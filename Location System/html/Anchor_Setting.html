@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Location System</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--BootStrap3-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <!--JQuery庫-->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!--編寫css-->
+    <link rel=stylesheet type="text/css" href="../css/bootstrap_collapsible_navbar.css">
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #b9b0b0;
+        }
+
+        #table_ip_address_infos tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .top {
+            text-align: center;
+            padding: 20px 10px 10px 10px;
+        }
+
+        .middle {
+            background-color: #eee;
+            border: 1px #003366 solid;
+            height: 300px;
+            margin: 5px;
+            overflow: auto;
+        }
+
+        .bottom {
+            height: auto;
+            max-height: 20%;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        .mode_comport {
+            margin: auto;
+            width: 400px;
+            padding: 100px;
+            text-align: left;
+            display: none;
+        }
+
+        .checkBox_block {
+            margin: auto;
+            width: 400px;
+            text-align: left;
+            padding: 30px 0px 20px 0px;
+        }
+
+        .line_block {
+            margin: auto;
+            width: 500px;
+            border: 2px solid #a8d3ee;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .line_block th,
+        .line_block td {
+            padding: 8px;
+            text-align: left;
+            border: none;
+        }
+
+        .rf_setting_table {
+            margin: auto;
+            padding: 20px;
+        }
+
+        .rf_setting_table th,
+        .rf_setting_table td {
+            padding: 8px;
+            text-align: left;
+            border: none;
+        }
+
+        .mode_ethernet tbody td {
+            text-align: center;
+            border: 1px solid #b9b0b0;
+        }
+
+        .mode_ethernet tbody img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .disable_color {
+            color: #b3b3b3;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="../js/navbar_setting.js"></script>
+    <script type="text/javascript" src="../js/anchor_setting_load.js"></script>
+    <script type="text/javascript" src="../js/anchor_setting_request.js"></script>
+    <script type="text/javascript">
+
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12" style="background-color:white;">
+                <!-- 最上方黑色區塊 -->
+                <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+                </div>
+                <div style="height: 35px;width: 100%;">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12" style="background-color:white;">
+                <!-- 側滑導航欄 -->
+                <div id="wrapper">
+                    <!-- 導航欄開啟時的遮罩，設定顏色和長寬就可以形成遮罩 -->
+                    <div class="overlay">
+                    </div>
+                    <!-- Sidebar(Left) -->
+                    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+                        <ul class="nav sidebar-nav">
+                            <li><a href="../index.html">
+                                    <img src="../image/home.png">首頁</a>
+                            </li>
+                            <li><a href="../Member_Setting.html">
+                                    <img src="../image/member_setting.png">人員設置</a>
+                            </li>
+                            <li><a href="../Timeline.html">
+                                    <img src="../image/timeline.png">歷史軌跡</a>
+                            </li>
+                            <li><a href="../Map_Setting.html">
+                                    <img src="../image/map_setting.png">地圖設定</a>
+                            </li>
+                            <li><a href="../Anchor_Setting.html">
+                                    <img src="../image/anchor_setting.png">Anchor設定</a>
+                            </li>
+                            <li><a href="../Tag_Setting.html">
+                                    <img src="../image/tag_setting.png">Tag設定</a>
+                            </li>
+                            <li><a href="../Alarm_Setting.html">
+                                    <img src="../image/alarm_setting.png">Alarm設定</a>
+                            </li>
+                            <li><a href="../Reference.html">
+                                    <img src="../image/research.png">Reference</a>
+                            </li>
+                            <li><a href="../Advance_cmd.html">
+                                    <img src="../image/website.png">Advance cmd</a>
+                            </li>
+                            <li><a href="../Update.html">
+                                    <img src="../image/update.png">Update</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <!-- /#sidebar-wrapper -->
+
+                    <!-- Page Content -->
+                    <div id="page-content-wrapper">
+                        <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
+                            <!--<span class="hamb-center"></span>-->
+                            <span class="hamb-top"></span>
+                            <span class="hamb-middle"></span>
+                            <span class="hamb-bottom"></span>
+                        </button>
+                    </div>
+                    <!-- /#page-content-wrapper -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 網頁內容 -->
+
+        <ul id="tab" class="nav nav-tabs">
+            <li class="active">
+                <a href="#content_device_connection" data-toggle="tab">Device Connection</a>
+            </li>
+            <li><a href="#content_device_setting" data-toggle="tab">Device Setting</a>
+            </li>
+            <li><a href="#content_rf_setting" data-toggle="tab">RF Setting</a>
+            </li>
+        </ul>
+        <div id="tabContent" class="tab-content">
+            <div class="tab-pane fade in active" id="content_device_connection">
+                <div class="row">
+                    <div class="col-lg-12" style="background-color:white;">
+                        <div class="top">
+                            <label>Interface: </label>
+                            <select id="select_connect_mode">
+                                <option value="ethernet" selected="selected">Ethernet</option>
+                                <option value="comport">Comport</option>
+                            </select>
+                            <button type="button" id="btn_search" onclick="Search()">Search</button>
+                            <button type="button" id="btn_connect" onclick="Connect()">Connect</button>
+                        </div>
+                        <div class="mode_comport">
+                            <label>Comport: </label>
+                            <select>
+                                <option value="">COM5</option>
+                            </select>
+                        </div>
+                        <div class="mode_ethernet">
+                            <input type="checkbox" id="is_multiple_settings">
+                            <label>Multiple Settings</label>
+                            <div class="middle">
+                                <div style="width: 1800px;">
+                                    <table id="table_ip_address_info" class="ui-widget ui-widget-content">
+                                        <thead>
+                                            <tr class="ui-widget-header">
+                                                <th>Check</th>
+                                                <th>Status</th>
+                                                <th>Machine Number</th>
+                                                <th>Model Name</th>
+                                                <th>Anchor ID</th>
+                                                <th>IP Address</th>
+                                                <th>Gateway</th>
+                                                <th>Subnet Mask</th>
+                                                <th>Client IP</th>
+                                                <th>MAC Address</th>
+                                                <th>TCP Server Port</th>
+                                                <th>Udp Server Port</th>
+                                                <th>Tcp Client Src Port</th>
+                                                <th>Tcp Client Des Port</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div style="padding: 0px 20px 0px 0px;">
+                                <button type="button" id="btn_deselectAll" onclick="DeselectAll()" style="float:right;margin: 10px;">Deselect
+                                    All</button>
+                                <button type="button" id="btn_selectAll" onclick="SelectAll()" style="float:right;margin: 10px;">Select
+                                    All</button>
+                            </div>
+                            <br>
+                            <div class="bottom">
+                                <label>Local IP:</label>
+                                <input type="text" id="local_ip" value="">
+                                <br><br>
+                                <input type="checkbox" name="is_fixed_ip_connect" value="true">
+                                <label>Fixed IP connect:</label>
+                                <input type="text" id="fixed_ip_1" value="192" style="max-width: 40px;">
+                                <label>.</label>
+                                <input type="text" id="fixed_ip_2" value="168" style="max-width: 40px;">
+                                <label>.</label>
+                                <input type="text" id="fixed_ip_3" value="1" style="max-width: 40px;">
+                                <label>.</label>
+                                <input type="text" id="fixed_ip_4" value="3" style="max-width: 40px;">
+                                <br><br>
+                                <label>Network interface card: </label>
+                                <div id="select_interface_card" style="display: inline;"></div>
+                            </div>
+                        </div>
+                        <div style="height: 30px;width: 100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="content_device_setting">
+                <div class="row">
+                    <div class="col-lg-6" style="background-color:white;">
+                        <div>
+                            <div class="checkBox_block">
+                                <input type="checkbox" id="is_network_setting"> Network Setting:<br>
+                            </div>
+                            <div class="line_block">
+                                <table class="table_network_setting">
+                                    <tr>
+                                        <th>
+                                            <form>
+                                                <input type="radio" name="network_setting_mode" value="DHCP" checked>
+                                                <label style="margin-right: 20px;">DHCP</label>
+                                                <input type="radio" name="network_setting_mode" value="Fixed IP">
+                                                <label>Fixed IP</label><br>
+                                            </form>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <label>IP Address:</label>
+                                        </th>
+                                        <th>
+                                            <input type="text" id="ip_address_1" style="max-width: 40px;">
+                                            <label>.</label>
+                                            <input type="text" id="ip_address_2" style="max-width: 40px;">
+                                            <label>.</label>
+                                            <input type="text" id="ip_address_3" style="max-width: 40px;">
+                                            <label>.</label>
+                                            <input type="text" id="ip_address_4" style="max-width: 40px;">
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <label>Mask Address:</label>
+                                        </th>
+                                        <th>
+                                            <input type="text" id="mask_address_1" style="max-width: 40px;">
+                                            <label>.</label>
+                                            <input type="text" id="mask_address_2" style="max-width: 40px;">
+                                            <label>.</label>
+                                            <input type="text" id="mask_address_3" style="max-width: 40px;">
+                                            <label>.</label>
+                                            <input type="text" id="mask_address_4" style="max-width: 40px;">
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <label>Gateway Address:</label>
+                                        </th>
+                                        <th>
+                                            <input type="text" id="gateway_address_1" style="max-width: 40px;">
+                                            <label>.</label>
+                                            <input type="text" id="gateway_address_2" style="max-width: 40px;">
+                                            <label>.</label>
+                                            <input type="text" id="gateway_address_3" style="max-width: 40px;">
+                                            <label>.</label>
+                                            <input type="text" id="gateway_address_4" style="max-width: 40px;">
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <label>Client IP:</label>
+                                        </th>
+                                        <th>
+                                            <input type="text" id="client_ip_1" style="max-width: 40px;">
+                                            <label>.</label>
+                                            <input type="text" id="client_ip_2" style="max-width: 40px;">
+                                            <label>.</label>
+                                            <input type="text" id="client_ip_3" style="max-width: 40px;">
+                                            <label>.</label>
+                                            <input type="text" id="client_ip_4" style="max-width: 40px;">
+                                        </th>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6" style="background-color:white;">
+                        <div>
+                            <div class="checkBox_block">
+                                <input type="checkbox" id="is_basic_setting"> Basic Setting:<br>
+                            </div>
+                            <div class="line_block">
+                                <table class="table_basic_setting">
+                                    <tr>
+                                        <th>
+                                            <label>Sent Cycle:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                &nbsp;&nbsp;&nbsp;</label>
+                                        </th>
+                                        <th>
+                                            <input type="text" id="sent_cycle" value="1000" style="max-width: 120px;">
+                                            (ms)
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <label>Device ID:</label>
+                                        </th>
+                                        <th>
+                                            <input type="text" id="device_id" value="65535" style="max-width: 120px;">
+                                        </th>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12" style="background-color:white;">
+                        <div style="padding: 30px 0px 30px 0px; width: 100%; text-align: center;">
+                            <button type="button" id="btn_device_read" onclick="Device_setting_read()">Read</button>
+                            <button type="button" id="btn_device_write" onclick="Device_setting_write()">Write</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="content_rf_setting">
+                <div class="row">
+                    <div class="col-lg-12" style="background-color:white;">
+                        <div class="rf_setting_table">
+                            <table>
+                                <tr>
+                                    <th>
+                                        <label>Model</label>
+                                    </th>
+                                    <th>
+                                        <label id="rf_Model"></label>
+                                    </th>
+                                    <th>
+                                        <label>Version:</label>
+                                    </th>
+                                    <th>
+                                        <label id="rf_Version"></label>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <label>MODE:</label>
+                                    </th>
+                                    <th>
+                                        <label id="rf_MODE"></label>
+                                    </th>
+                                    <th>
+                                        <label>Device ID:</label>
+                                    </th>
+                                    <th>
+                                        <label id="rf_Device_ID"></label>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <label>Channel:</label>
+                                    </th>
+                                    <th>
+                                        <select id="rf_Channel">
+                                            <option value="CH1 (3.5GHz)">CH1(3.5GHz)</option>
+                                            <option value="CH2 (4.0GHz)">CH2(4.0GHz)</option>
+                                            <option value="CH3 (4.5GHz)">CH3(4.5GHz)</option>
+                                            <option value="CH4 (4.5GHz WBW)">CH4(4.5GHz WBW)</option>
+                                            <option value="CH5 (6.5GHz)">CH5(6.5GHz)</option>
+                                            <option value="CH7 (6.5GHz WBW)">CH7(6.5GHz WBW)</option>
+                                        </select>
+                                    </th>
+                                    <th>
+                                        <label>TX Power:</label>
+                                    </th>
+                                    <th>
+                                        <select id="rf_TX_Power">
+                                            <option value="CH1_NOSMART_16M">CH1_NOSMART_16M</option>
+                                            <option value="CH2_NOSMART_16M">CH2_NOSMART_16M</option>
+                                            <option value="CH3_NOSMART_16M">CH3_NOSMART_16M</option>
+                                            <option value="CH4_NOSMART_16M">CH4_NOSMART_16M</option>
+                                            <option value="CH5_NOSMART_16M">CH5_NOSMART_16M</option>
+                                            <option value="CH7_NOSMART_16M">CH7_NOSMART_16M</option>
+                                            <option value="CH1_NOSMART_64M">CH1_NOSMART_64M</option>
+                                            <option value="CH2_NOSMART_64M">CH2_NOSMART_64M</option>
+                                            <option value="CH3_NOSMART_64M">CH3_NOSMART_64M</option>
+                                            <option value="CH4_NOSMART_64M">CH4_NOSMART_64M</option>
+                                            <option value="CH5_NOSMART_64M">CH5_NOSMART_64M</option>
+                                            <option value="CH7_NOSMART_64M">CH7_NOSMART_64M</option>
+                                            <option value="CH1_SMART_16M">CH1_SMART_16M</option>
+                                            <option value="CH2_SMART_16M">CH2_SMART_16M</option>
+                                            <option value="CH3_SMART_16M">CH3_SMART_16M</option>
+                                            <option value="CH4_SMART_16M">CH4_SMART_16M</option>
+                                            <option value="CH5_SMART_16M">CH5_SMART_16M</option>
+                                            <option value="CH7_SMART_16M">CH7_SMART_16M</option>
+                                            <option value="CH1_SMART_64M">CH1_SMART_64M</option>
+                                            <option value="CH2_SMART_64M">CH2_SMART_64M</option>
+                                            <option value="CH3_SMART_64M">CH3_SMART_64M</option>
+                                            <option value="CH4_SMART_64M">CH4_SMART_64M</option>
+                                            <option value="CH5_SMART_64M">CH5_SMART_64M</option>
+                                            <option value="CH7_SMART_64M">CH7_SMART_64M</option>
+                                        </select>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <label>Datarate:</label>
+                                    </th>
+                                    <th>
+                                        <select id="rf_Datarate">
+                                            <option value="110Kbps">110Kbps</option>
+                                            <option value="850Kbps">850Kbps</option>
+                                            <option value="6.8Mbps">6.8Mbps</option>
+                                        </select>
+                                    </th>
+                                    <th>
+                                        <label>NSD:</label>
+                                    </th>
+                                    <th>
+                                        <select id="rf_NSD">
+                                            <option value="0">0</option>
+                                            <option value="1">1</option>
+                                        </select>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <label>PRF:</label>
+                                    </th>
+                                    <th>
+                                        <select id="rf_PRF">
+                                            <option value="16M">16M</option>
+                                            <option value="64M">64M</option>
+                                        </select>
+                                    </th>
+                                    <th>
+                                        <label>SDF_timeoutr:</label>
+                                    </th>
+                                    <th>
+                                        <select id="rf_SDF_timeoutr">
+                                            <option value="1089">1089</option>
+                                        </select>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <label>PreambleCode:</label>
+                                    </th>
+                                    <th>
+                                        <select id="rf_PreambleCode">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                            <option value="8">8</option>
+                                            <option value="9">9</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                            <option value="17">17</option>
+                                            <option value="18">18</option>
+                                            <option value="19">19</option>
+                                            <option value="20">20</option>
+                                        </select>
+                                    </th>
+                                    <th>
+                                        <label>SMARTPOWER:</label>
+                                    </th>
+                                    <th>
+                                        <select id="rf_SMARTPOWER">
+                                            <option value="0">0</option>
+                                            <option value="1">1</option>
+                                        </select>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <label>PreambleLength:</label>
+                                    </th>
+                                    <th>
+                                        <select id="rf_PreambleLength">
+                                            <option value="64">64</option>
+                                            <option value="128">128</option>
+                                            <option value="256">256</option>
+                                            <option value="512">512</option>
+                                            <option value="1024">1024</option>
+                                            <option value="1536">1536</option>
+                                            <option value="2048">2048</option>
+                                            <option value="4096">4096</option>
+                                        </select>
+                                    </th>
+                                    <th>
+                                        <label>NTM:</label>
+                                    </th>
+                                    <th>
+                                        <select id="rf_NTM">
+                                            <option value="0">0</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                            <option value="8">8</option>
+                                            <option value="9">9</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                            <option value="13">13</option>
+                                            <option value="14">14</option>
+                                            <option value="15">15</option>
+                                            <option value="16">16</option>
+                                            <option value="17">17</option>
+                                            <option value="18">18</option>
+                                            <option value="19">19</option>
+                                            <option value="20">20</option>
+                                            <option value="21">21</option>
+                                            <option value="22">22</option>
+                                            <option value="23">23</option>
+                                            <option value="24">24</option>
+                                            <option value="25">25</option>
+                                            <option value="26">26</option>
+                                            <option value="27">27</option>
+                                            <option value="28">28</option>
+                                            <option value="29">29</option>
+                                            <option value="30">30</option>
+                                            <option value="31">31</option>
+                                        </select>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <label>PAC:</label>
+                                    </th>
+                                    <th>
+                                        <select id="rf_PAC">
+                                            <option value="8">8</option>
+                                            <option value="16">16</option>
+                                            <option value="32">32</option>
+                                            <option value="64">64</option>
+                                        </select>
+                                    </th>
+                                    <th>
+                                        <label>MULT:</label>
+                                    </th>
+                                    <th>
+                                        <select id="rf_MULT">
+                                            <option value="0">0</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                        </select>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <label>TX PGdelay:</label>
+                                    </th>
+                                    <th>
+                                        <select id="rf_TX_PGdelay">
+                                            <option value="CH1">CH1</option>
+                                            <option value="CH2">CH2</option>
+                                            <option value="CH3">CH3</option>
+                                            <option value="CH4">CH4</option>
+                                            <option value="CH5">CH5</option>
+                                            <option value="CH6">CH6</option>
+                                            <option value="CH7">CH7</option>
+                                        </select>
+                                    </th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12" style="background-color:white;">
+                        <div style="padding: 30px 0px 30px 0px; width: 100%; text-align: center;">
+                            <button type="button" id="btn_rf_read" onclick="RF_setting_read()">Read</button>
+                            <button type="button" id="btn_rf_write" onclick="RF_setting_write()">Write</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </div>
+</body>
+
+</html>

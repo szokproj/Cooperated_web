@@ -1,0 +1,25 @@
+#left_navbar .navbar-nav li {
+    width: 105px;
+    margin-top: 10px;
+}
+
+#left_navbar .navbar-nav li a {
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+    display: block;
+    text-decoration: none;
+    text-align: center;
+    font-size: 15px;
+    border-radius: 8px 0px 0px 8px;
+    border-left: 2px solid rgb(214, 214, 214);
+    border-top: 2px solid rgb(214, 214, 214);
+    border-bottom: 2px solid rgb(214, 214, 214);
+}
+
+#left_navbar .navbar {
+    top: 10px;
+    height: 500px !important;
+    width: 120px !important;
+    /*修改最上方黑色方框的高度*/
+    background-color: rgb(214, 214, 214);
+}

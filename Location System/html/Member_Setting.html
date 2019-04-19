@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Location System</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--JQuery庫-->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
+    <!--BootStrap3-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <!--jOrgChart-->
+    <link rel="stylesheet" type="text/css" href="../css/jOrgChart/jquery.orgchart.css">
+    <link rel="stylesheet" type="text/css" href="../css/j_orgchart_mini.css">
+    <!--編寫css-->
+    <link rel="stylesheet" type="text/css" href="../css/member_typesetting.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap_collapsible_navbar.css">
+    <link rel="stylesheet" type="text/css" href="../css/left_nav.css">
+</head>
+
+<body>
+    <script type="text/javascript" src="../js/navbar_setting.js"></script>
+    <script type="text/javascript" src="../js/table_Page.js"></script>
+    <script type="text/javascript" src="../js/palette.js"></script>
+    <script type="text/javascript" src="../js/member_setting.js"></script>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12" style="background-color:white;">
+                <!-- 最上方黑色區塊 -->
+                <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+                </div>
+                <div style="height: 35px;width: 100%;">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12" style="background-color:white;">
+                <div id="wrapper">
+                    <!-- 導航欄開啟時的遮罩，設定顏色和長寬就可以形成遮罩 -->
+                    <div class="overlay">
+                    </div>
+                    <!-- Sidebar(Left) -->
+                    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+                        <ul class="nav sidebar-nav">
+                            <li><a href="../index.html">
+                                    <img src="../image/home.png">首頁</a>
+                            </li>
+                            <li><a href="../Member_Setting.html">
+                                    <img src="../image/member_setting.png">人員設置</a>
+                            </li>
+                            <li><a href="../Timeline.html">
+                                    <img src="../image/timeline.png">歷史軌跡</a>
+                            </li>
+                            <li><a href="../Map_Setting.html">
+                                    <img src="../image/map_setting.png">地圖設定</a>
+                            </li>
+                            <li><a href="../Anchor_Setting.html">
+                                    <img src="../image/anchor_setting.png">Anchor設定</a>
+                            </li>
+                            <li><a href="../Tag_Setting.html">
+                                    <img src="../image/tag_setting.png">Tag設定</a>
+                            </li>
+                            <li><a href="../Alarm_Setting.html">
+                                    <img src="../image/alarm_setting.png">Alarm設定</a>
+                            </li>
+                            <li><a href="../Reference.html">
+                                    <img src="../image/research.png">Reference</a>
+                            </li>
+                            <li><a href="../Advance_cmd.html">
+                                    <img src="../image/website.png">Advance
+                                    cmd</a>
+                            </li>
+                            <li><a href="../Update.html">
+                                    <img src="../image/update.png">Update</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <!-- /#sidebar-wrapper -->
+
+                    <!-- Page Content -->
+                    <div id="page-content-wrapper">
+                        <button type="button" class="hamburger is-closed
+                                animated fadeInLeft" data-toggle="offcanvas">
+                            <!--<span class="hamb-center"></span>-->
+                            <span class="hamb-top"></span>
+                            <span class="hamb-middle"></span>
+                            <span class="hamb-bottom"></span>
+                        </button>
+                    </div>
+                    <!-- /#page-content-wrapper -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 網頁內容 -->
+        <div class="row" style="display:flex;">
+            <div class="col-lg-2" id="left_navbar">
+                <nav class="navbar navbar-default">
+                    <div class="container-fluid">
+                        <ul class="nav navbar-nav">
+                            <li class="active"><a href="#">成員設定</a></li>
+                            <li><a href="../Display_Setting.html">顯示設定</a></li>
+                            <li><a href="../Dept_Setting.html">部門設定</a></li>
+                            <li><a href="../Job_Title_Setting.html">職稱設定</a></li>
+                            <li><a href="../User_Type_Setting.html">職稱設定</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="col-lg-10">
+                <div>
+                    <button id="add_col" class="btn btn-success">新增</button>
+                    <button id="delete_col" class="btn btn-danger">刪除</button>
+                    <button id="multi_edit" class="btn btn-primary">批量修改</button>
+                </div>
+                <div class="table_member">
+                    <table class="table-line" id="table_member_setting">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAll" onchange="" /> Item</th>
+                                <th>標籤編號</th>
+                                <th>工號</th>
+                                <th>名稱</th>
+                                <th>部門</th>
+                                <th>職稱</th>
+                                <th>用戶類型</th>
+                                <th>門禁</th>
+                                <th>時段</th>
+                                <th>備註</th>
+                                <th>設置</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <ul class="pagination" style="min-width: 730px;">
+                    <li><a id="btn0">當前 0/0 頁</a></li>
+                    <li><a>每頁 <input id="pageSize" type="text" size="1" maxlength="2"> 條</a></li>
+                    <li><a href="#" class="page-btn" id="pageSizeSet">設置</a></li>
+                    <li><a id="sjzl">總數據量 0</a></li>
+                    <li><a href="#" class="page-btn" id="btn1">&laquo;</a></li>
+                    <li><a href="#" class="page-btn" id="btn2">上一頁</a></li>
+                    <li><a href="#" class="page-btn" id="btn3">下一頁</a></li>
+                    <li><a href="#" class="page-btn" id="btn4">&raquo;</a></li>
+                    <li><a>轉到 <input id="changePage" type="text" size="1" maxlength="4"> 頁</a></li>
+                    <li><a href="#" class="page-btn" id="btn5">跳轉</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="hidden_dialog">
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <!-- JQuery UI - Dialog -->
+        <script type="text/javascript" src="../js/Dialog/dialog_setting.js"></script>
+        <script type="text/javascript" src="../js/Dialog/dialog_member_setting.js"></script>
+        <script type="text/javascript" src="../js/Dialog/dialog_member_multi.js"></script>
+        <script type="text/javascript" src="../js/jOrgChart/jquery.orgchart.js"></script>
+        <script type="text/javascript" src="../js/Dialog/dialog_tree_chart.js"></script>
+        <!-- Hidden Dialog -->
+        <div id="dialog_edit_member" title="Edit Person Infomation">
+            <form>
+                <fieldset style="text-align: left;">
+                    <ul id="setTab" class="nav nav-tabs">
+                        <li class="active"><a href="#mainData" data-toggle="tab">主要資料</a></li>
+                        <li><a href="#basicData" data-toggle="tab">基本資料</a></li>
+                        <li><a href="#note" data-toggle="tab">備註</a></li>
+                    </ul><br>
+                    <div id="setTabContent" class="tab-content">
+                        <div class="tab-pane fade in active" id="mainData">
+                            <table class="noborder-block">
+                                <tr>
+                                    <td style="width:80px;"><label for="main_tag_id">標籤編號</label></td>
+                                    <td><input type="text" id="main_tag_id" style="width:100%;"></td>
+                                    <!--TagID是綁定資料的依據，故不得進行編輯，只可讀取-->
+                                </tr>
+                                <tr>
+                                    <td><label for="main_card_id">卡號</label></td>
+                                    <td><input type="text" id="main_card_id" style="width:100%;"></td>
+                                </tr>
+                            </table>
+                            <table class="noborder-block">
+                                <tr>
+                                    <td>
+                                        <p><label for="main_number" style="margin-right:48px;">工號</label>
+                                            <input type="text" id="main_number" style="width:70%;">
+                                        </p>
+                                        <p><label for="main_name" style="margin-right:48px;">名稱</label>
+                                            <input type="text" id="main_name" style="width:70%;">
+                                        </p>
+                                        <p><label for="main_department" style="margin-right:48px;">部門</label>
+                                            <input type="text" id="main_department" style="width:50%;" readonly />
+                                            <input type="button" id="btn_select_dept" value="選擇" />
+                                        </p>
+                                        <p><label for="main_jobTitle" style="margin-right:48px;">職稱</label>
+                                            <input type="text" id="main_jobTitle" style="width:50%;" readonly />
+                                            <input type="button" id="btn_select_title" value="選擇" />
+                                        </p>
+                                        <p><label for="main_type" style="margin-right:19px;">用戶類型</label>
+                                            <select id="main_type"></select>
+                                        </p>
+                                    </td>
+                                    <td style="width:45%;">
+                                        <div id="main_picture">
+                                            <div class="thumb-block">
+                                                <img id="main_picture_img" style="max-height:120px; max-width:150px;">
+                                            </div>
+                                            <span style="margin-right:10px;">
+                                                <label for="main_picture_upload" class="custom-file-download">
+                                                    <img src="../image/add-image.png" style="max-width:20px;"></label>
+                                                <input type="file" id="main_picture_upload" accept="image/*">
+                                            </span>
+                                            <span>
+                                                <label for="main_picture_clear" class="custom-file-download">
+                                                    <img src="../image/delete.png" style="max-width:20px;"></label>
+                                                <input type="button" id="main_picture_clear" class="image-btn">
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table class="noborder-block">
+                                <tr>
+                                    <td style="width:80px;"><label for="main_select_tag_color">畫點依據</label></td>
+                                    <td>
+                                        <select id="main_select_tag_color"></select>
+                                        <label style="margin: 0px 10px 0px 40px;">指定顏色</label>
+                                        <label for="main_input_tag_color" class="custom-file-download">
+                                            <img src="../image/palette.png" style="max-width:20px;">
+                                        </label>
+                                        <input type="text" class="palette" id="main_input_tag_color"
+                                            onchange="changeAlarmDotColor(this.value)" style="max-width:30px;">
+                                    </td>
+                                </tr>
+                            </table>
+                            <table class="noborder-block">
+                                <tr>
+                                    <td style="width:80px;"><label for="main_access">門禁</label></td>
+                                    <td><select id="main_access"></select></td>
+                                    <td style="width:80px;"><label for="main_duration">時段</label></td>
+                                    <td><select id="main_duration"></select></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="basicData" class="ui-widget ui-widget-content">
+                            <table class="noborder-block">
+                                <tr>
+                                    <td style="width:80px;"><label for="basic_state">工作狀態</label></td>
+                                    <td><select id="basic_state"></select>
+                                    </td>
+                                    <td style="width:80px;"><label for="basic_gender">性別</label></td>
+                                    <td><select id="basic_gender"></select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="basic_last_name">姓氏</label></td>
+                                    <td><input type="text" id="basic_last_name" style="width:100%;"></td>
+                                    <td><label for="basic_first_name">名字</label></td>
+                                    <td><input type="text" id="basic_first_name" style="width:100%;"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="basic_english_name">英文名</label></td>
+                                    <td><input type="text" id="basic_english_name" style="width:100%;"></td>
+                                    <td><label for="basic_birthday">出生日期</label></td>
+                                    <td><input type="date" id="basic_birthday"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="basic_job_phone">工作電話</label></td>
+                                    <td><input type="text" id="basic_job_phone" style="width:100%;" />
+                                    </td>
+                                    <td><label for="basic_self_phone">個人電話</label></td>
+                                    <td><input type="text" id="basic_self_phone" style="width:100%;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="basic_mail">電子郵件</label></td>
+                                    <td><input type="text" id="basic_mail" style="width:100%;" /></td>
+                                    <td><label for="basic_address">住址</label></td>
+                                    <td><input type="text" id="basic_address" style="width:100%;" multiple>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="basic_highest_education">最高學歷</label></td>
+                                    <td><select id="basic_highest_education"></select>
+                                    </td>
+                                    <td><label for="basic_school">畢業院校</label></td>
+                                    <td><input type="text" id="basic_school" style="width:100%;"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="basic_grade">職等</label></td>
+                                    <td><input type="text" id="basic_grade" style="width:100%;"></td>
+                                    <td><label for="basic_pro_level">技術等級</label></td>
+                                    <td><input type="text" id="basic_pro_level" style="width:100%;"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="basic_entry_date">入職日期</label></td>
+                                    <td><input type="date" id="basic_entry_date"></select>
+                                    <td><label for="basic_leave_date">離職日期</label></td>
+                                    <td><input type="date" id="basic_leave_date"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="note" class="ui-widget ui-widget-content">
+                            <textarea id="note_text" style="width:100%; height:410px; overflow:auto"></textarea>
+                        </div>
+                    </div>
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+        <div id="dialog_multi_edit" title="Multi set">
+            <form>
+                <fieldset style="text-align: center;">
+                    <table id="table_multi_edit" class="ui-widget ui-widget-content block">
+                        <tr>
+                            <td><label>Item</label></td>
+                            <td><select id="multi_edit_item">
+                                    <option value="">請選擇</option>
+                                    <option value="department">部門</option>
+                                    <option value="jobTitle">職稱</option>
+                                    <option value="type">用戶類型</option>
+                                </select></td>
+                        </tr>
+                        <tr>
+                            <td><label id="multi_edit_title"></label></td>
+                            <td><select id="multi_edit_value"></select></td>
+                        </tr>
+                    </table>
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+        <div id="dialog_tree_chart" title="select dept">
+            <form>
+                <fieldset style="text-align: center;">
+                    <div id="chart-container"></div>
+                    <div id="edit-panel">
+                        <label class="selected-node-group">selected node:</label>
+                        <input type="text" id="selected-node" class="selected-node-group" readonly>
+                    </div>
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

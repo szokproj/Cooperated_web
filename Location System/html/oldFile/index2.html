@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Location System</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!---->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <!---->
+    <link rel=stylesheet type="text/css" href="http:\\localhost\Location System\css\bootstrap_collapsible_navbar.css">
+    <link rel=stylesheet type="text/css" href="http:\\localhost\Location System\css\jquery_side_nav.css">
+    <style>
+        table {border-collapse: collapse; width: 100%;}
+        th, td {padding: 8px; text-align: left; border: 1px solid #808080;}
+        tr:hover {background-color: #f5f5f5;}
+        /*
+        * 網頁內的輸入框
+        */
+        label, input { display:inline block;}
+        input.text { margin-bottom:12px; width:95%; padding: .4em; }
+        fieldset { padding:0; border:0; margin-top:25px; }
+        h1 { font-size: 1.2em; margin: .6em 0; }
+        .ui-dialog .ui-state-error { padding: .3em; }
+
+        /*修改原本Navbar的寬度*/
+        .navbar-nav > li > a {padding-top:5px !important; padding-bottom:5px !important;}
+        .navbar {min-height:50px !important}
+
+        #wrapper.open {
+            padding-right: 320px;
+        }
+
+        .cvsBlock {
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+            background: #ccc;
+            height: 500px;
+            overflow: auto;
+            /*border-radius: 25px;*/
+            /*border: 1px black solid;*/
+        }
+
+        .thumbnail{
+            display: inline-block;
+            background: red;
+        }
+
+        .thumbnail img{
+            background: white;
+        }
+
+        .thumbnail p{
+            font-weight:bold;
+            line-height: 7px;
+        }
+
+        .thumbnail_columns{
+            height: 150px;
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        /*------------------------------------------*/
+
+        
+    </style>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="http:\\localhost\Location System\js\dialog_anchor_list.js"></script>
+    <script type="text/javascript" src="http:\\localhost\Location System\js\dialog_anchor_position.js"></script>
+    <script type="text/javascript" src="http:\\localhost\Location System\js\canvas_request.js"></script>
+    <script type="text/javascript" src="http:\\localhost\Location System\js\dialog_map_scale.js"></script>
+    <script type="text/javascript" src="http:\\localhost\Location System\js\navbar_setting.js"></script>
+    <script>
+        $(function () {
+            var $aside = $('.page-main > aside');
+            var $asidButton = $aside.find('.button_arrow')
+                .on('click', function () {
+                    $aside.toggleClass('open');
+                    if ($aside.hasClass('open')) {
+                        $aside.stop(true).animate({ right: '-80px' });
+                        $asidButton.find('img').attr('src', 'https://c2.staticflickr.com/6/5555/31208490685_5c55f2f28f_o.png');
+                        $('#wrapper').addClass('open');
+                    } else {
+                        $aside.stop(true).animate({ right: '-400px' });
+                        $asidButton.find('img').attr('src', 'https://c2.staticflickr.com/6/5635/31065147822_9b6e31ab5f_o.png');
+                        $('#wrapper').removeClass('open');
+                    };
+                });
+
+            $('#sidebarRightTab li:eq(1) a').tab('show');
+
+        });
+
+        $(function () {
+            var $aside_alarm = $('.page-bottom > aside');
+            var $aside_alarm_Button = $aside_alarm.find('.button_arrow')
+                .on('click', function () {
+                    $aside_alarm.toggleClass('open');
+                    if ($aside_alarm.hasClass('open')) {
+                        $aside_alarm.stop(true).animate({ left: '-80px' });
+                        $aside_alarm_Button.find('img').attr('src', 'https://c2.staticflickr.com/6/5635/31065147822_9b6e31ab5f_o.png');
+                        //$('#wrapper').addClass('open');
+                    } else {
+                        $aside_alarm.stop(true).animate({ left: '-400px' });
+                        $aside_alarm_Button.find('img').attr('src', 'https://c2.staticflickr.com/6/5555/31208490685_5c55f2f28f_o.png');
+                        //$('#wrapper').removeClass('open');
+                    };
+                });
+
+            $('#sidebarRightTab li:eq(1) a').tab('show');
+
+        });
+
+        /*---------------------------------------------------*/
+
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12" style="background-color:white;">
+                <!-- 最上方黑色區塊 -->
+                <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+                </div>
+                <div style="height: 60px;width: 100%;">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12" style="background-color:white;">
+                <!-- 側滑導航欄 -->
+                <div id="wrapper">
+                    <!-- 導航欄開啟時的遮罩，設定顏色和長寬就可以形成遮罩 -->
+                    <div class="overlay">
+                    </div>
+                    <!-- Sidebar(Left) -->
+                    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+                        <ul class="nav sidebar-nav">
+                            <li class="sidebar-brand"><a href="#">Location Station</a></li>
+
+                            <li><a href="#">人員設置</a></li>
+                            <li><a href="#">歷史軌跡</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-fw fa-plus"></i>進階設定<span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li class="dropdown-header"></li>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                            <i class="fa fa-fw fa-plus"></i>地圖設定<span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li class="dropdown-header"></li>
+                                            <li><label for="Map_Select" class="custom-file-selected">Map Select</label>
+                                                <input type="file" id="Map_Select" accept="image/png" onchange="loadImage(this.files[0])">
+                                            </li>
+                                            <li><input type="button" id="Map_Scale" value="Map Scale"></li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                            <i class="fa fa-fw fa-plus"></i>Anchor設定<span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li class="dropdown-header"></li>
+                                            <li><input type="button" id="Anchor_Position" value="Anchor Position"
+                                                    onclick="clickAnchorPosition();"></li>
+                                            <li><input type="button" id="Anchor_List" value="Anchor List"></li>
+                                            <li><input type="button" id="Anchor_Group" value="Anchor Group"></li>
+                                        </ul>
+                                    </li>
+                                    <li><input type="button" id="Tag_Setting" value="Tag設定"></li>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                            <i class="fa fa-fw fa-plus"></i>高級設定<span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li class="dropdown-header"></li>
+                                            <li><a href="#">Inventory + Reference</a></li>
+                                            <li><a href="#">Instruction</a></li>
+                                            <li><a href="Device_Setting.php">Device Setting</a></li>
+                                            <li><a href="#">RF Setting</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                    <!-- /#sidebar-wrapper -->
+
+                    <!-- Page Content -->
+                    <div id="page-content-wrapper">
+                        <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
+                            <!--<span class="hamb-center"></span>-->
+                            <span class="hamb-top"></span>
+                            <span class="hamb-middle"></span>
+                            <span class="hamb-bottom"></span>
+                        </button>
+                    </div>
+                    <!-- /#page-content-wrapper -->
+
+                    <div id="dialog_map_scale" title="Set Map Scale">
+                        <form>
+                            <fieldset style="text-align: center;">
+                                <label for="scale">1 : </label>
+                                <input type="text" name="scale" id="scale" value="3" style="max-width: 30px;">
+                                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                            </fieldset>
+                        </form>
+                    </div>
+                    <!-- Following is a dialog to add a new anchor -->
+                    <div id="dialog_add_new_anchor" title="Add New Anchor">
+                        <form>
+                            <fieldset style="text-align: left;">
+                                <label for="anchor_type">Anchor Type:</label>
+                                <select id="anchor_type" name="anchor_type">
+                                    <option value="Anchor" selected="selected">Anchor</option>
+                                    <option value="Main Anchor">Main Anchor</option>
+                                </select>
+                                <br><br>
+                                <label for="anchor_id">Anchor ID:</label>
+                                <input type="text" name="anchor_id" id="anchor_id" value="" style="max-width:100px;">
+                                (0 ~ 65535)
+                                <br><br>
+                                <label for="anchor_x">X:</label>
+                                <input type="text" name="anchor_x" id="anchor_x" value="" style="max-width:100px;">
+                                <br><br>
+                                <label for="anchor_y">Y:</label>
+                                <input type="text" name="anchor_y" id="anchor_y" value="" style="max-width:100px;">
+                                <br><br>
+                                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                            </fieldset>
+                        </form>
+                    </div>
+                    <!-- Following is a dialog to show all anchors -->
+                    <div id="dialog_anchor_list" title="Anchor List">
+                        <form>
+                            <fieldset style="text-align: center;">
+                                <table id="table_main_anchor_list" class="ui-widget ui-widget-content">
+                                    <thead>
+                                        <tr class="ui-widget-header ">
+                                            <th>Main Anchor ID</th>
+                                            <th>X</th>
+                                            <th>Y</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <br><br>
+                                <table id="table_anchor_list" class="ui-widget ui-widget-content">
+                                    <thead>
+                                        <tr class="ui-widget-header ">
+                                            <th>Anchor ID</th>
+                                            <th>X</th>
+                                            <th>Y</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                            </fieldset>
+                        </form>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="myModal" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Alarm Dialog</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <img src="http:\\localhost\Location System\image\user.png">
+                                    <p>Number:</p>
+                                    <p>Name:</p>
+                                    <p>ID:</p>
+                                    <p>Date:</p>
+                                    <p>Time:</p>
+                                    <p>Status:</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">暫時擱置</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">進行處理</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <!--網頁內容-->
+                    <div class="cvsBlock" id="cvsBlock">
+                        <canvas id="canvas" style="height: 300px;">
+                            此瀏覽器不支援canvas，請更換成Chrome瀏覽器
+                        </canvas>
+                    </div>
+                    <div>
+                        <div style="float: right;">
+                            <span id="scale_visible" style="margin-right:30px;">Map Scale: initial</span>
+                            X:<input type="text" name="x" id="x" value="" style="max-width: 50px;">
+                            Y:<input type="text" name="y" id="y" value="" style="max-width: 50px;">
+                        </div>
+                        <button onclick="restoreCanvas();" style="margin-right:30px;">恢復原比例</button>
+                        <button onclick="getServerImage();" style="margin-right:30px;">導入地圖</button>
+                        <button id="btn_start" onclick="StartClick();" style="margin-right:30px;">Start</button>
+                    </div>
+
+                    <div class="page-alarm" role="main">
+                        <aside>
+                            <div class="alarm-place">
+
+                            </div>
+                            <button><img src="http:\\localhost\Location System\image\arrow_up.png"></button>
+                            <!--<div>Icons made by <a href="https://www.flaticon.com/authors/dave-gandy" title="Dave Gandy">Dave Gandy</a> from <a href="https://www.flaticon.com/"
+                                title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/"
+                                title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>-->
+                        </aside>
+                    </div>
+
+                    <div class="page-main" role="main">
+                        <aside>
+                            <div class="main-place">
+                                <ul id="sidebarRightTab" class="nav nav-tabs">
+                                    <li class="active">
+                                        <a href="#sidebar_right_member" data-toggle="tab">人員名單</a>
+                                    </li>
+                                    <li><a href="#sidebar_right_alarm" data-toggle="tab">警報</a>
+                                    </li>
+                                    <li><a href="#sidebar_right_search" data-toggle="tab">搜尋</a>
+                                    </li>
+                                </ul>
+                                <div id="sidebarRightTabContent" class="tab-content">
+                                    <div class="tab-pane fade in active" id="sidebar_right_member">
+                                        <div style="overflow:auto; height: 600px; margin: 10px 5px 0px 0px;">
+                                            <table id="table_rightbar_member_list" class="ui-widget ui-widget-content">
+                                                <thead>
+                                                    <tr class="ui-widget-header ">
+                                                        <th style="width: 10px;">Items</th>
+                                                        <th>Display ID</th>
+                                                        <th>Name</th>
+                                                        <th>Tag List</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="sidebar_right_alarm">
+                                        <div style="overflow:auto; height: 600px; width: 300px; margin: 10px 10px 0px 0px;">
+                                            <div style="width: 800px;">
+                                                <table id="table_rightbar_alarm_list" class="ui-widget ui-widget-content">
+                                                    <thead>
+                                                        <tr class="ui-widget-header ">
+                                                            <th style="width: 10px;">Items</th>
+                                                            <th style="width: 60px;">ID</th>
+                                                            <th>Alarm Status</th>
+                                                            <th>Time</th>
+                                                            <th>Name</th>
+                                                            <th>Image</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="sidebar_right_search">
+                                        <label>搜尋類型 : </label>
+                                        <select id="search_select_type">
+                                            <option value="group" selected="selected">群組</option>
+                                            <option value="id">ID</option>
+                                            <option value="name">名稱</option>
+                                        </select>
+                                        <br>
+                                        <label>輸入資料 : </label>
+                                        <input type="text" id="search_input_target">
+                                        <br>
+                                        <label>時間 : </label>
+                                        <br>
+                                        <div style="margin-left: 10px;">
+                                            <label>開始 : </label>
+                                            <input type="date" id="start_date">
+                                            <label>時 : </label>
+                                            <input type="text" id="start_time" style="width: 30px;">
+                                            <br>
+                                            <label>結束 : </label>
+                                            <input type="date" id="end_date">
+                                            <label>時 : </label>
+                                            <input type="text" id="end_time" style="width: 30px;">
+                                            <br>
+                                        </div>
+                                        <br><br>
+                                        <div style="text-align: center;">
+                                            <input type="button" id="search_start" value="搜尋" onclick="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button><img src="https://c2.staticflickr.com/6/5635/31065147822_9b6e31ab5f_o.png"></button>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+</html>
