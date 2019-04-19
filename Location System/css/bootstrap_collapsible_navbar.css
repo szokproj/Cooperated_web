@@ -1,0 +1,474 @@
+input[type="file"] {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+}
+
+.custom-file-selected {
+	display: inline-block;
+	cursor: pointer;
+	color: #dddddd;
+	text-decoration: none;
+	font-family: Sans-serif;
+	padding: 10px 15px 10px 50px;
+}
+
+.font-type {
+	color: white;
+}
+
+.position1 {
+	position: relative;
+	float: left;
+	width: 20%;
+	height: 50px;
+	text-align: center;
+	line-height: 50px;
+}
+
+@import "https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css";
+
+body {
+	position: relative;
+	overflow-x: hidden;
+}
+
+body,
+html {
+	width: 100%;
+	height: 100%;
+	background-color: white;
+}
+
+/*修改原本Navbar的寬度*/
+
+.navbar-nav>li>a {
+	padding-top: 5px !important;
+	padding-bottom: 5px !important;
+}
+
+.navbar {
+	min-height: 30px !important;
+	/*修改最上方黑色方框的高度*/
+	background-color: rgb(53, 96, 155);
+	border: none;
+}
+
+.nav .open>a {
+	background-color: transparent;
+}
+
+.nav .open>a:hover {
+	background-color: transparent;
+}
+
+.nav .open>a:focus {
+	background-color: transparent;
+}
+
+/*-------------------------------*/
+
+/*           Wrappers            */
+
+/*-------------------------------*/
+
+#wrapper {
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 0.5s ease;
+	-webkit-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+	padding-left: 0;
+	margin-left: -100px;
+	margin-right: -100px;
+}
+
+#wrapper {
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 0.5s ease;
+	-webkit-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+	padding-left: 0;
+	margin-left: -100px;
+	margin-right: -100px;
+}
+
+#wrapper.toggled {
+	padding-left: 220px;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+	left: 0px;
+}
+
+#wrapper.toggled #page-content-wrapper {
+	margin-right: -220px;
+	position: absolute;
+}
+
+#sidebar-wrapper {
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 0.5s ease;
+	-webkit-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+	background: rgb(24, 5, 48);
+	/*background: url("../image/nav_bg.png");*/
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	height: 100%;
+	left: -100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	width: 100%;
+	z-index: 1000;
+}
+
+#sidebar-wrapper::-webkit-scrollbar {
+	display: none;
+}
+
+#page-content-wrapper {
+	/*padding-top: 70px;*/
+	width: 100%;
+}
+
+/*-------------------------------*/
+
+/*     Sidebar nav styles        */
+
+/*-------------------------------*/
+
+.sidebar-nav {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	top: 50px;
+	width: 100%;
+}
+
+.sidebar-nav ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+.sidebar-nav li {
+	top: 100px;
+	float: left;
+	line-height: 30px;
+	/*下方文字高度*/
+	width: 10%;
+	/*icons排版位置*/
+	position: relative;
+	margin: 40px;
+}
+
+.sidebar-nav li:before {
+	background-color: transparent;
+	position: absolute;
+	height: 100%;
+	left: 0;
+	top: 0;
+	-webkit-transition: width 0.2s ease-in;
+	transition: width 0.2s ease-in;
+	z-index: -1;
+}
+
+.sidebar-nav li:hover:before {
+	-webkit-transition: width 0.2s ease-in;
+	transition: width 0.2s ease-in;
+	width: 100%;
+}
+
+.sidebar-nav li a {
+	color: #dddddd;
+	display: block;
+	padding: 10px 15px 10px 15px;
+	text-decoration: none;
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 15px;
+}
+
+.sidebar-nav li img {
+	background-image: url("../image/pages_icon_bg.png");
+	background-color: #dddddd;
+	border: 2px solid #dddddd;
+	padding: 10px 15px 10px 15px;
+	border-radius: 10px;
+	width: 100px;
+	height: 90px;
+}
+
+.sidebar-nav li img:hover {
+	background-image: url("../image/pages_icon_bg2.png");
+	background-color: #9494b8;
+	border: 2px solid #9494b8;
+	/*box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);*/
+}
+
+.sidebar-nav li.open:hover before {
+	-webkit-transition: width 0.2s ease-in;
+	transition: width 0.2s ease-in;
+	width: 100%;
+}
+
+.sidebar-nav li input:hover,
+.sidebar-nav li input:active,
+.sidebar-nav li input:focus,
+.sidebar-nav li.open input:hover,
+.sidebar-nav li.open input:active,
+.sidebar-nav li.open input:focus {
+	background-color: transparent;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.sidebar-nav li a:hover,
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus,
+.sidebar-nav li.open a:hover,
+.sidebar-nav li.open a:active,
+.sidebar-nav li.open a:focus {
+	background-color: transparent;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.sidebar-nav>.sidebar-brand {
+	font-size: 20px;
+	height: 65px;
+	line-height: 44px;
+}
+
+/*-------下拉選單設定---------*/
+
+.sidebar-nav .dropdown-menu {
+	background-color: #222222;
+	border-radius: 0;
+	border: none;
+	box-shadow: none;
+	margin: 0;
+	padding: 0;
+	position: relative;
+	width: 100%;
+}
+
+.sidebar-nav .dropdown-menu a {
+	color: #dddddd;
+	display: block;
+	padding: 10px 15px 10px 40px;
+	text-decoration: none;
+	font-family: Sans-serif;
+	font-size: 15px;
+}
+
+.sidebar-nav .dropdown-menu .dropdown-menu a {
+	color: #dddddd;
+	display: block;
+	padding: 10px 15px 10px 50px;
+	text-decoration: none;
+	font-family: Sans-serif;
+	font-size: 15px;
+}
+
+.sidebar-nav .dropdown-menu li input {
+	color: #dddddd;
+	background-color: rgba(0, 0, 0, 0);
+	width: 100%;
+	height: 100%;
+	display: block;
+	border: 0px;
+	padding: 10px 15px 10px 40px;
+	text-decoration: none;
+	text-align: start;
+	font-family: Sans-serif;
+	font-size: 15px;
+}
+
+.sidebar-nav .dropdown-menu .dropdown-menu li input {
+	color: #dddddd;
+	background-color: rgba(0, 0, 0, 0);
+	width: 100%;
+	height: 100%;
+	display: block;
+	border: 0px;
+	padding: 10px 15px 10px 50px;
+	text-decoration: none;
+	text-align: start;
+	font-family: Sans-serif;
+}
+
+/*-------------------------------*/
+
+/*       Hamburger-Cross         */
+
+/*-------------------------------*/
+
+.hamburger {
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 0.5s ease;
+	-webkit-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+	background: black;
+	border: none;
+	display: block;
+	height: 32px;
+	width: 32px;
+	left: 10px;
+	position: fixed;
+	top: 40px;
+	z-index: 1111;
+}
+
+.hamburger.left_active {
+	left: 290px;
+}
+
+.hamburger:hover {
+	outline: none;
+}
+
+.hamburger:focus {
+	outline: none;
+}
+
+.hamburger:active {
+	outline: none;
+}
+
+.hamburger.is-closed:before {
+	transform: translate3d(0, 0, 0);
+	transition: all 0.35s ease-in-out;
+	color: #ffffff;
+	content: '';
+	display: block;
+	font-size: 14px;
+	line-height: 32px;
+	opacity: 0;
+	text-align: center;
+	width: 100px;
+}
+
+.hamburger.is-closed:hover before {
+	transform: translate3d(-100px, 0, 0);
+	transition: all 0.35s ease-in-out;
+	display: block;
+	opacity: 1;
+}
+
+.hamburger.is-closed:hover .hamb-top {
+	transition: all 0.35s ease-in-out;
+	top: 0;
+}
+
+.hamburger.is-closed:hover .hamb-bottom {
+	transition: all 0.35s ease-in-out;
+	bottom: 0;
+}
+
+.hamburger.is-closed .hamb-top {
+	transition: all 0.35s ease-in-out;
+	background-color: rgba(255, 255, 255, 0.7);
+	top: 5px;
+}
+
+.hamburger.is-closed .hamb-middle {
+	background-color: rgba(255, 255, 255, 0.7);
+	margin-top: -2px;
+	top: 50%;
+}
+
+.hamburger.is-closed .hamb-bottom {
+	transition: all 0.35s ease-in-out;
+	background-color: rgba(255, 255, 255, 0.7);
+	bottom: 5px;
+}
+
+.hamburger.is-closed .hamb-top,
+.hamburger.is-closed .hamb-middle,
+.hamburger.is-closed .hamb-bottom,
+.hamburger.is-open .hamb-top,
+.hamburger.is-open .hamb-middle,
+.hamburger.is-open .hamb-bottom {
+	height: 4px;
+	left: 0;
+	position: absolute;
+	width: 100%;
+}
+
+.hamburger.is-open .hamb-top {
+	transform: rotate(45deg);
+	transition: -webkit-transform 0.2s cubic-bezier(0.73, 1, 0.28, 0.08);
+	background-color: #ffffff;
+	margin-top: -2px;
+	top: 50%;
+}
+
+.hamburger.is-open .hamb-middle {
+	background-color: #ffffff;
+	display: none;
+}
+
+.hamburger.is-open .hamb-bottom {
+	transform: rotate(-45deg);
+	transition: -webkit-transform 0.2s cubic-bezier(0.73, 1, 0.28, 0.08);
+	background-color: #ffffff;
+	margin-top: -2px;
+	top: 50%;
+}
+
+.hamburger.is-open {
+	left: 97%;
+}
+
+.hamburger.is-open:before {
+	transform: translate3d(0, 0, 0);
+	transition: all 0.35s ease-in-out;
+	color: #ffffff;
+	content: '';
+	display: block;
+	font-size: 14px;
+	line-height: 32px;
+	opacity: 0;
+	text-align: center;
+	width: 100px;
+}
+
+.hamburger.is-open:hover before {
+	transform: translate3d(-100px, 0, 0);
+	transition: all 0.35s ease-in-out;
+	display: block;
+	opacity: 1;
+}
+
+/*-------------------------------*/
+
+/*          Dark Overlay         */
+
+/*-------------------------------*/
+
+.overlay {
+	position: fixed;
+	display: none;
+	width: 0%;
+	height: 0%;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.4);
+	z-index: 1;
+}
+
+/*--------------------------------*/
+
+/*         button style           */
+
+/*--------------------------------*/

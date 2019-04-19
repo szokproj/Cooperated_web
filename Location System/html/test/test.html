@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>图片鼠标区域放大细节</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<style>
+    body {
+        background: #666;
+        margin: 0;
+        padding: 0;
+    }
+
+    input {
+        display: block;
+        margin: 20px auto;
+    }
+
+    .dropup {
+        display: inline-block;
+        margin-right: 30px;
+        font-size: 16px;
+    }
+
+    .dropup .dropdown-menu li input {
+        color: #000000;
+        background-color: rgba(0, 0, 0, 0);
+        width: 100%;
+        height: 100%;
+        display: block;
+        border: 0px;
+        padding: 10px 0px 10px 30px;
+        text-decoration: none;
+        text-align: start;
+        font-family: Sans-serif;
+        font-size: 14px;
+    }
+
+    .dropdown-submenu {
+        position: relative;
+    }
+
+    .dropdown-submenu .dropdown-menu {
+        top: 0;
+        left: 100%;
+        margin-top: -1px;
+    }
+</style>
+
+<body>
+    <canvas id="kycanvas" style="display: block;margin:0 auto; border: 1px solid darksalmon;margin-top: 100px;">
+        当前浏览器不支持canvas，请更换浏览器后再试！
+    </canvas>
+    <canvas id="offCanvas" style="display: none;"></canvas>
+</body>
+<script>
+    var canvas = document.getElementById("kycanvas");//选取画布
+    var context = canvas.getContext("2d");//创建context对象
+
+    var offCanvas = document.getElementById("offCanvas");//选取画布
+    var offContext = offCanvas.getContext("2d");//创建context对象
+    var scale;
+    var image = new Image();
+    var isMouseDown = false;
+    window.onload = function () {
+        canvas.width = 400;//画布宽
+        canvas.height = 400;	//画布高	
+        image.src = "images/im1.jpg";//图片地址
+        image.onload = function () { //图片加载完毕
+            offCanvas.width = image.width;
+            offCanvas.height = image.height;
+            scale = offCanvas.width / canvas.width;
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+            offContext.drawImage(image, 0, 0);
+        };
+        canvas.onmousedown = function (e) {
+            e.preventDefault(); //去默认事件
+            var point = windowToCanvas(e.clientX, e.clientY);
+            console.log(point.x, point.y);
+            isMouseDown = true;
+            drawCanvasWithMagnifier(true, point)
+        };
+        canvas.onmousemove = function (e) {
+            e.preventDefault(); //去默认事件
+            if (isMouseDown == true) {
+                var point = windowToCanvas(e.clientX, e.clientY);
+                console.log(point.x, point.y);
+                drawCanvasWithMagnifier(true, point)
+            }
+        };
+        canvas.onmouseup = function (e) {
+            e.preventDefault(); //去默认事件
+            isMouseDown = false;
+            drawCanvasWithMagnifier(false);
+        };
+        canvas.onmouseout = function (e) {
+            e.preventDefault(); //去默认事件
+            isMouseDown = false;
+            drawCanvasWithMagnifier(false);
+        };
+    };
+    function windowToCanvas(x, y) {//获取画布上坐标点
+        var bbox = canvas.getBoundingClientRect();
+        return { x: x - bbox.left, y: y - bbox.top };
+    };
+    function drawCanvasWithMagnifier(isShowMagnifier, point) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        if (isShowMagnifier == true) {
+            drawMagnifier(point);
+        }
+    }
+    function drawMagnifier(point) {
+        var imageLG_cx = point.x * scale;
+        var imageLG_cy = point.y * scale;
+        var mr = 100;
+        var sx = imageLG_cx - mr;
+        var sy = imageLG_cy - mr;
+
+        var dx = point.x - mr;
+        var dy = point.y - mr;
+
+
+        context.drawImage(offCanvas, sx, sy, 2 * mr, 2 * mr, dx, dy, 2 * mr, 2 * mr);
+
+    }
+</script>
+
+</html>

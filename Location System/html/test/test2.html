@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title></title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="/resources/demos/style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="style.css" />
+	<style>
+		.aa {
+			height: 100px;
+			width: 200px;
+			position: absolute;
+			background-color: green;
+		}
+	</style>
+	<script>
+		$(document).ready(function () {
+			$(".aa").mousedown(function (e) { //設置移動後的默認位置 
+				var endx = 0;
+				var endy = 0;
+				//獲取div的初始位置，要注意的是需要轉整型，因為獲取到值帶px 
+				var left = parseInt($(".aa").css("left"));
+				var top = parseInt($(".aa").css("top"));
+				//獲取滑鼠按下時的坐標，區別於下面的es.pageX,es.pageY 
+				var downx = e.pageX;
+				var downy = e.pageY;
+				//pageY的y要大寫，必須大寫！！
+				// 滑鼠按下時給div掛事件 
+				$(".aa").bind("mousemove", function (es) {
+					//es.pageX,es.pageY:獲取滑鼠移動後的坐標 
+					var endx = es.pageX - downx + left;
+					//計算div的最終位置 
+					var endy = es.pageY - downy + top;
+					//帶上單位 
+					$(".aa").css("left", endx + "px").css("top", endy + "px")
+				});
+			});
+
+			$(".aa").mouseup(function () {
+				//滑鼠彈起時給div取消事件 
+				$(".aa").unbind("mousemove");
+			});
+		});
+
+	</script>
+</head>
+
+<body>
+	<div class="aa"></div>
+</body>
+
+</html>

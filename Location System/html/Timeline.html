@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Location System</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--BootStrap3-->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!--JQuery庫-->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Add icon library -->
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ'
+        crossorigin='anonymous'>
+    <!--編寫css-->
+    <link rel=stylesheet type="text/css" href="..\css\bootstrap_collapsible_navbar.css">
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #808080;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        canvas:hover {
+            cursor: pointer;
+        }
+
+        canvas:active {
+            cursor: move;
+        }
+
+        #cvsBlock {
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+            background: #fff;
+            height: 500px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            border: 1px black solid;
+        }
+
+        .control_btn {
+            text-decoration: none;
+            font-family: Sans-serif;
+            font-weight: normal;
+            font-size: 12px;
+            background: #fc8e10;
+            color: #f5f5f5;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="../js/navbar_setting.js"></script>
+    <script type="text/javascript" src="../js/draw_timeline.js"></script>
+    <script>
+
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <!-- 最上方黑色區塊 -->
+                <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+                </div>
+                <div style="height: 35px;width: 100%;">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="wrapper">
+                    <!-- 導航欄開啟時的遮罩，設定顏色和長寬就可以形成遮罩 -->
+                    <div class="overlay">
+                    </div>
+                    <!-- Sidebar(Left) -->
+                    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+                        <ul class="nav sidebar-nav">
+                            <li><a href="../index.html">
+                                    <img src="../image/home.png">首頁</a>
+                            </li>
+                            <li><a href="../Member_Setting.html">
+                                    <img src="../image/member_setting.png">人員設置</a>
+                            </li>
+                            <li><a href="../Timeline.html">
+                                    <img src="../image/timeline.png">歷史軌跡</a>
+                            </li>
+                            <li><a href="../Map_Setting.html">
+                                    <img src="../image/map_setting.png">地圖設定</a>
+                            </li>
+                            <li><a href="../Anchor_Setting.html">
+                                    <img src="../image/anchor_setting.png">Anchor設定</a>
+                            </li>
+                            <li><a href="../Tag_Setting.html">
+                                    <img src="../image/tag_setting.png">Tag設定</a>
+                            </li>
+                            <li><a href="../Alarm_Setting.html">
+                                    <img src="../image/alarm_setting.png">Alarm設定</a>
+                            </li>
+                            <li><a href="../Reference.html">
+                                    <img src="../image/research.png">Reference</a>
+                            </li>
+                            <li><a href="../Advance_cmd.html">
+                                    <img src="../image/website.png">Advance cmd</a>
+                            </li>
+                            <li><a href="../Update.html">
+                                    <img src="../image/update.png">Update</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <!-- /#sidebar-wrapper -->
+
+                    <!-- Page Content -->
+                    <div id="page-content-wrapper">
+                        <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
+                            <!--<span class="hamb-center"></span>-->
+                            <span class="hamb-top"></span>
+                            <span class="hamb-middle"></span>
+                            <span class="hamb-bottom"></span>
+                        </button>
+                    </div>
+                    <!-- /#page-content-wrapper -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Web content -->
+        <div class="row">
+            <div class="col-lg-10">
+                <div id="cvsBlock">
+                    <canvas id="canvas">
+                        此瀏覽器不支援canvas，請更換成Chrome瀏覽器
+                    </canvas>
+                </div>
+                <div style="margin: 5px;">
+                    Position:<input type="text" id="position" value="" style="max-width: 100px;">
+                    Time:<input type="text" id="draw_time" value="" style="max-width: 180px;">
+                    X:<input type="text" id="draw_x" value="" style="max-width: 50px;">
+                    Y:<input type="text" id="draw_y" value="" style="max-width: 50px;">
+                    <div class="btn-group" style="margin-left: 20px;">
+                        <button class="btn btn-default control_btn" id="btn_stop" onclick="stopTimeline()" disabled="true">
+                            <i class="fas fa-stop"></i></button>
+                        <button class="btn btn-default control_btn" id="btn_start" onclick="drawTimeline()" disabled="true">
+                            <i class="fas fa-play"></i></button>
+                        <button class="btn btn-default control_btn" id="btn_restore" onclick="restoreCanvas()" disabled="true">
+                            <i class="fas fa-compress"></i></button>
+                    </div>
+                    <!--
+                        <label>播放速度 : <input type="text" id="interval" style="width: 100px;">
+                        </label>
+                    -->
+                    <label style="margin-left:20px;">間隔時間 : <input type="text" id="interval" style="border:0; color:#f6931f; font-weight:bold; width:30px;">
+                        <label style="color:#f6931f;">(ms)</label>
+                        <div id="interval_slider" style="width:300px"></div>
+                    </label>
+                </div>
+            </div>
+            <div class="col-lg-2" style="text-align: left;">
+                <br>
+                <label>搜尋 :</label>
+                <select id="search_type">
+                    <option value="Tag_ID" selected="selected">Tag ID</option>
+                    <option value="Name">Name</option>
+                </select>
+                <input type="text" id="search_target">
+                <br>
+                <label>開始 :</label>
+                <div style="margin-left: 30px;">
+                    <p>日期 : <input type="date" id="start_date">
+                        時間 : <input type="time" id="start_time" step="01"></p>
+                </div>
+                <label>結束 :</label>
+                <div style="margin-left: 30px;">
+                    <p>日期 : <input type="date" id="end_date">
+                        時間 : <input type="time" id="end_time" step="01"></p>
+                </div>
+                <br><br>
+                <button class="btn btn-primary" id="btn_search" onclick="search()">搜尋</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Dialog -->
+    <div id="timeline_dialog" title="Timeline">
+        <span style="display: block;">
+            <label>Time:</label>
+            <label id="timeline_dialog_time"></label>
+            <br>
+            <label>X:</label>
+            <label id="timeline_dialog_x"></label>
+            <br>
+            <label>Y:</label>
+            <label id="timeline_dialog_y"></label>
+        </span>
+    </div>
+</body>
+
+</html>

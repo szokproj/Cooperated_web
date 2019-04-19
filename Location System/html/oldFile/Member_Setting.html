@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Location System</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--JQuery庫-->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
+    <!--BootStrap3-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
+        crossorigin="anonymous">
+    <!--jOrgChart-->
+    <link rel="stylesheet" type="text/css" href="../css/jOrgChart/jquery.orgchart.css">
+    <link rel="stylesheet" type="text/css" href="../css/j_orgchart.css">
+    <!--編寫css-->
+    <link rel="stylesheet" type="text/css" href="../css/member_typesetting.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap_collapsible_navbar.css">
+</head>
+
+<body>
+    <script type="text/javascript" src="../js/navbar_setting.js"></script>
+    <script type="text/javascript" src="../js/table_Page.js"></script>
+    <script type="text/javascript" src="../js/palette.js"></script>
+    <script type="text/javascript" src="../js/member_setting.js"></script>
+    <script type="text/javascript" src="../js/display_setting.js"></script>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12" style="background-color:white;">
+                <!-- 最上方黑色區塊 -->
+                <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+                </div>
+                <div style="height: 35px;width: 100%;">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12" style="background-color:white;">
+                <div id="wrapper">
+                    <!-- 導航欄開啟時的遮罩，設定顏色和長寬就可以形成遮罩 -->
+                    <div class="overlay">
+                    </div>
+                    <!-- Sidebar(Left) -->
+                    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+                        <ul class="nav sidebar-nav">
+                            <li><a href="../index.html">
+                                    <img src="../image/home.png">首頁</a>
+                            </li>
+                            <li><a href="../Member_Setting.html">
+                                    <img src="../image/member_setting.png">人員設置</a>
+                            </li>
+                            <li><a href="../Timeline.html">
+                                    <img src="../image/timeline.png">歷史軌跡</a>
+                            </li>
+                            <li><a href="../Map_Setting.html">
+                                    <img src="../image/map_setting.png">地圖設定</a>
+                            </li>
+                            <li><a href="../Anchor_Setting.html">
+                                    <img src="../image/anchor_setting.png">Anchor設定</a>
+                            </li>
+                            <li><a href="../Tag_Setting.html">
+                                    <img src="../image/tag_setting.png">Tag設定</a>
+                            </li>
+                            <li><a href="../Alarm_Setting.html">
+                                    <img src="../image/alarm_setting.png">Alarm設定</a>
+                            </li>
+                            <li><a href="../Reference.html">
+                                    <img src="../image/research.png">Reference</a>
+                            </li>
+                            <li><a href="../Advance_cmd.html">
+                                    <img src="../image/website.png">Advance
+                                    cmd</a>
+                            </li>
+                            <li><a href="../Update.html">
+                                    <img src="../image/update.png">Update</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <!-- /#sidebar-wrapper -->
+
+                    <!-- Page Content -->
+                    <div id="page-content-wrapper">
+                        <button type="button" class="hamburger is-closed
+                                animated fadeInLeft"
+                            data-toggle="offcanvas">
+                            <!--<span class="hamb-center"></span>-->
+                            <span class="hamb-top"></span>
+                            <span class="hamb-middle"></span>
+                            <span class="hamb-bottom"></span>
+                        </button>
+                    </div>
+                    <!-- /#page-content-wrapper -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 網頁內容 -->
+        <ul id="setTab" class="nav nav-tabs">
+            <li><a href="#memberSetting" data-toggle="tab">成員設定</a></li>
+            <li><a href="#displaySetting" data-toggle="tab">顯示設定</a></li>
+            <li class="active"><a href="#deptSetting" data-toggle="tab">部門設定</a></li>
+            <li><a href="#titleSetting" data-toggle="tab">職稱設定</a></li>
+        </ul><br>
+        <div id="setTabContent" class="tab-content">
+            <div class="tab-pane fade" id="memberSetting">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="table_member">
+                            <table class="table-line" id="table_member_setting">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAll" onchange="" /> Item</th>
+                                        <th>標籤編號</th>
+                                        <th>工號</th>
+                                        <th>名稱</th>
+                                        <th>部門</th>
+                                        <th>用戶類型</th>
+                                        <th>門禁</th>
+                                        <th>時段</th>
+                                        <th>備註</th>
+                                        <th>設置</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div style="margin-top: 20px;">
+                            <button id="add_col" class="btn btn-success" onclick="addMemberData()">新增</button>
+                            <button id="delete_col" class="btn btn-danger" onclick="removeMemberDatas()">刪除</button>
+                            <button id="multi_edit" class="btn btn-primary" onclick="">批量修改</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <ul class="pagination">
+                            <li><a id="btn0">當前 0/0 頁</a></li>
+                            <li><a>每頁 <input id="pageSize" type="text" size="1" maxlength="2"> 條</a></li>
+                            <li><a href="#" class="page-btn" id="pageSizeSet">設置</a></li>
+                            <li><a id="sjzl">總數據量 0</a></li>
+                            <li><a href="#" class="page-btn" id="btn1">&laquo;</a></li>
+                            <li><a href="#" class="page-btn" id="btn2">上一頁</a></li>
+                            <li><a href="#" class="page-btn" id="btn3">下一頁</a></li>
+                            <li><a href="#" class="page-btn" id="btn4">&raquo;</a></li>
+                            <li><a>轉到 <input id="changePage" type="text" size="1" maxlength="4"> 頁</a></li>
+                            <li><a href="#" class="page-btn" id="btn5">跳轉</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="displaySetting">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <label>分類依據 : </label>
+                        <select id="display_type_select">
+                            <option value="部門">部門</option>
+                            <option value="用戶類型">用戶類型</option>
+                            <option value="職等">職等</option>
+                        </select>
+                        <span>
+                            <label for="display_type_add" class="custom-file-download">
+                                <img src="../image/add.png" style="max-width:20px; margin-left:
+                                        10px;">
+                            </label>
+                            <input type="button" id="display_type_add" class="image-btn" />
+                            <label for="display_type_remove" class="custom-file-download">
+                                <img src="../image/remove.png" style="max-width:20px; margin-left:
+                                        10px;">
+                            </label>
+                            <input type="button" id="display_type_remove" class="image-btn" />
+                            <label for="display_type_edit" class="custom-file-download">
+                                <img src="../image/edit.png" style="max-width:20px; margin-left:
+                                        10px;">
+                            </label>
+                            <input type="button" id="display_type_edit" class="image-btn" />
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <table class="table-line" id="table_display_type" style="margin-right:
+                                10px;">
+                            <thead>
+                                <tr>
+                                    <th>類別</th>
+                                    <th>顏色</th>
+                                    <th>大小</th>
+                                    <th style="width: 80px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <br>
+                    </div>
+                    <div class="col-lg-4">
+                        <table class="table-line" id="table_alarm_status">
+                            <thead>
+                                <tr>
+                                    <th>警報狀態</th>
+                                    <th>外框顏色</th>
+                                    <th>中心顏色</th>
+                                    <th>大小</th>
+                                    <th style="width: 80px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-4">
+                        <span>
+                            <label for="load_image" class="load-file">
+                                Preview <i class="far fa-images"></i>
+                            </label>
+                            <input type="file" id="load_image" accept="image/*" />
+                        </span>
+                        <canvas id="canvas_map" class="draw-map"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade in active" id="deptSetting">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <script type="text/javascript" src="../js/jOrgChart/jquery.orgchart.js"></script>
+                        <script type="text/javascript" src="../js/create_dept_chart.js"></script>
+                        <div id="chart-container"></div>
+                        <div id="edit-panel">
+                            <label class="selected-node-group">selected node:</label>
+                            <input type="text" id="selected-node" class="selected-node-group" readonly>
+                            <label>new node:</label>
+                            <ul id="new-nodelist">
+                                <li><input type="text" class="new-node"></li>
+                            </ul>
+                            <span id="node-type-panel" class="radio-panel">
+                                <input type="radio" name="node-type" id="rd-child" value="children">
+                                <label for="rd-child">Child</label>
+                                <input type="radio" name="node-type" id="rd-sibling" value="siblings">
+                                <label for="rd-sibling">Sibling</label>
+                            </span>
+                            <button type="button" id="btn-add-nodes">Add</button>
+                            <button type="button" id="btn-delete-nodes">Delete</button>
+                            <button type="button" id="btn-edit-nodes">Edit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="titleSetting">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="hidden_dialog">
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <!-- JQuery UI - Dialog -->
+        <script type="text/javascript" src="../js/Dialog/dialog_setting.js"></script>
+        <script type="text/javascript" src="../js/Dialog/dialog_member_setting.js"></script>
+        <script type="text/javascript" src="../js/Dialog/dialog_dot_set.js"></script>
+        <!-- Hidden Dialog -->
+        <div id="dialog_edit_member" title="Edit Person Infomation">
+            <form>
+                <fieldset style="text-align: left;">
+                    <ul id="setTab" class="nav nav-tabs">
+                        <li class="active"><a href="#mainData" data-toggle="tab">主要資料</a></li>
+                        <li><a href="#basicData" data-toggle="tab">基本資料</a></li>
+                        <li><a href="#note" data-toggle="tab">備註</a></li>
+                    </ul><br>
+                    <div id="setTabContent" class="tab-content">
+                        <div class="tab-pane fade in active" id="mainData">
+                            <table class="noborder-block">
+                                <tr>
+                                    <td style="width:80px;"><label for="main_tag_id">標籤編號</label></td>
+                                    <td><input type="text" id="main_tag_id" style="width:100%;"></td>
+                                    <!--TagID是綁定資料的依據，故不得進行編輯，只可讀取-->
+                                </tr>
+                                <tr>
+                                    <td><label for="main_card_id">卡號</label></td>
+                                    <td><input type="text" id="main_card_id" style="width:100%;"></td>
+                                </tr>
+                            </table>
+                            <table class="noborder-block">
+                                <tr>
+                                    <td>
+                                        <p><label for="main_id" style="margin-right:48px;">工號</label>
+                                            <input type="text" id="main_id" style="width:70%;"></p>
+                                        <p><label for="main_name" style="margin-right:48px;">名稱</label>
+                                            <input type="text" id="main_name" style="width:70%;"></p>
+                                        <p><label for="main_dept" style="margin-right:48px;">部門</label>
+                                            <select id="main_dept">
+                                                <option value="Sales">Sales</option>
+                                                <option value="Account">Account</option>
+                                                <option value="RD">RD</option>
+                                                <option value="PD">PD</option>
+                                            </select></p>
+                                        <p><label for="basic_title" style="margin-right:48px;">職稱</label>
+                                            <select id="basic_title"></select></p>
+                                        <p><label for="main_type" style="margin-right:19px;">用戶類型</label>
+                                            <select id="main_type">
+                                                <option value="一般用戶">一般用戶</option>
+                                                <option value="訪客">訪客</option>
+                                                <option value="管理者">管理者</option>
+                                                <option value="巡邏卡">巡邏卡</option>
+                                                <option value="保全卡">保全卡</option>
+                                                <option value="More">More</option>
+                                            </select></p>
+                                    </td>
+                                    <td style="width:45%;">
+                                        <div id="main_picture">
+                                            <div class="thumb-block">
+                                                <img id="main_picture_img" style="max-height:120px; max-width:150px;">
+                                            </div>
+                                            <span style="margin-right:10px;">
+                                                <label for="main_picture_upload" class="custom-file-download">
+                                                    <img src="../image/add-image.png" style="max-width:20px;"></label>
+                                                <input type="file" id="main_picture_upload" accept="image/*">
+                                            </span>
+                                            <span>
+                                                <label for="main_picture_clear" class="custom-file-download">
+                                                    <img src="../image/delete.png" style="max-width:20px;"></label>
+                                                <input type="button" id="main_picture_clear" class="image-btn">
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table class="noborder-block">
+                                <tr>
+                                    <td style="width:80px;"><label for="main_select_tag_color">畫點依據</label></td>
+                                    <td>
+                                        <select id="main_select_tag_color">
+                                            <option value="部門">部門</option>
+                                            <option value="職稱">職稱</option>
+                                            <option value="用戶類型">用戶類型</option>
+                                            <option value="自訂">自訂</option>
+                                        </select>
+                                        <label style="margin: 0px 10px 0px 40px;">指定顏色</label>
+                                        <label for="main_input_tag_color" class="custom-file-download">
+                                            <img src="../image/palette.png" style="max-width:20px;">
+                                        </label>
+                                        <input type="text" class="palette" id="main_input_tag_color" onchange="changeAlarmDotColor(this.value)"
+                                            style="max-width:30px;">
+                                    </td>
+                                </tr>
+                            </table>
+                            <table class="noborder-block">
+                                <tr>
+                                    <td style="width:80px;"><label for="main_access">門禁</label></td>
+                                    <td><select id="main_access"></select></td>
+                                    <td style="width:80px;"><label for="main_duration">時段</label></td>
+                                    <td><select id="main_duration"></select></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="basicData" class="ui-widget ui-widget-content">
+                            <table class="noborder-block">
+                                <tr>
+                                    <td style="width:80px;"><label for="basic_state">工作狀態</label></td>
+                                    <td><select id="basic_state">
+                                            <option value="none">無</option>
+                                            <option value="in_service">在職</option>
+                                            <option value="leaved">已離職</option>
+                                        </select>
+                                    </td>
+                                    <td style="width:80px;"><label for="basic_gender">性別</label></td>
+                                    <td><select id="basic_gender">
+                                            <option value="male">男</option>
+                                            <option value="female">女</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="basic_last_name">姓氏</label></td>
+                                    <td><input type="text" id="basic_last_name" style="width:100%;"></td>
+                                    <td><label for="basic_first_name">名字</label></td>
+                                    <td><input type="text" id="basic_first_name" style="width:100%;"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="basic_english_name">英文名</label></td>
+                                    <td><input type="text" id="basic_english_name" style="width:100%;"></td>
+                                    <td><label for="basic_birthday">出生日期</label></td>
+                                    <td><input type="date" id="basic_birthday"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="contact_job_phone">工作電話</label></td>
+                                    <td><input type="text" id="contact_job_phone" style="width:100%;" />
+                                    </td>
+                                    <td><label for="contact_personal_phone">個人電話</label></td>
+                                    <td><input type="text" id="contact_personal_phone" style="width:100%;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="mail">電子郵件</label></td>
+                                    <td><input type="text" id="mail" style="width:100%;" /></td>
+                                    <td><label for="contact_address">住址</label></td>
+                                    <td><input type="text" id="contact_address" style="width:100%;" multiple>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="basic_highest_education">最高學歷</label></td>
+                                    <td><select id="basic_highest_education">
+                                            <option value="小學">小學</option>
+                                            <option value="國中">國中</option>
+                                            <option value="高中">高中</option>
+                                            <option value="專科">專科</option>
+                                            <option value="大學">大學</option>
+                                            <option value="研究所">研究所</option>
+                                        </select>
+                                    </td>
+                                    <td><label for="basic_school">畢業院校</label></td>
+                                    <td><input type="text" id="basic_school" style="width:100%;"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="basic_grade">職等</label></td>
+                                    <td><input type="text" id="basic_grade" style="width:100%;"></td>
+                                    <td><label for="basic_pro_level">技術等級</label></td>
+                                    <td><input type="text" id="basic_pro_level" style="width:100%;"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="basic_entry_date">入職日期</label></td>
+                                    <td><input type="date" id="basic_entry_date"></select>
+                                    <td><label for="basic_leave_date">離職日期</label></td>
+                                    <td><input type="date" id="basic_leave_date"></td>
+                                </tr>
+                            </table>
+                            <table class="noborder-block">
+
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="note" class="ui-widget ui-widget-content">
+                            <textarea id="note_text" style="width:100%; height:410px; overflow:auto"></textarea>
+                        </div>
+                    </div>
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+
+        <div id="dialog_dot_edit" title="Set Color and Size">
+            <form>
+                <fieldset style="text-align: center;">
+                    <br>
+                    <table id="table_dot_edit" class="ui-widget ui-widget-content block">
+                        <tr>
+                            <td>Name</td>
+                            <td><input type="text" id="edit_type_name" style="width:100%;" /></td>
+                        </tr>
+                        <tr>
+                            <td>Color</td>
+                            <td>
+                                <label for="dot_edit_color" class="custom-file-download">
+                                    <img src="../image/palette.png" style="max-width:20px;">
+                                </label>
+                                <input type="text" class="palette" id="dot_edit_color" value="#4CAF50" style="max-width:30px; background-color:#4CAF50;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Size</td>
+                            <td>
+                                <input type="text" id="dot_edit_size" value="10" style="border:0; color:#f6931f;
+                                                                                    font-weight:bold; width:20px;">
+                                <label style="color:#f6931f;">px</label>
+                                <div id="dot_edit_slider" style="width:100%;"></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <canvas id="canvas_dot" class="draw-position"></canvas>
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+
+        <div id="dialog_alarm_dot_edit" title="Set Color and Size">
+            <form>
+                <fieldset style="text-align: center;">
+                    <br>
+                    <table id="table_alarm_dot_edit" class="ui-widget ui-widget-content block">
+                        <tr>
+                            <td>Outside Color : </td>
+                            <td>
+                                <label for="alarm_dot_outside_color" class="custom-file-download">
+                                    <img src="../image/palette.png" style="max-width:20px;">
+                                </label>
+                                <input type="text" class="palette" id="alarm_dot_outside_color" value="#F44336" style="max-width:30px; background-color:#F44336;" />
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Inside Color :</td>
+                            <td>
+                                <label for="alarm_dot_inside_color" class="custom-file-download">
+                                    <img src="../image/palette.png" style="max-width:20px;">
+                                </label>
+                                <input type="text" class="palette" id="alarm_dot_inside_color" value="#F43636" style="max-width:30px; background-color:#F43636;" />
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Size：</td>
+                            <td>
+                                <input type="text" id="alarm_dot_edit_size" value="12" style="border:0; color:#f6931f;font-weight:bold; width:20px;">
+                                <label style="color:#f6931f;">px</label>
+                            </td>
+                            <td>
+                                <div id="alarm_dot_edit_slider" style="width:150px"></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <canvas id="canvas_alarm_dot" class="draw-position"></canvas>
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

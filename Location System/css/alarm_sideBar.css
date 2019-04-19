@@ -1,0 +1,92 @@
+.btn {
+    color: #ffffff;
+}
+
+.btn_change_focus {
+    background-color: #00b2df;
+}
+
+.btn_change_focus:hover {
+    background-color: #037e9c;
+}
+
+.btn_release_alarm {
+    background-color: #01b901;
+}
+
+.btn_release_alarm:hover {
+    background-color: #008800;
+}
+
+.sideBar {
+    width: 330px;
+    position: fixed;
+    top: 30px;
+    left: -330px;
+    display: block;
+}
+
+.sideBar .sideBar-left-button {
+    /*解除定位按鈕*/
+    height: 50px;
+    text-align: right;
+}
+
+.sideBar-left-button button {
+    margin: 10px;
+}
+
+.sideBar .sideBar-left {
+    width: 330px;
+    height: 90%;
+    background-color: transparent;
+    position: fixed;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#alarmSideBar_icon {
+    border: none;
+    background: none;
+}
+
+#alarmSideBar_icon img {
+    width: 30px;
+    height: auto;
+    z-index: 111111;
+}
+
+.sideBar .nav-icon:hover {
+    cursor: pointer;
+}
+
+/*Alarm Dialog*/
+
+.thumbnail {
+    display: inline-block;
+    background: #ff3333;
+    width: 320px;
+}
+
+.thumbnail:hover {
+    background: gray;
+    border: 1px solid white;
+    cursor: pointer;
+}
+
+.thumbnail td {
+    border: none;
+}
+
+.thumbnail img {
+    background: white;
+    height: 100px;
+    width: 100px;
+}
+
+.thumbnail p {
+    font-weight: bold;
+    line-height: 7px;
+}
+
+/***************/

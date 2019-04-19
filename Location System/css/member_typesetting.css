@@ -1,0 +1,166 @@
+html,
+body {
+    width: 100%;
+    height: 100%;
+    background-color: white;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th,
+td {
+    padding: 8px;
+    text-align: left;
+    font-family: sans-serif;
+}
+
+label {
+    font-family: sans-serif;
+}
+
+p {
+    padding: 2px 0px 2px 0px;
+}
+
+/* Tag Setting Css */
+
+.top {
+    text-align: center;
+    margin: 30px;
+}
+
+.block {
+    border: 1px solid lightblue;
+    padding: 10px;
+}
+
+.block th,
+.block td {
+    border: none;
+}
+
+.noborder-block {
+    border: none;
+    padding: 0px;
+}
+
+.noborder-block th,
+.noborder-block td {
+    border: none;
+}
+
+/* Member Setting Css */
+
+thead tr {
+    background: #7ab8ff;
+}
+
+.table_member tbody tr:hover {
+    background-color: #ffff66;
+}
+
+.table_member {
+    width: 100%;
+    height: 85%;
+    overflow: auto;
+}
+
+.table-line th,
+.table-line td {
+    border: 1px solid #808080;
+    padding: 0px 8px 0px 8px;
+    text-decoration: none;
+    text-align: left;
+    font-size: 14px;
+}
+
+.thumb-block {
+    height: 120px;
+    width: 100%;
+    text-align: center;
+    background: white;
+    margin-bottom: 10px;
+}
+
+#main_picture {
+    width: 100%;
+    background-color: rgb(59, 93, 121);
+    padding: 10px;
+    border-radius: 3px;
+}
+
+.image-btn {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0px;
+}
+
+.custom-file-download {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.pagination {
+    margin: 0px;
+}
+
+.pagination input {
+    height: 18px;
+    font-size: 12px;
+}
+
+.pagination li a,
+.pagination li a:hover {
+    font-weight: bold;
+    background-color: rgb(143, 187, 201);
+    color: rgb(60, 79, 92);
+}
+
+.page-btn:hover {
+    background-color: rgb(107, 136, 145) !important;
+}
+
+.changeBgColor {
+    background-color: rgb(187, 234, 250);
+}
+
+/* Display Setting Css */
+
+.load-file {
+    /*border: 1px solid rgb(44, 64, 80);*/
+    background-color: rgb(58, 138, 204);
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    color: rgb(255, 255, 255);
+}
+
+.draw-map {
+    height: 400px;
+    width: 100%;
+    background: lightgray;
+}
+
+.draw-position {
+    height: 200px;
+    width: 100%;
+    border: 1px solid lightgray;
+}
+
+.palette {
+    text-indent: -999px;
+}
+
+.btn {
+    margin: 5px 0px 5px 0px;
+    font-size: 12px;
+}
