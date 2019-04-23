@@ -109,7 +109,7 @@
                             <li><a href="../Display_Setting.html">顯示設定</a></li>
                             <li><a href="../Dept_Setting.html">部門設定</a></li>
                             <li><a href="../Job_Title_Setting.html">職稱設定</a></li>
-                            <li><a href="../User_Type_Setting.html">職稱設定</a></li>
+                            <li><a href="../User_Type_Setting.html">用戶類型設定</a></li>
                         </ul>
                     </div>
                 </nav>
@@ -198,10 +198,12 @@
                                         <p><label for="main_department" style="margin-right:48px;">部門</label>
                                             <input type="text" id="main_department" style="width:50%;" readonly />
                                             <input type="button" id="btn_select_dept" value="選擇" />
+                                            <input type="text" id="hidden_department" value="" />
                                         </p>
                                         <p><label for="main_jobTitle" style="margin-right:48px;">職稱</label>
                                             <input type="text" id="main_jobTitle" style="width:50%;" readonly />
                                             <input type="button" id="btn_select_title" value="選擇" />
+                                            <input type="text" id="hidden_jobTitle" value="" />
                                         </p>
                                         <p><label for="main_type" style="margin-right:19px;">用戶類型</label>
                                             <select id="main_type"></select>
@@ -235,8 +237,9 @@
                                         <label for="main_input_tag_color" class="custom-file-download">
                                             <img src="../image/palette.png" style="max-width:20px;">
                                         </label>
-                                        <input type="text" class="palette" id="main_input_tag_color"
-                                            onchange="changeAlarmDotColor(this.value)" style="max-width:30px;">
+                                        <input type="hidden" class="palette" id="main_input_tag_color"
+                                            style="max-width:30px;">
+                                        <input type="text" id="main_display_color" style="max-width:30px;" readonly>
                                     </td>
                                 </tr>
                             </table>

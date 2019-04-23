@@ -72,12 +72,15 @@ $(function () {
         valid = valid && checkLength(select_node, "not null", 0, 20);
         if (valid) {
             datascource = {};
-            if (chart_type == "dept")
+            if (chart_type == "dept") {
                 $("#main_department").val(select_node.val());
-            else if (chart_type == "jobTitle")
+                $("#hidden_department").val(select_node.data('node')[0].id);
+            } else if (chart_type == "jobTitle") {
                 $("#main_jobTitle").val(select_node.val());
-            else
+                $("#hidden_jobTitle").val(select_node.data('node')[0].id);
+            } else {
                 return;
+            }
             dialog.dialog("close");
         }
         return valid;
