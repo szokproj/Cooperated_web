@@ -14,11 +14,13 @@ th,
 td {
     padding: 8px;
     text-align: left;
-    font-family: sans-serif;
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
 }
 
 label {
-    font-family: sans-serif;
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
 }
 
 p {
@@ -142,12 +144,15 @@ thead tr {
     cursor: pointer;
     border-radius: 5px;
     color: rgb(255, 255, 255);
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
 }
 
 .draw-map {
-    height: 250px;
-    width: 100%;
+    height: 200px;
+    width: 400;
     background: lightgray;
+    border: 1px solid lightgray;
 }
 
 .draw-position {

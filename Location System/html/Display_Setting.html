@@ -108,7 +108,7 @@
                     </div>
                 </nav>
             </div>
-            <div class="col-lg-5">
+            <div class="col-lg-4">
                 <div>
                     <label>分類依據 : </label>
                     <select id="display_type_select">
@@ -137,18 +137,18 @@
                             <td>
                                 <div id="dot_size_slider" style="width:150px"></div>
                             </td>
-                            <td><input type="button" id="btn_size_submit" value="submit"></td>
+                            <td><input type="button" id="btn_size_submit" value="送出"></td>
                             <!--disabled-->
                         </tr>
                     </table>
                 </div>
             </div>
-            <div class="col-lg-5" style="top:50px;">
+            <div class="col-lg-6" style="top:50px;">
                 <span>
                     <label for="load_image" class="load-file">
-                        Input test map <i class="far fa-images"></i>
+                        載入測試地圖&nbsp;<i class="far fa-images"></i>
                     </label>
-                    <input type="file" id="load_image" accept="image/*">
+                    <input type="file" id="load_image" accept="image/*" onchange="loadFile(this)">
                 </span>
                 <canvas id="canvas_preview" class="draw-map"></canvas>
             </div>
