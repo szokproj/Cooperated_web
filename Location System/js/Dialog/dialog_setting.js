@@ -43,7 +43,7 @@ function checkLength(o, n, min, max) {
         } else {
             return true;
         }
-    }else{
+    } else {
         o.addClass("ui-state-error");
         return false;
     }

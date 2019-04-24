@@ -1,12 +1,14 @@
 var size = 10,
-    default_color = '#4CAF50';
+    default_color = '#4CAF50',
+    change = "",
+    usertypeNameArray = [];
 
 $(function () {
-    var dialog, form, change,
+    var dialog, form,
         sel_name = $("#set_type_name"),
         sel_color = $("#set_dot_color"),
         allFields = $([]).add(sel_name, sel_color);
-    //tips = $( ".validateTips" );
+    tips = $(".validateTips");
 
     $("#set_dot_color").change(function () { //設定change事件
         drawPosition($(this).val(), size);
@@ -24,20 +26,23 @@ $(function () {
         buttons: {
             "Confirm": SendResult,
             Cancel: function () {
+                dialog.dialog("close");
                 form[0].reset();
                 allFields.removeClass("ui-state-error");
-                dialog.dialog("close");
+                tips.empty();
             }
         },
         close: function () {
             form[0].reset();
             allFields.removeClass("ui-state-error");
+            tips.empty();
         }
     });
 
     form = dialog.find("form").on("submit", function (event) {
         event.preventDefault();
         SendResult();
+        tips.empty();
     });
 
     updateTypeList();
@@ -50,6 +55,18 @@ function SendResult() {
     var valid = true;
     valid = valid && checkLength($("#set_type_name"), "type set", 0, 20);
     valid = valid && checkLength($("#set_dot_color"), "type set", 0, 20);
+
+    if (change == "add") {
+        //因為type儲存為key值，所以必須先檢查是否新的type與舊的重複
+        usertypeNameArray.forEach(v => {
+            if (v == $("#set_type_name").val()) {
+                valid = false;
+                $("#set_type_name").addClass("ui-state-error");
+                updateTips("此用戶類型已存在，請變更名稱");
+            }
+        });
+    }
+
     if (valid) {
         var request = {};
         if (change == "add") {
@@ -80,9 +97,8 @@ function SendResult() {
                 if (revObj.success > 0) {
                     updateTypeList();
                 } else {
-                    alert("Operating failed!");
+                    alert("操作失敗，不可儲存重複的type(儲存時會刪除字串內的空白，請用\"_\"代替)!");
                 }
-                return;
             }
         };
         xmlHttp.send(JSON.stringify(request));
@@ -94,6 +110,7 @@ function SendResult() {
 
 function updateTypeList() {
     $("#table_type_list tbody").empty();
+    usertypeNameArray = [];
     var request_getData = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetUserTypes"]
@@ -119,6 +136,7 @@ function updateTypeList() {
                         "<input type=\"button\" class=\"image-btn\" id=\"btn_delete_" + i + "\"" +
                         " onclick=\"delectType(\'" + revInfo[i].type + "\')\">" +
                         "</td></tr>");
+                    usertypeNameArray.push(revInfo[i].type);
                 }
             }
         }
@@ -131,6 +149,7 @@ function addType() {
     change = "add"
     $("#set_type_name").val("");
     $("#set_type_name").attr("readonly", false);
+    $("#edit_tip").text("");
     $("#set_dot_color").val(default_color);
     $("#set_dot_color").css('background-color', default_color);
     drawPosition(default_color, size); //預設的點顏色
@@ -144,6 +163,7 @@ function editType(name, color) {
     change = "edit";
     $("#set_type_name").val(name);
     $("#set_type_name").attr("readonly", true);
+    $("#edit_tip").text("Type為Key，不可修改");
     var hex_color = colorToHex(color);
     $("#set_dot_color").val(hex_color);
     $("#set_dot_color").css('background-color', hex_color);
