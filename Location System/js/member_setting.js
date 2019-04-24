@@ -1,5 +1,76 @@
+var default_color = '#4CAF50';
+var deptColorArray = [];
+var titleColorArray = [];
+var userTypeColorArray = [];
+var userTypeArr = [];
+var dotTypeArr = ["部門", "職稱", "用戶類型", "自訂"];
+var statusArr = ["無", "在職", "已離職"];
+var genderArr = ["男", "女"];
+var educationArr = ["小學", "國中", "高中", "專科", "大學", "研究所"];
+
+
 $(function () {
     UpdateMemberList();
+    //Set deptColorArray
+    var deptXmlHttp = createJsonXmlHttp('sql');
+    deptXmlHttp.onreadystatechange = function () {
+        if (deptXmlHttp.readyState == 4 || deptXmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                for (i = 0; i < revObj.Values.length; i++)
+                    deptColorArray.push(revObj.Values[i]);
+            }
+        }
+    };
+    deptXmlHttp.send(JSON.stringify({
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetDepartment_relation_list"]
+    }));
+    //Set titleColorArray
+    var titleXmlHttp = createJsonXmlHttp('sql');
+    titleXmlHttp.onreadystatechange = function () {
+        if (titleXmlHttp.readyState == 4 || titleXmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                for (i = 0; i < revObj.Values.length; i++)
+                    titleColorArray.push(revObj.Values[i]);
+            }
+        }
+    };
+    titleXmlHttp.send(JSON.stringify({
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetJobTitle_relation_list"]
+    }));
+    //Set userTypeColorArray and userTypeArr
+    var userTypeXmlHttp = createJsonXmlHttp('sql');
+    userTypeXmlHttp.onreadystatechange = function () {
+        if (userTypeXmlHttp.readyState == 4 || userTypeXmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                for (i = 0; i < revObj.Values.length; i++) {
+                    userTypeColorArray.push(revObj.Values[i]);
+                    userTypeArr.push(revObj.Values[i].type);
+                }
+            }
+        }
+    };
+    userTypeXmlHttp.send(JSON.stringify({
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetUserTypes"]
+    }));
+    $("#main_type").change(function () {
+        var type = typeof ($(this).val()) != 'undefined' ? $(this).val() : "";
+        var index = $("#main_select_tag_color").children('option:selected').index();
+        if (index == 3 && type != "") {
+            userTypeColorArray.forEach(v => {
+                if (v.type == type) {
+                    $("#main_input_tag_color").val(colorToHex(v.color));
+                    $("#main_display_color").css("background-color", colorToHex(v.color));
+                }
+            });
+        }
+    });
+    /*-----------------------------------------------*/
     $("#main_picture_upload").unbind();
     $("#main_picture_upload").change(function () {
         var file = this.files[0];
@@ -28,15 +99,6 @@ $(function () {
         $("#dialog_tree_chart").dialog("open");
     });
 });
-
-
-var deptArr = ["管理", "財會", "研發", "生產", "銷售"];
-var titleArr = ["總經理", "協理", "經理", "部門主管", "財務", "會計", "總務", "業務", "工程師"];
-var typeArr = ["一般用戶", "訪客", "管理者", "巡邏卡", "保全卡"];
-var dotTypeArr = ["部門", "職稱", "用戶類型", "自訂"];
-var statusArr = ["無", "在職", "已離職"];
-var genderArr = ["男", "女"];
-var educationArr = ["小學", "國中", "高中", "專科", "大學", "研究所"];
 
 
 function UpdateMemberList() {
@@ -95,53 +157,58 @@ function editMemberData(number) {
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            try {
-                var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
-                    var revInfo = revObj.Values[0]
-                    $("#main_tag_id").val(revInfo.tag_id);
-                    $("#main_card_id").val(revInfo.card_id);
-                    $("#main_number").val(revInfo.number);
-                    $("#main_name").val(revInfo.Name);
-                    $("#main_department").val(revInfo.department);
-                    $("#main_jobTitle").val(revInfo.jobTitle);
-                    $("#main_type").html(createOptions(typeArr, revInfo.type));
-                    $("#main_picture_thumbnail").attr("href", revInfo.photo);
-                    $("#main_picture_img").attr("src", revInfo.photo);
-                    $("#main_select_tag_color").html(createOptions(dotTypeArr, revInfo.set_color));
-                    /*
-                    $("#main_input_tag_color").val();
-                    $("#main_access").val();
-                    $("#main_duration").val();
-                    */
-                    $("#basic_state").html(createOptions(statusArr, revInfo.status));
-                    $("#basic_gender").html(createOptions(genderArr, revInfo.gender));
-                    $("#basic_last_name").val(revInfo.lastName);
-                    $("#basic_first_name").val(revInfo.firstName);
-                    $("#basic_english_name").val(revInfo.EnglishName);
-                    $("#basic_birthday").val(revInfo.birthday);
-                    $("#basic_job_phone").val(revInfo.phoneJob);
-                    $("#basic_self_phone").val(revInfo.phoneSelf);
-                    $("#basic_mail").val(revInfo.mail);
-                    $("#basic_address").val(revInfo.address);
-                    $("#basic_highest_education").html(createOptions(educationArr, revInfo.education));
-                    $("#basic_school").val(revInfo.school);
-                    $("#basic_grade").val(revInfo.grade);
-                    $("#basic_pro_level").val(revInfo.tech_grade);
-                    $("#basic_entry_date").val(revInfo.dateEntry);
-                    $("#basic_leave_date").val(revInfo.dateLeave);
-                    $("#note_text").val(revInfo.note);
-                    //開啟編輯框
-                    setCommand("edit");
-                    $("#dialog_edit_member").dialog("open");
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                var revInfo = revObj.Values[0]
+                $("#main_tag_id").val(revInfo.tag_id);
+                $("#main_card_id").val(revInfo.card_id);
+                $("#main_number").val(revInfo.number);
+                $("#main_name").val(revInfo.Name);
+                $("#main_department").val(revInfo.department);
+                $("#hidden_department").val(revInfo.department_id);
+                $("#main_jobTitle").val(revInfo.jobTitle);
+                $("#hidden_jobTitle").val(revInfo.jobTitle_id);
+                $("#main_type").html(createOptions(userTypeArr, revInfo.type));
+                $("#main_picture_thumbnail").attr("href", revInfo.photo);
+                $("#main_picture_img").attr("src", revInfo.photo);
+                $("#main_select_tag_color").html(createOptions(dotTypeArr, revInfo.color_type));
+                selectTagColor(); //依照畫點依據的內容代入已設定的顏色，未設定則採用預設顏色
+                var color_type_index = $("#main_select_tag_color").children('option:selected').index();
+                if (color_type_index == 4) { //自訂
+                    $("#main_input_tag_color").val(colorToHex(revInfo.color));
+                    $("#main_input_tag_color").css("background-color", colorToHex(revInfo.color));
                 }
-            } catch (ignore) {
-                console.warn(ignore.message);
+                /*
+                $("#main_access").val();
+                $("#main_duration").val();
+                */
+                $("#basic_state").html(createOptions(statusArr, revInfo.status));
+                $("#basic_gender").html(createOptions(genderArr, revInfo.gender));
+                $("#basic_last_name").val(revInfo.lastName);
+                $("#basic_first_name").val(revInfo.firstName);
+                $("#basic_english_name").val(revInfo.EnglishName);
+                $("#basic_birthday").val(revInfo.birthday);
+                $("#basic_job_phone").val(revInfo.phoneJob);
+                $("#basic_self_phone").val(revInfo.phoneSelf);
+                $("#basic_mail").val(revInfo.mail);
+                $("#basic_address").val(revInfo.address);
+                $("#basic_highest_education").html(createOptions(educationArr, revInfo.education));
+                $("#basic_school").val(revInfo.school);
+                $("#basic_grade").val(revInfo.grade);
+                $("#basic_pro_level").val(revInfo.tech_grade);
+                $("#basic_entry_date").val(revInfo.dateEntry);
+                $("#basic_leave_date").val(revInfo.dateLeave);
+                $("#note_text").val(revInfo.note);
+                //開啟編輯框
+                setCommand("edit");
+                $("#dialog_edit_member").dialog("open");
             }
         }
     };
     xmlHttp.send(JSON.stringify(request));
 }
+
+
 
 
 
@@ -152,13 +219,20 @@ function addMemberData() {
     $("#main_number").val("");
     $("#main_name").val("");
     $("#main_department").val("");
+    $("#hidden_department").val("");
     $("#main_jobTitle").val("");
-    $("#main_type").html(createOptions(typeArr, ""));
+    $("#hidden_jobTitle").val("");
+    $("#main_type").html(createOptions(userTypeArr, ""));
     $("#main_picture_thumbnail").attr("href", "");
     $("#main_picture_img").attr("src", "");
     $("#main_select_tag_color").html(createOptions(dotTypeArr, ""));
-    /*$("#main_input_tag_color").val("");
-    $("#main_access").val();
+    //還原為預設顏色
+    $("#main_input_tag_color").val(default_color);
+    $("#main_input_tag_color").attr("type", "hidden"); //隱藏可選顏色
+    $("#main_input_tag_color").css("background-color", default_color);
+    $("#main_display_color").attr("type", "text"); //顯示不可選顏色
+    $("#main_display_color").css("background-color", default_color);
+    /*$("#main_access").val();
     $("#main_duration").val();*/
     $("#basic_state").html(createOptions(statusArr, ""));
     $("#basic_gender").html(createOptions(genderArr, ""));

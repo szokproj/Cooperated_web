@@ -1,3 +1,4 @@
+var default_color = '#4CAF50';
 var chart_type = "";
 
 function createChart(type) {
@@ -74,10 +75,34 @@ $(function () {
             datascource = {};
             if (chart_type == "dept") {
                 $("#main_department").val(select_node.val());
-                $("#hidden_department").val(select_node.data('node')[0].id);
+                var dept_id = select_node.data('node')[0].id;
+                $("#hidden_department").val(dept_id);
+                var index = $("#main_select_tag_color").children('option:selected').index();
+                if (index == 1 && dept_id != "") {
+                    $("#main_input_tag_color").val(default_color);
+                    $("#main_display_color").css("background-color", default_color);
+                    deptColorArray.forEach(v => {
+                        if (v.c_id == dept_id) {
+                            $("#main_input_tag_color").val(colorToHex(v.color));
+                            $("#main_display_color").css("background-color", colorToHex(v.color));
+                        }
+                    });
+                }
             } else if (chart_type == "jobTitle") {
                 $("#main_jobTitle").val(select_node.val());
-                $("#hidden_jobTitle").val(select_node.data('node')[0].id);
+                var title_id = select_node.data('node')[0].id;
+                $("#hidden_jobTitle").val(title_id);
+                var index = $("#main_select_tag_color").children('option:selected').index();
+                if (index == 2 && title_id != "") {
+                    $("#main_input_tag_color").val(default_color);
+                    $("#main_display_color").css("background-color", default_color);
+                    titleColorArray.forEach(v => {
+                        if (v.c_id == title_id) {
+                            $("#main_input_tag_color").val(colorToHex(v.color));
+                            $("#main_display_color").css("background-color", colorToHex(v.color));
+                        }
+                    });
+                }
             } else {
                 return;
             }

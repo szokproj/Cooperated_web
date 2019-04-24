@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!-- Add icon library -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
         integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
@@ -18,19 +19,19 @@
     <link rel="stylesheet" type="text/css" href="../css/member_typesetting.css">
     <link rel="stylesheet" type="text/css" href="../css/bootstrap_collapsible_navbar.css">
     <link rel="stylesheet" type="text/css" href="../css/left_nav.css">
-</head>
-
-<body>
     <script type="text/javascript" src="../js/navbar_setting.js"></script>
     <script type="text/javascript" src="../js/palette.js"></script>
     <script type="text/javascript" src="../js/display_setting.js"></script>
+</head>
+
+<body>
     <div class="container">
         <div class="row">
             <div class="col-lg-12" style="background-color:white;">
                 <!-- 最上方黑色區塊 -->
                 <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
                 </div>
-                <div style="height: 35px;width: 100%;">
+                <div style="height:35px; width:100%;">
                 </div>
             </div>
         </div>
@@ -112,136 +113,45 @@
                     <label>分類依據 : </label>
                     <select id="display_type_select">
                         <option value="部門">部門</option>
+                        <option value="職稱">職稱</option>
                         <option value="用戶類型">用戶類型</option>
-                        <option value="職等">職等</option>
+                        <option value="自訂">自訂</option>
                     </select>
-                    <span>
-                        <label for="display_type_add" class="custom-file-download">
-                            <img src="../image/add.png" style="max-width:20px; margin-left:10px;">
-                        </label>
-                        <input type="button" id="display_type_add" class="image-btn" />
-                        <label for="display_type_remove" class="custom-file-download">
-                            <img src="../image/remove.png" style="max-width:20px; margin-left:10px;">
-                        </label>
-                        <input type="button" id="display_type_remove" class="image-btn" />
-                        <label for="display_type_edit" class="custom-file-download">
-                            <img src="../image/edit.png" style="max-width:20px; margin-left:10px;">
-                        </label>
-                        <input type="button" id="display_type_edit" class="image-btn" />
-                    </span>
-                </div>
-                <table class="table-line" id="table_display_type" style="margin-right:10px;">
-                    <thead>
+                    <table class="table-line" id="table_display_type" style="margin-right:10px;">
+                        <thead>
+                            <tr>
+                                <th style="min-width:80px;" id="row_name">名稱</th>
+                                <th style="min-width:80px;">顏色</th>
+                                <th style="min-width:50px;">預覽</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <br>
+                    <label>畫點大小 : </label>
+                    <input type="text" id="dot_size_display" value="10"
+                        style="border:0; color:#f6931f; font-weight:bold; width:20px;">
+                    <label style="color:#f6931f;">px</label>
+                    <table style="max-width:100px;">
                         <tr>
-                            <th>類別</th>
-                            <th>顏色</th>
-                            <th>大小</th>
-                            <th style="width: 80px;">操作</th>
+                            <td>
+                                <div id="dot_size_slider" style="width:150px"></div>
+                            </td>
+                            <td><input type="button" id="btn_size_submit" value="submit"></td>
+                            <!--disabled-->
                         </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <br>
+                    </table>
+                </div>
             </div>
-            <div class="col-lg-5">
+            <div class="col-lg-5" style="top:50px;">
                 <span>
                     <label for="load_image" class="load-file">
-                        Preview <i class="far fa-images"></i>
+                        Input test map <i class="far fa-images"></i>
                     </label>
                     <input type="file" id="load_image" accept="image/*">
                 </span>
-                <canvas id="canvas_map" class="draw-map"></canvas>
+                <canvas id="canvas_preview" class="draw-map"></canvas>
             </div>
-        </div>
-    </div>
-
-    <div class="hidden_dialog">
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        <!-- JQuery UI - Dialog -->
-        <script type="text/javascript" src="../js/Dialog/dialog_setting.js"></script>
-        <script type="text/javascript" src="../js/Dialog/dialog_member_setting.js"></script>
-        <script type="text/javascript" src="../js/Dialog/dialog_dot_set.js"></script>
-        <!-- Hidden Dialog -->
-        <div id="dialog_dot_edit" title="Set Color and Size">
-            <form>
-                <fieldset style="text-align: center;">
-                    <br>
-                    <table id="table_dot_edit" class="ui-widget ui-widget-content block">
-                        <tr>
-                            <td>Name</td>
-                            <td><input type="text" id="edit_type_name" style="width:100%;" /></td>
-                        </tr>
-                        <tr>
-                            <td>Color</td>
-                            <td>
-                                <label for="dot_edit_color" class="custom-file-download">
-                                    <img src="../image/palette.png" style="max-width:20px;">
-                                </label>
-                                <input type="text" class="palette" id="dot_edit_color" value="#4CAF50"
-                                    style="max-width:30px; background-color:#4CAF50;" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Size</td>
-                            <td>
-                                <input type="text" id="dot_edit_size" value="10" style="border:0; color:#f6931f;
-                                                                                        font-weight:bold; width:20px;">
-                                <label style="color:#f6931f;">px</label>
-                                <div id="dot_edit_slider" style="width:100%;"></div>
-                            </td>
-                        </tr>
-                    </table>
-                    <br>
-                    <canvas id="canvas_dot" class="draw-position"></canvas>
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
-
-        <div id="dialog_alarm_dot_edit" title="Set Color and Size">
-            <form>
-                <fieldset style="text-align: center;">
-                    <br>
-                    <table id="table_alarm_dot_edit" class="ui-widget ui-widget-content block">
-                        <tr>
-                            <td>Outside Color : </td>
-                            <td>
-                                <label for="alarm_dot_outside_color" class="custom-file-download">
-                                    <img src="../image/palette.png" style="max-width:20px;">
-                                </label>
-                                <input type="text" class="palette" id="alarm_dot_outside_color" value="#F44336"
-                                    style="max-width:30px; background-color:#F44336;" />
-                            </td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>Inside Color :</td>
-                            <td>
-                                <label for="alarm_dot_inside_color" class="custom-file-download">
-                                    <img src="../image/palette.png" style="max-width:20px;">
-                                </label>
-                                <input type="text" class="palette" id="alarm_dot_inside_color" value="#F43636"
-                                    style="max-width:30px; background-color:#F43636;" />
-                            </td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>Size：</td>
-                            <td>
-                                <input type="text" id="alarm_dot_edit_size" value="12"
-                                    style="border:0; color:#f6931f;font-weight:bold; width:20px;">
-                                <label style="color:#f6931f;">px</label>
-                            </td>
-                            <td>
-                                <div id="alarm_dot_edit_slider" style="width:150px"></div>
-                            </td>
-                        </tr>
-                    </table>
-                    <br>
-                    <canvas id="canvas_alarm_dot" class="draw-position"></canvas>
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
         </div>
     </div>
 </body>

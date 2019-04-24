@@ -108,7 +108,8 @@ function updateTypeList() {
                     $("#table_type_list tbody").append("<tr>" +
                         "<td>" + (i + 1) + "</td>" +
                         "<td>" + revInfo[i].type + "</td>" +
-                        "<td style=\"background-color:" + revInfo[i].color + "\">" + revInfo[i].color + "</td>" +
+                        "<td>" + revInfo[i].color + "</td>" +
+                        "<td style=\"background-color:" + revInfo[i].color + "\"></td>" +
                         "<td><label for=\"btn_edit_" + i + "\" class=\"custom-file-download\">" +
                         "<img src=\"../image/edit.png\" style=\"max-width:20px; margin-right: 20px;\" ></label>" +
                         "<input type=\"button\" class=\"image-btn\" id=\"btn_edit_" + i + "\"" +

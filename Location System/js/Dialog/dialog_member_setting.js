@@ -1,6 +1,7 @@
 var default_color = '#4CAF50';
 var command_name = [];
 
+
 function setCommand(name) {
     if (name == "add")
         command_name = ["AddStaff"];
@@ -9,6 +10,136 @@ function setCommand(name) {
     else
         return;
 }
+
+
+function selectTagColor() {
+    $("#main_input_tag_color").val(default_color);
+    $("#main_input_tag_color").css("background-color", default_color);
+    $("#main_display_color").css("background-color", default_color);
+    //先還原為預設顏色，再依據選擇代入已設定顏色
+    var index = $("#main_select_tag_color").children('option:selected').index();
+    switch (index) {
+        case 1:
+            $("#main_display_color").attr("type", "text");
+            $("#main_input_tag_color").attr("type", "hidden");
+            var requestJSON = JSON.stringify({
+                "Command_Type": ["Read"],
+                "Command_Name": ["GetDepartment_relation_list"]
+            });
+            var xmlHttp = createJsonXmlHttp('sql');
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    var revObj = JSON.parse(this.responseText);
+                    var revInfo = revObj.Values;
+                    if (revObj.success > 0) {
+                        var nodeArray = [];
+                        for (i = 0; i < revInfo.length; i++)
+                            nodeArray.push(revInfo[i]);
+                        if (nodeArray.length > 0) {
+                            nodeArray.forEach(function (v) {
+                                if (v.c_id == $("#hidden_department").val()) {
+                                    $("#main_input_tag_color").val(colorToHex(v.color));
+                                    $("#main_display_color").css("background-color", colorToHex(v.color));
+                                }
+                            });
+                        }
+                    }
+                }
+            };
+            xmlHttp.send(requestJSON);
+            break;
+        case 2:
+            $("#main_display_color").attr("type", "text");
+            $("#main_input_tag_color").attr("type", "hidden");
+            var requestJSON = JSON.stringify({
+                "Command_Type": ["Read"],
+                "Command_Name": ["GetJobTitle_relation_list"]
+            });
+            var xmlHttp = createJsonXmlHttp('sql');
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    var revObj = JSON.parse(this.responseText);
+                    var revInfo = revObj.Values;
+                    if (revObj.success > 0) {
+                        var nodeArray = [];
+                        for (i = 0; i < revInfo.length; i++)
+                            nodeArray.push(revInfo[i]);
+                        if (nodeArray.length > 0) {
+                            nodeArray.forEach(function (v) {
+                                if (v.c_id == $("#hidden_jobTitle").val()) {
+                                    $("#main_input_tag_color").val(colorToHex(v.color));
+                                    $("#main_display_color").css("background-color", colorToHex(v.color));
+                                }
+                            });
+                        }
+                    }
+                }
+            };
+            xmlHttp.send(requestJSON);
+            break;
+        case 3:
+            $("#main_display_color").attr("type", "text");
+            $("#main_input_tag_color").attr("type", "hidden");
+            var requestJSON = JSON.stringify({
+                "Command_Type": ["Read"],
+                "Command_Name": ["GetUserTypes"]
+            });
+            var xmlHttp = createJsonXmlHttp('sql');
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    var revObj = JSON.parse(this.responseText);
+                    var revInfo = revObj.Values;
+                    if (revObj.success > 0) {
+                        var nodeArray = [];
+                        for (i = 0; i < revInfo.length; i++)
+                            nodeArray.push(revInfo[i]);
+                        if (nodeArray.length > 0) {
+                            nodeArray.forEach(function (v) {
+                                if (v.type == $("#main_type").val()) {
+                                    $("#main_input_tag_color").val(colorToHex(v.color));
+                                    $("#main_display_color").css("background-color", colorToHex(v.color));
+                                }
+                            });
+                        }
+                    }
+                }
+            };
+            xmlHttp.send(requestJSON);
+            break;
+        case 4:
+            $("#main_display_color").attr("type", "hidden");
+            $("#main_input_tag_color").attr("type", "text");
+            //假如已使用自訂顏色，則在導入時即顯示，此處做為變更成自訂時顏色保持預設
+            break;
+        default:
+            $("#main_display_color").attr("type", "text");
+            $("#main_input_tag_color").attr("type", "hidden");
+            break;
+    }
+}
+
+
+function colorToHex(color) {
+    color = typeof (color) != "string" ? color.toString() : color;
+    if (color.indexOf('#') == 0) {
+        return color;
+    } else {
+        var colorArr = color.substring(color.indexOf("(") + 1, color.length - 1).split(",");
+        var hexColor = "#";
+        for (i = 0; i < colorArr.length; i++) {
+            if (i == 3) {
+                var persentHex = Number(Math.floor(colorArr[i] * 255)).toString(16);
+                if (hexColor != "FF")
+                    hexColor += persentHex.length === 1 ? "0" + persentHex : persentHex;
+            } else {
+                var hexStr = Number(colorArr[i]).toString(16);
+                hexColor += hexStr.length === 1 ? "0" + hexStr : hexStr;
+            }
+        }
+        return hexColor.toUpperCase();
+    }
+}
+
 
 $(function () {
     var dialog, form,
@@ -23,136 +154,7 @@ $(function () {
             main_name, main_dept, main_title, main_type);
     //tips = $( ".validateTips" );
 
-
-    $("#main_select_tag_color").change(function () {
-        var num = $(this).children('option:selected').index();
-        switch (num) {
-            case 1:
-                $("#main_display_color").attr("type", "text");
-                $("#main_input_tag_color").attr("type", "hidden");
-                var requestJSON = JSON.stringify({
-                    "Command_Type": ["Read"],
-                    "Command_Name": ["GetDepartment_relation_list"]
-                });
-                var xmlHttp = createJsonXmlHttp('sql');
-                xmlHttp.onreadystatechange = function () {
-                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        var revInfo = revObj.Values;
-                        if (revObj.success > 0) {
-                            var nodeArray = [];
-                            for (i = 0; i < revInfo.length; i++)
-                                nodeArray.push(revInfo[i]);
-                            if (nodeArray.length > 0) {
-                                $("#main_input_tag_color").val(default_color);
-                                $("#main_display_color").css("background-color", default_color);
-                                nodeArray.forEach(function (v) {
-                                    if (v.c_id == $("#hidden_department").val()) {
-                                        $("#main_input_tag_color").val(colorToHex(v.color));
-                                        $("#main_display_color").css("background-color", colorToHex(v.color));
-                                    }
-                                });
-                            }
-                        }
-                    }
-                };
-                xmlHttp.send(requestJSON);
-                break;
-            case 2:
-                $("#main_display_color").attr("type", "text");
-                $("#main_input_tag_color").attr("type", "hidden");
-                var requestJSON = JSON.stringify({
-                    "Command_Type": ["Read"],
-                    "Command_Name": ["GetJobTitle_relation_list"]
-                });
-                var xmlHttp = createJsonXmlHttp('sql');
-                xmlHttp.onreadystatechange = function () {
-                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        var revInfo = revObj.Values;
-                        if (revObj.success > 0) {
-                            var nodeArray = [];
-                            for (i = 0; i < revInfo.length; i++)
-                                nodeArray.push(revInfo[i]);
-                            if (nodeArray.length > 0) {
-                                $("#main_input_tag_color").val(default_color);
-                                $("#main_display_color").css("background-color", default_color);
-                                nodeArray.forEach(function (v) {
-                                    if (v.c_id == $("#hidden_jobTitle").val()) {
-                                        $("#main_input_tag_color").val(colorToHex(v.color));
-                                        $("#main_display_color").css("background-color", colorToHex(v.color));
-                                    }
-                                });
-                            }
-                        }
-                    }
-                };
-                xmlHttp.send(requestJSON);
-                break;
-            case 3:
-                $("#main_display_color").attr("type", "text");
-                $("#main_input_tag_color").attr("type", "hidden");
-                var requestJSON = JSON.stringify({
-                    "Command_Type": ["Read"],
-                    "Command_Name": ["GetUserTypes"]
-                });
-                var xmlHttp = createJsonXmlHttp('sql');
-                xmlHttp.onreadystatechange = function () {
-                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        var revInfo = revObj.Values;
-                        if (revObj.success > 0) {
-                            var nodeArray = [];
-                            for (i = 0; i < revInfo.length; i++)
-                                nodeArray.push(revInfo[i]);
-                            if (nodeArray.length > 0) {
-                                $("#main_input_tag_color").val(default_color);
-                                $("#main_display_color").css("background-color", default_color);
-                                nodeArray.forEach(function (v) {
-                                    if (v.type == $("#main_type").val()) {
-                                        $("#main_input_tag_color").val(v.color);
-                                        $("#main_display_color").css("background-color", v.color);
-                                    }
-                                });
-                            }
-                        }
-                    }
-                };
-                xmlHttp.send(requestJSON);
-                break;
-            case 4:
-                $("#main_display_color").attr("type", "hidden");
-                $("#main_input_tag_color").attr("type", "text");
-                //假如已使用自訂顏色，則在導入時即顯示，此處做為變更成自訂時顏色自動還原成預設
-                $("#main_input_tag_color").val(default_color);
-                $("#main_input_tag_color").css("background-color", default_color);
-                break;
-            default:
-                return;
-        }
-    });
-
-    function colorToHex(color) {
-        color = typeof (color) != "string" ? color.toString() : color;
-        if (color.indexOf('#') == 0) {
-            return color;
-        } else {
-            var colorArr = color.substring(color.indexOf("(") + 1, color.length - 1).split(",");
-            var hexColor = "#";
-            for (i = 0; i < colorArr.length; i++) {
-                if (i == 3) {
-                    var persentHex = Number(Math.floor(colorArr[i] * 255)).toString(16);
-                    if (hexColor != "FF")
-                        hexColor += persentHex.length === 1 ? "0" + persentHex : persentHex;
-                } else {
-                    var hexStr = Number(colorArr[i]).toString(16);
-                    hexColor += hexStr.length === 1 ? "0" + hexStr : hexStr;
-                }
-            }
-            return hexColor.toUpperCase();
-        }
-    }
-
+    $("#main_select_tag_color").change(selectTagColor);
 
     var SendResult = function () {
         allFields.removeClass("ui-state-error");
@@ -173,11 +175,14 @@ $(function () {
                     "card_id": main_card_id.val(),
                     "number": main_number.val(),
                     "Name": main_name.val(),
-                    "department": main_dept.val(),
-                    "jobTitle": main_title.val(),
+                    //"department": main_dept.val(),
+                    "department_id": $("#hidden_department").val(),
+                    //"jobTitle": main_title.val(),
+                    "jobTitle_id": $("#hidden_jobTitle").val(),
                     "type": main_type.val(),
                     "photo": $("#main_picture_img").val(),
-                    "set_color": "",
+                    "color_type": $("#main_select_tag_color").val(),
+                    "color": colorToHex($("#main_input_tag_color").val()),
                     "status": $("#basic_state").val(),
                     "gender": $("#basic_gender").val(),
                     "lastName": $("#basic_last_name").val(),
