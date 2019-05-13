@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Location System</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title class="i18n" name='title'>Location System</title>
+    <meta id="i18n_pagename" content="common">
+    <meta name="viewport" content="width=device-width">
     <!-- Jquery庫 -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
@@ -13,26 +14,16 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <!-- Add icon library -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
-        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
     <!-- 編寫css -->
     <link rel="stylesheet" type="text/css" href="../css/bootstrap_collapsible_navbar.css">
     <link rel="stylesheet" type="text/css" href="../css/jquery_right_side_nav.css">
     <link rel="stylesheet" type="text/css" href="../css/alarm_sideBar.css">
     <link rel="stylesheet" type="text/css" href="../css/index_typesetting.css">
-    <script type="text/javascript" src="../js/Language/language.js"></script>
     <script type="text/javascript" src="../js/navbar_setting.js"></script>
-    <script type="text/javascript" src="../js/Dialog/dialog_setting.js"></script>
-    <script type="text/javascript" src="../js/Dialog/dialog_anchor_list.js"></script>
-    <script type="text/javascript" src="../js/Dialog/dialog_group_list.js"></script>
-    <script type="text/javascript" src="../js/Dialog/dialog_anchor_group.js"></script>
-    <script type="text/javascript" src="../js/Dialog/dialog_map_group.js"></script>
-    <script type="text/javascript" src="../js/Dialog/dialog_anchor_position.js"></script>
-    <script type="text/javascript" src="../js/Dialog/dialog_tag_set.js"></script>
-    <script type="text/javascript" src="../js/Dialog/dialog_alarm_set.js"></script>
-    <script type="text/javascript" src="../js/canvas_request.js"></script>
-    <script type="text/javascript" src="../js/Dialog/dialog_map_scale.js"></script>
     <script type="text/javascript" src="../js/sideBar.js"></script>
+    <script type="text/javascript" src="../js/canvas_request.js"></script>
     <script type="text/javascript">
         //多階下拉清單按鈕
         $(document).ready(function () {
@@ -61,74 +52,76 @@
             });
         });
     </script>
+    <!-- JQuery UI - Dialog -->
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="../js/Dialog/dialog_setting.js"></script>
+    <script type="text/javascript" src="../js/Dialog/dialog_alarm_set.js"></script>
 </head>
 
 <body>
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
-                <!-- 最上方黑色區塊 -->
-                <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
-                </div>
-                <div style="height: 35px;width: 100%;">
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-lg-12">
-                <!-- 側滑導航欄 -->
-                <div id="wrapper">
-                    <!-- 導航欄開啟時的遮罩，設定顏色和長寬就可以形成遮罩 -->
-                    <div class="overlay">
+                <!-- 最上方深藍色橫條 -->
+                <div class="navbar navbar-fixed-top navbar-inverse" role="navigation" style="text-align:right;">
+                    <!-- 側滑導航欄 -->
+                    <div id="wrapper">
+                        <!-- 導航欄開啟時的遮罩，設定顏色和長寬就可以形成遮罩 -->
+                        <div class="overlay"></div>
+                        <!-- Sidebar(Left) -->
+                        <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+                            <ul class="nav sidebar-nav">
+                                <li><a href="../index.html" data-i18n="nav.home">
+                                        <img src="../image/home.png">首頁</a>
+                                </li>
+                                <li><a href="../Member_Setting.html">
+                                        <img src="../image/member_setting.png">人員設置</a>
+                                </li>
+                                <li><a href="../Timeline.html">
+                                        <img src="../image/timeline.png">歷史軌跡</a>
+                                </li>
+                                <li><a href="../Map_Setting.html">
+                                        <img src="../image/map_setting.png">地圖設定</a>
+                                </li>
+                                <li><a href="../Anchor_Setting.html">
+                                        <img src="../image/anchor_setting.png">Anchor設定</a>
+                                </li>
+                                <li><a href="../Tag_Setting.html">
+                                        <img src="../image/tag_setting.png">Tag設定</a>
+                                </li>
+                                <li><a href="../Alarm_Setting.html">
+                                        <img src="../image/alarm_setting.png">Alarm設定</a>
+                                </li>
+                                <li><a href="../Reference.html">
+                                        <img src="../image/research.png">Reference</a>
+                                </li>
+                                <li><a href="../Advance_cmd.html">
+                                        <img src="../image/website.png">Advance cmd</a>
+                                </li>
+                                <li><a href="../Update.html">
+                                        <img src="../image/update.png">Update</a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <!-- /#sidebar-wrapper -->
+                        <!-- Page Content -->
+                        <div id="page-content-wrapper">
+                            <button type="button" class="hamburger is-closed animated fadeInLeft"
+                                data-toggle="offcanvas">
+                                <span class="hamb-top"></span>
+                                <span class="hamb-middle"></span>
+                                <span class="hamb-bottom"></span>
+                            </button>
+                        </div>
+                        <!-- /#page-content-wrapper -->
                     </div>
-                    <!-- Sidebar(Left) -->
-                    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
-                        <ul class="nav sidebar-nav">
-                            <li><a href="../index.html">
-                                    <img src="../image/home.png">首頁</a>
-                            </li>
-                            <li><a href="../Member_Setting.html">
-                                    <img src="../image/member_setting.png">人員設置</a>
-                            </li>
-                            <li><a href="../Timeline.html">
-                                    <img src="../image/timeline.png">歷史軌跡</a>
-                            </li>
-                            <li><a href="../Map_Setting.html">
-                                    <img src="../image/map_setting.png">地圖設定</a>
-                            </li>
-                            <li><a href="../Anchor_Setting.html">
-                                    <img src="../image/anchor_setting.png">Anchor設定</a>
-                            </li>
-                            <li><a href="../Tag_Setting.html">
-                                    <img src="../image/tag_setting.png">Tag設定</a>
-                            </li>
-                            <li><a href="../Alarm_Setting.html">
-                                    <img src="../image/alarm_setting.png">Alarm設定</a>
-                            </li>
-                            <li><a href="../Reference.html">
-                                    <img src="../image/research.png">Reference</a>
-                            </li>
-                            <li><a href="../Advance_cmd.html">
-                                    <img src="../image/website.png">Advance cmd</a>
-                            </li>
-                            <li><a href="../Update.html">
-                                    <img src="../image/update.png">Update</a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <!-- /#sidebar-wrapper -->
-
-                    <!-- Page Content -->
-                    <div id="page-content-wrapper">
-                        <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
-                            <!--<span class="hamb-center"></span>-->
-                            <span class="hamb-top"></span>
-                            <span class="hamb-middle"></span>
-                            <span class="hamb-bottom"></span>
-                        </button>
-                    </div>
-                    <!-- /#page-content-wrapper -->
+                    <label class="i18n" name="language" style="color:white;"></label>
+                    <select id="language" style="margin:5px 50px 0px 0px;">
+                        <option value="en">English</option>
+                        <option value="zh-TW">繁體中文</option>
+                        <option value="zh-CN">简体中文</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -136,7 +129,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <!-- Web content -->
-                <div id="content">
+                <div id="content" style="margin-top:35px;">
                     <div class="top_button_group">
                         <div style="float: right;">
                             <span id="scale_visible" style="margin-right:30px;">Map Scale: initial</span>
@@ -145,68 +138,38 @@
                         </div>
                         <div>
                             <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle icon_btn" type="button" data-toggle="dropdown">導入地圖
-                                    <i class="far fa-image"></i>
-                                    <span class="caret"></span></button>
-                                <ul class="dropdown-menu" id="loadMapButtonGroup">
-                                    <li><input type="button" id="map_btn_1" value="map_1" onclick="setMap('1111','map.png')">
-                                    </li>
-                                </ul>
+                                <button class="btn btn-primary dropdown-toggle icon_btn" type="button"
+                                    data-toggle="dropdown">
+                                    <span class="i18n" name="input_map"></span>&nbsp;<i class="far fa-image"></i>&nbsp;
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" id="loadMapButtonGroup"></ul>
                             </div>
-
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                                    設定 <i class="fas fa-cog"></i> <span class="caret"></span>
+                                    <span class="i18n" name="setting"></span>&nbsp;<i class="fas fa-cog"></i>&nbsp;
+                                    <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li class="dropdown-submenu">
-                                        <a class="test" tabindex="-1" href="#">
-                                            Map Setting <i class='fas fa-caret-right'></i></a>
-                                        <ul class="dropdown-menu">
-                                            <li><input type="button" id="Map_Scale" value="Map Scale"></li>
-                                        </ul>
-                                    </li>
-                                    <li class="dropdown-submenu">
-                                        <a class="test" tabindex="-1" href="#">
-                                            Anchor Setting <i class='fas fa-caret-right'></i></a>
-                                        <ul class="dropdown-menu">
-                                            <li><input type="button" id="Anchor_Position" value="Anchor Position"
-                                                    onclick="clickAnchorPosition();">
-                                            </li>
-                                            <li><input type="button" id="Anchor_List" value="Anchor List">
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li class="dropdown-submenu">
-                                        <a class="test" tabindex="-1" href="#">
-                                            Group Setting <i class='fas fa-caret-right'></i></a>
-                                        <ul class="dropdown-menu">
-                                            <li><input type="button" id="Group_List" value="Group List">
-                                            </li>
-                                            <li><input type="button" id="Anchor_Group" value="Anchor Group">
-                                            </li>
-                                            <li><input type="button" id="Map_Group" value="Map Group">
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li><input type="button" id="Tag_Setting" value="Tag Setting"></li>
+                                    <li><input type="button" id="Alarm_Setting" value="Alarm Setting"></li>
                                 </ul>
                             </div>
-
                             <div class="btn-group">
-                                <button class="btn btn-primary" id="btn_restore" onclick="restoreCanvas();">恢復原比例
+                                <button class="btn btn-primary" id="btn_restore" onclick="restoreCanvas();">
+                                    <span class="i18n" name="restore_scale"></span>&nbsp;
                                     <i class="fas fa-compress"></i></button>
-                                <button class="btn btn-primary" id="btn_start" onclick="StartClick();">Start <i class="fas fa-play"></i></button>
+                                <button class="btn btn-primary" id="btn_start" onclick="StartClick();">
+                                    <span class="i18n" name="start"></span>&nbsp;<i class="fas fa-play"></i></button>
                             </div>
-
                             <button id="alarmSideBar_icon">
                                 <img src="../image/alarm3.png">
                             </button>
                         </div>
                     </div>
+
                     <div class="cvsBlock" id="cvsBlock">
-                        <canvas id="canvas" style="height: 300px;">
-                            此瀏覽器不支援canvas，請更換成Chrome瀏覽器
+                        <canvas id="canvas" style="height:1px; width:1px;">
+                            <span class="i18n" name="no_canvas"></span>
                         </canvas>
                     </div>
                 </div>
@@ -302,206 +265,16 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="button_arrow"><img src="https://c2.staticflickr.com/6/5635/31065147822_9b6e31ab5f_o.png"></button>
+                        <button class="button_arrow"><img
+                                src="https://c2.staticflickr.com/6/5635/31065147822_9b6e31ab5f_o.png"></button>
                     </aside>
                 </div>
             </div>
         </div>
     </div>
 
-
-    <!-- Hidden Dialog -->
-    <!-- JQuery UI - Dialog -->
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!-- Hidden Dialog -->
     <div class="hidden_dialog">
-        <!-- Following is a dialog to set the map's scale -->
-        <div id="dialog_map_scale" title="Set Map Scale">
-            <form>
-                <fieldset style="text-align: center;">
-                    <label for="scale">1 : </label>
-                    <input type="text" name="scale" id="scale" value="3" style="max-width: 30px;">
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
-        <!-- Following is a dialog to add a new anchor -->
-        <div id="dialog_add_new_anchor" title="Add New Anchor">
-            <form>
-                <fieldset style="text-align: left;">
-                    <label for="anchor_type">Anchor Type:</label>
-                    <select id="anchor_type" name="anchor_type">
-                        <option value="" selected="selected">Anchor</option>
-                        <option value="main">Main Anchor</option>
-                    </select>
-                    <br><br>
-                    <label for="anchor_id">Anchor ID:</label>
-                    <input type="text" name="anchor_id" id="anchor_id" value="" style="max-width:100px;">
-                    (0 ~ 65535)
-                    <br><br>
-                    <label for="anchor_x">X:</label>
-                    <input type="text" name="anchor_x" id="anchor_x" value="" style="max-width:100px;">
-                    <br><br>
-                    <label for="anchor_y">Y:</label>
-                    <input type="text" name="anchor_y" id="anchor_y" value="" style="max-width:100px;">
-                    <br><br>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
-        <!-- Following is a dialog to set all anchors -->
-        <div id="dialog_anchor_list" title="Anchor List">
-            <form>
-                <fieldset style="text-align: center;">
-                    <table id="table_main_anchor_list" class="ui-widget ui-widget-content">
-                        <thead>
-                            <tr class="ui-widget-header">
-                                <th>Main Anchor ID</th>
-                                <th>X</th>
-                                <th>Y</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                    <br><br>
-                    <table id="table_anchor_list" class="ui-widget ui-widget-content">
-                        <thead>
-                            <tr class="ui-widget-header">
-                                <th>Anchor ID</th>
-                                <th>X</th>
-                                <th>Y</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
-        <!-- Following is a dialog to set group's main anchor -->
-        <div id="dialog_group_list" title="Group List">
-            <form>
-                <fieldset style="text-align: center;">
-                    <table id="table_group_list" class="ui-widget ui-widget-content">
-                        <thead>
-                            <tr class="ui-widget-header ">
-                                <th>Item</th>
-                                <th>Group ID</th>
-                                <th>Group Name</th>
-                                <th>Main Anchor</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
-        <!-- Following is a dialog to add group's main anchor -->
-        <div id="dialog_add_group_list" title="Add Group List">
-            <form>
-                <fieldset style="text-align: left;">
-                    <label for="add_grouplist_id">Group ID:</label>
-                    <input type="text" id="add_grouplist_id" value="" style="max-width:100px;">
-                    (1 ~ 65535)
-                    <br><br>
-                    <label for="add_grouplist_name">Group Name:</label>
-                    <input type="text" id="add_grouplist_name" value="" style="max-width:100px;">
-                    <br><br>
-                    <label for="add_grouplist_main_anchor">Main Anchor ID:</label>
-                    <select id="add_grouplist_main_anchor"></select>
-                    <br><br>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
-        <!-- Following is a dialog to set the group of anchors -->
-        <div id="dialog_anchor_group" title="Anchor Group">
-            <form>
-                <fieldset style="text-align: center;">
-                    <table id="table_anchor_group" class="ui-widget ui-widget-content">
-                        <thead>
-                            <tr class="ui-widget-header">
-                                <th>Item</th>
-                                <th>Group</th>
-                                <th>Main Anchor</th>
-                                <th>Anchor</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
-        <!-- Following is a dialog to add a new group -->
-        <div id="dialog_add_anchor_group" title="Add Anchor Group">
-            <form>
-                <fieldset style="text-align: left;">
-                    <label for="add_group_id">Group:</label>
-                    <input type="text" id="add_group_id" value="" style="max-width:100px;">
-                    (1 ~ 65535)
-                    <br><br>
-                    <label for="add_group_main_anchor">Main Anchor ID:</label>
-                    <select id="add_group_main_anchor">
-                    </select>
-                    <br><br>
-                    <label for="add_group_anchor">Anchor ID:</label>
-                    <select id="add_group_anchor"></select>
-                    <br><br>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
-        <!-- Following is a dialog to set the groups of maps -->
-        <div id="dialog_map_group" title="Map Group">
-            <form>
-                <fieldset style="text-align: center;">
-                    <table id="table_map_group" class="ui-widget ui-widget-content">
-                        <thead>
-                            <tr class="ui-widget-header">
-                                <th>Item</th>
-                                <th>Map</th>
-                                <th>Group</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
-        <!-- Following is a dialog to set the tags' name and color -->
-        <div id="dialog_tag_set" title="Set Name and Color">
-            <form>
-                <fieldset style="text-align: center;">
-                    <table id="table_tag_set" class="ui-widget ui-widget-content">
-                        <thead>
-                            <tr class="ui-widget-header">
-                                <th>Item</th>
-                                <th>Name</th>
-                                <th>Tag_id</th>
-                                <th>Color</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
         <!-- Following is a dialog to set alarm -->
         <div id="dialog_alarm_set" title="Alarm Setting">
             <form style="text-align: left;">
@@ -542,7 +315,8 @@
                         <td><label>Manual Release:</label></td>
                         <td><input id="off_manual_release" type="radio" name="manual_release" value="0">
                             <label for="off_manual_release">off</label>
-                            <input id="on_manual_release" type="radio" name="manual_release" value="1" checked="checked">
+                            <input id="on_manual_release" type="radio" name="manual_release" value="1"
+                                checked="checked">
                             <label for="on_manual_release">on</label></td>
                     </tr>
                     <tr>
@@ -561,6 +335,10 @@
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </form>
         </div>
+
+
+        <!--------------------------------------------------------------------------------------->
+
         <!-- The dialog of tag's infomation -->
         <div id="member_dialog" title="Tag Infomation">
             <img id="member_dialog_image" style="float: left;" src="../image/user2.png">
@@ -603,6 +381,10 @@
             </div>
         </div>
     </div>
+    <!-- i18n 多語言翻譯 -->
+    <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
+    <script type="text/javascript" src="../js/i18n/language.js"></script>
+    <!-- i18n -->
 </body>
 
 </html>

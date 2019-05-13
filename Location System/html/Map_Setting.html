@@ -13,233 +13,23 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!-- Add icon library -->
-    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ'
-        crossorigin='anonymous'>
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'
+        integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
     <!--編寫css-->
     <link rel=stylesheet type="text/css" href="../css/bootstrap_collapsible_navbar.css">
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th,
-        td {
-            padding: 1px;
-            text-align: left;
-            border: none;
-        }
-
-        /* 網頁內的輸入框 */
-        label,
-        input {
-            display: inline block;
-        }
-
-        input.text {
-            margin-bottom: 12px;
-            width: 95%;
-            padding: .4em;
-        }
-
-        fieldset {
-            padding: 0;
-            border: 0;
-            margin-top: 25px;
-        }
-
-        h1 {
-            font-size: 1.2em;
-            margin: .6em 0;
-        }
-
-        .ui-dialog .ui-state-error {
-            padding: .3em;
-        }
-
-        /******************/
-        .custom-file-download {
-            background-color: lightgray;
-            border: 1px solid gray;
-            border-radius: 3px;
-            width: 45%;
-            height: 200px;
-            color: rgb(63, 62, 62);
-            padding: 5px 5px;
-            font-size: 20px;
-            text-align: center;
-            cursor: pointer;
-            margin: 10px;
-        }
-
-        .new_map_block {
-            width: 100%;
-            height: 150px;
-            background-color: rgb(167, 166, 166);
-            margin-bottom: 10px;
-        }
-
-        .thumbnail {
-            width: 45%;
-            position: relative;
-            background-color: rgb(138, 181, 182);
-            border: 1px solid rgb(103, 151, 151);
-            display: inline-block;
-            margin: 10px;
-        }
-
-        .thumbnail img {
-            width: 100%;
-            /*border: 1px solid rgb(105, 174, 179);*/
-        }
-
-        .thumbnail input[type="text"] {
-            width: 50%;
-            background-color: rgb(221, 221, 221);
-        }
-    </style>
+    <link rel=stylesheet type="text/css" href="../css/left_nav.css">
+    <link rel=stylesheet type="text/css" href="../css/map_style.css">
+    <script type="text/javascript" src="../js/navbar_setting.js"></script>
+    <script type="text/javascript" src="../js/map_setting.js"></script>
+    <script type="text/javascript" src="../js/group_setting.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script type="text/javascript" src="../js/navbar_setting.js"></script>
-    <script type="text/javascript" src="../js/dialog_map_scale.js"></script>
-    <script type="text/javascript">
-        window.addEventListener("load", loadMap, false);
+    <script type="text/javascript" src="../js/Dialog/dialog_setting.js"></script>
+    <script type="text/javascript" src="../js/Dialog/dialog_map_setting.js"></script>
+    <script type="text/javascript" src="../js/Dialog/dialog_anchor_list.js"></script>
+    <script type="text/javascript" src="../js/Dialog/dialog_anchor_group.js"></script>
+    <script type="text/javascript" src="../js/Dialog/dialog_group_list.js"></script>
 
-        function GetXmlHttpObject() {
-            var xmlHttp = null;
-            try { // Firefox, Opera 8.0+, Safari
-                xmlHttp = new XMLHttpRequest();
-            } catch (e) { //Internet Explorer
-                try {
-                    xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-                } catch (e) {
-                    xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-                }
-            }
-            return xmlHttp;
-        }
-
-        //測試用選取圖片的方式，實際上應該是接收Server上所有的地圖，並存成Cookie
-        var img_count = 0;
-        //var arr_src = [];
-
-        function loadMap() {
-            var xmlHttp = GetXmlHttpObject();
-            if (xmlHttp == null) {
-                alert("Browser does not support HTTP Request");
-                return;
-            }
-            xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                    var mapInfo = JSON.parse(this.responseText);
-                    var map_id = "";
-                    var html = "";
-
-                    for (i = 0; i < mapInfo.ID.length; i++) {
-                        var img = "../image/map/" + mapInfo.Img_src[i];
-                        //arr_src.push(img);
-                        img_count++;
-                        var map_id = "map_id_" + img_count;
-
-                        $("#maps_gallery").append("<div class=\"thumbnail\">" +
-                            "<a href=\"" + img + "\" target=\"_blank\">" +
-                            "<img src=\"" + img + "\">" +
-                            "</a>" +
-                            "<div class=\"caption\"><table><tr>" +
-                            "<th>File name:</th>" +
-                            "<th><div name=\"fileName\">" + getFileName(img) + "</div></th>" +
-                            "</tr><tr>" +
-                            "<th>ID:</th>" +
-                            "<th><input type=\"text\" name=\"" + map_id + "\" value=\"" + mapInfo.ID[i] +
-                            "\"></th>" +
-                            "</tr><tr>" +
-                            "<th>Name:</th>" +
-                            "<th><input type=\"text\" name=\"" + map_id + "\" value=\"" + mapInfo.Name[i] +
-                            "\"></th>" +
-                            "</tr><tr>" +
-                            "<th>Scale:</th>" +
-                            "<th>1 : <input type=\"text\" name=\"" + map_id + "\" value=\"" + mapInfo.Scale[i] +
-                            "\"></th>" +
-                            "</tr></table></div>" +
-                            "</div>");
-                    }
-                }
-            };
-            xmlHttp.open("POST", "LoadMap", true);
-            xmlHttp.setRequestHeader("Content-type", "application/json");
-            xmlHttp.send();
-        }
-
-        function NewMap(input) {
-            var file = input.files[0];
-            var src = URL.createObjectURL(file);
-            //arr_src.push(src);
-            img_count++;
-            var map_id = "map_id_" + img_count;
-
-            $("#maps_gallery").append("<div class=\"thumbnail\">" +
-                "<a href=\"" + src + "\" target=\"_blank\">" +
-                "<img src=\"" + src + "\">" +
-                "</a>" +
-                "<div class=\"caption\"><table><tr>" +
-                "<th>File name:</th>" +
-                "<th><div name=\"fileName\">" + getFileName($("#map_download").val()) + "</div></th>" +
-                "</tr><tr>" +
-                "<th>ID:</th>" +
-                "<th><input type=\"text\" name=\"" + map_id + "\" value=\"" + map_id + "\"></th>" +
-                "</tr><tr>" +
-                "<th>Name:</th>" +
-                "<th><input type=\"text\" name=\"" + map_id + "\" value=\"" + map_id + "\"></th>" +
-                "</tr><tr>" +
-                "<th>Scale:</th>" +
-                "<th>1 : <input type=\"text\" name=\"" + map_id + "\" value=\"" + "1" + "\"></th>" +
-                "</tr></table></div>" +
-                "</div>");
-        }
-
-        function getFileName(src) {
-            var pos1 = src.lastIndexOf("\\");
-            var pos2 = src.lastIndexOf("/");
-            var pos = -1;
-            if (pos1 < 0) pos = pos2;
-            else pos = pos1;
-            return src.substring(pos + 1);
-        }
-
-        function Submit() {
-            var id_arr = [],
-                name_arr = [],
-                scale_arr = [],
-                filename_arr = [];
-            for (i = 0; i < img_count; i++) {
-                var inputName = document.getElementsByName("map_id_" + (i + 1));
-                var fileName = document.getElementsByName("fileName");
-                id_arr.push(inputName[0].value);
-                name_arr.push(inputName[1].value);
-                scale_arr.push(inputName[2].value);
-                filename_arr.push(fileName[i].innerText); //($(".thumbnail img").eq(i).prop("src"));
-            }
-            var requestArray = JSON.stringify({
-                "ID": id_arr,
-                "Name": name_arr,
-                "File_name": filename_arr,
-                "Scale": scale_arr
-            });
-
-            $(function () {
-                $.ajax({
-                    type: 'POST',
-                    url: 'Submit',
-                    data: requestArray,
-                    success: function (revObj) {
-                        var response = JSON.parse(revObj);
-                    },
-                    contentType: "application/json",
-                    dataType: 'json'
-                });
-            });
-        }
-    </script>
 </head>
 
 <body>
@@ -248,89 +38,335 @@
             <div class="col-lg-12" style="background-color:white;">
                 <!-- 最上方黑色區塊 -->
                 <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
-                </div>
-                <div style="height: 35px;width: 100%;">
-                </div>
-            </div>
-        </div>
+                    <div id="wrapper">
+                        <!-- 導航欄開啟時的遮罩，設定顏色和長寬就可以形成遮罩 -->
+                        <div class="overlay">
+                        </div>
+                        <!-- Sidebar(Left) -->
+                        <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+                            <ul class="nav sidebar-nav">
+                                <li><a href="../index.html">
+                                        <img src="../image/home.png">首頁</a>
+                                </li>
+                                <li><a href="../Member_Setting.html">
+                                        <img src="../image/member_setting.png">人員設置</a>
+                                </li>
+                                <li><a href="../Timeline.html">
+                                        <img src="../image/timeline.png">歷史軌跡</a>
+                                </li>
+                                <li><a href="../Map_Setting.html">
+                                        <img src="../image/map_setting.png">地圖設定</a>
+                                </li>
+                                <li><a href="../Anchor_Setting.html">
+                                        <img src="../image/anchor_setting.png">Anchor設定</a>
+                                </li>
+                                <li><a href="../Tag_Setting.html">
+                                        <img src="../image/tag_setting.png">Tag設定</a>
+                                </li>
+                                <li><a href="../Alarm_Setting.html">
+                                        <img src="../image/alarm_setting.png">Alarm設定</a>
+                                </li>
+                                <li><a href="../Reference.html">
+                                        <img src="../image/research.png">Reference</a>
+                                </li>
+                                <li><a href="../Advance_cmd.html">
+                                        <img src="../image/website.png">Advance cmd</a>
+                                </li>
+                                <li><a href="../Update.html">
+                                        <img src="../image/update.png">Update</a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <!-- /#sidebar-wrapper -->
 
-        <div class="row">
-            <div class="col-lg-12" style="background-color:white;">
-                <div id="wrapper">
-                    <!-- 導航欄開啟時的遮罩，設定顏色和長寬就可以形成遮罩 -->
-                    <div class="overlay">
+                        <!-- Page Content -->
+                        <div id="page-content-wrapper">
+                            <button type="button" class="hamburger is-closed animated fadeInLeft"
+                                data-toggle="offcanvas">
+                                <!--<span class="hamb-center"></span>-->
+                                <span class="hamb-top"></span>
+                                <span class="hamb-middle"></span>
+                                <span class="hamb-bottom"></span>
+                            </button>
+                        </div>
+                        <!-- /#page-content-wrapper -->
                     </div>
-                    <!-- Sidebar(Left) -->
-                    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
-                        <ul class="nav sidebar-nav">
-                            <li><a href="../index.html">
-                                    <img src="../image/home.png">首頁</a>
-                            </li>
-                            <li><a href="../Member_Setting.html">
-                                    <img src="../image/member_setting.png">人員設置</a>
-                            </li>
-                            <li><a href="../Timeline.html">
-                                    <img src="../image/timeline.png">歷史軌跡</a>
-                            </li>
-                            <li><a href="../Map_Setting.html">
-                                    <img src="../image/map_setting.png">地圖設定</a>
-                            </li>
-                            <li><a href="../Anchor_Setting.html">
-                                    <img src="../image/anchor_setting.png">Anchor設定</a>
-                            </li>
-                            <li><a href="../Tag_Setting.html">
-                                    <img src="../image/tag_setting.png">Tag設定</a>
-                            </li>
-                            <li><a href="../Alarm_Setting.html">
-                                    <img src="../image/alarm_setting.png">Alarm設定</a>
-                            </li>
-                            <li><a href="../Reference.html">
-                                    <img src="../image/research.png">Reference</a>
-                            </li>
-                            <li><a href="../Advance_cmd.html">
-                                    <img src="../image/website.png">Advance cmd</a>
-                            </li>
-                            <li><a href="../Update.html">
-                                    <img src="../image/update.png">Update</a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <!-- /#sidebar-wrapper -->
-
-                    <!-- Page Content -->
-                    <div id="page-content-wrapper">
-                        <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
-                            <!--<span class="hamb-center"></span>-->
-                            <span class="hamb-top"></span>
-                            <span class="hamb-middle"></span>
-                            <span class="hamb-bottom"></span>
-                        </button>
-                    </div>
-                    <!-- /#page-content-wrapper -->
                 </div>
+                <div style="height: 35px;width: 100%;"></div>
             </div>
         </div>
 
         <!-- Web Content -->
-        <div class="row">
-            <div class="col-lg-12" style="background-color:white;">
-                <div style="text-align: right; margin: 5px;">
-                    <button type="button" class="btn btn-primary">Save</button>
-                    <button type="button" class="btn btn-success" onclick="Submit()">Submit</button>
-                </div>
+        <div class="row" style="display:flex;">
+            <div class="col-lg-2" id="left_navbar">
+                <nav class="navbar navbar-default">
+                    <div class="container-fluid">
+                        <ul class="nav navbar-nav">
+                            <li class="active"><a href="#">地圖設定</a></li>
+                            <li><a href="../Group_Setting.html">群組設定</a></li>
+                        </ul>
+                    </div>
+                </nav>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12" style="background-color:white;">
+            <div class="col-lg-10">
                 <div id="maps_gallery"></div>
-                <label for="map_download" class="custom-file-download">
-                    <div class="new_map_block"></div>
-                    New Map <i class="	far fa-images"></i>
+                <label for="add_new_map" class="custom-file-download">
+                    <div class="new_map_block"></div>New Map<i class="far fa-images"></i>
                 </label>
-                <input id="map_download" type="file" accept="image/*" onchange="NewMap(this)" />
+                <input id="add_new_map" type="button" onclick="newMap();" class="btn-hidden" />
             </div>
         </div>
+    </div>
 
+    <!-- Hidden Dialog -->
+    <div class="hidden_dialog">
+        <!-- Following is a dialog to set the selected map or add a new map -->
+        <div id="dialog_map_setting" title="Set Map & Anchors" style="overflow:auto;">
+            <form>
+                <fieldset>
+                    <div style="height:490px; float:left;">
+                        <div class="cvsBlock" id="mapBlock">
+                            <canvas id="canvas_map" style="height:1px; width:1px;">
+                                此瀏覽器不支援canvas，請更換成Chrome瀏覽器
+                            </canvas>
+                        </div>
+                        <div style="height:40px;">
+                            <span style="float:left;">
+                                X:<input type="text" id="x" style="max-width:100px; border:none;" readonly>
+                                Y:<input type="text" id="y" style="max-width:100px; border:none;" readonly>
+                            </span>
+                            <nav class="sidebar-menu" style="margin-left:322px;">
+                                <ul class="nav">
+                                    <!--Load Map-->
+                                    <li><label for="menu_load_map" class="btn-sidebar" title="load new map">
+                                            <i class="far fa-image" style='font-size:20px;'></i></label>
+                                        <input id="menu_load_map" type="file" accept="image/*" /></li>
+                                    <!--Restore Size-->
+                                    <li><label for="menu_restore" id="label_restore" class="btn-sidebar"
+                                            title="Restore original size">
+                                            <i class="fas fa-expand" style='font-size:20px;'></i></label>
+                                        <input id="menu_restore" type="button" class="btn-hidden" /></li>
+                                    <!--Map Info-->
+                                    <li><label for="menu_map_info" id="label_map_info" class="btn-sidebar"
+                                            title="Map Information">
+                                            <i class="fas fa-info-circle" style='font-size:20px;'></i></label>
+                                        <input id="menu_map_info" type="button" class="btn-hidden" /></li>
+                                    <!--Anchor List-->
+                                    <li><label for="menu_anchor_list" id="label_anchor_list" class="btn-sidebar"
+                                            title="Anchor List">
+                                            <i class="fas fa-file-alt" style='font-size:20px;'></i></label>
+                                        <input id="menu_anchor_list" type="button" class="btn-hidden" /></li>
+                                    <!--Group List-->
+                                    <li><label for="menu_group_list" id="label_group_list" class="btn-sidebar"
+                                            title="Group Setting">
+                                            <i class="far fa-edit" style='font-size:20px;'></i></label>
+                                        <input id="menu_group_list" type="button" class="btn-hidden" /></li>
+                                    <!--Anchor Group-->
+                                    <li><label for="menu_anchor_group" id="label_anchor_group" class="btn-sidebar"
+                                            title="Anchor Group">
+                                            <i class="fas fa-draw-polygon" style='font-size:20px;'></i></label>
+                                        <input id="menu_anchor_group" type="button" class="btn-hidden" /></li>
+                                    <!--Map Group-->
+                                    <li><label for="menu_map_group" id="label_map_group" class="btn-sidebar"
+                                            title="Map Group">
+                                            <i class="far fa-object-ungroup" style='font-size:20px;'></i></label>
+                                        <input id="menu_map_group" type="button" class="btn-hidden" /></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    <div style="height:490px; float:left;">
+                        <div id="block_info" style="margin-left:40px;">
+                            <table>
+                                <tr>
+                                    <th><label>File:&nbsp;</label></th>
+                                    <th><label id="map_info_path"></label></th>
+                                </tr>
+                                <tr>
+                                    <td><label>ID:&nbsp;</label></td>
+                                    <td><input type="text" id="map_info_id" style="width:100%;" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label>Name:&nbsp;</label></td>
+                                    <td><input type="text" id="map_info_name" style="width:100%;" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label>Scale:&nbsp;&nbsp;1:</label></td>
+                                    <td><input type="text" id="map_info_scale" style="width:100%;" /></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div id="block_anchor_list" class="block-list">
+                            <span>
+                                <!--Add Pos-->
+                                <label for="btn_anchor_position" id="label_anchor_position" class="btn-add-pos"
+                                    title="Start anchor position"><i class="fas fa-map-marked-alt"
+                                        style='font-size:20px;'></i></label>
+                                <input id="btn_anchor_position" type="button" class="btn-hidden" />
+                                <!--Add-->
+                                <label for="btn_add_anchor" id="label_add_anchor" class="btn-add" title="Add anchor">
+                                    <i class="fas fa-map-marker-alt" style='font-size:20px;'></i></label>
+                                <input id="btn_add_anchor" type="button" class="btn-hidden" />
+                                <!--Delete-->
+                                <label for="btn_delete_anchor" id="label_delete_anchor" class="btn-delete"
+                                    title="Delete anchor"><i class="fas fa-trash-alt"
+                                        style='font-size:20px;'></i></label>
+                                <input id="btn_delete_anchor" type="button" class="btn-hidden" />
+                            </span>
+                            <table id="table_main_anchor_list" class="table-line">
+                                <thead>
+                                    <tr class="ui-widget-header">
+                                        <th>Item</th>
+                                        <th>Main Anchor ID</th>
+                                        <th>X</th>
+                                        <th>Y</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                            <br>
+                            <table id="table_anchor_list" class="table-line">
+                                <thead>
+                                    <tr class="ui-widget-header">
+                                        <th>Item</th>
+                                        <th>Anchor ID</th>
+                                        <th>X</th>
+                                        <th>Y</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div id="block_group_list" class="block-list">
+                            <span>
+                                <label for="btn_add_group" id="label_add_group" class="btn-add" title="Add group">
+                                    <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                                <input id="btn_add_group" type="button" class="btn-hidden" />
+                                <label for="btn_delete_group" id="label_delete_group" class="btn-delete"
+                                    title="Delete group"><i class="fas fa-minus-square"
+                                        style='font-size:20px;'></i></label>
+                                <input id="btn_delete_group" type="button" class="btn-hidden" />
+                            </span>
+                            <table id="table_group_list" class="table-line">
+                                <thead>
+                                    <tr class="ui-widget-header ">
+                                        <th>Item</th>
+                                        <th>Group ID</th>
+                                        <th>Group Name</th>
+                                        <th>Main Anchor</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div id="block_anchor_group" class="block-list">
+                            <span>
+                                <label for="btn_add_anchor_group" id="label_add_anchor_group" class="btn-add"
+                                    title="Add anchor group">
+                                    <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                                <input id="btn_add_anchor_group" type="button" class="btn-hidden" />
+                                <label for="btn_delete_anchor_group" id="label_delete_anchor_group" class="btn-delete"
+                                    title="Delete anchor group"><i class="fas fa-minus-square"
+                                        style='font-size:20px;'></i></label>
+                                <input id="btn_delete_anchor_group" type="button" class="btn-hidden" />
+                            </span>
+                            <table id="table_anchor_group" class="table-line">
+                                <thead>
+                                    <tr class="ui-widget-header">
+                                        <th>Item</th>
+                                        <th>Group</th>
+                                        <th>Main Anchor</th>
+                                        <th>Anchor</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div id="block_map_group" class="block-list">
+                            <span>
+                                <label for="btn_add_map_group" id="label_add_map_group" class="btn-add"
+                                    title="Add map group">
+                                    <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                                <input id="btn_add_map_group" type="button" class="btn-hidden"
+                                    onclick="addMapGroup()" />
+                                <label for="btn_delete_map_group" id="label_delete_map_group" class="btn-delete"
+                                    title="Delete map group"><i class="fas fa-minus-square"
+                                        style='font-size:20px;'></i></label>
+                                <input id="btn_delete_map_group" type="button" class="btn-hidden"
+                                    onclick="removeMapGroup()" />
+                            </span>
+                            <table id="table_map_group" class="table-line">
+                                <thead>
+                                    <tr class="ui-widget-header">
+                                        <th>Item</th>
+                                        <th style="min-width:150px;">Map Groups</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <!-- Following is a dialog to add a new anchor -->
+        <div id="dialog_add_new_anchor" title="Add New Anchor">
+            <form>
+                <fieldset style="text-align: left;">
+                    <label for="anchor_type">Anchor Type:</label>
+                    <select id="anchor_type">
+                        <option value="" selected="selected">Anchor</option>
+                        <option value="main">Main Anchor</option>
+                    </select>
+                    <br><br>
+                    <label for="anchor_id">Anchor ID:</label>
+                    <input type="text" id="anchor_id" value="" style="max-width:100px;">(0 ~ 65535)
+                    <br><br>
+                    <label for="anchor_x">X:</label>
+                    <input type="text" id="anchor_x" value="" style="max-width:100px;">
+                    <br><br>
+                    <label for="anchor_y">Y:</label>
+                    <input type="text" id="anchor_y" value="" style="max-width:100px;">
+                    <br><br>
+                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+        <!-- Following is a dialog to add group's main anchor -->
+        <div id="dialog_add_group_list" title="Add Group List">
+            <form>
+                <fieldset style="text-align: left;">
+                    <label for="add_grouplist_id">Group ID:</label>
+                    <input type="text" id="add_grouplist_id" value="" style="max-width:100px;">
+                    (1 ~ 65535)
+                    <br><br>
+                    <label for="add_grouplist_name">Group Name:</label>
+                    <input type="text" id="add_grouplist_name" value="" style="max-width:100px;">
+                    <br><br>
+                    <label for="add_grouplist_main_anchor">Main Anchor ID:</label>
+                    <select id="add_grouplist_main_anchor"></select>
+                    <br><br>
+                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+        <!-- Following is a dialog to add a new group -->
+        <div id="dialog_add_anchor_group" title="Add Anchor Group">
+            <form>
+                <fieldset style="text-align: left;">
+                    <label for="add_group_id">Group:</label>
+                    <input type="text" id="add_group_id" style="max-width:100px;"> (1 ~ 65535)
+                    <br><br>
+                    <label for="add_group_main_anchor">Main Anchor ID:</label>
+                    <span id="add_group_main_anchor"></span>
+                    <br><br>
+                    <label for="add_group_anchor">Anchor ID:</label>
+                    <select id="add_group_anchor"></select>
+                </fieldset>
+            </form>
+        </div>
     </div>
 </body>
 

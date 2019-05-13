@@ -1,0 +1,208 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th,
+td {
+    padding: 1px;
+    text-align: left;
+    border: none;
+}
+
+/* 網頁內的輸入框 */
+label,
+input {
+    display: inline-block;
+}
+
+input[type="text"] {
+    width: 150px;
+}
+
+fieldset {
+    padding: 0;
+    border: 0;
+    margin-top: 25px;
+}
+
+h1 {
+    font-size: 1.2em;
+    margin: .6em 0;
+}
+
+.ui-dialog .ui-state-error {
+    padding: .3em;
+}
+
+/******************/
+.table-line th,
+.table-line td {
+    border: 1px solid #808080;
+    padding: 0px 8px 0px 8px;
+    text-decoration: none;
+    text-align: left;
+    font-size: 14px;
+}
+
+.table-line input[type="text"] {
+    border: none;
+}
+
+.custom-file-download {
+    background-color: lightgray;
+    border: 1px solid gray;
+    border-radius: 3px;
+    width: 45%;
+    height: 200px;
+    color: rgb(63, 62, 62);
+    padding: 5px 5px;
+    font-size: 20px;
+    text-align: center;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.new_map_block {
+    width: 100%;
+    height: 150px;
+    background-color: rgb(167, 166, 166);
+    margin-bottom: 10px;
+}
+
+.thumbnail {
+    width: 45%;
+    position: relative;
+    background-color: rgb(138, 181, 182);
+    border: 1px solid rgb(103, 151, 151);
+    display: inline-block;
+    margin: 10px;
+}
+
+.thumbnail .image_block {
+    width: 100%;
+    height: 150px;
+    margin-bottom: 5px;
+    background-color: lightgray;
+    display: inline-flex;
+    text-align: center;
+}
+
+.thumbnail input[type="text"] {
+    width: 100%;
+    background-color: rgb(221, 221, 221);
+}
+
+.btn-sidebar {
+    width: 40px;
+    height: 36px;
+    background-color: rgb(57, 143, 255);
+    color: white;
+    text-align: center;
+    /*border-radius: 5px;*/
+    padding-top: 1px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+.btn-sidebar:hover {
+    background-color: rgb(40, 108, 197);
+}
+
+.btn-delete {
+    cursor: pointer;
+    color: rgb(255, 38, 38);
+    font-size: 20px;
+    margin: 0px 5px 0px 5px;
+}
+
+.btn-delete:hover {
+    color: rgb(255, 113, 113);
+}
+
+.btn-add {
+    cursor: pointer;
+    color: rgb(0, 119, 255);
+    font-size: 20px;
+    margin: 0px 5px 0px 5px;
+}
+
+.btn-add:hover {
+    color: rgb(90, 158, 236);
+}
+
+.btn-add-pos {
+    cursor: pointer;
+    color: rgb(105, 196, 0);
+    font-size: 20px;
+    margin: 0px 5px 0px 5px;
+}
+
+.btn-add-pos:hover {
+    color: rgb(147, 192, 96);
+}
+
+.sidebar-menu {
+    height: 50px;
+    float: right;
+    margin-right: 10px;
+    position: absolute;
+}
+
+.sidebar-menu ul {
+    list-style-type: none;
+    /*overflow: hidden;*/
+}
+
+.sidebar-menu li {
+    line-height: 38px;
+    float: left;
+    width: 40px;
+    height: 38px;
+    position: relative;
+    background-color: rgb(57, 143, 255);
+    border: 1px dashed rgb(25, 66, 121);
+}
+
+.sidebar-menu li:before {
+    background-color: transparent;
+    position: absolute;
+    height: 100%;
+    left: 0;
+    top: 0;
+    -webkit-transition: width 0.2s ease-in;
+    transition: width 0.2s ease-in;
+    z-index: -1;
+}
+
+.btn-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.cvsBlock {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    background: #ccc;
+    max-height: 452px;
+    max-width: 602px;
+    display: block;
+    height: 452px;
+    width: 602px;
+    overflow: auto;
+    border: 1px gray solid;
+}
+
+.block-list {
+    overflow: auto;
+    height: 490px;
+    margin: 0px 0px 0px 10px;
+}

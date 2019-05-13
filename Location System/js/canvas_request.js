@@ -226,7 +226,7 @@ function getAnchors(map_id) {
             }
         }
     };
-    xmlHttp.open("POST", Request_Name.GetAnchors, true);
+    xmlHttp.open("POST", "sql", true);
     xmlHttp.setRequestHeader("Content-type", "application/json");
     xmlHttp.send(JSON.stringify(requestArray));
     Map_id = map_id;
@@ -247,7 +247,7 @@ function getGroups(anchorList) {
             var revObj = JSON.parse(this.responseText);
             var anchor_groups = revObj.Values;
             if (revObj.success > 0) {
-                inputGroups(anchor_groups, anchorList); //函式在dialog_anchor_group.jsss內
+                inputGroups(anchor_groups, anchorList); //函式在dialog_anchor_group.js內
             }
         }
     };
@@ -271,7 +271,7 @@ function getGroupList(anchorList) {
             var revObj = JSON.parse(this.responseText);
             var anchor_group_list = revObj.Values;
             if (revObj.success > 0) {
-                inputGroupList(anchor_group_list, anchorList); //函式在dialog_anchor_group.jsss內
+                inputGroupList(anchor_group_list, anchorList); //函式在dialog_anchor_group.js內
                 var GroupArray = [];
                 for (i in anchor_group_list)
                     GroupArray.push(anchor_group_list[i].group_id);

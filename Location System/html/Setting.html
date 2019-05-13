@@ -14,22 +14,16 @@
     <!-- Add icon library -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
         integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
-    <!--jOrgChart-->
-    <link rel="stylesheet" type="text/css" href="../css/jOrgChart/jquery.orgchart.css">
-    <link rel="stylesheet" type="text/css" href="../css/j_orgchart.css">
     <!--編寫css-->
     <link rel="stylesheet" type="text/css" href="../css/member_typesetting.css">
     <link rel="stylesheet" type="text/css" href="../css/bootstrap_collapsible_navbar.css">
     <link rel="stylesheet" type="text/css" href="../css/left_nav.css">
-    <script type="text/javascript" src="../js/navbar_setting.js"></script>
-    <script type="text/javascript" src="../js/Dialog/dialog_setting.js"></script>
-    <script type="text/javascript" src="../js/palette.js"></script>
-    <script type="text/javascript" src="../js/jOrgChart/jquery.orgchart.js"></script>
-    <script type="text/javascript" src="../js/create_title_chart.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
 
 <body>
+    <script type="text/javascript" src="../js/navbar_setting.js"></script>
+    <script type="text/javascript" src="../js/palette.js"></script>
+    <script type="text/javascript" src="../js/user_type_setting.js"></script>
     <div class="container">
         <div class="row">
             <div class="col-lg-12" style="background-color:white;">
@@ -108,48 +102,54 @@
                             <li><a href="../Member_Setting.html">成員設定</a></li>
                             <li><a href="../Display_Setting.html">顯示設定</a></li>
                             <li><a href="../Dept_Setting.html">部門設定</a></li>
-                            <li class="active"><a href="#">職稱設定</a></li>
-                            <li><a href="../User_Type_Setting.html">用戶類型設定</a></li>
+                            <li><a href="../Job_Title_Setting.html">職稱設定</a></li>
+                            <li class="active"><a href="#">用戶類型設定</a></li>
                         </ul>
                     </div>
                 </nav>
             </div>
-            <div class="col-lg-10">
-                <div id="chart-container"></div>
-                <div id="edit-panel">
-                    <label class="selected-node-group">selected node:</label>
-                    <input type="text" id="selected-node" class="selected-node-group" readonly>
-                    <span id="node-type-panel" class="radio-panel">
-                        <input type="radio" name="node-type" id="rd-child" value="children">
-                        <label for="rd-child">Child</label>
-                        <input type="radio" name="node-type" id="rd-sibling" value="siblings">
-                        <label for="rd-sibling">Sibling</label>
-                    </span>
-                    <button type="button" id="btn-add-nodes">Add</button>
-                    <button type="button" id="btn-delete-nodes">Delete</button>
-                    <button type="button" id="btn-edit-nodes">Edit</button>
-                </div>
+            <div class="col-lg-10" style="text-align: left;">
+                <label for="set_type_add" class="custom-file-download">
+                    <img src="../image/add.png" style="max-width:20px; margin-left:10px;">
+                </label>
+                <input type="button" id="set_type_add" class="image-btn" />
+                <table class="table-line" id="table_type_list">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Type name</th>
+                            <th>Color(hex)</th>
+                            <th>Color</th>
+                            <th>Operating</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
     </div>
     <div class="hidden_dialog">
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script type="text/javascript" src="../js/Dialog/dialog_setting.js"></script>
         <!-- JQuery UI - Dialog -->
-        <div id="dialog_edit_node" title="Set Dept">
+        <div id="dialog_set_type" title="Set Type">
             <form>
                 <fieldset style="text-align: center;">
                     <br>
-                    <table id="table_edit_node" class="ui-widget ui-widget-content block">
+                    <table id="table_set_type" class="ui-widget ui-widget-content block">
                         <tr>
                             <td>Name</td>
-                            <td><input type="text" id="edit_type_name" style="width:100%;" /></td>
+                            <td><input type="text" id="set_type_name" style="width:50%;">
+                                <span id="edit_tip" style="color:gray;"></span></td>
+                            <span class="validateTips"></span>
                         </tr>
                         <tr>
                             <td>Color</td>
                             <td>
-                                <label for="edit_dot_color" class="custom-file-download">
+                                <label for="set_dot_color" class="custom-file-download">
                                     <img src="../image/palette.png" style="max-width:20px;">
                                 </label>
-                                <input type="text" class="palette" id="edit_dot_color" style="max-width:30px;">
+                                <input type="text" class="palette" id="set_dot_color" style="max-width:30px;">
                             </td>
                         </tr>
                     </table>

@@ -31,18 +31,11 @@ input[type="file"] {
 	line-height: 50px;
 }
 
-@import "https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css";
-
 body {
-	position: relative;
-	overflow-x: hidden;
-}
-
-body,
-html {
 	width: 100%;
 	height: 100%;
-	background-color: white;
+	position: relative;
+	overflow-x: hidden;
 }
 
 /*修改原本Navbar的寬度*/
@@ -319,11 +312,11 @@ html {
 	background: black;
 	border: none;
 	display: block;
-	height: 32px;
-	width: 32px;
-	left: 10px;
+	height: 30px;
+	width: 30px;
+	left: 0px;
+	top: 0px;
 	position: fixed;
-	top: 40px;
 	z-index: 1111;
 }
 
