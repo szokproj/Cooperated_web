@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <title>Location System</title>
@@ -12,46 +12,28 @@
     <!--JQuery庫-->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Add icon library -->
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'
+        integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
     <!--編寫css-->
     <link rel=stylesheet type="text/css" href="../css/bootstrap_collapsible_navbar.css">
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th,
-        td {
-            padding: 8px;
-            text-align: left;
-            border: 1px solid #b9b0b0;
-        }
-
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-    </style>
+    <link rel=stylesheet type="text/css" href="../css/alarm_setting_style.css">
+    <!--Time picker
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+    -->
+    <!--編寫js-->
+    <script type="text/javascript" src="../js/general_functions.js"></script>
+    <script type="text/javascript" src="../js/navbar_setting.js"></script>
+    <script type="text/javascript" src="../js/alarm_setting.js"></script>
+    <script type="text/javascript" src="../js/time_slot_setting.js"></script>
+    <script type="text/javascript" src="../js/time_slot_group_setting.js"></script>
+    <script type="text/javascript" src="../js/electronic_fence_set.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script type="text/javascript" src="../js/navbar_setting.js"></script>
-    <script type="text/javascript">
-        function GetXmlHttpObject() {
-            var xmlHttp = null;
-            try {// Firefox, Opera 8.0+, Safari
-                xmlHttp = new XMLHttpRequest();
-            }
-            catch (e) {//Internet Explorer
-                try {
-                    xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-                }
-                catch (e) {
-                    xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-                }
-            }
-            return xmlHttp;
-        }
-
-    </script>
+    <script type="text/javascript" src="../js/Dialog/dialog_alarm_set.js"></script>
+    <script type="text/javascript" src="../js/Dialog/dialog_fence_add.js"></script>
 </head>
 
 <body>
@@ -90,9 +72,6 @@
                             <li><a href="../Anchor_Setting.html">
                                     <img src="../image/anchor_setting.png">Anchor設定</a>
                             </li>
-                            <li><a href="../Tag_Setting.html">
-                                    <img src="../image/tag_setting.png">Tag設定</a>
-                            </li>
                             <li><a href="../Alarm_Setting.html">
                                     <img src="../image/alarm_setting.png">Alarm設定</a>
                             </li>
@@ -124,15 +103,514 @@
         </div>
 
         <!-- 網頁內容 -->
-        <div class="row">
-            <div class="col-lg-6" style="background-color:white;">
-            
+        <ul class="nav nav-tabs">
+            <!--<li><a data-toggle="tab" href="#tab_start_setting">顯示設定</a></li>-->
+            <li><a data-toggle="tab" href="#tab_alarm_setting">警報設定</a></li>
+            <li><a data-toggle="tab" href="#tab_time_setting">時段設定</a></li>
+            <li class="active"><a data-toggle="tab" href="#tab_fence_setting">圍籬設定</a></li>
+        </ul>
+        <div class="tab-content">
+            <!--<div id="tab_start_setting" class="tab-pane fade">
+                <div class="row">
+                    <div class="col-lg-3"></div>
+                    <div class="col-lg-6" style="background-color:white;">
+                        <h3>顯示警報</h3>
+                        <table id="table_alarm_setting" class="table-line table-noline-inner">
+                            <thead>
+                                <tr>
+                                    <th>警報名稱</th>
+                                    <th>啟動開關</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><label>低電壓警報 : </label></td>
+                                    <td><input id="off_alarm_low" type="radio" class='beauty' name="alarm_low_power"
+                                            value="0">
+                                        <label for="off_alarm_low">off</label>
+                                        <input id="on_alarm_low" type="radio" class='beauty' name="alarm_low_power"
+                                            value="1" checked="checked">
+                                        <label for="on_alarm_low">on</label></td>
+                                </tr>
+                                <tr>
+                                    <td><label>緊急警報 : </label></td>
+                                    <td><input id="off_alarm_help" type="radio" class='beauty' name="alarm_help"
+                                            value="0">
+                                        <label for="off_alarm_help">off</label>
+                                        <input id="on_alarm_help" type="radio" class='beauty' name="alarm_help"
+                                            value="1" checked="checked">
+                                        <label for="on_alarm_help">on</label></td>
+                                </tr>
+                                <tr>
+                                    <td><label>移動警報 : </label></td>
+                                    <td><input id="off_alarm_active" type="radio" class='beauty' name="alarm_active"
+                                            value="0">
+                                        <label for="off_alarm_active">off</label>
+                                        <input id="on_alarm_active" type="radio" class='beauty' name="alarm_active"
+                                            value="1" checked="checked">
+                                        <label for="on_alarm_active">on</label></td>
+                                </tr>
+                                <tr>
+                                    <td><label>靜止警報 : </label></td>
+                                    <td><input id="off_alarm_still" type="radio" class='beauty' name="alarm_still"
+                                            value="0">
+                                        <label for="off_alarm_still">off</label>
+                                        <input id="on_alarm_still" type="radio" class='beauty' name="alarm_still"
+                                            value="1" checked="checked">
+                                        <label for="on_alarm_still">on</label></td>
+                                </tr>
+                                <tr>
+                                    <td><label>電子圍籬 : </label></td>
+                                    <td><input id="off_alarm_fence" type="radio" class='beauty' name="alarm_fence"
+                                            value="0">
+                                        <label for="off_alarm_fence">off</label>
+                                        <input id="on_alarm_fence" type="radio" class='beauty' name="alarm_fence"
+                                            value="1" checked="checked">
+                                        <label for="on_alarm_fence">on</label></td>
+                                </tr>
+                                <tr>
+                                    <td><label>滯留警報 : </label></td>
+                                    <td><input id="off_alarm_stay" type="radio" class='beauty' name="alarm_stay"
+                                            value="0">
+                                        <label for="off_alarm_stay">off</label>
+                                        <input id="on_alarm_stay" type="radio" class='beauty' name="alarm_stay"
+                                            value="1" checked="checked">
+                                        <label for="on_alarm_stay">on</label></td>
+                                </tr>
+                                <tr>
+                                    <td><label>隱匿警報 : </label></td>
+                                    <td><input id="off_alarm_hidden" type="radio" class='beauty' name="alarm_hidden"
+                                            value="0">
+                                        <label for="off_alarm_hidden">off</label>
+                                        <input id="on_alarm_hidden" type="radio" class='beauty' name="alarm_hidden"
+                                            value="1" checked="checked">
+                                        <label for="on_alarm_hidden">on</label></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="text-align:center;">
+                            <br><input type="button" class="btn btn-primary" id="btn_submit_alarm_setting"
+                                value="確認送出" />
+                        </div>
+                        
+                        <h3>警報觸發</h3>
+                        <table id="table_alarm_release">
+                            <tr>
+                                <td><label>手動解除警報:</label></td>
+                                <td><input id="off_manual_release" type="radio" class='beauty' name="manual_release" value="0">
+                                    <label for="off_manual_release">off</label>
+                                    <input id="on_manual_release" type="radio" class='beauty' name="manual_release" value="1"
+                                        checked="checked">
+                                    <label for="on_manual_release">on</label></td>
+                            </tr>
+                        <tr>
+                            <td><label>警報時段:</label></td>
+                            <td><input id="duration" type="text" value=""></td>
+                        </tr>
+                        <tr>
+                            <td><label>警報聲:</label></td>
+                            <td><select id="siren">
+                                    <option value=""></option>
+                                </select>
+                            </td>
+                        </tr>
+                        </table>
+                        
+                    </div>
+                    <div class="col-lg-3"></div>
+                </div>
+            </div>-->
+            <div id="tab_alarm_setting" class="tab-pane fade">
+                <div class="row">
+                    <div class="col-lg-12" style="background-color:white;">
+                        <h3>自訂警報群組</h3>
+                        <table id="table_alarm_mode" class="table-line">
+                            <thead>
+                                <th>item</th>
+                                <th style="min-width:80px;">群組名稱</th>
+                                <th style="min-width:120px;">警報群組</th>
+                                <th style="min-width:80px;">搭配時段</th>
+                                <th style="min-width:50px;">編輯</th>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <span>
+                            <label for="btn_add_alarm_group" class="btn-add" title="Add alarm group">
+                                <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                            <input id="btn_add_alarm_group" type="button" class="btn-hidden" />
+                            <label for="btn_delete_alarm_group" class="btn-delete" title="Delete alarm group">
+                                <i class="fas fa-minus-square" style='font-size:20px;'></i></label>
+                            <input id="btn_delete_alarm_group" type="button" class="btn-hidden" />
+                        </span>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-6" style="background-color:white;">
-                
+            <div id="tab_time_setting" class="tab-pane fade">
+                <div class="row">
+                    <div class="col-lg-4" style="background-color:white;">
+                        <h3>時段設定</h3>
+                        <table id="table_time_setting" class="table-line-gray">
+                            <thead>
+                                <tr>
+                                    <th>item</th>
+                                    <th>時段名稱</th>
+                                    <th>編輯</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <span>
+                            <label for="btn_add_time_setting" class="btn-add" title="Add time setting">
+                                <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                            <input id="btn_add_time_setting" type="button" class="btn-hidden" />
+                            <label for="btn_delete_time_setting" class="btn-delete" title="Delete time setting">
+                                <i class="fas fa-minus-square" style='font-size:20px;'></i></label>
+                            <input id="btn_delete_time_setting" type="button" class="btn-hidden" />
+                            <!--<label for="btn_submit_time_setting" class="btn-submit" title="Submit time setting list">
+                                    <i class="fas fa-save" style='font-size:20px;'></i></label>
+                                <input id="btn_submit_time_setting" type="button" class="btn-hidden" />-->
+                        </span>
+                    </div>
+                    <div class="col-lg-8" style="background-color:white;">
+                        <h3>時段群組設定</h3>
+                        <table id="table_time_group" class="table-line">
+                            <thead>
+                                <tr>
+                                    <th>item</th>
+                                    <th>時段群組名稱</th>
+                                    <th>時段代號</th>
+                                    <th>編輯</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <span>
+                            <label for="btn_add_time_group" class="btn-add" title="Add time group">
+                                <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                            <input id="btn_add_time_group" type="button" class="btn-hidden" />
+                            <label for="btn_delete_time_group" class="btn-delete" title="Delete time group">
+                                <i class="fas fa-minus-square" style='font-size:20px;'></i></label>
+                            <input id="btn_delete_time_group" type="button" class="btn-hidden" />
+                            <!--<label for="btn_submit_time_group" class="btn-submit" title="Submit time group list">
+                                    <i class="fas fa-save" style='font-size:20px;'></i></label>
+                                <input id="btn_submit_time_group" type="button" class="btn-hidden" />-->
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div id="tab_fence_setting" class="tab-pane fade in active">
+                <div class="row" style="margin-top:20px;">
+                    <div class="col-lg-8" style="background-color:white;">
+                        <div class="cvsBlock" id="mapBlock">
+                            <canvas id="canvas_map" style="height:1px; width:1px;">
+                                此瀏覽器不支援canvas，請更換成Chrome瀏覽器
+                            </canvas>
+                        </div>
+                        <div>
+                            X:<input type="text" id="x" class="coordinate" disabled>
+                            Y:<input type="text" id="y" class="coordinate" disabled>
+                        </div>
+                    </div>
+                    <div class="col-lg-4" style="background-color:white;">
+                        <label>選擇地圖 : </label>
+                        <select id="select_map"></select>
+                        <br>
+                        <div style="margin-bottom:20px;">
+                            <nav class="sidebar-menu">
+                                <ul class="nav">
+                                    <!--Load Map
+                                    <li><label for="menu_load_map" class="btn-sidebar" title="load new map">
+                                            <i class="far fa-image" style='font-size:20px;'></i></label>
+                                        <input id="menu_load_map" type="file" accept="image/*" /></li>
+                                    -->
+                                    <!--Restore Size-->
+                                    <li><label for="menu_resize" id="label_resize" class="btn-sidebar" title="恢復原比例">
+                                            <i class="fas fa-expand" style='font-size:20px;'></i></label>
+                                        <input id="menu_resize" type="button" class="btn-hidden" /></li>
+                                    <!--Fence Info-->
+                                    <li><label for="menu_fence_info" id="label_fence_info" class="btn-sidebar"
+                                            title="圍籬資訊">
+                                            <i class="fas fa-file-alt" style='font-size:20px;'></i></label>
+                                        <input id="menu_fence_info" type="button" class="btn-hidden" /></li>
+                                    <!--Fence Dot List-->
+                                    <li><label for="menu_fence_dot_list" id="label_fence_dot_list" class="btn-sidebar"
+                                            title="圍籬點座標">
+                                            <i class="fas fa-draw-polygon" style='font-size:20px;'></i></label>
+                                        <input id="menu_fence_dot_list" type="button" class="btn-hidden" /></li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <br>
+                        <div id="block_fence_setting">
+                            <label>圍籬設定 : </label><br>
+                            <span>
+                                <!--Add-->
+                                <label for="btn_fence_add" id="label_fence_add" class="btn-add"
+                                    title="Add electronic fence">
+                                    <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                                <input id="btn_fence_add" type="button" class="btn-hidden" />
+                                <!--Delete-->
+                                <label for="btn_fence_delete" id="label_fence_delete" class="btn-delete"
+                                    title="Delete electronic fence"><i class="fas fa-minus-square"
+                                        style='font-size:20px;'></i></label>
+                                <input id="btn_fence_delete" type="button" class="btn-hidden" />
+                            </span>
+                            <div class="block-list">
+                                <table id="table_fence_setting" class="table-line-gray">
+                                    <thead>
+                                        <tr class="ui-widget-header">
+                                            <th>Item</th>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div id="block_fence_dot_setting">
+                            <label>圍籬座標設定 : </label><br>
+                            <span>
+                                <!--Add Pos-->
+                                <label for="btn_fence_dot_position" id="label_fence_dot_position" class="btn-add-pos"
+                                    title="地圖上定位新增座標點"><i class="fas fa-map-marked-alt"
+                                        style='font-size:20px;'></i></label>
+                                <input id="btn_fence_dot_position" type="button" class="btn-hidden" />
+                                <!--Add-->
+                                <label for="btn_fence_dot_add" id="label_fence_dot_add" class="btn-add" title="新增圍籬座標點">
+                                    <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                                <input id="btn_fence_dot_add" type="button" class="btn-hidden" />
+                                <!--Delete-->
+                                <label for="btn_fence_dot_delete" id="label_fence_dot_delete" class="btn-delete"
+                                    title="移除圍籬座標點"><i class="fas fa-minus-square" style='font-size:20px;'></i></label>
+                                <input id="btn_fence_dot_delete" type="button" class="btn-hidden" />
+                            </span>
+                            <div class="block-list">
+                                <table id="table_fence_dot_setting" class="table-line-gray">
+                                    <thead>
+                                        <tr class="ui-widget-header">
+                                            <th>Item</th>
+                                            <th>Fence ID</th>
+                                            <th>X</th>
+                                            <th>Y</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+    <div class="hidden_dialog">
+        <!-- Following is a dialog to edit alarm setting
+        <div id="dialog_alarm_setting" title="設定警報閾值">
+            <form>
+                <fieldset style="text-align: left;">
+                    <label>滯留時間 :</label>&nbsp;&nbsp;
+                    <input type="text" style="width:50%;" id="stay_alarm_time"> 秒
+                    <label>隱匿時間 :</label>&nbsp;&nbsp;
+                    <input type="text" style="width:50%;" id="hidden_alarm_time"> 秒
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div> -->
+        <!-- Following is a dialog to set stay alarm
+        <div id="dialog_stay_alarm_setting" title="設定滯留警報">
+            <form>
+                <fieldset style="text-align: left;">
+                    <label>滯留時間 :</label>&nbsp;&nbsp;
+                    <input type="text" style="width:50%;" id="stay_alarm_time"> 秒
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div> -->
+        <!-- Following is a dialog to set hidden alarm
+        <div id="dialog_hidden_alarm_setting" title="設定隱匿警報">
+            <form>
+                <fieldset style="text-align: left;">
+                    <label>隱匿時間 :</label>&nbsp;&nbsp;
+                    <input type="text" style="width:50%;" id="hidden_alarm_time"> 秒
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>-->
+        <!-- Following is a dialog to add a new anchor -->
+        <div id="dialog_add_fence" title="設定圍籬">
+            <form>
+                <fieldset style="text-align: left;">
+                    <label for="add_fence_id">Fence ID :</label>
+                    <input type="text" id="add_fence_id" style="width:40%;">(0 ~ 65535)
+                    <br><br>
+                    <label for="add_fence_name">Fence Name :</label>
+                    <input type="text" id="add_fence_name" style="width:50%;">
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+        <!-- Following is a dialog to add a new anchor -->
+        <div id="dialog_add_fence_dot" title="設定圍籬座標點">
+            <form>
+                <fieldset style="text-align: left;">
+                    <label for="add_dot_fence_id">Fence ID:</label>
+                    <select id="add_dot_fence_id"></select>
+                    <br><br>
+                    <label for="add_dot_x">X:</label>
+                    <input type="text" id="add_dot_x" style="width:80%;">
+                    <br><br>
+                    <label for="add_dot_y">Y:</label>
+                    <input type="text" id="add_dot_y" style="width:80%;">
+                    <br><br>
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+        <!-- Following is a dialog to set alarm group -->
+        <div id="dialog_add_alarm_group" title="設定警報群組">
+            <form>
+                <fieldset style="text-align: left;">
+                    <input type="hidden" id="edit_alarm_group_id">
+                    <label>群組名稱 :</label>&nbsp;&nbsp;<input type="text" style="width:70%;" id="add_alarm_mode_name">
+                    <br><br>
+                    <label>警報模式 :</label>
+                    <table style="border:none; min-width:300px;">
+                        <tr>
+                            <td style="min-width:110px"><input id="add_alarm_mode_0" type="checkbox" class='beauty'
+                                    name="add_alarm_mode" value="1"><label for="add_alarm_mode_0">低電壓警報</label></td>
+                        </tr>
+                        <tr>
+                            <td><input id="add_alarm_mode_1" type="checkbox" class='beauty' name="add_alarm_mode"
+                                    value="2"><label for="add_alarm_mode_1">緊急警報</label></td>
+                        </tr>
+                        <tr>
+                            <td><input id="add_alarm_mode_2" type="checkbox" class='beauty' name="add_alarm_mode"
+                                    value="3"><label for="add_alarm_mode_2">移動警報</label></td>
+                        </tr>
+                        <tr>
+                            <td><input id="add_alarm_mode_3" type="checkbox" class='beauty' name="add_alarm_mode"
+                                    value="4"><label for="add_alarm_mode_3">靜止警報</label></td>
+                        </tr>
+                        <tr>
+                            <td><input id="add_alarm_mode_4" type="checkbox" class='beauty' name="add_alarm_mode"
+                                    value="5"><label for="add_alarm_mode_4">電子圍籬</label></td>
+                        </tr>
+                        <tr>
+                            <td><input id="add_alarm_mode_5" type="checkbox" class='beauty' name="add_alarm_mode"
+                                    value="6"><label for="add_alarm_mode_5">滯留警報, </label>
+                                時間閾值 : <input type="text" id="add_alarm_mode_time_5" name="add_alarm_mode_time"
+                                    style="max-width:35%"> 秒</td>
+                        </tr>
+                        <tr>
+                            <td><input id="add_alarm_mode_6" type="checkbox" class='beauty' name="add_alarm_mode"
+                                    value="7"><label for="add_alarm_mode_6">隱匿警報, </label>
+                                時間閾值 : <input type="text" id="add_alarm_mode_time_6" name="add_alarm_mode_time"
+                                    style="max-width:35%"> 秒</td>
+                        </tr>
 
+                    </table>
+                    <br>
+                    <label>搭配時段 :</label>
+                    <select id="add_alarm_time_group"></select>
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+        <!-- Following is a dialog to edit the time setting -->
+        <div id="dialog_add_time_setting" title="設定時段">
+            <form>
+                <fieldset style="text-align: left;">
+                    <br>
+                    <label>時段名稱 :</label>&nbsp;&nbsp;<input type="text" id="add_time_setting_name" style="width:70%;">
+                    <br><br>
+                    <label>時段排程 : (12小時格式，從上午12:00開始)</label>
+                    <br><br>
+                    <table id="table_week_schedule" class="table-line table-noline-inner">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="week_time_check_all">&nbsp;星期</th>
+                                <th>開始時間</th>
+                                <th></th>
+                                <th>結束時間</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox" id="week_time_check_Sun">&nbsp;日</td>
+                                <td><input type="time" id="week_time_start_Sun">:00</td>
+                                <td>~</td>
+                                <td><input type="time" id="week_time_end_Sun">:59</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="week_time_check_Mon">&nbsp;一</td>
+                                <td><input type="time" id="week_time_start_Mon">:00</td>
+                                <td>~</td>
+                                <td><input type="time" id="week_time_end_Mon">:59</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="week_time_check_Tue">&nbsp;二</td>
+                                <td><input type="time" id="week_time_start_Tue">:00</td>
+                                <td>~</td>
+                                <td><input type="time" id="week_time_end_Tue">:59</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="week_time_check_Wed">&nbsp;三</td>
+                                <td><input type="time" id="week_time_start_Wed">:00</td>
+                                <td>~</td>
+                                <td><input type="time" id="week_time_end_Wed">:59</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="week_time_check_Thu">&nbsp;四</td>
+                                <td><input type="time" id="week_time_start_Thu">:00</td>
+                                <td>~</td>
+                                <td><input type="time" id="week_time_end_Thu">:59</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="week_time_check_Fri">&nbsp;五</td>
+                                <td><input type="time" id="week_time_start_Fri">:00</td>
+                                <td>~</td>
+                                <td><input type="time" id="week_time_end_Fri">:59</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="week_time_check_Sat">&nbsp;六</td>
+                                <td><input type="time" id="week_time_start_Sat">:00</td>
+                                <td>~</td>
+                                <td><input type="time" id="week_time_end_Sat">:59</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br><br>
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+        <!-- Following is a dialog to set time group -->
+        <div id="dialog_add_time_group" title="設定時段群組">
+            <form>
+                <fieldset style="text-align: left;">
+                    <label>時段群組名稱 :</label>&nbsp;&nbsp;<input type="text" style="width:70%;" id="add_time_group_name">
+                    <br><br>
+                    <label>選擇時段代號 :</label>
+                    <table id="table_time_group_settings" style="min-width:300px;" class="table-line-gray">
+                        <thead>
+                            <tr>
+                                <th>item</th>
+                                <th>時段代號</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <label for="btn_add_time_group_settings" class="btn-add" title="Add time setting">
+                        <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                    <input id="btn_add_time_group_settings" type="button" class="btn-hidden" />
+                    <label for="btn_delete_time_group_settings" class="btn-delete" title="Delete time setting">
+                        <i class="fas fa-minus-square" style='font-size:20px;'></i></label>
+                    <input id="btn_delete_time_group_settings" type="button" class="btn-hidden" />
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
     </div>
 </body>
 

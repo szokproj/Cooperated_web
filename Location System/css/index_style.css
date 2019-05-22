@@ -1,3 +1,8 @@
+.container {
+    width: 100%;
+    height: 100%;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
@@ -35,8 +40,9 @@ fieldset {
 
 /***************/
 
-/*Alarm Dialog裡的Status文字設定*/
-
+/**
+ * Alarm Dialog裡的Status文字設定
+ */
 #alarm_dialog_status {
     color: red;
 }
@@ -50,7 +56,7 @@ fieldset {
 }
 
 #content.right_open {
-    padding-right: 220px;
+    padding-right: 360px;
 }
 
 #content.left_open {
@@ -228,4 +234,16 @@ input[type=radio]:not(old):checked+label {
 
 #dialog_alarm_set h4 {
     color: rgb(0, 89, 255);
+}
+
+.nav-tabs a,
+.tab-pane {
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+.sidebar-table {
+    overflow: auto;
+    width: 300px;
+    margin: 10px 10px 0px 0px;
 }

@@ -21,15 +21,19 @@
     <!--編寫css-->
     <link rel="stylesheet" type="text/css" href="../css/member_typesetting.css">
     <link rel="stylesheet" type="text/css" href="../css/bootstrap_collapsible_navbar.css">
-</head>
-
-<body>
+    <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/navbar_setting.js"></script>
     <script type="text/javascript" src="../js/table_Page.js"></script>
     <script type="text/javascript" src="../js/palette.js"></script>
     <script type="text/javascript" src="../js/member_setting.js"></script>
     <script type="text/javascript" src="../js/display_setting.js"></script>
+    <!-- JQuery UI - Dialog -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="../js/Dialog/dialog_member_setting.js"></script>
+    <script type="text/javascript" src="../js/Dialog/dialog_dot_set.js"></script>
+</head>
 
+<body>
     <div class="container">
         <div class="row">
             <div class="col-lg-12" style="background-color:white;">
@@ -259,11 +263,6 @@
     </div>
 
     <div class="hidden_dialog">
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        <!-- JQuery UI - Dialog -->
-        <script type="text/javascript" src="../js/Dialog/dialog_setting.js"></script>
-        <script type="text/javascript" src="../js/Dialog/dialog_member_setting.js"></script>
-        <script type="text/javascript" src="../js/Dialog/dialog_dot_set.js"></script>
         <!-- Hidden Dialog -->
         <div id="dialog_edit_member" title="Edit Person Infomation">
             <form>

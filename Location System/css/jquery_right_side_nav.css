@@ -1,8 +1,10 @@
-aside img {
+aside button i {
     vertical-align: middle;
     width: 25px;
     height: auto;
     z-index: 111111;
+    font-size: 48px;
+    color: gray
 }
 
 aside button {
@@ -23,10 +25,10 @@ aside button {
 }
 
 .page-main>aside button {
-    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0);
     display: block;
     position: absolute;
-    right: 400px;
+    right: 420px;
     width: 30px;
     height: 100%;
     margin: 0;

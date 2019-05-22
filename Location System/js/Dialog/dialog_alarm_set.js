@@ -1,99 +1,50 @@
-var count_tag_set = 0,
-    RecordAlarmInfos = {},
-    statusArray = ["Low Power Alarm", "Help Alarm", "Still Alarm", "Active Alarm"],
-    //假設接收到response的key，並建立Array
-    res_key_array = ["low_power_alarm", "help_alarm", "still_alarm", "active_alarm",
-        "manual_release", "duration", "siren"
-    ]
-
-function inputAlarmSetting(setting) {
-    RecordAlarmInfos = setting;
-    $(function () {
-        for (var i = 0; i < statusArray.length; i++) {
-            if (setting[statusArray[i]] == 1)
-                $("#on_status" + (i + 1)).prop("checked", true);
-            else
-                $("#off_status" + (i + 1)).prop("checked", true);
-        }
-        if (setting[statusArray[statusArray.length]] == 1)
-            $("#on_manual_release").prop("checked", true);
-        else
-            $("#off_manual_release").prop("checked", true);
-        $("#duration").val(setting[statusArray[statusArray.length + 1]]);
-        $("#siren option[value=" + setting[statusArray[statusArray.length + 2]] + "]").prop('selected', true)
-    });
-}
-
-$(function () {
-    var dialog, form,
-        duration = $("#duration"),
-        alarm_array = {};
-    allFields = $([]).add(duration);
-    //tips = $( ".validateTips" );
+function cerateAlarmDialog(dialog_id, request_name) {
+    var dialog, form, target, allFields;
 
     var SendResult = function () {
         allFields.removeClass("ui-state-error");
         var valid = true;
-        valid = valid && checkLength(duration, "Alarm duration", 0, 20);
-        for (i = 0; i < statusArray.length; i++) {
-            alarm_array.push($("input[name=status" + (i + 1) + "]:checked").val());
-        }
-        var requestJSON = JSON.stringify({
+        valid = valid && checkLength(target, "Not nullable", 1, 20);
+        var jsonRequest = JSON.stringify({
             "Command_Type": ["Write"],
-            "Command_Name": ["", ""],
+            "Command_Name": [request_name],
             "Value": {
-                "low_power_alarm": alarm_array[0],
-                "help_alarm": alarm_array[1],
-                "still_alarm": alarm_array[2],
-                "active_alarm": alarm_array[3],
-                "manual_release": $("input[name=manual_release]:checked").val(),
-                "duration": duration.val(),
-                "siren": $("#siren").children('option:selected').val()
+                "time": target.val()
             }
         });
         if (valid) {
-            var xmlHttp = GetXmlHttpObject();
-            if (xmlHttp == null) {
-                alert("Browser does not support HTTP Request");
-                return;
-            }
+            var xmlHttp = createJsonXmlHttp(request_name);
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    var revInfo = revObj.Values;
-                    if (revObj.success == 1) {
-                        alert("成功更新 Group List:" + revInfo.length + "筆\n" +
-                            "失敗:" + (revInfo.length - row_count) + "筆");
-                        inputAlarmSetting(revInfo);
-                    }
+                    if (revObj.success > 0)
+                        alert("設定成功!");
+                    else
+                        alert("設定失敗!");
                 }
             };
-            xmlHttp.open("POST", "AlarmSet", true);
-            xmlHttp.setRequestHeader("Content-type", "application/json");
-            xmlHttp.send(requestJSON);
+            xmlHttp.send(jsonRequest);
             dialog.dialog("close");
         }
         return valid;
     };
 
-    dialog = $("#dialog_alarm_set").dialog({
+    dialog = $("#" + dialog_id).dialog({
         autoOpen: false,
-        height: 500,
-        width: 400,
+        height: 200,
+        width: 300,
         modal: true,
         buttons: {
             "Confirm": SendResult,
             Cancel: function () {
                 form[0].reset();
                 allFields.removeClass("ui-state-error");
-                inputAlarmSetting(RecordAlarmInfos);
                 dialog.dialog("close");
             }
         },
         close: function () {
             form[0].reset();
             allFields.removeClass("ui-state-error");
-            inputAlarmSetting(RecordAlarmInfos);
         }
     });
 
@@ -102,7 +53,26 @@ $(function () {
         SendResult();
     });
 
-    $("#Alarm_Setting").button().on("click", function () {
-        dialog.dialog("open");
-    });
+    this.inputTimeNode = function (node_id) {
+        target = $("#" + node_id);
+        allFields = $([]).add(target);
+    };
+
+    this.setOpenButton = function (btn_id) {
+        $("#" + btn_id).button().on("click", function () {
+            dialog.dialog("open");
+        });
+    };
+}
+
+
+
+$(function () {
+    var stay_alarm_dialog = new cerateAlarmDialog("dialog_stay_alarm_setting", "setStayAlarmTime");
+    stay_alarm_dialog.inputTimeNode("stay_alarm_time");
+    stay_alarm_dialog.setOpenButton("set_alarm_stay");
+
+    var hidden_alarm_dialog = new cerateAlarmDialog("dialog_hidden_alarm_setting", "setHiddenAlarmTime");
+    hidden_alarm_dialog.inputTimeNode("hidden_alarm_time");
+    hidden_alarm_dialog.setOpenButton("set_alarm_hidden");
 });

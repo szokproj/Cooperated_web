@@ -83,9 +83,6 @@ $(function () {
         return valid;
     };
 
-    /**
-     * 在AnchorListDialog內的Add鈕按下後，新增一列空白欄位
-     */
     var addTagSet = function () {
         count_tag_set++;
         var tr_id = "tr_tag_set_" + count_tag_set;

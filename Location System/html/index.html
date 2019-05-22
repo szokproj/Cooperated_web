@@ -20,42 +20,15 @@
     <link rel="stylesheet" type="text/css" href="../css/bootstrap_collapsible_navbar.css">
     <link rel="stylesheet" type="text/css" href="../css/jquery_right_side_nav.css">
     <link rel="stylesheet" type="text/css" href="../css/alarm_sideBar.css">
-    <link rel="stylesheet" type="text/css" href="../css/index_typesetting.css">
+    <link rel="stylesheet" type="text/css" href="../css/index_style.css">
+    <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/navbar_setting.js"></script>
     <script type="text/javascript" src="../js/sideBar.js"></script>
     <script type="text/javascript" src="../js/canvas_request.js"></script>
-    <script type="text/javascript">
-        //多階下拉清單按鈕
-        $(document).ready(function () {
-            $('.dropdown-submenu a.test').click(function (e) {
-                $(this).next('ul').show();
-                e.stopPropagation();
-                e.preventDefault();
-            });
-            $('.dropdown-submenu a.test').mouseleave(function (e) {
-                $(this).next('ul').hide();
-                e.stopPropagation();
-                e.preventDefault();
-            });
-            $('.dropdown-submenu a.test').next('ul').hover(function (e) {
-                $(this).show();
-            }, function (e) {
-                $(this).hide();
-            });
-
-            $("#member_dialog").dialog({
-                autoOpen: false
-            });
-
-            $("#alarm_dialog").dialog({
-                autoOpen: false
-            });
-        });
-    </script>
+    <script type="text/javascript" src="../js/sidebar_search.js"></script>
     <!-- JQuery UI - Dialog -->
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script type="text/javascript" src="../js/Dialog/dialog_setting.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_alarm_set.js"></script>
 </head>
 
@@ -132,7 +105,8 @@
                 <div id="content" style="margin-top:35px;">
                     <div class="top_button_group">
                         <div style="float: right;">
-                            <span id="scale_visible" style="margin-right:30px;">Map Scale: initial</span>
+                            <span>Map Scale: </span>
+                            <span id="scale_visible" style="margin-right:30px;">initial</span>
                             X:<input type="text" name="x" id="x" value="" style="max-width: 50px;">
                             Y:<input type="text" name="y" id="y" value="" style="max-width: 50px;">
                         </div>
@@ -144,15 +118,6 @@
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu" id="loadMapButtonGroup"></ul>
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                                    <span class="i18n" name="setting"></span>&nbsp;<i class="fas fa-cog"></i>&nbsp;
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><input type="button" id="Alarm_Setting" value="Alarm Setting"></li>
-                                </ul>
                             </div>
                             <div class="btn-group">
                                 <button class="btn btn-primary" id="btn_restore" onclick="restoreCanvas();">
@@ -200,10 +165,10 @@
                             </ul>
                             <div id="sidebarRightTabContent" class="tab-content">
                                 <div class="tab-pane fade in active" id="sidebar_right_member">
-                                    <div style="overflow:auto; height: 600px; margin: 10px 5px 0px 0px;">
+                                    <div class="sidebar-table" style="max-height: 650px;">
                                         <table id="table_rightbar_member_list" class="ui-widget ui-widget-content">
                                             <thead>
-                                                <tr class="ui-widget-header ">
+                                                <tr class="ui-widget-header">
                                                     <th style="width: 10px;">Items</th>
                                                     <th>Display ID</th>
                                                     <th>Name</th>
@@ -215,11 +180,11 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="sidebar_right_alarm">
-                                    <div style="overflow:auto; height: 600px; width: 300px; margin: 10px 10px 0px 0px;">
+                                    <div class="sidebar-table" style="max-height: 650px;">
                                         <div style="width: 800px;">
                                             <table id="table_rightbar_alarm_list" class="ui-widget ui-widget-content">
                                                 <thead>
-                                                    <tr class="ui-widget-header ">
+                                                    <tr class="ui-widget-header">
                                                         <th style="width: 10px;">Items</th>
                                                         <th style="width: 60px;">ID</th>
                                                         <th>Alarm Status</th>
@@ -237,36 +202,40 @@
                                     <label>搜尋類型 : </label>
                                     <select id="search_select_type">
                                         <option value="group" selected="selected">群組</option>
-                                        <option value="id">ID</option>
-                                        <option value="name">名稱</option>
+                                        <option value="tag_id">標籤編號</option>
+                                        <option value="id">工號</option>
                                     </select>
                                     <br>
                                     <label>輸入資料 : </label>
                                     <input type="text" id="search_input_target">
-                                    <br>
-                                    <label>時間 : </label>
-                                    <br>
-                                    <div style="margin-left: 10px;">
-                                        <label>開始 : </label>
-                                        <input type="date" id="start_date">
-                                        <label>時 : </label>
-                                        <input type="text" id="start_time" style="width: 30px;">
-                                        <br>
-                                        <label>結束 : </label>
-                                        <input type="date" id="end_date">
-                                        <label>時 : </label>
-                                        <input type="text" id="end_time" style="width: 30px;">
-                                        <br>
-                                    </div>
                                     <br><br>
                                     <div style="text-align: center;">
-                                        <input type="button" id="search_start" value="搜尋" onclick="">
+                                        <input type="button" id="search_start" value="搜尋">
+                                    </div>
+                                    <br><br>
+                                    <div class="sidebar-table" style="max-height: 500px;">
+                                        <div style="width: 800px;">
+                                            <table id="table_sidebar_search" class="ui-widget ui-widget-content">
+                                                <thead>
+                                                    <tr class="ui-widget-header">
+                                                        <th>標籤編號</th>
+                                                        <th>工號</th>
+                                                        <th>名稱</th>
+                                                        <th>部門</th>
+                                                        <th>用戶類型</th>
+                                                        <th>門禁</th>
+                                                        <th>時段</th>
+                                                        <th>定位</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <button class="button_arrow"><img
-                                src="https://c2.staticflickr.com/6/5635/31065147822_9b6e31ab5f_o.png"></button>
+                        <button class="button_arrow"><i class='fas fa-angle-double-left'></i></button>
                     </aside>
                 </div>
             </div>
@@ -275,70 +244,6 @@
 
     <!-- Hidden Dialog -->
     <div class="hidden_dialog">
-        <!-- Following is a dialog to set alarm -->
-        <div id="dialog_alarm_set" title="Alarm Setting">
-            <form style="text-align: left;">
-                <h4>Alarm Status</h4>
-                <table id="table_alarm_status">
-                    <tr>
-                        <td><label>Low Power Alarm:</label></td>
-                        <td><input id="off_status1" type="radio" name="status1" value="0">
-                            <label for="off_status1">off</label>
-                            <input id="on_status1" type="radio" name="status1" value="1" checked="checked">
-                            <label for="on_status1">on</label></td>
-                    </tr>
-                    <tr>
-                        <td><label>Help Alarm:</label></td>
-                        <td><input id="off_status2" type="radio" name="status2" value="0">
-                            <label for="off_status2">off</label>
-                            <input id="on_status2" type="radio" name="status2" value="1" checked="checked">
-                            <label for="on_status2">on</label></td>
-                    </tr>
-                    <tr>
-                        <td><label>Still Alarm:</label></td>
-                        <td><input id="off_status3" type="radio" name="status3" value="0">
-                            <label for="off_status3">off</label>
-                            <input id="on_status3" type="radio" name="status3" value="1" checked="checked">
-                            <label for="on_status3">on</label></td>
-                    </tr>
-                    <tr>
-                        <td><label>Active Alarm:</label></td>
-                        <td><input id="off_status4" type="radio" name="status4" value="0">
-                            <label for="off_status4">off</label>
-                            <input id="on_status4" type="radio" name="status4" value="1" checked="checked">
-                            <label for="on_status4">on</label></td>
-                    </tr>
-                </table>
-                <h4>Alarm Occur</h4>
-                <table id="table_alarm_release">
-                    <tr>
-                        <td><label>Manual Release:</label></td>
-                        <td><input id="off_manual_release" type="radio" name="manual_release" value="0">
-                            <label for="off_manual_release">off</label>
-                            <input id="on_manual_release" type="radio" name="manual_release" value="1"
-                                checked="checked">
-                            <label for="on_manual_release">on</label></td>
-                    </tr>
-                    <tr>
-                        <td><label>Duration:</label></td>
-                        <td><input id="duration" type="text" value=""></td>
-                    </tr>
-                    <tr>
-                        <td><label>Siren:</label></td>
-                        <td><select id="siren">
-                                <option value=""></option>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-                <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-            </form>
-        </div>
-
-
-        <!--------------------------------------------------------------------------------------->
-
         <!-- The dialog of tag's infomation -->
         <div id="member_dialog" title="Tag Infomation">
             <img id="member_dialog_image" style="float: left;" src="../image/user2.png">

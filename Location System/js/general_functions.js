@@ -12,6 +12,26 @@ function GetXmlHttpObject() {
     return xmlHttp;
 }
 
+function createJsonXmlHttp(url) {
+    var xmlHttp = null;
+    try { // Firefox, Opera 8.0+, Safari
+        xmlHttp = new XMLHttpRequest();
+    } catch (e) { //Internet Explorer
+        try {
+            xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+        } catch (e) {
+            xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+    }
+    if (xmlHttp == null) {
+        alert("Browser does not support HTTP Request");
+        return;
+    }
+    xmlHttp.open("POST", url, true);
+    xmlHttp.setRequestHeader("Content-type", "application/json");
+    return xmlHttp;
+}
+
 function makeOptions(array, select) {
     var options = "";
     for (i = 0; i < array.length; i++) {

@@ -140,6 +140,18 @@ function colorToHex(color) {
     }
 }
 
+function getBase64Ext(urldata) {
+    urldata = typeof (urldata) == 'undefined' ? "" : urldata;
+    var start = urldata.indexOf("/"),
+        end = urldata.indexOf(";");
+    if (start > -1 && end > -1) {
+        return urldata.substring(start + 1, end);
+    } else {
+        alert("檔案格式錯誤，請檢查格式後重新上傳!");
+        return "";
+    }
+}
+
 
 $(function () {
     var dialog, form,
@@ -158,13 +170,22 @@ $(function () {
 
     var SendResult = function () {
         allFields.removeClass("ui-state-error");
-        var valid = true;
+        var valid = true, photo_ext = "", photo_base64 = "";
         valid = valid && checkLength(main_tag_id, "main set", 0, 20);
         valid = valid && checkLength(main_number, "main set", 0, 20);
         valid = valid && checkLength(main_name, "main set", 0, 20);
         valid = valid && checkLength(main_dept, "main set", 0, 20);
         valid = valid && checkLength(main_title, "main set", 0, 20);
         valid = valid && checkLength(main_type, "main set", 0, 10);
+
+        if ($("#main_picture_img").attr("src").length > 0) {
+            var photo_file = $("#main_picture_img").attr("src").split(",");
+            photo_ext = getBase64Ext(photo_file[0]);
+            photo_base64 = photo_ext != "" ? photo_file[1].trim() : "";
+        } else { //no image
+            photo_ext = "";
+            photo_base64 = "";
+        }
 
         if (valid) {
             var requestJSON = JSON.stringify({
@@ -180,7 +201,8 @@ $(function () {
                     //"jobTitle": main_title.val(),
                     "jobTitle_id": $("#hidden_jobTitle").val(),
                     "type": main_type.val(),
-                    "photo": $("#main_picture_img").val(),
+                    "photo": photo_base64,
+                    "file_ext": photo_ext,
                     "color_type": $("#main_select_tag_color").val(),
                     "color": colorToHex($("#main_input_tag_color").val()),
                     "status": $("#basic_state").val(),

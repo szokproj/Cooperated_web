@@ -74,9 +74,15 @@ $(function () {
     $("#main_picture_upload").unbind();
     $("#main_picture_upload").change(function () {
         var file = this.files[0];
-        var src = URL.createObjectURL(file);
-        $("#main_picture_thumbnail").attr("href", src);
-        $("#main_picture_img").attr("src", src);
+        var valid = checkExt(this.value);
+        //console.log(file.size / 1024);
+        valid = valid && checkImageSize(file); //" KB"
+        if (valid)
+            transBase64(file);
+        else
+            return;
+        //var src = URL.createObjectURL(file);
+        //$("#main_picture_thumbnail").attr("href", src);
     });
     $("#main_picture_clear").click(function () {
         $("#main_picture_img").attr('src', '');
@@ -169,8 +175,10 @@ function editMemberData(number) {
                 $("#main_jobTitle").val(revInfo.jobTitle);
                 $("#hidden_jobTitle").val(revInfo.jobTitle_id);
                 $("#main_type").html(createOptions(userTypeArr, revInfo.type));
-                $("#main_picture_thumbnail").attr("href", revInfo.photo);
-                $("#main_picture_img").attr("src", revInfo.photo);
+                if (revInfo.file_ext == "" || revInfo.photo == "")
+                    $("#main_picture_img").attr("src", "");
+                else
+                    $("#main_picture_img").attr("src", "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo);
                 $("#main_select_tag_color").html(createOptions(dotTypeArr, revInfo.color_type));
                 selectTagColor(); //依照畫點依據的內容代入已設定的顏色，未設定則採用預設顏色
                 var color_type_index = $("#main_select_tag_color").children('option:selected').index();
@@ -209,7 +217,99 @@ function editMemberData(number) {
 }
 
 
+function getOneMemberPhoto(number) {
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetOneStaffPhoto"],
+        "Value": {
+            "number": number
+        }
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                var revInfo = revObj.Values[0]
+                //$("#main_picture_thumbnail").attr("href", "data:image/png;base64," + revInfo.photo);
+                $("#main_picture_img").attr("src", "data:image/png;base64," + revInfo.photo);
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
+}
 
+function transBase64(file) {
+    //file transform base64
+    if (file) {
+        var FR = new FileReader();
+        FR.readAsDataURL(file);
+        FR.onloadend = function (e) {
+            var base64data = e.target.result;
+            $("#main_picture_img").attr("src", base64data);
+        };
+    }
+}
+
+function checkExt(fileName) {
+    var validExts = new Array(".png", ".jpg", ".jpeg"); // 可接受的副檔名
+    var fileExt = fileName.substring(fileName.lastIndexOf('.'));
+    if (validExts.indexOf(fileExt) < 0) {
+        alert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+        return false;
+    } else
+        return true;
+}
+
+function checkImageSize(file) {
+    if (file.size / 1024 > 1024) {
+        alert("檔案大小超過1MB，請重新選擇圖檔!");
+        return false;
+    } else
+        return true;
+}
+
+// 使用FileReader讀取檔案，並且回傳Base64編碼後的source
+function convertTobase64(file) {
+    return new Promise((resolve, reject) => {
+        // 建立FileReader物件
+        var reader = new FileReader();
+        // 註冊onload事件，取得result則resolve (會是一個Base64字串)
+        reader.onload = () => {
+            resolve(reader.result);
+        }
+        // 註冊onerror事件，若發生error則reject
+        reader.onerror = () => {
+            reject(reader.error);
+        }
+        // 讀取檔案
+        reader.readAsDataURL(file);
+    });
+}
+
+function adjustImageSize(src) {
+    var thumb_width = parseFloat($("#main_picture_img").css("width"));
+    var thumb_height = parseFloat($("#main_picture_img").css("height"));
+    var img = new Image();
+    var width = thumb_width,
+        height = thumb_height;
+    img.src = src;
+    img.onload = function () {
+        var imgSize = img.width / img.height;
+        var thumbSize = thumb_width / thumb_height;
+        if (imgSize > thumbSize) { //原圖比例寬邊較長
+            width = thumb_width;
+            height = img.height * (thumb_width / img.width);
+        } else {
+            width = img.width * (thumb_height / img.height);
+            height = thumb_height;
+        }
+    }
+    return {
+        width: width,
+        height: height
+    };
+}
 
 
 function addMemberData() {

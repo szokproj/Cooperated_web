@@ -41,7 +41,7 @@ $(function () {
         var valid = true,
             map_group_array = [],
             row_count = 0;
-        for (var i = 0; i < map_id.length; i++) {
+        for (i = 0; i < map_id.length; i++) {
             valid = valid && checkLength(map_id.eq(i), "Please select the number more than 0 and less than 6.", 0, 6);
             valid = valid && checkLength(group_id.eq(i), "Please select the number more than 0 and less than 6.", 0, 6);
             map_group_array.push({

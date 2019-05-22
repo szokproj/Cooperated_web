@@ -1,0 +1,275 @@
+.container {
+    width: 100%;
+    height: 100%;
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid rgb(0, 105, 175);
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+label {
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+    font-size: 14px;
+}
+
+fieldset {
+    padding: 0;
+    border: 0;
+    margin-top: 10px;
+}
+
+#table_alarm_setting tr td:first label {
+    width: 100px;
+}
+
+#table_alarm_mode input {
+    border: none;
+}
+
+th,
+td {
+    padding: 6px;
+    text-align: left;
+    border: none;
+}
+
+.table-line th {
+    border: 1px solid rgb(0, 105, 175);
+    background: rgb(1, 79, 131);
+    color: white;
+    text-align: center;
+}
+
+.table-line td {
+    border: 1px solid rgb(0, 105, 175);
+}
+
+.table-line-gray th {
+    border: 1px solid rgb(146, 154, 160);
+    background: rgb(168, 178, 185);
+    color: white;
+    text-align: center;
+}
+
+.table-line-gray td {
+    border: 1px solid rgb(146, 154, 160);
+}
+
+#dialog_add_time_setting label {
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+    font-size: 16px;
+}
+
+.table-noline-inner th,
+.table-noline-inner td {
+    text-align: center;
+    border: none;
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+    font-size: 14px;
+}
+
+h3 {
+    color: rgb(0, 105, 175);
+}
+
+.btn {
+    margin-left: 20px;
+}
+
+/* 自訂radiobox跟checkbox的樣式 */
+
+
+input[type=checkbox]:not(old).beauty,
+input[type=radio]:not(old).beauty {
+    width: 28px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+}
+
+input[type=checkbox]:not(old).beauty+label {
+    display: inline-block;
+    margin-left: -28px;
+    padding-left: 28px;
+    line-height: 24px;
+    background: url('../image/checks.png') no-repeat 0 -48px;
+}
+
+input[type=checkbox]:not(old).beauty:checked+label {
+    background-position: 0 -73px;
+}
+
+input[type=radio]:not(old).beauty+label {
+    display: inline-block;
+    margin-left: -24px;
+    padding-left: 28px;
+    line-height: 24px;
+    background: url('../image/checks.png') no-repeat 0 3px;
+}
+
+input[type=radio]:not(old).beauty:checked+label {
+    background-position: 0 -22px;
+}
+
+.btn-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.btn-delete {
+    cursor: pointer;
+    color: rgb(255, 38, 38);
+    font-size: 20px;
+    margin: 0px 5px 0px 5px;
+}
+
+.btn-delete:hover {
+    color: rgb(255, 113, 113);
+}
+
+.btn-add {
+    cursor: pointer;
+    color: rgb(0, 119, 255);
+    font-size: 20px;
+    margin: 0px 5px 0px 5px;
+}
+
+.btn-add:hover {
+    color: rgb(90, 158, 236);
+}
+
+.btn-add-pos {
+    cursor: pointer;
+    color: rgb(105, 196, 0);
+    font-size: 20px;
+    margin: 0px 5px 0px 5px;
+}
+
+.btn-add-pos:hover {
+    color: rgb(147, 192, 96);
+}
+
+.btn-submit {
+    cursor: pointer;
+    color: rgb(0, 172, 29);
+    font-size: 20px;
+    margin: 0px 5px 0px 5px;
+}
+
+.btn-submit:hover {
+    color: rgb(113, 184, 125);
+}
+
+.btn-edit {
+    cursor: pointer;
+    color: rgb(0, 172, 135);
+    margin: auto;
+}
+
+.btn-edit:hover {
+    color: rgb(158, 180, 162)
+}
+
+
+
+/* Dialog內的tr被選取時變色 */
+.changeBgColor {
+    background-color: rgb(148, 212, 255);
+}
+
+#table_time_setting input[type=text],
+#table_time_setting input[type=time] {
+    width: 100%;
+    min-width: 100px;
+}
+
+/* Electronic fence dialog */
+
+.cvsBlock {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    background: #ccc;
+    display: block;
+    height: 612px;
+    width: 100%;
+    overflow: auto;
+    border: 1px gray solid;
+}
+
+.block-list {
+    overflow: auto;
+    max-height: 500px;
+    width: 100%;
+}
+
+.coordinate {
+    background-color: white;
+    max-width: 100px;
+    border: none;
+}
+
+.btn-sidebar {
+    width: 40px;
+    height: 36px;
+    background-color: rgb(57, 143, 255);
+    color: white;
+    text-align: center;
+    /*border-radius: 5px;*/
+    padding-top: 1px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+.btn-sidebar:hover {
+    background-color: rgb(40, 108, 197);
+}
+
+.sidebar-menu {
+    height: 50px;
+    float: right;
+    margin-right: 10px;
+    position: absolute;
+}
+
+.sidebar-menu ul {
+    list-style-type: none;
+    /*overflow: hidden;*/
+}
+
+.sidebar-menu li {
+    line-height: 38px;
+    float: left;
+    width: 40px;
+    height: 38px;
+    position: relative;
+    background-color: rgb(57, 143, 255);
+    border: 1px dashed rgb(25, 66, 121);
+}
+
+.sidebar-menu li:before {
+    background-color: transparent;
+    position: absolute;
+    height: 100%;
+    left: 0;
+    top: 0;
+    -webkit-transition: width 0.2s ease-in;
+    transition: width 0.2s ease-in;
+    z-index: -1;
+}

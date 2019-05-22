@@ -3,7 +3,8 @@ var PIXEL_RATIO, // 獲取瀏覽器像素比
     canvasImg = {
         isPutImg: false,
         width: 0,
-        height: 0
+        height: 0,
+        scale: 1 //預設比例尺為1:1,
     },
     mapArray = [],
     anchorArray = [],
@@ -91,7 +92,31 @@ function setup() {
 
 
     $(function () {
-        $("#canvas").mousedown(function (e) { //設置移動後的默認位置 
+        //多階下拉清單按鈕
+        $('.dropdown-submenu a.test').click(function (e) {
+            $(this).next('ul').show();
+            e.stopPropagation();
+            e.preventDefault();
+        });
+        $('.dropdown-submenu a.test').mouseleave(function (e) {
+            $(this).next('ul').hide();
+            e.stopPropagation();
+            e.preventDefault();
+        });
+        $('.dropdown-submenu a.test').next('ul').hover(function () {
+            $(this).show();
+        }, function () {
+            $(this).hide();
+        });
+        //預設彈跳視窗載入後隱藏
+        $("#member_dialog").dialog({
+            autoOpen: false
+        });
+        $("#alarm_dialog").dialog({
+            autoOpen: false
+        });
+        //設置移動後的默認位置 
+        $("#canvas").mousedown(function (e) {
             //獲取div的初始位置，要注意的是需要轉整型，因為獲取到值帶px 
             var canvas_left = parseInt($("#canvas").css("margin-left"));
             var canvas_top = parseInt($("#canvas").css("margin-top"));
@@ -125,15 +150,11 @@ function setup() {
             "Command_Name": ["GetMaps"]
         };
         //接收並載入Server的地圖設定到按鈕
-        var xmlHttp = GetXmlHttpObject();
-        if (xmlHttp == null) {
-            alert("Browser does not support HTTP Request");
-            return;
-        }
+        var xmlHttp = createJsonXmlHttp("sql");
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj.success == 1) {
+                if (revObj.success > 0) {
                     var MapList = revObj.Values;
                     mapArray = MapList;
                     var html = "";
@@ -141,25 +162,27 @@ function setup() {
                         html += "<li><input type=\"button\" id=\"map_btn_" + i + "\" " +
                             "value=\"" + MapList[i].map_name + "\"" +
                             "onclick = \"setMap(\'" + MapList[i].map_id + "\',\'" +
-                            MapList[i].map_path + "\')\"></li>";
+                            "data:image/" + MapList[i].map_file_ext + ";base64," +
+                            MapList[i].map_file + "\',\'" + MapList[i].map_scale + "\')\"></li>";
                     }
                     document.getElementById("loadMapButtonGroup").innerHTML = html;
                 }
             }
         };
-        xmlHttp.open("POST", Request_Name.LoadMap, true);
-        xmlHttp.setRequestHeader("Content-type", "application/json");
         xmlHttp.send(JSON.stringify(requestArray));
     });
 }
 
-function setMap(map_id, map_src) {
-    serverImg.src = '../image/map/' + getFileName(map_src);
+function setMap(map_id, map_url, map_scale) {
+    map_scale = typeof (map_scale) != 'undefined' && map_scale != "" ? map_scale : 1;
+    serverImg.src = map_url; //"data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
     serverImg.onload = function () {
         cvsBlock.style.background = "none";
         canvasImg.isPutImg = true;
         canvasImg.width = serverImg.width;
         canvasImg.height = serverImg.height;
+        canvasImg.scale = map_scale;
+        document.getElementById("scale_visible").innerText = map_scale;
         setCanvas(this.src, serverImg.width, serverImg.height);
         //canvas.style.position = "absolute"; //可以不設定
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -182,7 +205,6 @@ function setMap(map_id, map_src) {
 
         //在設定好地圖後，導入Anchors & Groups & Tags' setting
         getAnchors(map_id);
-        getTagSet();
     };
 }
 
@@ -210,8 +232,9 @@ function getAnchors(map_id) {
                 for (i in anchorList) {
                     id = anchorList[i].anchor_id;
                     type = anchorList[i].anchor_type;
-                    x = anchorList[i].set_x; // / 3;
-                    y = canvasImg.height - anchorList[i].set_y; // / 3; //因為Server回傳的座標為左下原點
+                    type = anchorList[i].anchor_type;
+                    x = anchorList[i].set_x / canvasImg.scale;
+                    y = canvasImg.height - anchorList[i].set_y / canvasImg.scale; //因為Server回傳的座標為左下原點
                     anchorArray.push({
                         id: id,
                         type: type,
@@ -221,8 +244,8 @@ function getAnchors(map_id) {
                     drawAnchor(ctx, id, type, x, y); //畫出點的設定
                 }
                 inputAnchorList(anchorList); //函式在dialog_anchor_list.js內
-                getGroupList(anchorList);
-                getGroups(anchorList);
+                //getGroupList(anchorList);
+                //getGroups(anchorList);
             }
         }
     };
@@ -311,30 +334,6 @@ function getMapGroup(groupArray) {
     xmlHttp.send(JSON.stringify(requestArray));
 }
 
-function getTagSet() {
-    var requestArray = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["GetTags"]
-    };
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            var tag_list = revObj.Values;
-            if (revObj.success > 0) {
-                inputTagSetting(tag_list);
-            }
-        }
-    };
-    xmlHttp.open("POST", "sql", true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
-    xmlHttp.send(JSON.stringify(requestArray));
-}
-
 function getFileName(src) {
     var pos1 = src.lastIndexOf("\\");
     var pos2 = src.lastIndexOf("/");
@@ -379,14 +378,16 @@ function restoreCanvas() {
         ctx.restore();
         ctx.save();
         isFitWindow = false; //目前狀態:原比例
-        document.getElementById("btn_restore").innerHTML = "符合視窗大小 <i class=\"fas fa-expand\" ></i >";
+        document.getElementById("btn_restore").innerHTML = $.i18n.prop('fit_window') +
+            "&nbsp;<i class=\"fas fa-expand\" ></i >";
     } else { //依比例拉伸(Fit in Window)
         if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
             fitZoom = cvsBlock_width / serverImg.width;
         else
             fitZoom = cvsBlock_height / serverImg.height;
         isFitWindow = true; //目前狀態:依比例拉伸
-        document.getElementById("btn_restore").innerHTML = "恢復原比例 <i class=\"fas fa-compress\" ></i >";
+        document.getElementById("btn_restore").innerHTML = $.i18n.prop('restore_scale') +
+            "&nbsp;<i class=\"fas fa-compress\" ></i >";
     }
     $(function () {
         $("#canvas").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
@@ -482,8 +483,8 @@ function handleMouseMove(event) {
     var y = event.pageY;
     var loc = getPointOnCanvas(x, y);
     if (canvasImg.isPutImg) {
-        document.getElementById('x').value = loc.x / Zoom;
-        document.getElementById('y').value = loc.y / Zoom;
+        document.getElementById('x').value = (lastX * Zoom / fitZoom * canvasImg.scale).toFixed(2); //parseInt(lastX * Zoom / fitZoom);
+        document.getElementById('y').value = (lastY * Zoom / fitZoom * canvasImg.scale).toFixed(2); //parseInt(lastY * Zoom / fitZoom);
         lastX = loc.x;
         lastY = loc.y;
     }
@@ -693,8 +694,6 @@ function updateMemberList() {
                 tbody[2].innerHTML = list; //此tbody在html文件中所有tbody標籤的排序(0開頭)-->2
             } catch (e) {
                 return 0;
-                // alert(e.name); // 警報 'Error'
-                // alert(e.message); // 警報 'The message' 或 JavaScript 錯誤訊息
             }
         }
     };
@@ -756,9 +755,9 @@ function drawAnchor(dctx, id, type, x, y) {
         dctx.fillStyle = "red";
     else
         dctx.fillStyle = "blue";
-    dctx.font = '13px serif';
+    dctx.font = 13 * 3 / canvasImg.scale + 'px serif';
     dctx.fillText(id, x - 15, y - 6); //anchorID
-    dctx.fillRect(x - 5, y - 5, 10, 10);
+    dctx.fillRect(x - 5, y - 5, 10 * 3 / canvasImg.scale, 10 * 3 / canvasImg.scale);
 }
 
 function drawTags(dctx, id, x, y) {
@@ -944,7 +943,8 @@ function StartClick() {
     if (canvasImg.isPutImg) {
         if (!isStart) {
             isStart = true;
-            document.getElementById("btn_start").innerHTML = "Stop <i class=\"fas fa-pause\" ></i >";
+            document.getElementById("btn_start").innerHTML = $.i18n.prop('stop') +
+                "&nbsp;<i class=\"fas fa-pause\"></i>";
             requestArray.Value = "Start";
             //設定計時器
             //pageTimer["timer1"] = setInterval("autoSendRequest()", delaytime);
@@ -955,7 +955,8 @@ function StartClick() {
         } else {
             isStart = false;
             requestArray.Value = "Stop";
-            document.getElementById("btn_start").innerHTML = "Start <i class=\"fas fa-play\" ></i >";
+            document.getElementById("btn_start").innerHTML = $.i18n.prop('start') +
+                "&nbsp;<i class=\"fas fa-play\"></i>";
             for (var each in pageTimer) {
                 //clearInterval(pageTimer[each]);
                 clearTimeout(pageTimer[each]);

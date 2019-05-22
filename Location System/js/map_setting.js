@@ -64,13 +64,13 @@ function setMapById(id) { //點擊設定:開啟設定視窗
         return info.map_id == id;
     });
     if (index > -1) {
-        var path = getFileName(mapArray[index].map_path);
+        var urlData = "data:image/" + mapArray[index].map_file_ext + ";base64," + mapArray[index].map_file;
         var scale = mapArray[index].map_scale;
         $("#map_info_id").val(mapArray[index].map_id);
         $("#map_info_name").val(mapArray[index].map_name);
         $("#map_info_scale").val(scale);
-        $("#map_info_path").text(path);
-        setMap(path, scale);
+        $("#map_info_path").text(urlData);
+        setMap(urlData, scale);
         //在設定好地圖後，導入Anchors
         getAnchors(mapArray[index].map_id);
         $("#dialog_map_setting").dialog("open");
