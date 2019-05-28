@@ -132,8 +132,7 @@ function UpdateMemberList() {
                             "<td>" + memberArray[i].department + "</td>" +
                             "<td>" + memberArray[i].jobTitle + "</td>" +
                             "<td>" + memberArray[i].type + "</td>" +
-                            "<td>" + "" + "</td>" +
-                            "<td>" + "" + "</td>" +
+                            "<td>" + "" + "</td>" + //memberArray[i].alarm_group_id
                             "<td>" + memberArray[i].note + "</td>" +
                             "<td><button class=\"btn btn-primary\"" +
                             " onclick=\"editMemberData(\'" + number + "\')\">編輯" +
@@ -186,10 +185,7 @@ function editMemberData(number) {
                     $("#main_input_tag_color").val(colorToHex(revInfo.color));
                     $("#main_input_tag_color").css("background-color", colorToHex(revInfo.color));
                 }
-                /*
-                $("#main_access").val();
-                $("#main_duration").val();
-                */
+                //$("#main_alarm_group").val(createOptions(alarmGroupArr, revInfo.alarm_group_id));
                 $("#basic_state").html(createOptions(statusArr, revInfo.status));
                 $("#basic_gender").html(createOptions(genderArr, revInfo.gender));
                 $("#basic_last_name").val(revInfo.lastName);
@@ -463,9 +459,4 @@ function getFileName(src) {
     if (pos1 < 0) pos = pos2;
     else pos = pos1;
     return src.substring(pos + 1);
-}
-
-function requestMemberDropdown() {
-    //等等把Dropdown的ID放進來
-    //在每次開啟編輯框時重新要求最新的dropdownlist
 }

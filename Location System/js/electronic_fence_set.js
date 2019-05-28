@@ -103,16 +103,16 @@ function setMapById(id) { //選擇地圖(下拉選單)後，依據map_id抓取�
         return map_info.id == id;
     });
     if (index > -1) {
-        var path = getFileName(mapArray[index].path);
-        var scale = mapArray[index].scale;
-        setMap(path, scale);
+        var dataUrl = "data:image/" + mapArray[index].file_ext + ";base64," + mapArray[index].file;
+        setMap(dataUrl, mapArray[index].scale);
     } else {
         return;
     }
 }
 
-function setMap(map_path, map_scale) { //接收Server發送的地圖資料並導入
-    serverImg.src = '../image/map/' + getFileName(map_path);
+function setMap(map_url, map_scale) {
+    map_scale = typeof (map_scale) != 'undefined' && map_scale != "" ? map_scale : 1;
+    serverImg.src = map_url;
     serverImg.onload = function () {
         cvsBlock.style.background = "none";
         canvasImg.isPutImg = true;
