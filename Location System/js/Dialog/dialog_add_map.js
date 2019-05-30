@@ -14,7 +14,7 @@ $(function () {
             FR.readAsDataURL(file);
             FR.onloadend = function (e) {
                 var base64data = e.target.result;
-                $("#add_map_image").attr("src", base64data);
+                map_image.attr("src", base64data);
             };
         } else {
             return;
@@ -57,11 +57,27 @@ $(function () {
                 mapHttp.onreadystatechange = function () {
                     if (mapHttp.readyState == 4 || mapHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
-                        var revInfo = revObj.Values;
+                        var mapArray = revObj.Values;
+                        var lan = mapArray.length;
                         if (revObj.success > 0) {
-                            loadMap();
+                            for (i = 0; i < lan; i++) {
+                                var map = "map_id_" + mapArray[i].map_id;
+                                var src = "data:image/" + mapArray[i].map_file_ext + ";base64," + mapArray[i].map_file;
+                                var img_size = adjustImageSize(src);
+                                $("#maps_gallery").append("<div class=\"thumbnail\">" +
+                                    "<div class=\"image_block\">" +
+                                    "<img src=\"" + src + "\" width=\"" + img_size.width + "\" height=\"" + img_size.height + "\">" +
+                                    "</div>" +
+                                    "<div class=\"caption\"><table style='width:100%;'><tr>" +
+                                    "<th style=\"width:90px;\">Map Name:</th>" +
+                                    "<th style=\"width:50%;\"><span name=\"" + map + "\">" + mapArray[i].map_name + "</span></th>" +
+                                    "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + mapArray + "\',\'" + mapArray[i].map_id + "\')\">設定</button></th>" +
+                                    "<th><button class='btn btn-primary' onclick=\"deleteMap(\'" + mapArray[i].map_id + "\')\">刪除</button></th>" +
+                                    "</tr></table></div>" +
+                                    "</div>");
+                            }
                             dialog.dialog("close");
-                            setMapById(revInfo[0].map_id);
+                            setMapById(mapArray, mapArray[lan - 1].map_id); //catch last row
                         }
                     }
                 };
@@ -98,6 +114,8 @@ $(function () {
     });
 
     $("#add_new_map").button().on("click", function () {
+        map_name.val(""); //reset
+        map_image.attr("src", "");
         dialog.dialog("open");
     });
 });

@@ -1,31 +1,35 @@
+var operate = "";
 var count_time_setting = 0;
 var weekday_arr = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
+var timeSlotArray = [];
 
 function inputTimeSetting() {
     var request = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetTimeSetting"]
+        "Command_Name": ["GetTimeSlot_list"]
     };
-    var xmlHttp = createJsonXmlHttp("GetTimeSetting");
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            var revList = revObj.Values;
+            $("#table_time_slot tbody").empty(); //先重置表格
+            count_time_slot = 0;
             if (revObj.success > 0) {
-                $("#table_time_setting tbody").empty(); //先重置表格
-                count_time_setting = 0;
-                for (i = 0; i < revList.length; i++) {
-                    count_time_setting++;
-                    var tr_id = "tr_time_setting_" + count_time_setting;
-                    $("#table_time_setting tbody").append("<tr id=\"" + tr_id + "\">" +
-                        "<td><input type='checkbox' name=\"chkbox_time_setting\" value=\"" + revList[i].id + "\" " +
-                        "onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_time_setting + "</td>" +
-                        "<td><label name=\"time_setting_name\">" + revList[i].name + "</label></td>" +
-                        "<td style='text-align:center;'><label for=\"btn_edit_time_setting_" + count_time_setting +
-                        "\" class='btn-edit' title='Edit the time setting'><i class='fas fa-edit' style='font-size: 18px;'></i></label>" +
-                        "<input id=\"btn_edit_time_setting_" + count_time_setting + "\" type='button' class='btn-hidden'" +
-                        " onclick=\"inputWeekSchedule()\" /></td></tr>");
+                timeSlotArray = revObj.Values.slice(0);
+                if (timeSlotArray) {
+                    for (i = 0; i < timeSlotArray.length; i++) {
+                        count_time_slot++;
+                        var tr_id = "tr_time_slot_" + count_time_slot;
+                        $("#table_time_slot tbody").append("<tr id=\"" + tr_id + "\">" +
+                            "<td><input type='checkbox' name=\"chkbox_time_slot\" value=\"" + timeSlotArray[i].time_slot_id +
+                            "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_time_slot + "</td>" +
+                            "<td><label name=\"time_slot_name\">" + timeSlotArray[i].time_slot_name + "</label></td>" +
+                            "<td style='text-align:center;'><label for=\"btn_edit_time_slot_" + count_time_slot +
+                            "\" class='btn-edit' title='Edit the time slot'><i class='fas fa-edit' style='font-size:18px;'>" +
+                            "</i></label><input id=\"btn_edit_time_slot_" + count_time_slot + "\" type='button'" +
+                            " class='btn-hidden' onclick=\"inputWeekSchedule(\'" + timeSlotArray[i].time_slot_id + "\')\" />" +
+                            "</td></tr>");
+                    }
                 }
             } else {
                 alert("讀取TimeSettingList失敗，請再試一次!");
@@ -36,41 +40,40 @@ function inputTimeSetting() {
     xmlHttp.send(JSON.stringify(request));
 }
 
+function inputWeekSchedule(id) {
+    operate = "Edit";
+    var index = timeSlotArray.findIndex(function (info) {
+        return info.time_slot_id == id;
+    });
+    $("#add_time_slot_id").val(timeSlotArray[index].time_slot_id)
+    $("#add_time_slot_name").val(timeSlotArray[index].time_slot_name);
+    var weekTime = timeSlotArray[index];
+    weekday_arr.forEach(weekday => {
+        var start = weekTime[weekday + "_start"];
+        var end = weekTime[weekday + "_end"];
+        if (start != "-1" && end != "-1") {
+            $("#week_time_check_" + weekday).prop('checked', true);
+            $("#week_time_start_" + weekday).attr('disabled', false);
+            $("#week_time_end_" + weekday).attr('disabled', false);
+            $("#week_time_start_" + weekday).val(start.substr(0, 5));
+            $("#week_time_end_" + weekday).val(end.substr(0, 5));
+        }
+    });
+    $("#dialog_add_time_slot").dialog("open");
+}
+
 function resetWeekSchedule() {
     weekday_arr.forEach(weekday => {
+        $("#week_time_check_" + weekday).prop('checked', false);
+        $("#week_time_start_" + weekday).attr('disabled', true);
+        $("#week_time_end_" + weekday).attr('disabled', true);
         $("#week_time_start_" + weekday).val("").attr('disabled', true);
         $("#week_time_end_" + weekday).val("").attr('disabled', true);
     });
 }
 
-function inputWeekSchedule() {
-    var request = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["GetWeekSchedule"]
-    };
-    var xmlHttp = createJsonXmlHttp("GetWeekSchedule");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            var revList = revObj.Values;
-            if (revObj.success > 0) {
-                $("#add_time_setting_name").val(revList[0].name);
-                var weekTime = revList[0].week_time;
-                for (i = 0; i < weekday_arr.length; i++) {
-                    $("#week_time_start_" + weekday_arr[i]).val(weekTime[weekday_arr[i] + "_start"]);
-                    $("#week_time_end_" + weekday_arr[i]).val(weekTime[weekday_arr[i] + "_end"]);
-                }
-                $("#dialog_add_time_setting").dialog("open");
-            } else {
-                alert("讀取TimeSettingList失敗，請再試一次!");
-                return;
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(request));
-}
-
 $(function () {
+    inputTimeSetting();
     resetWeekSchedule();
     weekday_arr.forEach(weekday => {
         $("#week_time_check_" + weekday).on('change', function () {
@@ -95,7 +98,18 @@ $(function () {
             $("#week_time_end_" + weekday).attr('disabled', !all_check);
         });
     });
-    inputTimeSetting();
+
+    var dialog, form,
+        add_name = $("#add_time_slot_name"),
+        allFields = $([]).add(add_name);
+    //tips = $( ".validateTips" );
+
+    function resetWeekTimeColor() {
+        weekday_arr.forEach(weekday => {
+            $("#week_time_start_" + weekday).removeClass("ui-state-error");
+            $("#week_time_end_" + weekday).removeClass("ui-state-error");
+        });
+    }
 
     function checkTimeSum(start_time, end_time) {
         if (typeof (start_time) == 'undefined' || typeof (end_time) == 'undefined')
@@ -116,89 +130,95 @@ $(function () {
         }
     }
 
-    var dialog, form,
-        add_name = $("#add_time_setting_name"),
-        allFields = $([]).add(add_name);
-    //tips = $( ".validateTips" );
+    function SendResult() {
+        var r = confirm("Confirm submit the time slot setting ?");
+        if (r == false)
+            return;
 
-    var resetWeekTimeColor = function () {
-        weekday_arr.forEach(weekday => {
-            $("#week_time_start_" + weekday).removeClass("ui-state-error");
-            $("#week_time_end_" + weekday).removeClass("ui-state-error");
-        });
-    };
-
-    var SendResult = function () {
         allFields.removeClass("ui-state-error");
         resetWeekTimeColor();
-        var valid = true;
 
-        valid = valid && checkLength(add_name, "Time setting check", 1, 20);
-
-        var request = {
-            "Command_Type": ["Write"],
-            "Command_Name": ["AddTimeSetting"],
-            "Value": {
-                "name": add_name.val(),
-                "week_time": {
-                    "Sun_start": "-1",
-                    "Sun_end": "-1",
-                    "Mon_start": "-1",
-                    "Mon_end": "-1",
-                    "Tue_start": "-1",
-                    "Tue_end": "-1",
-                    "Wed_start": "-1",
-                    "Wed_end": "-1",
-                    "Thu_start": "-1",
-                    "Thu_end": "-1",
-                    "Fri_start": "-1",
-                    "Fri_end": "-1",
-                    "Sat_start": "-1",
-                    "Sat_end": "-1"
-                }
-            }
-        };
+        var valid = true && checkLength(add_name, "Time slot check", 1, 20),
+            time_slot_setting = {
+                "time_slot_name": add_name.val(),
+                "Sun_start": "-1",
+                "Sun_end": "-1",
+                "Mon_start": "-1",
+                "Mon_end": "-1",
+                "Tue_start": "-1",
+                "Tue_end": "-1",
+                "Wed_start": "-1",
+                "Wed_end": "-1",
+                "Thu_start": "-1",
+                "Thu_end": "-1",
+                "Fri_start": "-1",
+                "Fri_end": "-1",
+                "Sat_start": "-1",
+                "Sat_end": "-1"
+            };
 
         weekday_arr.forEach(weekday => {
             if ($("#week_time_check_" + weekday).prop('checked')) {
-                valid = valid && checkLength($("#week_time_start_" + weekday), "Time setting check", 5, 5);
-                valid = valid && checkLength($("#week_time_end_" + weekday), "Time setting check", 5, 5);
+                valid = valid && checkLength($("#week_time_start_" + weekday), "Time slot check", 5, 5);
+                valid = valid && checkLength($("#week_time_end_" + weekday), "Time slot check", 5, 5);
                 valid = valid && checkTimeSum($("#week_time_start_" + weekday), $("#week_time_end_" + weekday));
-                request.Value.week_time[weekday + "_start"] = $("#week_time_start_" + weekday).val() + ":00";
-                request.Value.week_time[weekday + "_end"] = $("#week_time_end_" + weekday).val() + ":59";
+                time_slot_setting[weekday + "_start"] = $("#week_time_start_" + weekday).val() + ":00";
+                time_slot_setting[weekday + "_end"] = $("#week_time_end_" + weekday).val() + ":59";
             }
         });
 
         if (valid) {
-            var addXmlHttp = createJsonXmlHttp("AddSettingTest");
-            addXmlHttp.onreadystatechange = function () {
-                if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
-                    var revInfo = revObj.Values;
-                    if (revObj.success == 1) {
-                        //inputTimeSetting();
-                        //測試用
-                        count_time_setting++;
-                        var tr_id = "tr_time_setting_" + count_time_setting;
-                        $("#table_time_setting tbody").append("<tr id=\"" + tr_id + "\">" +
-                            "<td><input type='checkbox' name=\"chkbox_time_setting\" value=\"" + revInfo.id + "\" " +
-                            "onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_time_setting + "</td>" +
-                            "<td><label name=\"time_setting_name\">" + revInfo.name + "</label></td>" +
-                            "<td style='text-align:center;'><label for=\"btn_edit_time_setting_" + count_time_setting +
-                            "\" class='btn-edit' title='Edit the time setting'><i class='fas fa-edit' style='font-size: 18px;'></i></label>" +
-                            "<input id=\"btn_edit_time_setting_" + count_time_setting + "\" type='button' class='btn-hidden'" +
-                            " onclick=\"inputWeekSchedule()\" /></td></tr>");
+            if (operate == "Add") {
+                var request = {
+                    "Command_Type": ["Write"],
+                    "Command_Name": ["AddTimeSlot"],
+                    "Value": [time_slot_setting]
+                };
+                var addXmlHttp = createJsonXmlHttp("sql");
+                addXmlHttp.onreadystatechange = function () {
+                    if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (revObj.success > 0) {
+                            inputTimeSetting();
+                            dialog.dialog("close");
+                            resetWeekSchedule();
+                            alert("新增時段設定成功!");
+                        } else {
+                            alert("新增時段設定失敗");
+                        }
                     }
-                }
-            };
-            addXmlHttp.send(JSON.stringify(request));
-            dialog.dialog("close");
-            resetWeekSchedule();
+                };
+                addXmlHttp.send(JSON.stringify(request));
+            } else if (operate == "Edit") {
+                time_slot_setting.time_slot_id = $("#add_time_slot_id").val();
+                var request = {
+                    "Command_Type": ["Write"],
+                    "Command_Name": ["EditTimeSlot"],
+                    "Value": time_slot_setting
+                };
+                var editXmlHttp = createJsonXmlHttp("sql");
+                editXmlHttp.onreadystatechange = function () {
+                    if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (revObj.success > 0) {
+                            inputTimeSetting();
+                            dialog.dialog("close");
+                            resetWeekSchedule();
+                            alert("編輯時段設定成功!");
+                        } else {
+                            alert("編輯時段設定失敗");
+                        }
+                    }
+                };
+                editXmlHttp.send(JSON.stringify(request));
+            } else {
+                return false;
+            }
         }
         return valid;
-    };
+    }
 
-    dialog = $("#dialog_add_time_setting").dialog({
+    dialog = $("#dialog_add_time_slot").dialog({
         autoOpen: false,
         height: 600,
         width: 500,
@@ -229,80 +249,45 @@ $(function () {
     /**
      * 新增Time Setting
      */
-    $("#btn_add_time_setting").button().on("click", function () {
+    $("#btn_add_time_slot").button().on("click", function () {
+        operate = "Add";
         dialog.dialog("open");
     });
 
     /**
      * 刪除Time Setting
      */
-    $("#btn_delete_time_setting").button().on("click", function () {
-        var checkboxs = document.getElementsByName("chkbox_alarm_group");
+    $("#btn_delete_time_slot").button().on("click", function () {
+        var checkboxs = document.getElementsByName("chkbox_time_slot");
         var delete_arr = [];
         for (k in checkboxs) {
-            if (checkboxs[k].checked)
-                delete_arr.push({ "id": checkboxs[k].value });
+            if (checkboxs[k].checked) {
+                delete_arr.push({
+                    "time_slot_id": checkboxs[k].value
+                });
+            }
+        }
+        if (delete_arr.length == 0) {
+            alert("請至少勾選一項時段設定");
+            return;
         }
         var requestJSON = JSON.stringify({
             "Command_Type": ["Write"],
-            "Command_Name": ["DeleteTimeSetting"],
+            "Command_Name": ["DeleteTimeSlot"],
             "Value": delete_arr
         });
         var deleteXmlHttp = createJsonXmlHttp("sql");
         deleteXmlHttp.onreadystatechange = function () {
             if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj.success == 1) {
-                    inputAlarmGroupTable();
-                    alert("Success delete the time setting");
+                if (revObj.success > 0) {
+                    inputTimeSetting();
+                    alert("刪除時段設定成功");
+                } else {
+                    alert("刪除時段設定失敗");
                 }
             }
         };
         deleteXmlHttp.send(requestJSON);
     });
-
-    /**
-    * 送出修改後的Time Setting List
-    */
-    /*$("#btn_submit_time_setting").button().on("click", function () {
-        var r = confirm("Confirm submit the time settings(All of the list)?");
-        if (r == false)
-            return;
-        var valid = true,
-            checkboxs = document.getElementsByName("chkbox_time_setting"),
-            time_name = document.getElementsByName("time_setting_name"),
-            time_start = document.getElementsByName("time_setting_start"),
-            time_end = document.getElementsByName("time_setting_end"),
-            edit_arr = [];
-        for (i = 0; i < count_time_setting; i++) {
-            valid = valid && checkLengthByDOM(time_name[i], "Time setting list check", 1, 20);
-            valid = valid && checkLengthByDOM(time_start[i], "Time setting list check", 1, 20);
-            valid = valid && checkLengthByDOM(time_end[i], "Time setting list check", 1, 20);
-            edit_arr.push({
-                "id": checkboxs[i].value,
-                "name": time_name[i].value,
-                "start_time": time_start[i].value,
-                "end_time": time_end[i].value
-            });
-        }
-        if (valid) {
-            var requestJSON = JSON.stringify({
-                "Command_Type": ["Write"],
-                "Command_Name": ["EditTimeSetting"],
-                "Value": edit_arr
-            });
-            var editXmlHttp = createJsonXmlHttp("sql");
-            editXmlHttp.onreadystatechange = function () {
-                if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
-                    if (revObj.success == 1) {
-                        inputTimeSetting();
-                        alert("Success delete the alarm groups");
-                    }
-                }
-            };
-            editXmlHttp.send(requestJSON);
-        }
-        return valid;
-    });*/
 });

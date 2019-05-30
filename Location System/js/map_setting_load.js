@@ -1,5 +1,3 @@
-var mapArray = [];
-
 window.addEventListener("load", loadMap, false);
 
 function loadMap() {
@@ -13,23 +11,24 @@ function loadMap() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
-                mapArray = [];
-                mapArray = revObj.Values.slice(0); //利用抽離全部陣列完成陣列拷貝;
-                for (i = 0; i < mapArray.length; i++) {
-                    var map = "map_id_" + mapArray[i].map_id;
-                    var src = "data:image/" + mapArray[i].map_file_ext + ";base64," + mapArray[i].map_file;
-                    var img_size = adjustImageSize(src);
-                    $("#maps_gallery").append("<div class=\"thumbnail\">" +
-                        "<div class=\"image_block\">" +
-                        "<img src=\"" + src + "\" width=\"" + img_size.width + "\" height=\"" + img_size.height + "\">" +
-                        "</div>" +
-                        "<div class=\"caption\"><table style='width:100%;'><tr>" +
-                        "<th style=\"width:90px;\">Map Name:</th>" +
-                        "<th style=\"width:50%;\"><span name=\"" + map + "\">" + mapArray[i].map_name + "</span></th>" +
-                        "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + mapArray[i].map_id + "\')\">設定</button></th>" +
-                        "<th><button class='btn btn-primary' onclick=\"deleteMap(\'" + mapArray[i].map_id + "\')\">刪除</button></th>" +
-                        "</tr></table></div>" +
-                        "</div>");
+                var mapArray = revObj.Values.slice(0); //利用抽離全部陣列完成陣列拷貝;
+                if (mapArray) {
+                    for (i = 0; i < mapArray.length; i++) {
+                        var map = "map_id_" + mapArray[i].map_id;
+                        var src = "data:image/" + mapArray[i].map_file_ext + ";base64," + mapArray[i].map_file;
+                        var img_size = adjustImageSize(src);
+                        $("#maps_gallery").append("<div class=\"thumbnail\">" +
+                            "<div class=\"image_block\">" +
+                            "<img src=\"" + src + "\" width=\"" + img_size.width + "\" height=\"" + img_size.height + "\">" +
+                            "</div>" +
+                            "<div class=\"caption\"><table style='width:100%;'><tr>" +
+                            "<th style=\"width:90px;\">Map Name:</th>" +
+                            "<th style=\"width:50%;\"><span name=\"" + map + "\">" + mapArray[i].map_name + "</span></th>" +
+                            "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + mapArray + "\',\'" + mapArray[i].map_id + "\')\">設定</button></th>" +
+                            "<th><button class='btn btn-primary' onclick=\"deleteMap(\'" + mapArray[i].map_id + "\')\">刪除</button></th>" +
+                            "</tr></table></div>" +
+                            "</div>");
+                    }
                 }
             }
         }
@@ -45,7 +44,7 @@ function confirmHrefType(href) {
         return false;
 }
 
-function setMapById(id) { //點擊設定:開啟設定視窗
+function setMapById(mapArray, id) { //點擊設定:開啟設定視窗
     var index = mapArray.findIndex(function (info) {
         return info.map_id == id;
     });
@@ -74,23 +73,6 @@ function newMap() {
     $("#dialog_map_setting").dialog("open");
 }
 
-/*function setNewMap(map_id) { //新增地圖
-    var map = "map_id_" + map_id;
-    var src = $("menu_load_map").files[0];
-    var img_size = adjustImageSize(src);
-    $("#maps_gallery").append("<div class=\"thumbnail\">" +
-        "<div class=\"image_block\">" +
-        "<a href=\"javascript: confirmHrefType(\'" + src + "\')\"  target=\"_blank\">" +
-        "<img src=\"" + src + "\" width=\"" + img_size.width + "\" height=\"" + img_size.height + "\">" +
-        "</a></div>" +
-        "<div class=\"caption\"><table style='width:200px;'><tr>" +
-        "<th>Map Name:</th>" +
-        "<th><span name=\"" + map + "\">" + $("#map_info_name").val() + "</span></th>" +
-        "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + map_id + "\')\">設定</button></th>" +
-        "</tr></table></div>" +
-        "</div>");
-}*/
-
 function deleteMap(id) {
     var r = confirm("Confirm to delete the map?");
     if (r == true) {
@@ -106,6 +88,23 @@ function deleteMap(id) {
             if (mapHttp.readyState == 4 || mapHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
                 if (revObj.success > 0) {
+                    var deleteMap_GroupReq = JSON.stringify({
+                        "Command_Type": ["Read"],
+                        "Command_Name": ["DeleteMap_Group"],
+                        "Value": [{
+                            "map_id": id
+                        }]
+                    });
+                    var mapGroupHttp = createJsonXmlHttp("sql");
+                    mapGroupHttp.onreadystatechange = function () {
+                        if (mapGroupHttp.readyState == 4 || mapGroupHttp.readyState == "complete") {
+                            var revObj = JSON.parse(this.responseText);
+                            if (revObj.success > 0) {
+                                return;
+                            }
+                        }
+                    };
+                    mapGroupHttp.send(deleteMap_GroupReq);
                     $("#maps_gallery").empty();
                     loadMap();
                 }

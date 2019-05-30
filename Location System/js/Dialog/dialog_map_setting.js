@@ -78,7 +78,7 @@ $(function () {
         if (mapinfo_image.css("backgroundImage").length > 0) {
             var mapinfo_file = mapinfo_image.css("backgroundImage").split(",");
             mapinfo_ext = getBase64Ext(mapinfo_file[0]);
-            mapinfo_base64 = mapinfo_ext != "" ? mapinfo_file[1].trim() : "";
+            mapinfo_base64 = mapinfo_ext != "" ? mapinfo_file[1].split("\"")[0].trim() : "";
         } else { //no image
             valid = false;
             mapinfo_image.addClass("ui-state-error");

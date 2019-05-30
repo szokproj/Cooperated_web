@@ -249,7 +249,7 @@
                 <div class="row">
                     <div class="col-lg-4" style="background-color:white;">
                         <h3>時段設定</h3>
-                        <table id="table_time_setting" class="table-line-gray">
+                        <table id="table_time_slot" class="table-line-gray">
                             <thead>
                                 <tr>
                                     <th>item</th>
@@ -260,15 +260,12 @@
                             <tbody></tbody>
                         </table>
                         <span>
-                            <label for="btn_add_time_setting" class="btn-add" title="Add time setting">
+                            <label for="btn_add_time_slot" class="btn-add" title="Add time setting">
                                 <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
-                            <input id="btn_add_time_setting" type="button" class="btn-hidden" />
-                            <label for="btn_delete_time_setting" class="btn-delete" title="Delete time setting">
+                            <input id="btn_add_time_slot" type="button" class="btn-hidden" />
+                            <label for="btn_delete_time_slot" class="btn-delete" title="Delete time setting">
                                 <i class="fas fa-minus-square" style='font-size:20px;'></i></label>
-                            <input id="btn_delete_time_setting" type="button" class="btn-hidden" />
-                            <!--<label for="btn_submit_time_setting" class="btn-submit" title="Submit time setting list">
-                                    <i class="fas fa-save" style='font-size:20px;'></i></label>
-                                <input id="btn_submit_time_setting" type="button" class="btn-hidden" />-->
+                            <input id="btn_delete_time_slot" type="button" class="btn-hidden" />
                         </span>
                     </div>
                     <div class="col-lg-8" style="background-color:white;">
@@ -291,9 +288,6 @@
                             <label for="btn_delete_time_group" class="btn-delete" title="Delete time group">
                                 <i class="fas fa-minus-square" style='font-size:20px;'></i></label>
                             <input id="btn_delete_time_group" type="button" class="btn-hidden" />
-                            <!--<label for="btn_submit_time_group" class="btn-submit" title="Submit time group list">
-                                    <i class="fas fa-save" style='font-size:20px;'></i></label>
-                                <input id="btn_submit_time_group" type="button" class="btn-hidden" />-->
                         </span>
                     </div>
                 </div>
@@ -486,11 +480,12 @@
             </form>
         </div>
         <!-- Following is a dialog to edit the time setting -->
-        <div id="dialog_add_time_setting" title="設定時段">
+        <div id="dialog_add_time_slot" title="設定時段">
             <form>
                 <fieldset style="text-align: left;">
+                    <input type="hidden" id="add_time_slot_id" style="width:70%;">
                     <br>
-                    <label>時段名稱 :</label>&nbsp;&nbsp;<input type="text" id="add_time_setting_name" style="width:70%;">
+                    <label>時段名稱 :</label>&nbsp;&nbsp;<input type="text" id="add_time_slot_name" style="width:70%;">
                     <br><br>
                     <label>時段排程 : (12小時格式，從上午12:00開始)</label>
                     <br><br>
@@ -554,27 +549,38 @@
             </form>
         </div>
         <!-- Following is a dialog to set time group -->
-        <div id="dialog_add_time_group" title="設定時段群組">
+        <div id="dialog_time_group_slot" title="設定時段群組">
             <form>
                 <fieldset style="text-align: left;">
+                    <input type="hidden" id="add_time_group_id">
                     <label>時段群組名稱 :</label>&nbsp;&nbsp;<input type="text" style="width:70%;" id="add_time_group_name">
                     <br><br>
-                    <label>選擇時段代號 :</label>
-                    <table id="table_time_group_settings" style="min-width:300px;" class="table-line-gray">
+                    <label>時段設定 :</label>
+                    <table id="table_time_group_slot" style="min-width:300px;" class="table-line-gray">
                         <thead>
                             <tr>
                                 <th>item</th>
-                                <th>時段代號</th>
+                                <th>時段名稱</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
-                    <label for="btn_add_time_group_settings" class="btn-add" title="Add time setting">
+                    <label for="btn_add_time_group_slot" class="btn-add" title="Add time slot">
                         <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
-                    <input id="btn_add_time_group_settings" type="button" class="btn-hidden" />
-                    <label for="btn_delete_time_group_settings" class="btn-delete" title="Delete time setting">
+                    <input id="btn_add_time_group_slot" type="button" class="btn-hidden" />
+                    <label for="btn_delete_time_group_slot" class="btn-delete" title="Delete time slot">
                         <i class="fas fa-minus-square" style='font-size:20px;'></i></label>
-                    <input id="btn_delete_time_group_settings" type="button" class="btn-hidden" />
+                    <input id="btn_delete_time_group_slot" type="button" class="btn-hidden" />
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+        <!-- Following is a dialog to set the time group's slots -->
+        <div id="dialog_add_time_group_slot" title="新增群組時段">
+            <form>
+                <fieldset style="text-align: left;">
+                    <label>新增時段設定 :</label>
+                    <select id="add_time_group_slot"></select>
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                 </fieldset>
             </form>
