@@ -15,14 +15,20 @@
     <!-- Add icon library -->
     <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'
         integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+    <!-- Icon Navbar-->
+    <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
     <!--編寫css-->
-    <link rel=stylesheet type="text/css" href="..\css\bootstrap_collapsible_navbar.css">
     <style>
         .container {
             width: 100%;
             height: 100%;
             font-weight: bold;
             font-family: 'Microsoft JhengHei', 'sans-serif';
+        }
+
+        .row {
+            margin-left: 30px;
         }
 
         table {
@@ -39,6 +45,26 @@
 
         tr:hover {
             background-color: #f5f5f5;
+        }
+
+        input[type="file"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        .custom-file-selected {
+            display: inline-block;
+            cursor: pointer;
+            color: #dddddd;
+            text-decoration: none;
+            font-family: Sans-serif;
+            padding: 10px 15px 10px 50px;
         }
 
         canvas:hover {
@@ -72,7 +98,6 @@
     </style>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script type="text/javascript" src="../js/navbar_setting.js"></script>
     <script type="text/javascript" src="../js/draw_timeline.js"></script>
     <script>
 
@@ -81,72 +106,30 @@
 
 <body>
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <!-- 最上方黑色區塊 -->
-                <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
-                </div>
-                <div style="height: 35px;width: 100%;">
-                </div>
+        <aside class="menu">
+            <div class="menu-left">
+                <nav class="sidebar">
+                    <ul class="nav">
+                        <li><a href="../index.html">
+                                <i class="fas fa-home"></i><span>首頁</span></a></li>
+                        <li><a href="../Member_Setting.html">
+                                <i class="fas fa-user-cog"></i><span>人員設置</span></a></li>
+                        <li class="active"><a href="../Timeline.html">
+                                <i class="fas fa-route"></i><span>歷史軌跡</span></a></li>
+                        <li><a href="../Map_Setting.html">
+                                <i class="fas fa-map"></i><span>地圖設定</span></a></li>
+                        <li><a href="../Anchor_Setting.html">
+                                <i class="fas fa-anchor"></i><span>Anchor設定</span></a></li>
+                        <li><a href="../Alarm_Setting.html">
+                                <i class="fas fa-bell"></i><span>Alarm設定</span></a></li>
+                        <li><a href="../Reference.html">
+                                <i class="fas fa-cogs"></i><span>進階設定</span></a></li>
+                        <hr>
+                    </ul>
+                </nav>
             </div>
-        </div>
+        </aside>
 
-        <div class="row">
-            <div class="col-lg-12">
-                <div id="wrapper">
-                    <!-- 導航欄開啟時的遮罩，設定顏色和長寬就可以形成遮罩 -->
-                    <div class="overlay">
-                    </div>
-                    <!-- Sidebar(Left) -->
-                    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
-                        <ul class="nav sidebar-nav">
-                            <li><a href="../index.html">
-                                    <img src="../image/home.png">首頁</a>
-                            </li>
-                            <li><a href="../Member_Setting.html">
-                                    <img src="../image/member_setting.png">人員設置</a>
-                            </li>
-                            <li><a href="../Timeline.html">
-                                    <img src="../image/timeline.png">歷史軌跡</a>
-                            </li>
-                            <li><a href="../Map_Setting.html">
-                                    <img src="../image/map_setting.png">地圖設定</a>
-                            </li>
-                            <li><a href="../Anchor_Setting.html">
-                                    <img src="../image/anchor_setting.png">Anchor設定</a>
-                            </li>
-                            <li><a href="../Tag_Setting.html">
-                                    <img src="../image/tag_setting.png">Tag設定</a>
-                            </li>
-                            <li><a href="../Alarm_Setting.html">
-                                    <img src="../image/alarm_setting.png">Alarm設定</a>
-                            </li>
-                            <li><a href="../Reference.html">
-                                    <img src="../image/research.png">Reference</a>
-                            </li>
-                            <li><a href="../Advance_cmd.html">
-                                    <img src="../image/website.png">Advance cmd</a>
-                            </li>
-                            <li><a href="../Update.html">
-                                    <img src="../image/update.png">Update</a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <!-- /#sidebar-wrapper -->
-
-                    <!-- Page Content -->
-                    <div id="page-content-wrapper">
-                        <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
-                            <!--<span class="hamb-center"></span>-->
-                            <span class="hamb-top"></span>
-                            <span class="hamb-middle"></span>
-                            <span class="hamb-bottom"></span>
-                        </button>
-                    </div>
-                    <!-- /#page-content-wrapper -->
-                </div>
-            </div>
-        </div>
 
         <!-- Web content -->
         <div class="row">
@@ -157,11 +140,12 @@
                     </canvas>
                 </div>
                 <div style="margin: 5px;">
-                    Position:<input type="text" id="position" value="" style="max-width: 100px;">
-                    Time:<input type="text" id="draw_time" value="" style="max-width: 180px;">
-                    X:<input type="text" id="draw_x" value="" style="max-width: 50px;">
-                    Y:<input type="text" id="draw_y" value="" style="max-width: 50px;">
-                    <div class="btn-group" style="margin-left: 20px;">
+                    Position : <input type="text" id="position" value="" style="max-width: 100px;">
+                    Time : <input type="text" id="draw_time" value="" style="max-width: 180px;">
+                    X : <input type="text" id="draw_x" value="" style="max-width: 100px;">
+                    Y : <input type="text" id="draw_y" value="" style="max-width: 100px;">
+                    <br><br>
+                    <div class="btn-group">
                         <button class="btn btn-default control_btn" id="btn_stop" onclick="stopTimeline()"
                             disabled="true">
                             <i class="fas fa-stop"></i></button>
@@ -177,7 +161,7 @@
                         </label>
                     -->
                     <label style="margin-left:20px;">間隔時間 : <input type="text" id="interval"
-                            style="border:0; color:#f6931f; font-weight:bold; width:40px;">
+                            style="border:0; color:#f6931f; font-weight:bold; width:40px;"/>
                         <label style="color:#f6931f;">(ms)</label>
                         <div id="interval_slider" style="width:250px"></div>
                     </label>
@@ -203,7 +187,8 @@
                         時間 : <input type="time" id="end_time" step="01"></p>
                 </div>
                 <br><br>
-                <button class="btn btn-primary" id="btn_search" style="margin-left: 160px;" onclick="search()">搜尋</button>
+                <button class="btn btn-primary" id="btn_search" style="margin-left: 160px;"
+                    onclick="search()">搜尋</button>
             </div>
         </div>
     </div>

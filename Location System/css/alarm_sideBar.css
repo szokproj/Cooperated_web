@@ -19,17 +19,17 @@
 }
 
 .sideBar {
-    width: 330px;
+    width: 300px;
     position: fixed;
-    top: 30px;
+    top: 0px;
     left: -330px;
     display: block;
+    /*background-color: rgba(204, 204, 204, 0.452);*/
 }
 
 .sideBar .sideBar-left-button {
     /*解除定位按鈕*/
     height: 50px;
-    text-align: right;
 }
 
 .sideBar-left-button button {
@@ -37,7 +37,7 @@
 }
 
 .sideBar .sideBar-left {
-    width: 330px;
+    width: 300px;
     height: 90%;
     background-color: transparent;
     position: fixed;
@@ -90,3 +90,29 @@
 }
 
 /***************/
+
+.btn-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.btn-alarm {
+    padding: 5px 10px 5px 10px;
+    font-size: 20px;
+    color: rgb(207, 2, 2);
+    float: right;
+    background-color: rgb(196, 195, 195);
+    border: 1px solid rgb(196, 195, 195);
+    border-radius: 50%;
+}
+
+.btn-alarm:hover {
+    background-color: rgb(175, 175, 175);
+    border: 1px solid rgb(175, 175, 175);
+}

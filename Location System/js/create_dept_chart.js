@@ -200,10 +200,10 @@ $(function () {
             $('#btn-delete-nodes').on('click', function () {
                 var $node = $('#selected-node').data('node');
                 if (!$node) {
-                    alert('Please select one node in orgchart');
+                    alert('Please select one node in orgchart.');
                     return;
                 } else if ($node[0] === $('.orgchart').find('.node:first')[0]) {
-                    if (!window.confirm('Are you sure you want to delete the whole chart?')) {
+                    if (!window.confirm('Are you sure to delete the whole chart?')) {
                         return;
                     }
                 }
@@ -236,7 +236,7 @@ $(function () {
             $('#btn-edit-nodes').on('click', function () {
                 var $node = $('#selected-node').data('node');
                 if (!$node) {
-                    alert('Please select one node in orgchart');
+                    alert('Please select one node in orgchart.');
                     return;
                 }
                 var nodeTitle = $node.children('.title');

@@ -128,7 +128,7 @@ $(function () {
     dialog = $("#dialog_map_setting").dialog({
         autoOpen: false,
         height: 640,
-        width: 980,
+        width: 1000,
         modal: true,
         buttons: {
             "Confirm": function () {

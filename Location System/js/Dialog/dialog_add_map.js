@@ -60,6 +60,7 @@ $(function () {
                         var mapArray = revObj.Values;
                         var lan = mapArray.length;
                         if (revObj.success > 0) {
+                            setMapArray(mapArray);
                             for (i = 0; i < lan; i++) {
                                 var map = "map_id_" + mapArray[i].map_id;
                                 var src = "data:image/" + mapArray[i].map_file_ext + ";base64," + mapArray[i].map_file;
@@ -77,7 +78,7 @@ $(function () {
                                     "</div>");
                             }
                             dialog.dialog("close");
-                            setMapById(mapArray, mapArray[lan - 1].map_id); //catch last row
+                            setMapById(mapArray[lan - 1].map_id); //catch last row
                         }
                     }
                 };

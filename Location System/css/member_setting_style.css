@@ -3,6 +3,10 @@
     height: 100%;
 }
 
+.row {
+    margin: 10px 0px 0px 30px;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
@@ -23,6 +27,26 @@ label {
 
 p {
     padding: 2px 0px 2px 0px;
+}
+
+input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.custom-file-selected {
+    display: inline-block;
+    cursor: pointer;
+    color: #dddddd;
+    text-decoration: none;
+    font-family: Sans-serif;
+    padding: 10px 15px 10px 50px;
 }
 
 /* Tag Setting Css */
@@ -78,21 +102,13 @@ thead tr {
 }
 
 .thumb-block {
-    max-height: 120px;
     height: 120px;
-    width: 100%;
+    width: 220px;
+    max-height: 120px;
+    max-width: 220px;
     text-align: center;
     background: white;
     margin-bottom: 10px;
-    display: inline-block;
-}
-
-.image-style {
-    max-height: 120px;
-    max-width: 150px;
-    position: relative;
-    display:inline-flex;
-    vertical-align: middle;
 }
 
 #main_picture {
@@ -176,4 +192,14 @@ thead tr {
 .btn {
     margin: 5px 0px 5px 0px;
     font-size: 12px;
+}
+
+/* icon navbar */
+.sidebar ul .setting-type a {
+    background: transparent
+}
+
+.sidebar ul .setting-type:hover a,
+.sidebar ul .setting-type.active a {
+    background: rgb(11, 74, 168)
 }

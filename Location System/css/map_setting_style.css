@@ -5,6 +5,14 @@
     font-family: 'Microsoft JhengHei', 'sans-serif';
 }
 
+.row {
+    margin-left: 40px;
+}
+
+.nav-tabs {
+    margin: 10px 0px 0px 50px;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
@@ -19,14 +27,30 @@ td {
     border: none;
 }
 
+input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.custom-file-selected {
+    display: inline-block;
+    cursor: pointer;
+    color: #dddddd;
+    text-decoration: none;
+    font-family: Sans-serif;
+    padding: 10px 15px 10px 50px;
+}
+
 /* 網頁內的輸入框 */
 label,
 input {
-    font-weight: bold;
-    font-family: 'Microsoft JhengHei', 'sans-serif';
-    font-size: 14px;
     display: inline-block;
-    background-color: transparent;
 }
 
 input[type="text"] {
@@ -72,7 +96,7 @@ h1 {
     width: 500px;
     height: 250px;
     color: rgb(63, 62, 62);
-    padding: 5px;
+    padding: 5px 5px;
     font-size: 20px;
     text-align: center;
     cursor: pointer;
@@ -82,6 +106,8 @@ h1 {
 .new_map_block {
     width: 100%;
     height: 200px;
+    max-width: 490px;
+    max-height: 200px;
     background-color: rgb(167, 166, 166);
     margin-bottom: 10px;
 }
@@ -96,7 +122,8 @@ h1 {
 }
 
 .thumbnail .image_block {
-    width: 100%;
+    width: 480px;
+    height: 150px;
     background-color: lightgray;
     display: inline-flex;
     text-align: center;
@@ -105,10 +132,6 @@ h1 {
 .thumbnail input[type="text"] {
     width: 100%;
     background-color: rgb(221, 221, 221);
-}
-
-.thumbnail a {
-    cursor: default;
 }
 
 .caption {
@@ -165,37 +188,6 @@ h1 {
     color: rgb(147, 192, 96);
 }
 
-.btn-edit {
-    cursor: pointer;
-    color: rgb(0, 172, 135);
-    margin: auto;
-}
-
-.btn-edit:hover {
-    color: rgb(158, 180, 162)
-}
-
-.btn-add-file {
-    width: 150px;
-    height: 15px;
-    cursor: pointer;
-    color: #fffdfd;
-    font-size: 14px;
-    text-align: center;
-}
-
-.block-add-file{
-    position: absolute;
-    background-color: rgb(39, 178, 212);
-    border: 1px solid rgb(81, 174, 197);
-    border-radius: 5px;
-    padding: 5px;
-}
-
-.block-add-file:hover {
-    background-color: rgb(108, 201, 224);
-}
-
 .sidebar-menu {
     height: 50px;
     float: right;
@@ -245,10 +237,10 @@ h1 {
     -ms-flex: 1;
     flex: 1;
     background: #ccc;
-    max-height: 452px;
+    max-height: 460px;
     max-width: 602px;
     display: block;
-    height: 452px;
+    height: 460px;
     width: 602px;
     overflow: auto;
     border: 1px gray solid;
@@ -256,11 +248,13 @@ h1 {
 
 .block-list {
     overflow: auto;
-    height: 430px;
+    height: 414px;
     max-width: 330px;
     margin: 0px 0px 0px 10px;
 }
 
-.changeBgColor {
-    background-color: rgb(187, 234, 250);
+.coordinate {
+    background-color: white;
+    max-width: 100px;
+    border: none;
 }

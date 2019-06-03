@@ -232,14 +232,14 @@ function handleMouseClick(event) {
 
 function handleMouseMove(event) {
     //滑鼠移動事件
-    var x = event.pageX;
-    var y = event.pageY;
-    var loc = getPointOnCanvas(x, y);
+    var loc = getPointOnCanvas(event.pageX, event.pageY);
     if (canvasImg.isPutImg) {
         lastX = loc.x;
         lastY = loc.y;
-        document.getElementById('x').innerText = (lastX * Zoom / fitZoom * canvasImg.scale).toFixed(2); //parseInt(lastX * Zoom / fitZoom);
-        document.getElementById('y').innerText = (lastY * Zoom / fitZoom * canvasImg.scale).toFixed(2); //parseInt(lastY * Zoom / fitZoom);
+        var x = (lastX * Zoom / fitZoom * canvasImg.scale).toFixed(2);
+        var y = (lastY * Zoom / fitZoom * canvasImg.scale).toFixed(2);
+        document.getElementById('x').innerText = x > 0 ? x : 0; //parseInt(lastX * Zoom / fitZoom);
+        document.getElementById('y').innerText = y > 0 ? y : 0; //parseInt(lastY * Zoom / fitZoom);
     }
 }
 

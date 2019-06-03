@@ -93,21 +93,17 @@ function setup() {
 
     $(function () {
         //多階下拉清單按鈕
-        $('.dropdown-submenu a.test').click(function (e) {
-            $(this).next('ul').show();
-            e.stopPropagation();
-            e.preventDefault();
+        $('.dropdown').mouseover(function (e) {
+            $(this).children('ul').show();
         });
-        $('.dropdown-submenu a.test').mouseleave(function (e) {
-            $(this).next('ul').hide();
-            e.stopPropagation();
-            e.preventDefault();
+        $('.dropdown ul').mouseleave(function (e) {
+            $(this).hide();
         });
-        $('.dropdown-submenu a.test').next('ul').hover(function () {
+        /*$('.dropdown ul').hover(function () {
             $(this).show();
         }, function () {
             $(this).hide();
-        });
+        });*/
         //預設彈跳視窗載入後隱藏
         $("#member_dialog").dialog({
             autoOpen: false
@@ -446,10 +442,10 @@ function handleMouseMove(event) {
     var y = event.pageY;
     var loc = getPointOnCanvas(x, y);
     if (canvasImg.isPutImg) {
-        document.getElementById('x').value = (lastX * Zoom / fitZoom * canvasImg.scale).toFixed(2); //parseInt(lastX * Zoom / fitZoom);
-        document.getElementById('y').value = (lastY * Zoom / fitZoom * canvasImg.scale).toFixed(2); //parseInt(lastY * Zoom / fitZoom);
         lastX = loc.x;
         lastY = loc.y;
+        document.getElementById('x').value = (lastX / Zoom / fitZoom * canvasImg.scale).toFixed(2);
+        document.getElementById('y').value = (lastY / Zoom / fitZoom * canvasImg.scale).toFixed(2);
     }
 }
 
@@ -481,17 +477,17 @@ function GetXmlHttpObject() {
 }
 
 /*------------------------------------*/
-/*            接收並處理Alarm          */
+/*            接收並處理Alarm           */
 /*------------------------------------*/
 
 var alarm_dialog_count = -1;
 
 function updateAlarmList() {
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetAlarmTop50List"]
+    };
+    var xmlHttp = createJsonXmlHttp("request");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
@@ -501,22 +497,19 @@ function updateAlarmList() {
                 for (var i = 0; i < revObj.id.length; i++) {
                     items = i;
                     list += "<tr><td>" + (items + 1) +
-                        "</td><td>" + revObj.id[i] +
-                        "</td><td>" + revObj.alarm_status[i] +
-                        "</td><td>" + revObj.time[i] +
-                        "</td><td>" + revObj.name[i] +
-                        "</td><td>" + revObj.image[i] +
+                        "</td><td>" + revObj[i].tag_alarm_type +
+                        "</td><td>" + revObj[i].tag_id +
+                        "</td><td>" + revObj[i].tag_time +
                         "</td></tr>";
                 }
-                $("#sidebar_right_alarm tbody").html(list);
+                $("#table_rightbar_alarm_list tbody").html(list);
 
                 changeAlarmLight();
 
                 if (items > alarm_dialog_count) {
-                    //changeAlarmLight();
                     isFocus = true;
                     isFocusNewAlarm = true;
-                    var alarmID_new = revObj.id[items];
+                    var alarmID_new = revObj[items].tag_id;
                     //依照更新順序放入alarmTag的ID到變數   
                     //如果變數(alarm的ID)已經儲存進了alarm陣列中，那麼刪除已存在的第index項
                     //再把此alarm的ID值push到alarm陣列裡面
@@ -528,12 +521,12 @@ function updateAlarmList() {
                     /*
                      * Alarm Card
                      */
-                    var time_arr = TimeToArray(revObj.time[items]);
+                    var time_arr = TimeToArray(revObj[items].tag_time);
                     var thumb_id = "alarmCard_" + items;
                     var thumb_unlock_btn_id = "alarmCard_unlock_btn_" + items;
                     var thumb_focus_btn_id = "alarmCard_focus_btn_" + items;
                     var color = "";
-                    switch (revObj.alarm_status[items]) {
+                    switch (revObj[items].tag_alarm_type) {
                         case "Low Power Alarm":
                             color = "#33cc00";
                             break;
@@ -558,11 +551,11 @@ function updateAlarmList() {
                         "</td>" +
                         "<td>" +
                         "<p>Number: " + (items + 1) + "</p>" +
-                        "<p>Name: " + revObj.name[items] + "</p>" +
-                        "<p>ID: " + parseInt(revObj.id[items], 16) + "</p>" +
+                        "<p>Name: " + revObj[items].name + "</p>" +
+                        "<p>ID: " + revObj[items].tag_id + "</p>" +
                         "<p>Date: " + time_arr.date + "</p>" +
                         "<p>Time: " + time_arr.time + "</p>" +
-                        "<p>Status: " + revObj.alarm_status[items] + "</p>" +
+                        "<p>Status: " + revObj[items].tag_alarm_type + "</p>" +
                         "<button type=\"button\" class=\"btn btn-success\"" +
                         " id=\"" + thumb_unlock_btn_id + "\">解除警報</button>" +
                         "<button type=\"button\" class=\"btn btn-info\" style=\"margin-left: 10px;\"" +
@@ -572,14 +565,21 @@ function updateAlarmList() {
                         "</table>" +
                         "</div>");
                     $("#" + thumb_unlock_btn_id).click(function () {
-                        releaseFocusAlarm(revObj.id[items]);
+                        releaseFocusAlarm(revObj[items].tag_id);
                         $("#" + thumb_id).hide(); //警告卡片會消失
                         changeAlarmLight();
                     });
                     $("#" + thumb_focus_btn_id).click(function () {
-                        changeFocusAlarm(revObj.id[items]);
+                        changeFocusAlarm(revObj[items].tag_id);
                         changeAlarmLight();
                     });
+
+                    /*{
+                        "tag_alarm_type": "low_power",
+                        "tag_id": "0000000000000017",
+                        "tag_time": "2019/05/31/16:06:12:44"
+                    }*/
+
 
                     /*
                      *  Alarm Dialog
@@ -588,17 +588,17 @@ function updateAlarmList() {
                     $("#alarm_dialog_btn_unlock").unbind();
                     $("#alarm_dialog_btn_focus").unbind();
                     $("#alarm_dialog_number").text(items + 1);
-                    $("#alarm_dialog_name").text(revObj.name[items]);
-                    $("#alarm_dialog_id").text(parseInt(revObj.id[items], 16));
+                    $("#alarm_dialog_name").text(revObj[items].name);
+                    $("#alarm_dialog_id").text(parseInt(revObj[items].tag_id, 16));
                     $("#alarm_dialog_date").text(time_arr.date);
                     $("#alarm_dialog_time").text(time_arr.time);
-                    $("#alarm_dialog_status").text(revObj.alarm_status[items]);
+                    $("#alarm_dialog_status").text(revObj[items].tag_alarm_type);
                     $("#alarm_dialog_btn_unlock").click(function () {
-                        releaseFocusAlarm(revObj.id[items]);
+                        releaseFocusAlarm(revObj[items].tag_id);
                         $("#alarm_dialog").dialog("close");
                     });
                     $("#alarm_dialog_btn_focus").click(function () {
-                        changeFocusAlarm(revObj.id[items]);
+                        changeFocusAlarm(revObj[items].tag_id);
                     });
                     $("#alarm_dialog").dialog("open");
                 }
@@ -606,9 +606,7 @@ function updateAlarmList() {
             alarm_dialog_count = items;
         }
     };
-    xmlHttp.open("POST", "requestAlarmList", true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
-    xmlHttp.send();
+    xmlHttp.send(JSON.stringify(request));
 }
 
 function TimeToArray(time_str) {
@@ -631,8 +629,7 @@ function changeAlarmLight() {
     });
 }
 
-/*------------------------------------*/
-
+/*
 function updateMemberList() {
     var xmlHttp = GetXmlHttpObject();
     if (xmlHttp == null) {
@@ -664,27 +661,41 @@ function updateMemberList() {
     xmlHttp.setRequestHeader("Content-type", "application/json");
     xmlHttp.send();
 }
+*/
 
 function updateTagList() {
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["requestTagList_json"],
+        "Value": {
+            "map_id": Map_id
+        }
+    };
+    var xmlHttp = createJsonXmlHttp("request");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (canvasImg.isPutImg) {
+
+                /*{
+                    "Name": "",
+                    "number": "",
+                    "tag_id": "0000000000000002",
+                    "tag_time": "2019-05-31 16:06:24.69",
+                    "tag_x": 649,
+                    "tag_y": 61
+                }*/
+
                 var id = "",
                     x = 0,
                     y = 0,
                     system_time = "";
                 tagArray = [];
-                for (i in revObj.tag_list) {
-                    id = revObj.tag_list[i];
-                    x = revObj.x[i] / canvasImg.scale;
-                    y = canvasImg.height - revObj.y[i] / canvasImg.scale; //因為Server回傳的座標為左下原點 
-                    system_time = revObj.system_time[i];
+                for (i in revObj) {
+                    id = revObj[i].tag_id;
+                    x = revObj[i].tag_x / canvasImg.scale;
+                    y = canvasImg.height - revObj[i].tag_y / canvasImg.scale; //因為Server回傳的座標為左下原點 
+                    system_time = revObj[i].tag_time;
                     tagArray.push({
                         x: x,
                         y: y,
@@ -692,6 +703,31 @@ function updateTagList() {
                         system_time: system_time
                     });
                 }
+
+
+
+                //update member list
+                var revObj = JSON.parse(this.responseText);
+                var list = "",
+                    items;
+                var tbody = $("#table_rightbar_member_list tbody");
+                tbody.empty();
+                for (var i = 0; i < revObj.tag_list.length; i++) {
+                    items = i + 1;
+                    /*list += "<tr><td>" + items +
+                        "</td><td>" + " " +
+                        "</td><td>" + revObj.name[i] +
+                        "</td><td>" + revObj.tag_list[i].substring(14) +
+                        "</td></tr>";*/
+                    tbody.append("<tr><td>" + items +
+                        "</td><td>" + " " +
+                        "</td><td>" + revObj.name[i] +
+                        "</td><td>" + revObj.tag_list[i].substring(14) +
+                        "</td></tr>");
+                }
+                //tbody.html(list);
+
+
 
                 //定時比對tagArray更新alarmArray
                 var alarmIndex = -1;
@@ -708,10 +744,7 @@ function updateTagList() {
             }
         }
     };
-    xmlHttp.open("POST", "requestTagList", true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
-    xmlHttp.send();
-    //xmlHttp.send("map_id=" + Map_id);
+    xmlHttp.send(JSON.stringify(request));
 }
 
 function drawAnchor(dctx, id, type, x, y) {

@@ -3,6 +3,10 @@
     height: 100%;
 }
 
+.row {
+    margin-left: 30px;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
@@ -56,11 +60,11 @@ fieldset {
 }
 
 #content.right_open {
-    padding-right: 360px;
+    padding-right: 310px;
 }
 
 #content.left_open {
-    padding-left: 200px;
+    padding-left: 300px;
 }
 
 .cvsBlock {
@@ -159,6 +163,17 @@ canvas:active {
     margin-top: -1px;
 }
 
+input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
 .custom-file-download {
     color: #000000;
     background-color: rgba(0, 0, 0, 0);
@@ -174,6 +189,7 @@ canvas:active {
     font-size: 14px;
     cursor: pointer;
 }
+
 
 /**
  *  Dialog內的tr被選取時變色 
@@ -191,51 +207,6 @@ thead th {
     font-size: 12px;
 }
 
-/**
- *  自訂radiobox跟checkbox的樣式
- */
-
-/*input[type=checkbox]:not(old),*/
-input[type=radio]:not(old) {
-    width: 28px;
-    margin: 0;
-    padding: 0;
-    opacity: 0;
-}
-
-/*input[type=checkbox]:not(old)+label {
-    display: inline-block;
-    margin-left: -28px;
-    padding-left: 28px;
-    line-height: 24px;
-    background: url('../image/checks.png') no-repeat 0 -48px;
-}
-
-input[type=checkbox]:not(old):checked+label {
-    background-position: 0 -73px;
-}*/
-
-input[type=radio]:not(old)+label {
-    display: inline-block;
-    margin-left: -24px;
-    padding-left: 28px;
-    line-height: 24px;
-    background: url('../image/checks.png') no-repeat 0 3px;
-}
-
-input[type=radio]:not(old):checked+label {
-    background-position: 0 -22px;
-}
-
-#dialog_alarm_set tr,
-#dialog_alarm_set td {
-    border: none;
-}
-
-#dialog_alarm_set h4 {
-    color: rgb(0, 89, 255);
-}
-
 .nav-tabs a,
 .tab-pane {
     font-weight: bold;
@@ -246,4 +217,24 @@ input[type=radio]:not(old):checked+label {
     overflow: auto;
     width: 300px;
     margin: 10px 10px 0px 0px;
+}
+
+.coordinate {
+    background-color: white;
+    max-width: 100px;
+    border: none;
+}
+
+/* icon navbar */
+.sidebar ul .alarm a,
+.sidebar ul .member a {
+    background: transparent
+}
+
+.sidebar ul .alarm:hover a {
+    background: rgb(240, 107, 98)
+}
+
+.sidebar ul .member:hover a {
+    background: rgb(219, 157, 43)
 }

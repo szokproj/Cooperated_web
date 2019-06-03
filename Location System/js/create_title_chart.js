@@ -203,7 +203,7 @@ $(function () {
                     alert('Please select one node in orgchart');
                     return;
                 } else if ($node[0] === $('.orgchart').find('.node:first')[0]) {
-                    if (!window.confirm('Are you sure you want to delete the whole chart?')) {
+                    if (!window.confirm('Are you sure to delete the whole chart?')) {
                         return;
                     }
                 }

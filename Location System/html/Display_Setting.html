@@ -1,13 +1,14 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <title>Location System</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--JQuery庫-->
+    <!-- JQuery庫 -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
-    <!--BootStrap3-->
+    <!-- BootStrap3 -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
@@ -15,100 +16,54 @@
     <!-- Add icon library -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
         integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
-    <!--編寫css-->
+    <!-- Icon Navbar -->
+    <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
+    <!--Edit css -->
     <link rel="stylesheet" type="text/css" href="../css/member_setting_style.css">
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap_collapsible_navbar.css">
-    <link rel="stylesheet" type="text/css" href="../css/left_nav.css">
-    <script type="text/javascript" src="../js/navbar_setting.js"></script>
+    <!--Edit js-->
     <script type="text/javascript" src="../js/palette.js"></script>
     <script type="text/javascript" src="../js/display_setting.js"></script>
 </head>
 
 <body>
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12" style="background-color:white;">
-                <!-- 最上方黑色區塊 -->
-                <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
-                </div>
-                <div style="height:35px; width:100%;">
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12" style="background-color:white;">
-                <div id="wrapper">
-                    <!-- 導航欄開啟時的遮罩，設定顏色和長寬就可以形成遮罩 -->
-                    <div class="overlay">
-                    </div>
-                    <!-- Sidebar(Left) -->
-                    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
-                        <ul class="nav sidebar-nav">
-                            <li><a href="../index.html">
-                                    <img src="../image/home.png">首頁</a>
-                            </li>
-                            <li><a href="../Member_Setting.html">
-                                    <img src="../image/member_setting.png">人員設置</a>
-                            </li>
-                            <li><a href="../Timeline.html">
-                                    <img src="../image/timeline.png">歷史軌跡</a>
-                            </li>
-                            <li><a href="../Map_Setting.html">
-                                    <img src="../image/map_setting.png">地圖設定</a>
-                            </li>
-                            <li><a href="../Anchor_Setting.html">
-                                    <img src="../image/anchor_setting.png">Anchor設定</a>
-                            </li>
-                            <li><a href="../Tag_Setting.html">
-                                    <img src="../image/tag_setting.png">Tag設定</a>
-                            </li>
-                            <li><a href="../Alarm_Setting.html">
-                                    <img src="../image/alarm_setting.png">Alarm設定</a>
-                            </li>
-                            <li><a href="../Reference.html">
-                                    <img src="../image/research.png">Reference</a>
-                            </li>
-                            <li><a href="../Advance_cmd.html">
-                                    <img src="../image/website.png">Advance
-                                    cmd</a>
-                            </li>
-                            <li><a href="../Update.html">
-                                    <img src="../image/update.png">Update</a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <!-- /#sidebar-wrapper -->
-
-                    <!-- Page Content -->
-                    <div id="page-content-wrapper">
-                        <button type="button" class="hamburger is-closed
-                                    animated fadeInLeft" data-toggle="offcanvas">
-                            <!--<span class="hamb-center"></span>-->
-                            <span class="hamb-top"></span>
-                            <span class="hamb-middle"></span>
-                            <span class="hamb-bottom"></span>
-                        </button>
-                    </div>
-                    <!-- /#page-content-wrapper -->
-                </div>
-            </div>
-        </div>
-
-        <div class="row" style="display:flex;">
-            <div class="col-lg-2" id="left_navbar">
-                <nav class="navbar navbar-default">
-                    <div class="container-fluid">
-                        <ul class="nav navbar-nav">
-                            <li><a href="../Member_Setting.html">成員設定</a></li>
-                            <li class="active"><a href="#">顯示設定</a></li>
-                            <li><a href="../Dept_Setting.html">部門設定</a></li>
-                            <li><a href="../Job_Title_Setting.html">職稱設定</a></li>
-                            <li><a href="../User_Type_Setting.html">用戶類型設定</a></li>
-                        </ul>
-                    </div>
+        <aside class="menu">
+            <div class="menu-left">
+                <nav class="sidebar">
+                    <ul class="nav">
+                        <li><a href="../index.html">
+                                <i class="fas fa-home"></i><span>首頁</span></a></li>
+                        <li class="active"><a href="../Member_Setting.html">
+                                <i class="fas fa-user-cog"></i><span>人員設置</span></a></li>
+                        <li><a href="../Timeline.html">
+                                <i class="fas fa-route"></i><span>歷史軌跡</span></a></li>
+                        <li><a href="../Map_Setting.html">
+                                <i class="fas fa-map"></i><span>地圖設定</span></a></li>
+                        <li><a href="../Anchor_Setting.html">
+                                <i class="fas fa-anchor"></i><span>Anchor設定</span></a></li>
+                        <li><a href="../Alarm_Setting.html">
+                                <i class="fas fa-bell"></i><span>Alarm設定</span></a></li>
+                        <li><a href="../Reference.html">
+                                <i class="fas fa-cogs"></i><span>進階設定</span></a></li>
+                        <hr>
+                        <li class="setting-type"><a href="../Member_Setting.html">
+                                <i class="fas fa-users"></i><span>成員設定</span></a></li>
+                        <li class="setting-type active"><a href="#">
+                                <i class="fas fa-map-marker-alt" style="padding-left:4px;"></i><span>顯示設定</span></a></li>
+                        <li class="setting-type"><a href="../Dept_Setting.html">
+                                <i class="fas fa-sitemap"></i><span>部門設定</span></a></li>
+                        <li class="setting-type"><a href="../Job_Title_Setting.html">
+                                <i class="fas fa-id-card"></i><span>職稱設定</span></a></li>
+                        <li class="setting-type"><a href="../User_Type_Setting.html">
+                                <i class="fas fa-user-tag"></i><span>用戶類型設定</span></a></li>
+                    </ul>
                 </nav>
             </div>
-            <div class="col-lg-4">
+        </aside>
+
+        <div class="row" style="display:flex;">
+            <div class="col-lg-6">
                 <div>
                     <label>分類依據 : </label>
                     <select id="display_type_select">
@@ -138,19 +93,17 @@
                                 <div id="dot_size_slider" style="width:150px"></div>
                             </td>
                             <td><input type="button" id="btn_size_submit" value="送出"></td>
-                            <!--disabled-->
                         </tr>
                     </table>
                 </div>
             </div>
             <div class="col-lg-6" style="top:50px;">
-                <span>
-                    <label for="load_image" class="load-file">
-                        載入測試地圖&nbsp;<i class="far fa-images"></i>
-                    </label>
-                    <input type="file" id="load_image" accept="image/*" onchange="loadFile(this)">
-                </span>
                 <canvas id="canvas_preview" class="draw-map"></canvas>
+                <br>
+                <label for="load_image" class="load-file">
+                    載入測試地圖&nbsp;<i class="far fa-images"></i>
+                </label>
+                <input type="file" id="load_image" accept="image/*" onchange="loadFile(this)">
             </div>
         </div>
     </div>

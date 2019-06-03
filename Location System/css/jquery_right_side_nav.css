@@ -39,7 +39,7 @@ aside button {
 .page-main>aside .main-place {
     margin-top: 10px;
     padding: 10px;
-    top: 30px;
+    top: 0px;
     position: fixed;
 }
 

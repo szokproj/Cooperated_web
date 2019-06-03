@@ -3,6 +3,7 @@ var deptColorArray = [];
 var titleColorArray = [];
 var userTypeColorArray = [];
 var userTypeArr = [];
+var alarmGroupArr = [];
 var dotTypeArr = ["部門", "職稱", "用戶類型", "自訂"];
 var statusArr = ["無", "在職", "已離職"];
 var genderArr = ["男", "女"];
@@ -106,47 +107,76 @@ $(function () {
     });
 });
 
+function getAlarmGroupList() {
+
+}
+
 
 function UpdateMemberList() {
-    var request = {
+    var getAlarmGroupReq = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetStaffs"]
+        "Command_Name": ["GetAlarmGroup_list"]
     };
-    var xmlHttp = createJsonXmlHttp("sql"); //updateMemberList
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            try {
-                var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
-                    $("#table_member_setting tbody").empty(); //先重置表格
-                    var memberArray = revObj.Values;
-                    for (var i = 0; i < memberArray.length; i++) {
-                        var tr_id = "tr_member_" + i;
-                        var number = memberArray[i].number;
-                        $("#table_member_setting tbody").append("<tr id=\"" + tr_id + "\">" +
-                            "<td><input type=\"checkbox\" name=\"chkbox_members\" value=\"" + number + "\"" +
-                            " onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (i + 1) + "</td>" +
-                            "<td>" + memberArray[i].tag_id + "</td>" +
-                            "<td>" + number + "</td>" +
-                            "<td>" + memberArray[i].Name + "</td>" +
-                            "<td>" + memberArray[i].department + "</td>" +
-                            "<td>" + memberArray[i].jobTitle + "</td>" +
-                            "<td>" + memberArray[i].type + "</td>" +
-                            "<td>" + "" + "</td>" + //memberArray[i].alarm_group_id
-                            "<td>" + memberArray[i].note + "</td>" +
-                            "<td><button class=\"btn btn-primary\"" +
-                            " onclick=\"editMemberData(\'" + number + "\')\">編輯" +
-                            "</button></td>" +
-                            "</tr>");
+    var getXmlHttp = createJsonXmlHttp("sql");
+    getXmlHttp.onreadystatechange = function () {
+        if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            var revList = revObj.Values;
+            if (revObj.success > 0 && revList) {
+                alarmGroupArr = [];
+                revList.forEach(element => {
+                    alarmGroupArr.push({
+                        id: element.alarm_gid,
+                        name: element.alarm_group_name
+                    });
+                });
+                var request = {
+                    "Command_Type": ["Read"],
+                    "Command_Name": ["GetStaffs"]
+                };
+                var xmlHttp = createJsonXmlHttp("sql"); //updateMemberList
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (revObj.success > 0) {
+                            $("#table_member_setting tbody").empty(); //先重置表格
+                            var memberArray = revObj.Values;
+                            if (memberArray) {
+                                for (var i = 0; i < memberArray.length; i++) {
+                                    var tr_id = "tr_member_" + i;
+                                    var number = memberArray[i].number;
+                                    var alarm_index = alarmGroupArr.findIndex(function (array) {
+                                        return array.id == memberArray[i].alarm_group_id;
+                                    });
+                                    var alarm_group_name = alarm_index > -1 ? alarmGroupArr[alarm_index].name : "";
+                                    $("#table_member_setting tbody").append("<tr id=\"" + tr_id + "\">" +
+                                        "<td><input type=\"checkbox\" name=\"chkbox_members\" value=\"" + number +
+                                        "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (i + 1) + "</td>" +
+                                        "<td>" + memberArray[i].tag_id + "</td>" +
+                                        "<td>" + number + "</td>" +
+                                        "<td>" + memberArray[i].Name + "</td>" +
+                                        "<td>" + memberArray[i].department + "</td>" +
+                                        "<td>" + memberArray[i].jobTitle + "</td>" +
+                                        "<td>" + memberArray[i].type + "</td>" +
+                                        "<td>" + alarm_group_name + "</td>" +
+                                        "<td>" + memberArray[i].note + "</td>" +
+                                        "<td><button class=\"btn btn-primary\"" +
+                                        " onclick=\"editMemberData(\'" + number + "\')\">編輯" +
+                                        "</button></td>" +
+                                        "</tr>");
+                                }
+                                displayBar("table_member_setting");
+                            }
+                        } else {
+                            alert("取得人員資料失敗!");
+                        }
                     }
-                    displayBar("table_member_setting");
-                }
-            } catch (ignore) {
-                console.warn(ignore.message);
+                };
+                xmlHttp.send(JSON.stringify(request));
             }
         }
     };
-    xmlHttp.send(JSON.stringify(request));
+    getXmlHttp.send(JSON.stringify(getAlarmGroupReq));
 }
 
 
@@ -174,10 +204,12 @@ function editMemberData(number) {
                 $("#main_jobTitle").val(revInfo.jobTitle);
                 $("#hidden_jobTitle").val(revInfo.jobTitle_id);
                 $("#main_type").html(createOptions(userTypeArr, revInfo.type));
-                if (revInfo.file_ext == "" || revInfo.photo == "")
-                    $("#main_picture_img").attr("src", "");
-                else
-                    $("#main_picture_img").attr("src", "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo);
+                if (revInfo.file_ext == "" || revInfo.photo == "") {
+                    adjustImageSize("");
+                } else {
+                    var src = "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
+                    adjustImageSize(src);
+                }
                 $("#main_select_tag_color").html(createOptions(dotTypeArr, revInfo.color_type));
                 selectTagColor(); //依照畫點依據的內容代入已設定的顏色，未設定則採用預設顏色
                 var color_type_index = $("#main_select_tag_color").children('option:selected').index();
@@ -185,7 +217,7 @@ function editMemberData(number) {
                     $("#main_input_tag_color").val(colorToHex(revInfo.color));
                     $("#main_input_tag_color").css("background-color", colorToHex(revInfo.color));
                 }
-                //$("#main_alarm_group").val(createOptions(alarmGroupArr, revInfo.alarm_group_id));
+                $("#main_alarm_group").html(displayNameOptions(alarmGroupArr, revInfo.alarm_group_id));
                 $("#basic_state").html(createOptions(statusArr, revInfo.status));
                 $("#basic_gender").html(createOptions(genderArr, revInfo.gender));
                 $("#basic_last_name").val(revInfo.lastName);
@@ -213,7 +245,7 @@ function editMemberData(number) {
 }
 
 
-function getOneMemberPhoto(number) {
+/*function getOneMemberPhoto(number) {
     var request = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetOneStaffPhoto"],
@@ -233,7 +265,7 @@ function getOneMemberPhoto(number) {
         }
     };
     xmlHttp.send(JSON.stringify(request));
-}
+}*/
 
 function transBase64(file) {
     //file transform base64
@@ -242,7 +274,7 @@ function transBase64(file) {
         FR.readAsDataURL(file);
         FR.onloadend = function (e) {
             var base64data = e.target.result;
-            $("#main_picture_img").attr("src", base64data);
+            adjustImageSize(base64data);
         };
     }
 }
@@ -284,27 +316,26 @@ function convertTobase64(file) {
 }
 
 function adjustImageSize(src) {
-    var thumb_width = parseFloat($("#main_picture_img").css("width"));
-    var thumb_height = parseFloat($("#main_picture_img").css("height"));
-    var img = new Image();
-    var width = thumb_width,
-        height = thumb_height;
-    img.src = src;
-    img.onload = function () {
-        var imgSize = img.width / img.height;
-        var thumbSize = thumb_width / thumb_height;
-        if (imgSize > thumbSize) { //原圖比例寬邊較長
-            width = thumb_width;
-            height = img.height * (thumb_width / img.width);
-        } else {
-            width = img.width * (thumb_height / img.height);
-            height = thumb_height;
+    var thumb_width = $("#main_picture_block").css('max-width');
+    var thumb_height = $("#main_picture_block").css('max-height');
+    if (src.length > 0) {
+        var img = new Image();
+        img.src = src;
+        img.onload = function () {
+            var thumbSize = thumb_width / thumb_height;
+            var imgSize = img.width / img.height;
+            if (imgSize > thumbSize) { //原圖比例寬邊較長
+                $("#main_picture_img").attr('src', src);
+                $("#main_picture_img").width(thumb_width).height(img.height * (thumb_width / img.width));
+            } else {
+                $("#main_picture_img").attr('src', src);
+                $("#main_picture_img").width(img.width * (thumb_height / img.height)).height(thumb_height);
+            }
         }
+    } else {
+        $("#main_picture_img").attr('src', '');
+        $("#main_picture_img").width(thumb_width).height(thumb_height);
     }
-    return {
-        width: width,
-        height: height
-    };
 }
 
 
@@ -328,8 +359,7 @@ function addMemberData() {
     $("#main_input_tag_color").css("background-color", default_color);
     $("#main_display_color").attr("type", "text"); //顯示不可選顏色
     $("#main_display_color").css("background-color", default_color);
-    /*$("#main_access").val();
-    $("#main_duration").val();*/
+    $("#main_alarm_group").html(displayNameOptions(alarmGroupArr, ""));
     $("#basic_state").html(createOptions(statusArr, ""));
     $("#basic_gender").html(createOptions(genderArr, ""));
     $("#basic_last_name").val("");
@@ -449,6 +479,19 @@ function createOptions(array, select) {
             options += "<option value=\"" + array[i] + "\">" + array[i] + "</option>";
         }
     }
+    return options;
+}
+
+function displayNameOptions(array, select_id) {
+    var options = "";
+    array.forEach(element => {
+        if (element.id == select_id) {
+            options += "<option value=\"" + element.id + "\" selected=\"selected\">" +
+                element.name + "</option>";
+        } else {
+            options += "<option value=\"" + element.id + "\">" + element.name + "</option>";
+        }
+    });
     return options;
 }
 

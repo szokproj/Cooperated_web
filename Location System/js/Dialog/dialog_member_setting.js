@@ -6,7 +6,7 @@ function setCommand(name) {
     if (name == "add")
         command_name = ["AddStaff"];
     else if (name == "edit")
-        command_name = ["DeleteStaff", "AddStaff"];
+        command_name = ["EditStaff"];
     else
         return;
 }
@@ -162,21 +162,25 @@ $(function () {
         main_dept = $("#main_department"),
         main_title = $("#main_jobTitle"),
         main_type = $("#main_type"),
+        main_alarm_group = $("#main_alarm_group"),
         allFields = $([]).add(main_tag_id, main_card_id, main_number,
-            main_name, main_dept, main_title, main_type);
+            main_name, main_dept, main_title, main_type, main_alarm_group);
     //tips = $( ".validateTips" );
 
     $("#main_select_tag_color").change(selectTagColor);
 
     var SendResult = function () {
         allFields.removeClass("ui-state-error");
-        var valid = true, photo_ext = "", photo_base64 = "";
-        valid = valid && checkLength(main_tag_id, "main set", 0, 20);
-        valid = valid && checkLength(main_number, "main set", 0, 20);
-        valid = valid && checkLength(main_name, "main set", 0, 20);
-        valid = valid && checkLength(main_dept, "main set", 0, 20);
-        valid = valid && checkLength(main_title, "main set", 0, 20);
-        valid = valid && checkLength(main_type, "main set", 0, 10);
+        var valid = true,
+            photo_ext = "",
+            photo_base64 = "";
+        valid = valid && checkLength(main_tag_id, "main set", 1, 20);
+        valid = valid && checkLength(main_number, "main set", 1, 50);
+        valid = valid && checkLength(main_name, "main set", 1, 50);
+        valid = valid && checkLength(main_dept, "main set", 1, 50);
+        valid = valid && checkLength(main_title, "main set", 1, 50);
+        valid = valid && checkLength(main_type, "main set", 1, 50);
+        valid = valid && checkLength(main_alarm_group, "main set", 1, 50);
 
         if ($("#main_picture_img").attr("src").length > 0) {
             var photo_file = $("#main_picture_img").attr("src").split(",");
@@ -203,6 +207,7 @@ $(function () {
                     "file_ext": photo_ext,
                     "color_type": $("#main_select_tag_color").val(),
                     "color": colorToHex($("#main_input_tag_color").val()),
+                    "alarm_group_id": main_alarm_group.val(),
                     "status": $("#basic_state").val(),
                     "gender": $("#basic_gender").val(),
                     "lastName": $("#basic_last_name").val(),

@@ -1,4 +1,10 @@
+var mapArray = [];
+
 window.addEventListener("load", loadMap, false);
+
+function setMapArray(new_mapInfos) {
+    mapArray = new_mapInfos.slice(0);
+}
 
 function loadMap() {
     $("#maps_gallery").empty();
@@ -11,7 +17,7 @@ function loadMap() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
-                var mapArray = revObj.Values.slice(0); //利用抽離全部陣列完成陣列拷貝;
+                setMapArray(revObj.Values); //利用抽離全部陣列完成陣列拷貝;
                 if (mapArray) {
                     for (i = 0; i < mapArray.length; i++) {
                         var map = "map_id_" + mapArray[i].map_id;
@@ -24,7 +30,7 @@ function loadMap() {
                             "<div class=\"caption\"><table style='width:100%;'><tr>" +
                             "<th style=\"width:90px;\">Map Name:</th>" +
                             "<th style=\"width:50%;\"><span name=\"" + map + "\">" + mapArray[i].map_name + "</span></th>" +
-                            "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + mapArray + "\',\'" + mapArray[i].map_id + "\')\">設定</button></th>" +
+                            "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + mapArray[i].map_id + "\')\">設定</button></th>" +
                             "<th><button class='btn btn-primary' onclick=\"deleteMap(\'" + mapArray[i].map_id + "\')\">刪除</button></th>" +
                             "</tr></table></div>" +
                             "</div>");
@@ -44,7 +50,7 @@ function confirmHrefType(href) {
         return false;
 }
 
-function setMapById(mapArray, id) { //點擊設定:開啟設定視窗
+function setMapById(id) { //點擊設定:開啟設定視窗
     var index = mapArray.findIndex(function (info) {
         return info.map_id == id;
     });
@@ -118,8 +124,8 @@ function deleteMap(id) {
 
 function adjustImageSize(src) {
     var img = new Image();
-    var thumb_width = parseFloat($("#new_map_block").css("width"));
-    var thumb_height = parseFloat($("#new_map_block").css("height"));
+    var thumb_width = $("#new_map_block").css("max-width");
+    var thumb_height = $("#new_map_block").css("max-height");
     var width = thumb_width,
         height = thumb_height;
     img.src = src;
@@ -128,9 +134,9 @@ function adjustImageSize(src) {
         var thumbSize = thumb_width / thumb_height;
         if (imgSize > thumbSize) { //原圖比例寬邊較長
             width = thumb_width;
-            height = imgSize.height * (thumb_width / imgSize.width);
+            height = img.height * (thumb_width / img.width);
         } else {
-            width = img.width * (thumb_height / imgSize.height);
+            width = img.width * (thumb_height / img.height);
             height = thumb_height;
         }
     }

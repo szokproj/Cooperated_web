@@ -148,7 +148,7 @@ function updateTypeList() {
 function addType() {
     change = "add"
     $("#set_type_name").val("");
-    $("#set_type_name").attr("readonly", false);
+    $("#set_type_name").attr("disabled", false);
     $("#edit_tip").text("");
     $("#set_dot_color").val(default_color);
     $("#set_dot_color").css('background-color', default_color);
@@ -162,7 +162,7 @@ function editType(name, color) {
     color = typeof (color) != 'undefined' ? color : "";
     change = "edit";
     $("#set_type_name").val(name);
-    $("#set_type_name").attr("readonly", true);
+    $("#set_type_name").attr("disabled", true);
     $("#edit_tip").text("Type為Key，不可修改");
     var hex_color = colorToHex(color);
     $("#set_dot_color").val(hex_color);
