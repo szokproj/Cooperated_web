@@ -30,7 +30,8 @@
     <script type="text/javascript" src="../js/alarm_setting.js"></script>
     <script type="text/javascript" src="../js/time_slot_setting.js"></script>
     <script type="text/javascript" src="../js/time_slot_group_setting.js"></script>
-    <script type="text/javascript" src="../js/electronic_fence_set.js"></script>
+    <script type="text/javascript" src="../js/set_electronic_fence.js"></script>
+    <script type="text/javascript" src="../js/set_black_white_list.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_alarm_set.js"></script>
@@ -53,11 +54,15 @@
                         <li><a href="../Map_Setting.html">
                                 <i class="fas fa-map"></i><span>地圖設定</span></a></li>
                         <li><a href="../Anchor_Setting.html">
-                                <i class="fas fa-anchor"></i><span>Anchor設定</span></a></li>
+                                <i class="fas fa-anchor"></i><span>裝置設定</span></a></li>
                         <li class="active"><a href="../Alarm_Setting.html">
-                                <i class="fas fa-bell"></i><span>Alarm設定</span></a></li>
+                                <i class="fas fa-bell"></i><span>警報設定</span></a></li>
                         <li><a href="../Reference.html">
                                 <i class="fas fa-cogs"></i><span>進階設定</span></a></li>
+                        <li class="excel"><a href="#">
+                                <i class="fas fa-sign-in-alt"></i><span>匯入</span></a></li>
+                        <li class="excel"><a href="#">
+                                <i class="fas fa-sign-out-alt"></i><span>匯出</span></a></li>
                         <hr>
                     </ul>
                 </nav>
@@ -68,9 +73,9 @@
         <ul class="nav nav-tabs">
             <!--<li><a dat
             a-toggle="tab" href="#tab_start_setting">顯示設定</a></li>-->
-            <li><a data-toggle="tab" href="#tab_alarm_setting">警報設定</a></li>
+            <li class="active"><a data-toggle="tab" href="#tab_alarm_setting">警報設定</a></li>
             <li><a data-toggle="tab" href="#tab_time_setting">時段設定</a></li>
-            <li class="active"><a data-toggle="tab" href="#tab_fence_setting">圍籬設定</a></li>
+            <li><a data-toggle="tab" href="#tab_fence_setting">圍籬設定</a></li>
         </ul>
         <div class="tab-content">
             <!--<div id="tab_start_setting" class="tab-pane fade">
@@ -183,7 +188,7 @@
                     <div class="col-lg-3"></div>
                 </div>
             </div>-->
-            <div id="tab_alarm_setting" class="tab-pane fade">
+            <div id="tab_alarm_setting" class="tab-pane fade in active">
                 <div class="row">
                     <div class="col-lg-12" style="background-color:white;">
                         <h3>自訂警報群組</h3>
@@ -255,9 +260,9 @@
                     </div>
                 </div>
             </div>
-            <div id="tab_fence_setting" class="tab-pane fade in active">
+            <div id="tab_fence_setting" class="tab-pane fade">
                 <div class="row" style="margin-top:20px;">
-                    <div class="col-lg-8" style="background-color:white;">
+                    <div class="col-lg-7" style="background-color:white;">
                         <div class="cvsBlock" id="mapBlock">
                             <canvas id="canvas_map" style="height:1px; width:1px;">
                                 此瀏覽器不支援canvas，請更換成Chrome瀏覽器
@@ -268,18 +273,18 @@
                             Y:<input type="text" id="y" class="coordinate" disabled>
                         </div>
                     </div>
-                    <div class="col-lg-4" style="background-color:white;">
-                        <label>選擇地圖 : </label>
-                        <select id="select_map"></select>
+                    <div class="col-lg-5" style="background-color:white;">
+                        <!--<label>選擇地圖 : </label>
+                        <select id="select_map"></select>-->
                         <br>
                         <div style="margin-bottom:20px;">
                             <nav class="sidebar-menu">
                                 <ul class="nav">
-                                    <!--Load Map
-                                    <li><label for="menu_load_map" class="btn-sidebar" title="load new map">
+                                    <!--Select Map-->
+                                    <li><label for="menu_select_map" class="btn-sidebar" title="Select map">
                                             <i class="far fa-image" style='font-size:20px;'></i></label>
-                                        <input id="menu_load_map" type="file" accept="image/*" /></li>
-                                    -->
+                                        <!--<input id="menu_select_map" type="file" accept="image/*" />-->
+                                        <select id="menu_select_map" class="btn-hidden"></select></li>
                                     <!--Restore Size-->
                                     <li><label for="menu_resize" id="label_resize" class="btn-sidebar" title="恢復原比例">
                                             <i class="fas fa-expand" style='font-size:20px;'></i></label>
@@ -287,19 +292,23 @@
                                     <!--Fence Info-->
                                     <li><label for="menu_fence_info" id="label_fence_info" class="btn-sidebar"
                                             title="圍籬資訊">
-                                            <i class="fas fa-file-alt" style='font-size:20px;'></i></label>
+                                            <i class="fas fa-info-circle" style='font-size:20px;'></i></label>
                                         <input id="menu_fence_info" type="button" class="btn-hidden" /></li>
                                     <!--Fence Dot List-->
                                     <li><label for="menu_fence_dot_list" id="label_fence_dot_list" class="btn-sidebar"
                                             title="圍籬點座標">
-                                            <i class="fas fa-draw-polygon" style='font-size:20px;'></i></label>
+                                            <i class="fas fa-vector-square" style='font-size:20px;'></i></label>
                                         <input id="menu_fence_dot_list" type="button" class="btn-hidden" /></li>
+                                    <!--Fence Dot List-->
+                                    <li><label for="menu_BW_list" id="label_BW_list" class="btn-sidebar" title="黑白名單">
+                                            <i class="fas fa-file-alt" style='font-size:20px;'></i></label>
+                                        <input id="menu_BW_list" type="button" class="btn-hidden" /></li>
                                 </ul>
                             </nav>
                         </div>
                         <br>
-                        <div id="block_fence_setting">
-                            <label>圍籬設定 : </label><br>
+                        <div id="block_fence_info">
+                            <label>設定圍籬ID與名稱 : </label><br>
                             <span>
                                 <!--Add-->
                                 <label for="btn_fence_add" id="label_fence_add" class="btn-add"
@@ -325,8 +334,8 @@
                                 </table>
                             </div>
                         </div>
-                        <div id="block_fence_dot_setting">
-                            <label>圍籬座標設定 : </label><br>
+                        <div id="block_fence_dot_list">
+                            <label>設定圍籬座標 : </label><br>
                             <span>
                                 <!--Add Pos-->
                                 <label for="btn_fence_dot_position" id="label_fence_dot_position" class="btn-add-pos"
@@ -354,6 +363,53 @@
                                     </thead>
                                     <tbody></tbody>
                                 </table>
+                            </div>
+                        </div>
+                        <div id="block_BW_list">
+                            <label>設定黑白名單 : </label><br>
+                            <label>選擇圍籬 : </label>
+                            <select id="select_fence"></select><br>
+                            <label>名單類型 : </label>
+                            <input type="radio" name="BW_list_type" value="Black" checked /> Black
+                            <input type="radio" name="BW_list_type" value="White" /> White
+                            <div style="display:flex; text-align: center;">
+                                <span class="block-bw-list">
+                                    <label class="bw-list-title">黑名單</label> <!-- 預設黑名單 -->
+                                    <table id="table_BW_list" class="table-line-gray">
+                                        <thead>
+                                            <tr class="ui-widget-header">
+                                                <th>Item</th>
+                                                <th>Number</th>
+                                                <th>Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </span>
+                                <span style="width:6%; margin-top:200px; display: inline-block;">
+                                    <!--Add-->
+                                    <label for="btn_BW_list_add" id="label_BW_list_add" class="btn-arrow" title="加入名單">
+                                        <i class="fas fa-caret-square-left" style='font-size:20px;'></i></label>
+                                    <input id="btn_BW_list_add" type="button" class="btn-hidden" /><br>
+                                    <!--Delete-->
+                                    <label for="btn_BW_list_delete" id="label_BW_list_delete" class="btn-arrow"
+                                        title="從名單內移除"><i class="fas fa-caret-square-right"
+                                            style='font-size:20px;'></i></label>
+                                    <input id="btn_BW_list_delete" type="button" class="btn-hidden" />
+                                </span>
+                                <span class="block-bw-list">
+                                    <label class="bw-list-title">未選入的人員名單</label>
+                                    <table id="table_member_list" class="table-line-gray">
+                                        <thead>
+                                            <tr class="ui-widget-header">
+                                                <th>Item</th>
+                                                <th>Number</th>
+                                                <th>Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </span>
                             </div>
                         </div>
                     </div>

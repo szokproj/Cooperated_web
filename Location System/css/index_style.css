@@ -101,6 +101,10 @@ canvas:active {
     font-size: 12px;
 }
 
+.selected {
+    background-color: rgb(30, 88, 141);
+}
+
 .dropdown {
     display: inline-block;
     font-size: 14px;
@@ -120,7 +124,7 @@ canvas:active {
     height: 100%;
     display: block;
     border: none;
-    padding: 10px 0px 10px 30px;
+    padding: 5px 0px 5px 30px;
     text-decoration: none;
     text-align: left;
     font-family: Sans-serif;
@@ -163,6 +167,17 @@ canvas:active {
     margin-top: -1px;
 }
 
+.nav-tabs .tab_map_btn {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
 input[type="file"] {
     position: absolute;
     width: 1px;
@@ -190,6 +205,38 @@ input[type="file"] {
     cursor: pointer;
 }
 
+.btn-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.btn-icon {
+    cursor: pointer;
+    color: rgb(0, 119, 255);
+    font-size: 20px;
+    margin: 0px 5px 0px 5px;
+}
+
+.btn-icon:hover {
+    color: rgb(90, 158, 236);
+}
+
+.btn-delete {
+    cursor: pointer;
+    color: rgb(255, 38, 38);
+    font-size: 20px;
+    margin: 0px 5px 0px 5px;
+}
+
+.btn-delete:hover {
+    color: rgb(255, 113, 113);
+}
 
 /**
  *  Dialog內的tr被選取時變色 
@@ -226,15 +273,20 @@ thead th {
 }
 
 /* icon navbar */
-.sidebar ul .alarm a,
-.sidebar ul .member a {
-    background: transparent
+.menu-left ul .alarm a,
+.menu-left ul .member a,
+.menu-left ul .start a  {
+    background: transparent;
 }
 
-.sidebar ul .alarm:hover a {
+.menu-left ul .alarm:hover a {
     background: rgb(240, 107, 98)
 }
 
-.sidebar ul .member:hover a {
+.menu-left ul .member:hover a {
     background: rgb(219, 157, 43)
+}
+
+.menu-left ul .start:hover a {
+    background: rgb(4, 143, 124)
 }

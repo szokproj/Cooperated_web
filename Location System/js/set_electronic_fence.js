@@ -45,26 +45,45 @@ function setupCanvas() {
     cvsBlock.addEventListener("DOMMouseScroll", handleMouseWheel, false); // for Firefox
 
     $(function () {
-        $("#block_fence_dot_setting").hide();
+        resetBlockDisplay();
+        $("#block_fence_info").show();
         $("#label_fence_info").css('background-color', 'rgb(40, 108, 197)');
         $("#menu_fence_info").on('click', function () {
-            $("#block_fence_dot_setting").hide();
-            $("#block_fence_setting").show();
+            resetBlockDisplay();
+            $("#block_fence_info").show();
             $("#label_fence_info").css('background-color', 'rgb(40, 108, 197)');
-            $("#label_fence_dot_list").css('background-color', 'rgb(57, 143, 255)');
         });
         $("#menu_fence_dot_list").on('click', function () {
-            $("#block_fence_setting").hide();
-            $("#block_fence_dot_setting").show();
+            resetBlockDisplay();
+            $("#block_fence_dot_list").show();
             $("#label_fence_dot_list").css('background-color', 'rgb(40, 108, 197)');
-            $("#label_fence_info").css('background-color', 'rgb(57, 143, 255)');
+        });
+        $("#menu_BW_list").on('click', function () {
+            resetBlockDisplay();
+            $("#block_BW_list").show();
+            $("#label_BW_list").css('background-color', 'rgb(40, 108, 197)');
         });
         $("#menu_resize").on('click', resizeCanvas);
         $("#select_map").on('change', function () {
-            setMapById($(this).val());
+            if ($(this).val() == '')
+                resetCanvas();
+            else
+                setMapById($(this).val());
         });
         loadMaps();
+
+        getMemberList();
+        $("#btn_BW_list_add").on('click', addMembers);
     });
+}
+
+function resetBlockDisplay() {
+    $("#block_fence_info").hide();
+    $("#block_fence_dot_list").hide();
+    $("#block_BW_list").hide();
+    $("#label_fence_info").css('background-color', 'rgb(57, 143, 255)');
+    $("#label_fence_dot_list").css('background-color', 'rgb(57, 143, 255)');
+    $("#label_BW_list").css('background-color', 'rgb(57, 143, 255)');
 }
 
 function loadMaps() {
@@ -79,6 +98,7 @@ function loadMaps() {
             if (revObj.success > 0) {
                 var revInfo = revObj.Values;
                 mapArray = [];
+                $("#select_map").html("<option value=\"''\" selected=\"selected\">請選擇</option>")
                 revInfo.forEach(v => {
                     mapArray.push({
                         id: v.map_id,
@@ -87,18 +107,17 @@ function loadMaps() {
                         file_ext: v.map_file_ext,
                         scale: v.map_scale
                     });
+                    $("#select_map").append("<option value=\"" + v.map_id + "\">" + v.map_name + "</option>");
                 });
-                $("#select_map").append(displayNameOptions(mapArray, mapArray[0].id));
-                //初始化
-                map_id = mapArray[0].id;
-                setMapById(map_id);
             }
         }
     };
     xmlHttp.send(JSON.stringify(requestArray));
 }
 
+
 function setMapById(id) { //選擇地圖(下拉選單)後，依據map_id抓取對應資訊
+    map_id = id;
     var index = mapArray.findIndex(function (map_info) {
         return map_info.id == id;
     });

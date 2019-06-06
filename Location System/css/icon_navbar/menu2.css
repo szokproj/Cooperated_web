@@ -6,12 +6,12 @@
  * 																*
 ****************************************************************/
 body,html{font-weight: bold;font-family: 'Microsoft JhengHei', 'sans-serif';}
-.sidebar ul li.active a,.sidebar ul li:hover a{background: rgb(112, 196, 221)}
+.sidebar ul li.active a,.sidebar ul li:hover a{background: rgb(128, 192, 201)}
 .sidebar>.nav>li.active{border-left-color: rgb(255, 228, 193)}
 .menu{z-index: 1000;position: fixed;width: 52px;top: 0;left: 0;bottom: 0;line-height: 2.5;-webkit-backface-visibility: hidden;-moz-backface-visibility: hidden;backface-visibility: hidden;background-color: rgb(0, 0, 0);-webkit-transition: width .2s cubic-bezier(.35,0,.25,1),translate .2s cubic-bezier(.35,0,.25,1);-o-transition: width .2s cubic-bezier(.35,0,.25,1),translate .2s cubic-bezier(.35,0,.25,1);transition: width .2s cubic-bezier(.35,0,.25,1),translate .2s cubic-bezier(.35,0,.25,1)}
 .menu .menu-left{background: rgb(0, 0, 0);transition: .5s;height: 100%;width: 52px;overflow: hidden}
 .menu-left,.sidebar>.nav>li{-webkit-transition: width .2s cubic-bezier(.35,0,.25,1);-o-transition: width .2s cubic-bezier(.35,0,.25,1);transition: width .2s cubic-bezier(.35,0,.25,1)}
-.sidebar{background: none;overflow-x: hidden;height: 100%;-webkit-overflow-scrolling: touch}
+.sidebar{background: none;overflow: hidden;height: 100%;-webkit-overflow-scrolling: touch}
 .sidebar>.nav{position: relative;list-style: none;padding: 0;margin: 0}
 .sidebar>.nav>li>a>span{-webkit-animation: fadeIn 1s;-o-animation: fadeIn 1s;animation: fadeIn 1s}
 .sidebar>.nav>li{border-left: 3px solid transparent;-webkit-transition: border-left-color .4s ease;-o-transition: border-left-color .4s ease;transition: border-left-color .4s ease}
@@ -30,3 +30,7 @@ body,html{font-weight: bold;font-family: 'Microsoft JhengHei', 'sans-serif';}
 .menu .menu-left:hover{width: 200px}
 .menu .menu-left:hover .sidebar ul li a{width: 200px}
 .menu .menu-left:hover .sidebar hr{width: 200px}
+
+/* custom */
+.sidebar ul .excel a  {background: transparent}
+.sidebar ul .excel:hover a {background: rgb(128, 192, 201)}

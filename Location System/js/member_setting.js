@@ -107,9 +107,6 @@ $(function () {
     });
 });
 
-function getAlarmGroupList() {
-
-}
 
 
 function UpdateMemberList() {
@@ -428,15 +425,79 @@ function multiEditData() {
     }
     $("#multi_edit_title").text("");
     $("#multi_edit_item").children("option:eq(0)").prop("selected", true);
+    $("#multi_edit_value").html("");
     $("#multi_edit_item").change(function () {
-        var item = $(this).val()
+        var item = $(this).val();
         $("#multi_edit_title").text(item);
         if (item == "department") {
-            $("#multi_edit_value").html(createOptions(deptArr, ""));
+            var request = {
+                "Command_Type": ["Read"],
+                "Command_Name": ["GetDepartment_relation_list"]
+            };
+            var xmlHttp = createJsonXmlHttp("sql");
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    var revObj = JSON.parse(this.responseText);
+                    if (revObj.success > 0) {
+                        //var revInfo = typeof (revObj.Values) != 'undefined' ? revObj.Values : [];
+                        var deptArr = [];
+                        var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
+                        revInfo.forEach(element => {
+                            deptArr.push({
+                                id: element.c_id,
+                                name: element.children
+                            });
+                        });
+                        $("#multi_edit_value").html(displayNameOptions(deptArr, deptArr[0].id));
+                    }
+                }
+            };
+            xmlHttp.send(JSON.stringify(request));
         } else if (item == "jobTitle") {
-            $("#multi_edit_value").html(createOptions(titleArr, ""));
+            var request = {
+                "Command_Type": ["Read"],
+                "Command_Name": ["GetJobTitle_relation_list"]
+            };
+            var xmlHttp = createJsonXmlHttp("sql");
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    var revObj = JSON.parse(this.responseText);
+                    if (revObj.success > 0) {
+                        //var revInfo = typeof (revObj.Values) != 'undefined' ? revObj.Values : [];
+                        var titleArr = [];
+                        var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
+                        revInfo.forEach(element => {
+                            titleArr.push({
+                                id: element.c_id,
+                                name: element.children
+                            });
+                        });
+                        $("#multi_edit_value").html(displayNameOptions(titleArr, titleArr[0].id));
+                    }
+                }
+            };
+            xmlHttp.send(JSON.stringify(request));
         } else if (item == "type") {
-            $("#multi_edit_value").html(createOptions(typeArr, ""));
+            var request = {
+                "Command_Type": ["Read"],
+                "Command_Name": ["GetUserTypes"]
+            };
+            var xmlHttp = createJsonXmlHttp("sql");
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    var revObj = JSON.parse(this.responseText);
+                    if (revObj.success > 0) {
+                        //var revInfo = typeof (revObj.Values) != 'undefined' ? revObj.Values : [];
+                        var typeArr = [];
+                        var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
+                        revInfo.forEach(element => {
+                            typeArr.push(element.type);
+                        });
+                        $("#multi_edit_value").html(createOptions(typeArr, typeArr[0]));
+                    }
+                }
+            };
+            xmlHttp.send(JSON.stringify(request));
         } else {
             return;
         }
@@ -444,27 +505,6 @@ function multiEditData() {
     $("#multi_edit_item").removeClass("ui-state-error");
     $("#multi_edit_value").removeClass("ui-state-error");
     $("#dialog_multi_edit").dialog("open");
-}
-
-
-function createJsonXmlHttp(url) {
-    var xmlHttp = null;
-    try { // Firefox, Opera 8.0+, Safari
-        xmlHttp = new XMLHttpRequest();
-    } catch (e) { //Internet Explorer
-        try {
-            xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
-            xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-    }
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
-    xmlHttp.open("POST", url, true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
-    return xmlHttp;
 }
 
 function createOptions(array, select) {

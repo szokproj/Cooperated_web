@@ -28,8 +28,8 @@ function loadMap() {
                             "<img src=\"" + src + "\" width=\"" + img_size.width + "\" height=\"" + img_size.height + "\">" +
                             "</div>" +
                             "<div class=\"caption\"><table style='width:100%;'><tr>" +
-                            "<th style=\"width:90px;\">Map Name:</th>" +
-                            "<th style=\"width:50%;\"><span name=\"" + map + "\">" + mapArray[i].map_name + "</span></th>" +
+                            "<th style=\"width:120px;\"><label>Map name:</label></th>" +
+                            "<th style=\"width:50%;\"><label name=\"" + map + "\">" + mapArray[i].map_name + "</label></th>" +
                             "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + mapArray[i].map_id + "\')\">設定</button></th>" +
                             "<th><button class='btn btn-primary' onclick=\"deleteMap(\'" + mapArray[i].map_id + "\')\">刪除</button></th>" +
                             "</tr></table></div>" +

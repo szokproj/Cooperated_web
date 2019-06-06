@@ -134,6 +134,10 @@ h1 {
     background-color: rgb(221, 221, 221);
 }
 
+.thumbnail label{
+    font-size: 18px;
+}
+
 .caption {
     margin-top: 15px;
 }

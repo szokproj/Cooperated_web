@@ -93,13 +93,13 @@ function setup() {
 
     $(function () {
         //多階下拉清單按鈕
-        $('.dropdown').mouseover(function (e) {
+        /*$('.dropdown').mouseover(function (e) {
             $(this).children('ul').show();
         });
-        $('.dropdown ul').mouseleave(function (e) {
-            $(this).hide();
+        $('.dropdown').mouseleave(function (e) {
+            $(this).children('ul').hide();
         });
-        /*$('.dropdown ul').hover(function () {
+        $('.dropdown ul').hover(function () {
             $(this).show();
         }, function () {
             $(this).hide();
@@ -152,14 +152,13 @@ function setup() {
                 var revObj = JSON.parse(this.responseText);
                 if (revObj.success > 0) {
                     var MapList = revObj.Values;
-                    mapArray = MapList;
+                    mapArray = MapList.slice(0); //Copy array
                     var html = "";
                     for (i = 0; i < MapList.length; i++) {
-                        html += "<li><input type=\"button\" id=\"map_btn_" + i + "\" " +
+                        html += "<li><input type=\"button\" id=\"map_btn_" + MapList[i].map_id + "\" " +
                             "value=\"" + MapList[i].map_name + "\"" +
-                            "onclick = \"setMap(\'" + MapList[i].map_id + "\',\'" +
-                            "data:image/" + MapList[i].map_file_ext + ";base64," +
-                            MapList[i].map_file + "\',\'" + MapList[i].map_scale + "\')\"></li>";
+                            "onclick=\"addMapTab(\'" + MapList[i].map_id + "\',\'" + MapList[i].map_name +
+                            "\')\"></li>";
                     }
                     document.getElementById("loadMapButtonGroup").innerHTML = html;
                 }
@@ -169,9 +168,42 @@ function setup() {
     });
 }
 
-function setMap(map_id, map_url, map_scale) {
-    map_scale = typeof (map_scale) != 'undefined' && map_scale != "" ? map_scale : 1;
-    serverImg.src = map_url; //"data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
+function addMapTab(map_id, map_name) {
+    var tab_map_id = "map_tab_" + map_id;
+    $("#input_map").before("<button type=\"button\" name=\"map_tab\" class=\"btn btn-primary\" id=\"" + tab_map_id +
+        "\" onclick=\"setMap(\'" + map_id + "\')\">" +
+        map_name + "</button></li>");
+    setMap(map_id);
+    $("#map_btn_" + map_id).prop('disabled', true).css('color', 'lightgray');
+}
+
+function closeMapTag() {
+    $("#map_tab_" + Map_id).remove();
+    $("#map_btn_" + Map_id).prop('disabled', false).css('color', 'black');
+    if (Map_id == "")
+        return;
+    if ($("button[name=map_tab]").length > 0) {
+        var tab_map_id = $("button[name=map_tab]").eq(0).attr("id"); //"map_tab_" + map_id
+        $("#" + tab_map_id).addClass("selected");
+        setMap(tab_map_id.substring(8));
+    } else { //reset
+        resetCanvas_Anchor();
+    }
+}
+
+function setMap(map_id) {
+    var index = mapArray.findIndex(function (info) {
+        return info.map_id == map_id;
+    });
+    if (index < 0)
+        return;
+    var map_url = "data:image/" + mapArray[index].map_file_ext + ";base64," + mapArray[index].map_file;
+    var map_scale = typeof (mapArray[index].map_scale) != 'undefined' && mapArray[index].map_scale != "" ? mapArray[index].map_scale : 1;
+
+    $("button[name=map_tab]").removeClass("selected");
+    $("#map_tab_" + map_id).addClass("selected");
+
+    serverImg.src = map_url; //"data:image/" + revInfo.file_ext + ";base64," + revInfo.map_file;
     serverImg.onload = function () {
         cvsBlock.style.background = "none";
         canvasImg.isPutImg = true;
@@ -204,45 +236,89 @@ function setMap(map_id, map_url, map_scale) {
     };
 }
 
+function resetCanvas_Anchor() {
+    cvsBlock.style.background = '#ccc';
+    canvasImg.isPutImg = false;
+    canvasImg.width = 0;
+    canvasImg.height = 0;
+    canvasImg.scale = 1;
+    setCanvas("", 1, 1);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    xleftView = 0;
+    ytopView = 0;
+    Zoom = zoomOriginal;
+    anchorArray = [];
+    document.getElementById('scale_visible').innerText = "";
+    document.getElementById('x').value = "";
+    document.getElementById('y').value = "";
+}
+
 function getAnchors(map_id) {
-    var requestArray = {
+    Map_id = map_id;
+    anchorArray = [];
+    setSize();
+    var request_anc = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetAnchors"],
+        "Command_Name": ["GetAnchorsInMap"],
         "Value": {
             "map_id": map_id
         }
     };
-    var xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+    var ancXmlHttp = createJsonXmlHttp("sql");
+    ancXmlHttp.onreadystatechange = function () {
+        if (ancXmlHttp.readyState == 4 || ancXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             var anchorList = revObj.Values;
             if (revObj.success > 0) {
-                var id, type, x, y;
-                anchorArray = [];
-                setSize();
+                var x, y;
                 for (i in anchorList) {
-                    id = anchorList[i].anchor_id;
-                    type = anchorList[i].anchor_type;
                     x = anchorList[i].set_x / canvasImg.scale;
                     y = canvasImg.height - anchorList[i].set_y / canvasImg.scale; //因為Server回傳的座標為左下原點
                     anchorArray.push({
-                        id: id,
-                        type: type,
+                        id: anchorList[i].anchor_id,
+                        type: "",
                         x: x,
                         y: y
                     });
-                    drawAnchor(ctx, id, type, x, y); //畫出點的設定
+                    drawAnchor(ctx, anchorList[i].anchor_id, "", x, y); //畫出點的設定
                 }
             }
         }
     };
-    xmlHttp.send(JSON.stringify(requestArray));
-    Map_id = map_id;
+    ancXmlHttp.send(JSON.stringify(request_anc));
+    var request_main = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetMainAnchorsInMap"],
+        "Value": {
+            "map_id": map_id
+        }
+    };
+    var mainXmlHttp = createJsonXmlHttp("sql");
+    mainXmlHttp.onreadystatechange = function () {
+        if (mainXmlHttp.readyState == 4 || mainXmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            var anchorList = revObj.Values;
+            if (revObj.success > 0) {
+                var x, y;
+                for (i in anchorList) {
+                    x = anchorList[i].set_x / canvasImg.scale;
+                    y = canvasImg.height - anchorList[i].set_y / canvasImg.scale;
+                    anchorArray.push({
+                        id: anchorList[i].main_anchor_id,
+                        type: "main",
+                        x: x,
+                        y: y
+                    });
+                    drawAnchor(ctx, anchorList[i].main_anchor_id, "main", x, y);
+                }
+            }
+        }
+    };
+    mainXmlHttp.send(JSON.stringify(request_main));
 }
 
 function getGroups(anchorList) {
-    var requestArray = {
+    var request = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetGroup_Anchors"]
     };
@@ -256,7 +332,7 @@ function getGroups(anchorList) {
             }
         }
     };
-    xmlHttp.send(JSON.stringify(requestArray));
+    xmlHttp.send(JSON.stringify(request));
 }
 
 function getGroupList(anchorList) {
@@ -337,16 +413,20 @@ function restoreCanvas() {
         ctx.restore();
         ctx.save();
         isFitWindow = false; //目前狀態:原比例
-        document.getElementById("btn_restore").innerHTML = $.i18n.prop('fit_window') +
-            "&nbsp;<i class=\"fas fa-expand\" ></i >";
+        document.getElementById("label_restore").innerHTML = "<i class=\"fas fa-expand\" style='font-size:20px;'" +
+            " title=\"Resize the map\"></i>";
+        //document.getElementById("btn_restore").innerHTML = $.i18n.prop('fit_window') +
+        //    "&nbsp;<i class=\"fas fa-expand\" ></i >";
     } else { //依比例拉伸(Fit in Window)
         if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
             fitZoom = cvsBlock_width / serverImg.width;
         else
             fitZoom = cvsBlock_height / serverImg.height;
         isFitWindow = true; //目前狀態:依比例拉伸
-        document.getElementById("btn_restore").innerHTML = $.i18n.prop('restore_scale') +
-            "&nbsp;<i class=\"fas fa-compress\" ></i >";
+        document.getElementById("label_restore").innerHTML = "<i class=\"fas fa-compress\" style='font-size:20px;'" +
+            " title=\"Fit window\"></i>";
+        //document.getElementById("btn_restore").innerHTML = $.i18n.prop('restore_scale') +
+        //    "&nbsp;<i class=\"fas fa-compress\" ></i >";
     }
     $(function () {
         $("#canvas").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
@@ -622,9 +702,9 @@ function TimeToArray(time_str) {
 function changeAlarmLight() {
     $(function () {
         if (alarmID_array.length > 0) {
-            $("#alarmSideBar_icon img").attr("src", "../image/alarm1.png");
+            $("#alarmSideBar_icon").css("color", "red");
         } else {
-            $("#alarmSideBar_icon img").attr("src", "../image/alarm3.png");
+            $("#alarmSideBar_icon").css("color", "white");
         }
     });
 }
@@ -664,14 +744,7 @@ function updateMemberList() {
 */
 
 function updateTagList() {
-    var request = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["requestTagList_json"],
-        "Value": {
-            "map_id": Map_id
-        }
-    };
-    var xmlHttp = createJsonXmlHttp("request");
+    var xmlHttp = createJsonXmlHttp("requestTagList_json");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
@@ -691,6 +764,11 @@ function updateTagList() {
                     y = 0,
                     system_time = "";
                 tagArray = [];
+
+                //update member list
+                var tbody = $("#table_rightbar_member_list tbody");
+                tbody.empty();
+
                 for (i in revObj) {
                     id = revObj[i].tag_id;
                     x = revObj[i].tag_x / canvasImg.scale;
@@ -702,29 +780,30 @@ function updateTagList() {
                         id: id,
                         system_time: system_time
                     });
-                }
 
-
-
-                //update member list
-                var revObj = JSON.parse(this.responseText);
-                var list = "",
-                    items;
-                var tbody = $("#table_rightbar_member_list tbody");
-                tbody.empty();
-                for (var i = 0; i < revObj.tag_list.length; i++) {
-                    items = i + 1;
-                    /*list += "<tr><td>" + items +
-                        "</td><td>" + " " +
-                        "</td><td>" + revObj.name[i] +
-                        "</td><td>" + revObj.tag_list[i].substring(14) +
-                        "</td></tr>";*/
-                    tbody.append("<tr><td>" + items +
-                        "</td><td>" + " " +
-                        "</td><td>" + revObj.name[i] +
-                        "</td><td>" + revObj.tag_list[i].substring(14) +
+                    tbody.append("<tr><td>" + (i + 1) +
+                        "</td><td>" + revObj[i].number +
+                        "</td><td>" + revObj[i].Name +
+                        "</td><td>" + revObj[i].tag_id +
                         "</td></tr>");
                 }
+
+                //update member list
+                //var list = "",
+
+                //for (var i = 0; i < revObj; i++) {
+                //    items = i + 1;
+                /*list += "<tr><td>" + items +
+                    "</td><td>" + " " +
+                    "</td><td>" + revObj.name[i] +
+                    "</td><td>" + revObj.tag_list[i].substring(14) +
+                    "</td></tr>";*/
+                /*    tbody.append("<tr><td>" + items +
+                        "</td><td>" + revObj[i].number +
+                        "</td><td>" + revObj[i].Name +
+                        "</td><td>" + revObj[i].tag_id +
+                        "</td></tr>");
+                }*/
                 //tbody.html(list);
 
 
@@ -744,7 +823,7 @@ function updateTagList() {
             }
         }
     };
-    xmlHttp.send(JSON.stringify(request));
+    xmlHttp.send();
 }
 
 function drawAnchor(dctx, id, type, x, y) {
@@ -918,8 +997,8 @@ function handleAnchorPosition() {
 
 function autoSendRequest() {
     if (!AnchorPosition) {
-        updateAlarmList()
-        updateMemberList();
+        //updateAlarmList()
+        //updateMemberList();
         updateTagList();
         draw();
         canvas.removeEventListener("click", handleAnchorPosition);
@@ -943,9 +1022,9 @@ function StartClick() {
     if (canvasImg.isPutImg) {
         if (!isStart) {
             isStart = true;
-            document.getElementById("btn_start").innerHTML = $.i18n.prop('stop') +
-                "&nbsp;<i class=\"fas fa-pause\"></i>";
             requestArray.Value = "Start";
+            document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-pause\">" +
+                "</i><span>" + $.i18n.prop('stop') + "</span>";
             //設定計時器
             //pageTimer["timer1"] = setInterval("autoSendRequest()", delaytime);
             pageTimer["timer1"] = setTimeout(function request() {
@@ -955,8 +1034,8 @@ function StartClick() {
         } else {
             isStart = false;
             requestArray.Value = "Stop";
-            document.getElementById("btn_start").innerHTML = $.i18n.prop('start') +
-                "&nbsp;<i class=\"fas fa-play\"></i>";
+            document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\">" +
+                "</i><span>" + $.i18n.prop('start') + "</span>";
             for (var each in pageTimer) {
                 //clearInterval(pageTimer[each]);
                 clearTimeout(pageTimer[each]);

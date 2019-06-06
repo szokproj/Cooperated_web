@@ -49,42 +49,35 @@
                         <li><a href="../Map_Setting.html">
                                 <i class="fas fa-map"></i><span>地圖設定</span></a></li>
                         <li><a href="../Anchor_Setting.html">
-                                <i class="fas fa-anchor"></i><span>Anchor設定</span></a></li>
+                                <i class="fas fa-anchor"></i><span>裝置設定</span></a></li>
                         <li><a href="../Alarm_Setting.html">
-                                <i class="fas fa-bell"></i><span>Alarm設定</span></a></li>
+                                <i class="fas fa-bell"></i><span>警報設定</span></a></li>
                         <li><a href="../Reference.html">
                                 <i class="fas fa-cogs"></i><span>進階設定</span></a></li>
+                        <li class="excel"><a href="#">
+                                <i class="fas fa-sign-in-alt"></i><span>匯入</span></a></li>
+                        <li class="excel"><a href="#">
+                                <i class="fas fa-sign-out-alt"></i><span>匯出</span></a></li>
                         <hr>
                         <li class="alarm"><a href="javascript: alarmSidebarMove();">
                                 <i class="fas fa-exclamation-circle" id="alarmSideBar_icon"></i>
                                 <span>Alarm List</span></a></li>
                         <li class="member"><a href="javascript: memberSidebarMove();">
                                 <i class="fas fa-address-book"></i><span>Member List</span></a></li>
+                        </li>
+                        <li class="start"><a href="javascript: StartClick();" id="btn_start">
+                                <i class="fas fa-play"></i><span>Start</span></a></li>
+                        </li>
                     </ul>
                 </nav>
             </div>
         </aside>
 
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-12" style="background: #ffffff;">
                 <!-- Web content -->
-                <div id="content" style="margin-top: 5px;">
+                <div id="content" style="margin-top:5px;">
                     <!-- Top -->
-                    <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle icon_btn" type="button" data-toggle="dropdown">
-                            <span class="i18n" name="input_map"></span>&nbsp;<i class="far fa-image"></i>&nbsp;
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" id="loadMapButtonGroup"></ul>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" id="btn_restore" onclick="restoreCanvas();">
-                            <span class="i18n" name="restore_scale"></span>&nbsp;
-                            <i class="fas fa-compress"></i></button>
-                        <button class="btn btn-primary" id="btn_start" onclick="StartClick();">
-                            <span class="i18n" name="start"></span>&nbsp;<i class="fas fa-play"></i></button>
-                    </div>
-
                     <div style="float:right;">
                         <label class="i18n" name="language" style="color:rgb(0, 0, 0);"></label>
                         <select id="language" style="margin-top:5px;">
@@ -92,16 +85,34 @@
                             <option value="zh-TW">繁體中文</option>
                             <option value="zh-CN">简体中文</option>
                         </select>
+
+                        <label for="btn_remove" id="label_remove" class="btn-delete" title="Close the map">
+                            <i class="fas fa-window-close" style='font-size:20px;'></i></label>
+                        <input id="btn_remove" type="button" class="btn-hidden" onclick="closeMapTag();" />
+
                     </div>
 
                     <!-- Midden -->
+                    <div class="btn-group">
+                        <div class="btn-group dropdown" id="input_map">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                <span class="i18n" name="input_map"></span>&nbsp;<i class="far fa-image"></i>&nbsp;
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu" id="loadMapButtonGroup"></ul>
+                        </div>
+                    </div>
+
                     <div class="cvsBlock" id="cvsBlock">
                         <canvas id="canvas" style="height:1px; width:1px;">
                             <span class="i18n" name="no_canvas"></span>
                         </canvas>
                     </div>
+
                     <div style="text-align:right;">
-                        Map Scale: <span id="scale_visible" style="margin-right:30px;">undefined</span>
+                        <label for="btn_restore" id="label_restore" class="btn-icon" style="margin-right:30px;">
+                            <i class="fas fa-compress" style='font-size:18px;' title="Resize the map"></i></label>
+                        <input id="btn_restore" type="button" class="btn-hidden" onclick="restoreCanvas();" />
+                        Map Scale: <span id="scale_visible" style="margin-right:50px;"></span>
                         X: <input type="text" id="x" class="coordinate" disabled>
                         Y: <input type="text" id="y" class="coordinate" disabled>
                     </div>
@@ -204,7 +215,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!--<button class="button_arrow"><i class='fas fa-angle-double-left'></i></button>-->
                     </aside>
                 </div>
             </div>

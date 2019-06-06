@@ -213,7 +213,15 @@ input[type=radio]:not(old).beauty:checked+label {
     color: rgb(158, 180, 162)
 }
 
+.btn-arrow {
+    cursor: pointer;
+    color: rgb(29, 155, 194);
+    margin: 10px;
+}
 
+.btn-arrow:hover {
+    color: rgb(156, 210, 226);
+}
 
 /* Dialog內的tr被選取時變色 */
 .changeBgColor {
@@ -244,6 +252,21 @@ input[type=radio]:not(old).beauty:checked+label {
     overflow: auto;
     max-height: 490px;
     width: 100%;
+}
+
+.block-bw-list {
+    border: 1px solid gray;
+    overflow: auto;
+    height: 490px;
+    max-height: 490px;
+    width: 47%;
+}
+
+.bw-list-title {
+    font-size: 16px;
+    background: rgb(168, 178, 185);
+    width: 100%;
+    margin: 0px;
 }
 
 .coordinate {
