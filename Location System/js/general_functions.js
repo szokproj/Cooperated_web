@@ -53,55 +53,37 @@ function updateTips(t) {
     }, 500);
 }
 
-function checkLengthByDOM(element, n, min, max) {
-    if (element.value.length > max || element.value.length < min) {
-        var name = "ui-state-error";
-        var arr = element.className.split(" ");
-        if (arr.indexOf(name) == -1)
-            element.className += " " + name;
-        /*updateTips( "Length of " + n + " must be between " +
-        min + " and " + max + "." );*/
-        return false;
-    } else {
-        return true;
-    }
-}
-
-//*
 function checkLength(o, n, min, max) {
     if (o.val().length) {
         if (o.val().length > max || o.val().length < min) {
             o.addClass("ui-state-error");
-            //*updateTips( "Length of " + n + " must be between " +
-            //min + " and " + max + "." );
+            alert("Test");
             return false;
         } else {
-            //*
-            if ( checkRegexp2(o, n, min, max) ) {                
+            if (checkRegexp2(o, n, min, max)) {
                 return true;
             } else {
                 o.addClass("ui-state-error");
                 return false;
             }
-            //*/
-            //return true;
         }
     } else {
         o.addClass("ui-state-error");
+        alert(n);
         return false;
     }
 }
-//*/
 // 2019/05/03 Regular Expression.
 var regexp = /(=)|(<)|(>)|(')|(")|(--)|(\/)|(\+)|(;)|(\*)|(!)|({)|(})|(drop table)|(drop stored)|(alter table)|(alter stored)|(sp_)|(xp_)|(exec )|(execute )|(fetch)|(select)|(kill)|(selectsys)|(sysobjects)|(syscolumns)|(isnull)|(coalesce)|(dbo)|(tbl)|(usp)/;
+
 function checkRegexp2(o, n, min, max) { // Check sql injection or not.
     var OK = regexp.exec(o.val());
     if (OK) { // This is sql injection.
         o.addClass("ui-state-error");
         //updateTips( n );
+        alert(n);
         return false;
     } else { // Legal SQL string
-        
         return true;
     }
 }

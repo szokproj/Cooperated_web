@@ -116,6 +116,7 @@ canvas:active {
     font-size: 12px;
 }
 
+
 .dropdown input,
 .dropdown label {
     color: #000000;
@@ -255,15 +256,23 @@ thead th {
 }
 
 .nav-tabs a,
-.tab-pane {
-    font-weight: bold;
+.tab-pane th,
+.tab-pane td {
     font-family: 'Microsoft JhengHei', 'sans-serif';
 }
 
 .sidebar-table {
     overflow: auto;
     width: 300px;
+    max-width: 300px;
+    height: 700px;
+    max-height: 700px;
     margin: 10px 10px 0px 0px;
+}
+
+.sidebar-table table{
+    width: 500px;
+    height: 700px;
 }
 
 .coordinate {
@@ -273,17 +282,17 @@ thead th {
 }
 
 /* icon navbar */
-.menu-left ul .alarm a,
-.menu-left ul .member a,
-.menu-left ul .start a  {
+.menu-left ul .alarmlist a,
+.menu-left ul .taglist a,
+.menu-left ul .start a {
     background: transparent;
 }
 
-.menu-left ul .alarm:hover a {
+.menu-left ul .alarmlist:hover a {
     background: rgb(240, 107, 98)
 }
 
-.menu-left ul .member:hover a {
+.menu-left ul .taglist:hover a {
     background: rgb(219, 157, 43)
 }
 

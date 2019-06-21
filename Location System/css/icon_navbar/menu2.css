@@ -7,14 +7,14 @@
 ****************************************************************/
 body,html{font-weight: bold;font-family: 'Microsoft JhengHei', 'sans-serif';}
 .sidebar ul li.active a,.sidebar ul li:hover a{background: rgb(128, 192, 201)}
-.sidebar>.nav>li.active{border-left-color: rgb(255, 228, 193)}
+.sidebar>.nav>li.active{border-left: 3px solid rgb(255, 234, 189)}
 .menu{z-index: 1000;position: fixed;width: 52px;top: 0;left: 0;bottom: 0;line-height: 2.5;-webkit-backface-visibility: hidden;-moz-backface-visibility: hidden;backface-visibility: hidden;background-color: rgb(0, 0, 0);-webkit-transition: width .2s cubic-bezier(.35,0,.25,1),translate .2s cubic-bezier(.35,0,.25,1);-o-transition: width .2s cubic-bezier(.35,0,.25,1),translate .2s cubic-bezier(.35,0,.25,1);transition: width .2s cubic-bezier(.35,0,.25,1),translate .2s cubic-bezier(.35,0,.25,1)}
 .menu .menu-left{background: rgb(0, 0, 0);transition: .5s;height: 100%;width: 52px;overflow: hidden}
 .menu-left,.sidebar>.nav>li{-webkit-transition: width .2s cubic-bezier(.35,0,.25,1);-o-transition: width .2s cubic-bezier(.35,0,.25,1);transition: width .2s cubic-bezier(.35,0,.25,1)}
 .sidebar{background: none;overflow: hidden;height: 100%;-webkit-overflow-scrolling: touch}
 .sidebar>.nav{position: relative;list-style: none;padding: 0;margin: 0}
 .sidebar>.nav>li>a>span{-webkit-animation: fadeIn 1s;-o-animation: fadeIn 1s;animation: fadeIn 1s}
-.sidebar>.nav>li{border-left: 3px solid transparent;-webkit-transition: border-left-color .4s ease;-o-transition: border-left-color .4s ease;transition: border-left-color .4s ease}
+.sidebar>.nav>li{/*border-left: 3px solid transparent;*/-webkit-transition: border-left-color .4s ease;-o-transition: border-left-color .4s ease;transition: border-left-color .4s ease}
 .sidebar>.nav>li>a{padding: 7px 13px;color: #fff;text-decoration: none;letter-spacing: .025em;font-weight: 400;white-space: nowrap;box-shadow: 0 -10px 10px -10px rgba(0,0,0,0.1) inset;display: block;width: 49px;-webkit-animation: fadeInLeft .5s;-o-animation: fadeInLeft .5s;animation: fadeInLeft .5s}
 .sidebar>.nav>li>a>em{color: #fff;width: 1.8em;display: inline-block;font-style: normal;font-weight: 400;line-height: 1;-webkit-font-smoothing: antialiased}
 .sidebar ul li a span,hr,.sidebar ul li a,.sidebar ul li a i{-webkit-transition: .5s;-moz-transition: .5s;-ms-transition: .5s;-o-transition: .5s;transition: .5s}
@@ -25,11 +25,11 @@ body,html{font-weight: bold;font-family: 'Microsoft JhengHei', 'sans-serif';}
 .sidebar ul li a span{display: none}
 .locked{color: #23b7e5!important}
 .menu:hover{background: rgba(0, 0, 0, 0)}
-.menu:hover .sidebar ul li a{width: 200px}
+.menu:hover .sidebar ul li a{width: 220px}
 .menu:hover .sidebar ul li a span{display: inline-block}
-.menu .menu-left:hover{width: 200px}
-.menu .menu-left:hover .sidebar ul li a{width: 200px}
-.menu .menu-left:hover .sidebar hr{width: 200px}
+.menu .menu-left:hover{width: 220px}
+.menu .menu-left:hover .sidebar ul li a{width: 220px}
+.menu .menu-left:hover .sidebar hr{width: 220px}
 
 /* custom */
 .sidebar ul .excel a  {background: transparent}

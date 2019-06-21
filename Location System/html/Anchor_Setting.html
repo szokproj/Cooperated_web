@@ -56,7 +56,7 @@
 
         .middle {
             background-color: #eee;
-            border: 1px #003366 solid;
+            border: 1px #363636 solid;
             height: 300px;
             margin: 5px;
             overflow: auto;
@@ -127,6 +127,7 @@
     </style>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/anchor_setting_load.js"></script>
     <script type="text/javascript" src="../js/anchor_setting_request.js"></script>
     <script type="text/javascript">
@@ -152,13 +153,11 @@
                         <li class="active"><a href="#">
                                 <i class="fas fa-anchor"></i><span>裝置設定</span></a></li>
                         <li><a href="../Alarm_Setting.html">
-                                <i class="fas fa-bell"></i><span>警報設定</span></a></li>
+                                <i class="fas fa-bell" style="padding-left:2px;"></i><span>警報設定</span></a></li>
                         <li><a href="../Reference.html">
                                 <i class="fas fa-cogs"></i><span>進階設定</span></a></li>
                         <li class="excel"><a href="#">
-                                <i class="fas fa-sign-in-alt"></i><span>匯入</span></a></li>
-                        <li class="excel"><a href="#">
-                                <i class="fas fa-sign-out-alt"></i><span>匯出</span></a></li>
+                                <i class="fas fa-file-excel" style="padding-left:4px;"></i><span>匯入/匯出</span></a></li>
                         <hr>
                     </ul>
                 </nav>
@@ -237,7 +236,7 @@
                                 <input type="text" id="local_ip" value="">
                                 <br><br>
                                 <input type="checkbox" name="is_fixed_ip_connect" value="true">
-                                <label>Fixed IP connect:</label>
+                                <label>Static IP connect:</label>
                                 <input type="text" id="fixed_ip_1" value="192" style="max-width: 40px;">
                                 <label>.</label>
                                 <input type="text" id="fixed_ip_2" value="168" style="max-width: 40px;">
@@ -269,8 +268,8 @@
                                             <form>
                                                 <input type="radio" name="network_setting_mode" value="DHCP" checked>
                                                 <label style="margin-right: 20px;">DHCP</label>
-                                                <input type="radio" name="network_setting_mode" value="Fixed IP">
-                                                <label>Fixed IP</label><br>
+                                                <input type="radio" name="network_setting_mode" value="Static IP">
+                                                <label>Static IP</label><br>
                                             </form>
                                         </th>
                                     </tr>

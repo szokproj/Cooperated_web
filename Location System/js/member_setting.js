@@ -1,13 +1,13 @@
-var default_color = '#4CAF50';
+var default_color = '#2eb82e';
 var deptColorArray = [];
 var titleColorArray = [];
 var userTypeColorArray = [];
 var userTypeArr = [];
 var alarmGroupArr = [];
-var dotTypeArr = ["部門", "職稱", "用戶類型", "自訂"];
-var statusArr = ["無", "在職", "已離職"];
-var genderArr = ["男", "女"];
-var educationArr = ["小學", "國中", "高中", "專科", "大學", "研究所"];
+var dotTypeArr = ['Dept', 'JobTitle', 'UserType', 'Custom'];
+var statusArr = ['OnJob', 'LeaveJob'];
+var genderArr = ['Male', 'Female'];
+var educationArr = ['PrimarySchool', 'MiddleSchool', 'HighSchool', 'JuniorSchool', 'College', 'GraduateSchool'];
 
 
 $(function () {
@@ -71,7 +71,6 @@ $(function () {
             });
         }
     });
-    /*-----------------------------------------------*/
     $("#main_picture_upload").unbind();
     $("#main_picture_upload").change(function () {
         var file = this.files[0];
@@ -82,8 +81,6 @@ $(function () {
             transBase64(file);
         else
             return;
-        //var src = URL.createObjectURL(file);
-        //$("#main_picture_thumbnail").attr("href", src);
     });
     $("#main_picture_clear").click(function () {
         $("#main_picture_img").attr('src', '');
@@ -99,10 +96,12 @@ $(function () {
     });
     $("#btn_select_dept").click(function () {
         createChart("dept");
+        $("#select_node_title").text($.i18n.prop('i_selectDept') + ' : ');
         $("#dialog_tree_chart").dialog("open");
     });
     $("#btn_select_title").click(function () {
         createChart("jobTitle");
+        $("#select_node_title").text($.i18n.prop('i_selectJobtitle') + ' : ');
         $("#dialog_tree_chart").dialog("open");
     });
 });
@@ -158,14 +157,14 @@ function UpdateMemberList() {
                                         "<td>" + alarm_group_name + "</td>" +
                                         "<td>" + memberArray[i].note + "</td>" +
                                         "<td><button class=\"btn btn-primary\"" +
-                                        " onclick=\"editMemberData(\'" + number + "\')\">編輯" +
+                                        " onclick=\"editMemberData(\'" + number + "\')\">" + $.i18n.prop('i_edit') +
                                         "</button></td>" +
                                         "</tr>");
                                 }
                                 displayBar("table_member_setting");
                             }
                         } else {
-                            alert("取得人員資料失敗!");
+                            alert($.i18n.prop('i_alertError_1'));
                         }
                     }
                 };
@@ -207,7 +206,7 @@ function editMemberData(number) {
                     var src = "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
                     adjustImageSize(src);
                 }
-                $("#main_select_tag_color").html(createOptions(dotTypeArr, revInfo.color_type));
+                $("#main_select_tag_color").html(createI18nOptions(dotTypeArr, revInfo.color_type));
                 selectTagColor(); //依照畫點依據的內容代入已設定的顏色，未設定則採用預設顏色
                 var color_type_index = $("#main_select_tag_color").children('option:selected').index();
                 if (color_type_index == 4) { //自訂
@@ -215,8 +214,8 @@ function editMemberData(number) {
                     $("#main_input_tag_color").css("background-color", colorToHex(revInfo.color));
                 }
                 $("#main_alarm_group").html(displayNameOptions(alarmGroupArr, revInfo.alarm_group_id));
-                $("#basic_state").html(createOptions(statusArr, revInfo.status));
-                $("#basic_gender").html(createOptions(genderArr, revInfo.gender));
+                $("#basic_state").html(createI18nOptions(statusArr, revInfo.status));
+                $("#basic_gender").html(createI18nOptions(genderArr, revInfo.gender));
                 $("#basic_last_name").val(revInfo.lastName);
                 $("#basic_first_name").val(revInfo.firstName);
                 $("#basic_english_name").val(revInfo.EnglishName);
@@ -225,7 +224,7 @@ function editMemberData(number) {
                 $("#basic_self_phone").val(revInfo.phoneSelf);
                 $("#basic_mail").val(revInfo.mail);
                 $("#basic_address").val(revInfo.address);
-                $("#basic_highest_education").html(createOptions(educationArr, revInfo.education));
+                $("#basic_highest_education").html(createI18nOptions(educationArr, revInfo.education));
                 $("#basic_school").val(revInfo.school);
                 $("#basic_grade").val(revInfo.grade);
                 $("#basic_pro_level").val(revInfo.tech_grade);
@@ -280,15 +279,15 @@ function checkExt(fileName) {
     var validExts = new Array(".png", ".jpg", ".jpeg"); // 可接受的副檔名
     var fileExt = fileName.substring(fileName.lastIndexOf('.'));
     if (validExts.indexOf(fileExt) < 0) {
-        alert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+        alert($.i18n.prop('i_fileError_2') + validExts.toString());
         return false;
     } else
         return true;
 }
 
 function checkImageSize(file) {
-    if (file.size / 1024 > 1024) {
-        alert("檔案大小超過1MB，請重新選擇圖檔!");
+    if (file.size / 1024 > 100) {
+        alert($.i18n.prop('i_fileError_3'));
         return false;
     } else
         return true;
@@ -349,7 +348,7 @@ function addMemberData() {
     $("#main_type").html(createOptions(userTypeArr, ""));
     $("#main_picture_thumbnail").attr("href", "");
     $("#main_picture_img").attr("src", "");
-    $("#main_select_tag_color").html(createOptions(dotTypeArr, ""));
+    $("#main_select_tag_color").html(createI18nOptions(dotTypeArr, ""));
     //還原為預設顏色
     $("#main_input_tag_color").val(default_color);
     $("#main_input_tag_color").attr("type", "hidden"); //隱藏可選顏色
@@ -357,8 +356,8 @@ function addMemberData() {
     $("#main_display_color").attr("type", "text"); //顯示不可選顏色
     $("#main_display_color").css("background-color", default_color);
     $("#main_alarm_group").html(displayNameOptions(alarmGroupArr, ""));
-    $("#basic_state").html(createOptions(statusArr, ""));
-    $("#basic_gender").html(createOptions(genderArr, ""));
+    $("#basic_state").html(createI18nOptions(statusArr, ""));
+    $("#basic_gender").html(createI18nOptions(genderArr, ""));
     $("#basic_last_name").val("");
     $("#basic_first_name").val("");
     $("#basic_english_name").val("");
@@ -367,7 +366,7 @@ function addMemberData() {
     $("#basic_self_phone").val("");
     $("#basic_mail").val("");
     $("#basic_address").val("");
-    $("#basic_highest_education").html(createOptions(educationArr, ""));
+    $("#basic_highest_education").html(createI18nOptions(educationArr, ""));
     $("#basic_school").val("");
     $("#basic_grade").val("");
     $("#basic_pro_level").val("");
@@ -398,13 +397,9 @@ function removeMemberDatas() {
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            try {
-                var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
-                    UpdateMemberList();
-                }
-            } catch (ignore) {
-                console.warn(ignore.message);
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                UpdateMemberList();
             }
         }
     };
@@ -420,7 +415,7 @@ function multiEditData() {
             num_arr.push(checkboxs[j].value);
     }
     if (!num_arr.length) {
-        alert('Please check any column');
+        alert($.i18n.prop('i_alertError_2'));
         return;
     }
     $("#multi_edit_title").text("");
@@ -439,9 +434,8 @@ function multiEditData() {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
                     if (revObj.success > 0) {
-                        //var revInfo = typeof (revObj.Values) != 'undefined' ? revObj.Values : [];
                         var deptArr = [];
-                        var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
+                        var revInfo = 'Values' in revObj == true ? revObj.Values : [];
                         revInfo.forEach(element => {
                             deptArr.push({
                                 id: element.c_id,
@@ -463,9 +457,8 @@ function multiEditData() {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
                     if (revObj.success > 0) {
-                        //var revInfo = typeof (revObj.Values) != 'undefined' ? revObj.Values : [];
                         var titleArr = [];
-                        var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
+                        var revInfo = 'Values' in revObj == true ? revObj.Values : [];
                         revInfo.forEach(element => {
                             titleArr.push({
                                 id: element.c_id,
@@ -487,9 +480,8 @@ function multiEditData() {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
                     if (revObj.success > 0) {
-                        //var revInfo = typeof (revObj.Values) != 'undefined' ? revObj.Values : [];
                         var typeArr = [];
-                        var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
+                        var revInfo = 'Values' in revObj == true ? revObj.Values : [];
                         revInfo.forEach(element => {
                             typeArr.push(element.type);
                         });
@@ -507,10 +499,26 @@ function multiEditData() {
     $("#dialog_multi_edit").dialog("open");
 }
 
+function createI18nOptions(array, select) {
+    var options = "";
+    select = typeof (select) != 'undefined' ? select : "";
+    options += "<option value=\"\">" + $.i18n.prop('i_select') + "</option>"; //增加預設的空白項
+    for (i = 0; i < array.length; i++) {
+        var i18n_value = $.i18n.prop(array[i]);
+        if (array[i] == select) {
+            options += "<option value=\"" + array[i] + "\" selected=\"selected\">" + i18n_value + "</option>";
+        } else {
+            options += "<option value=\"" + array[i] + "\">" + i18n_value + "</option>";
+        }
+    }
+    return options;
+}
+
+
 function createOptions(array, select) {
     var options = "";
     select = typeof (select) != 'undefined' ? select : "";
-    options += "<option value=\"\">請選擇</option>"; //增加預設的空白項
+    options += "<option value=\"\">" + $.i18n.prop('i_select') + "</option>";
     for (i = 0; i < array.length; i++) {
         if (array[i] == select) {
             options += "<option value=\"" + array[i] + "\" selected=\"selected\">" +

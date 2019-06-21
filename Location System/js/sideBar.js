@@ -20,7 +20,7 @@ function alarmSidebarMove() {
     });
 }
 
-function memberSidebarMove() {
+function tagSidebarMove() {
     $(function () {
         var $aside = $('#page_rightSide > aside');
         if (!rightSide_isOpen) {

@@ -1,4 +1,4 @@
-var default_color = '#4CAF50';
+var default_color = '#2eb82e';
 var chart_type = "";
 
 function createChart(type) {

@@ -4,54 +4,33 @@ var SubMitType = "";
 var alarmSettingArr = [];
 var alarmModeArray = [{
         id: "low_power",
-        name: "低電壓警報"
+        name: 'i_lowPowerAlarm'
     },
     {
         id: "help",
-        name: "緊急警報"
+        name: 'i_helpAlarm'
     },
     {
         id: "active",
-        name: "移動警報"
+        name: 'i_activeAlarm'
     },
     {
         id: "still",
-        name: "靜止警報"
+        name: 'i_stillAlarm'
     },
     {
         id: "fence",
-        name: "電子圍籬"
+        name: 'i_electronicFence'
     },
     {
         id: "stay",
-        name: "滯留警報"
+        name: 'i_stayAlarm'
     },
     {
         id: "hidden",
-        name: "隱匿警報"
+        name: 'i_hiddenAlarm'
     }
 ];
-
-
-function createJsonXmlHttp(url) {
-    var xmlHttp = null;
-    try { // Firefox, Opera 8.0+, Safari
-        xmlHttp = new XMLHttpRequest();
-    } catch (e) { //Internet Explorer
-        try {
-            xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
-            xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-    }
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
-    xmlHttp.open("POST", url, true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
-    return xmlHttp;
-}
 
 /*function inputAlarmSetting() {
     var request = {
@@ -85,11 +64,15 @@ function createJsonXmlHttp(url) {
     xmlHttp.send(JSON.stringify(request));
 }*/
 
-
-function selectColumn(id) {
-    $("#" + id).toggleClass("changeBgColor");
+function getTimeGroups(timeGroupInfo) {
+    timeGroupArr = [];
+    timeGroupInfo.forEach(element => {
+        timeGroupArr.push({
+            id: element.time_group_id,
+            name: element.time_group_name
+        })
+    });
 }
-
 
 function removeMapGroup() {
     var checkboxs = document.getElementsByName("chkbox_map_group");
@@ -103,32 +86,19 @@ function removeMapGroup() {
     });
 }
 
-function displayNameOptions(array, select_id) {
-    var options = "";
-    array.forEach(element => {
-        if (element.id == select_id) {
-            options += "<option value=\"" + element.id + "\" selected=\"selected\">" +
-                element.name + "</option>";
-        } else {
-            options += "<option value=\"" + element.id + "\">" + element.name + "</option>";
-        }
-    });
-    return options;
-}
 
 function inputAlarmGroupTable() {
-    var request = {
+    var alarmRequest = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetAlarmGroup_list"]
     };
-    var xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+    var alarmXmlHttp = createJsonXmlHttp("sql");
+    alarmXmlHttp.onreadystatechange = function () {
+        if (alarmXmlHttp.readyState == 4 || alarmXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            var revList = revObj.Values;
-            if (revObj.success > 0 && revList) {
-                alarmSettingArr = [];
-                alarmSettingArr = revList.slice(0); //利用抽離全部陣列完成陣列拷貝
+            var revList = ('Values' in revObj) == true ? revObj.Values : [];
+            if (revObj.success > 0) {
+                alarmSettingArr = revList.slice(0);
                 $("#table_alarm_mode tbody").empty(); //先重置表格
                 count_alarm_group = 0;
                 for (i = 0; i < revList.length; i++) {
@@ -140,32 +110,54 @@ function inputAlarmGroupTable() {
                         var checkedText = revList[i].elements[j].alarm_switch == "0" ? "" : "checked";
                         var alarm_value = revList[i].elements[j].alarm_value == "-1" ? "" : revList[i].elements[j].alarm_value;
                         var endHtml = "</label>";
-                        if (j == 5)
-                            endHtml = ",&nbsp;&nbsp;</label>時間閾值 : " + alarm_value + " 秒<br>";
-                        else if (j == 6)
-                            endHtml = ",&nbsp;&nbsp;</label>時間閾值 : " + alarm_value + " 秒";
+                        if (j == 5) {
+                            endHtml = ",&nbsp;&nbsp;</label>" + $.i18n.prop('i_wait_time') + " : " + alarm_value + " " +
+                                $.i18n.prop('i_second') + "<br>";
+                        } else if (j == 6) {
+                            endHtml = ",&nbsp;&nbsp;</label>" + $.i18n.prop('i_wait_time') + " : " + alarm_value + " " +
+                                $.i18n.prop('i_second');
+                        }
                         modeCheckHtml += "<input id=\"" + alarm_mode + "_" + j + "\" type='checkbox' class='beauty' " +
-                            "name=\"" + alarm_mode + "\" value=\"" + revList[i].elements[j].alarm_iid + "\" " + checkedText + " disabled/>" +
-                            "<label for=\"" + alarm_mode + "_" + j + "\">" + alarmModeArray[j].name + endHtml;
+                            "name=\"" + alarm_mode + "\" value=\"" + revList[i].elements[j].alarm_iid + "\" " + checkedText +
+                            " disabled/><label for=\"" + alarm_mode + "_" + j + "\">" + $.i18n.prop(alarmModeArray[j].name) + endHtml;
                     }
+                    var t_index = timeGroupArr.findIndex(function (info) {
+                        return info.id == revList[i].time_group_id;
+                    });
+                    var timeGroupName = (t_index > -1) ? timeGroupArr[t_index].name : "";
                     $("#table_alarm_mode tbody").append("<tr id=\"" + tr_id + "\"><td>" +
                         "<input type=\"checkbox\" name=\"chkbox_alarm_group\" value=\"" + revList[i].alarm_gid + "\" " +
                         "onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_alarm_group + "</td>" +
                         "<td><input type='text' name=\"alarm_group_name\" value=\"" + revList[i].alarm_group_name + "\" " +
                         "style=\"width:100px;\" /></td>" +
                         "<td>" + modeCheckHtml + "</td>" +
-                        "<td><label id=\"alarm_group_time\">" + revList[i].time_group_id + "</label></td>" +
+                        "<td><label id=\"alarm_group_time\">" + timeGroupName + "</label></td>" +
                         "<td style='text-align:center;'><label for=\"btn_edit_alarm_mode_" + count_alarm_group +
-                        "\" class='btn-edit' title='Edit the alarm mode'><i class='fas fa-edit' style='font-size: 18px;'></i></label>" +
-                        "<input id=\"btn_edit_alarm_mode_" + count_alarm_group + "\" type='button' class='btn-hidden'" +
-                        " onclick=\"editAlarmGroup(\'" + revList[i].alarm_gid + "\')\" /></td></tr>");
+                        "\" class='btn-edit' title='" + $.i18n.prop('i_editAlarmGroup') + "'><i class='fas fa-edit'" +
+                        " style='font-size:18px;'></i></label><input id=\"btn_edit_alarm_mode_" + count_alarm_group +
+                        "\" type='button' class='btn-hidden' onclick=\"editAlarmGroup(\'" + revList[i].alarm_gid + "\')\" />" +
+                        "</td></tr>");
                 }
             } else {
+                alert($.i18n.prop('i_alarmAlert_1'));
                 return;
             }
         }
     };
-    xmlHttp.send(JSON.stringify(request));
+    alarmXmlHttp.send(JSON.stringify(alarmRequest));
+}
+
+function createOptions_name(array, select_id) {
+    var options = "";
+    array.forEach(element => {
+        if (element.id == select_id) {
+            options += "<option value=\"" + element.id + "\" selected=\"selected\">" +
+                element.name + "</option>";
+        } else {
+            options += "<option value=\"" + element.id + "\">" + element.name + "</option>";
+        }
+    });
+    return options;
 }
 
 function editAlarmGroup(id) {
@@ -185,43 +177,15 @@ function editAlarmGroup(id) {
         }
         $("input[name=add_alarm_mode]").eq(j).prop("checked", isCheck).val(groupElement[j].alarm_iid);
     }
-    $("#add_alarm_time_group").empty();
-    $("#add_alarm_time_group").append(
-        "<option value=\"1\">A</option>" +
-        "<option value=\"2\">B</option>" +
-        "<option value=\"3\">C</option>"
-        //displayNameOptions(timeGroupArr, timeGroupArr[0].id)
+    $("#add_alarm_time_group").html(
+        createOptions_name(timeGroupArr, alarmSettingArr[index].time_group_id)
     );
     $("#add_alarm_time_group").val(alarmSettingArr[index].time_group_id);
     SubMitType = "Edit";
     $("#dialog_add_alarm_group").dialog("open");
 }
 
-function getTimeGroups() {
-    var request = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["GetTimeGroup"]
-    };
-    var xmlHttp = createJsonXmlHttp("GetTimeGroup");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            var revList = revObj.Values;
-            if (revObj.success > 0) {
-                timeGroupArr = [];
-                revList.forEach(element => {
-                    timeGroupArr.push({
-                        id: element.group_id,
-                        name: element.group_name
-                    });
-                });
-            } else {
-                alert("讀取TimeGroupList失敗，請再試一次!");
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(request));
-}
+
 
 
 $(document).ready(function () {
@@ -232,11 +196,8 @@ $(document).ready(function () {
         startTime: '12:00:00'
     }); //設定Jquery日期元件*/
 
-    //getTimeGroups(); //載入已設定的時段群組
-    inputAlarmGroupTable(); //載入警報群組已設定的內容
 
     $("#btn_submit_alarm_setting").button().on("click", function () {
-        var alarm_arr = ["low_power", "help", "active", "still", "stay", "hidden"];
         var request = {
             "Command_Type": ["Write"],
             "Command_Name": ["UpdateAlarmSetting"],
@@ -266,6 +227,7 @@ $(document).ready(function () {
                 }
             }
         };
+        //var alarm_arr = ["low_power", "help", "active", "still", "stay", "hidden"];
         /*alarm_arr.forEach(element => {
             request.Value[element + "_alarm"]["on"] = $("input[name=alarm_" + element + "]:checked").val();
         });*/
@@ -274,9 +236,9 @@ $(document).ready(function () {
             if (submitXmlHttp.readyState == 4 || submitXmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
                 if (revObj.success > 0) {
-                    alert("寫入警報設定成功!");
+                    alert($.i18n.prop('i_alarmAlert_2'));
                 } else {
-                    alert("寫入警報設定失敗，請再試一次!");
+                    alert($.i18n.prop('i_alarmAlert_3'));
                 }
             }
         };
@@ -299,12 +261,12 @@ $(document).ready(function () {
         hidden_time.removeClass("ui-state-error");
         var valid = true;
 
-        valid = valid && checkLength(name, "not null", 1, 20);
+        valid = valid && checkLength(name, $.i18n.prop('i_alarmAlert_4'), 1, 20);
         if ($("#add_alarm_mode_5").prop("checked"))
-            valid = valid && checkLength(stay_time, "not null", 1, 20);
+            valid = valid && checkLength(stay_time, $.i18n.prop('i_alarmAlert_4'), 1, 20);
         if ($("#add_alarm_mode_6").prop("checked"))
-            valid = valid && checkLength(hidden_time, "not null", 1, 20);
-        valid = valid && checkLength(time_group, "not null", 1, 20);
+            valid = valid && checkLength(hidden_time, $.i18n.prop('i_alarmAlert_4'), 1, 20);
+        valid = valid && checkLength(time_group, $.i18n.prop('i_alarmAlert_4'), 1, 20);
 
         if (valid) {
             if (SubMitType == "Add") {
@@ -348,9 +310,7 @@ $(document).ready(function () {
                             addXmlHttp.onreadystatechange = function () {
                                 if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                                     var revObj = JSON.parse(this.responseText);
-                                    //var revInfo = revObj.Values;
                                     if (revObj.success > 0) {
-                                        //getTimeGroups();
                                         inputAlarmGroupTable();
                                     }
                                 }
@@ -404,9 +364,7 @@ $(document).ready(function () {
                             addXmlHttp.onreadystatechange = function () {
                                 if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                                     var revObj = JSON.parse(this.responseText);
-                                    //var revInfo = revObj.Values;
                                     if (revObj.success > 0) {
-                                        //getTimeGroups();
                                         inputAlarmGroupTable();
                                     }
                                 }
@@ -427,7 +385,7 @@ $(document).ready(function () {
     dialog = $("#dialog_add_alarm_group").dialog({
         autoOpen: false,
         height: 550,
-        width: 350,
+        width: 400,
         modal: true,
         buttons: {
             "Confirm": SendResult,
@@ -456,13 +414,9 @@ $(document).ready(function () {
      * 新增Alarm Group
      */
     $("#btn_add_alarm_group").button().on("click", function () {
-        //getTimeGroups();
         $("#add_alarm_time_group").empty();
         $("#add_alarm_time_group").append(
-            "<option value=\"1\">A</option>" +
-            "<option value=\"2\">B</option>" +
-            "<option value=\"3\">C</option>"
-            //displayNameOptions(timeGroupArr, timeGroupArr[0].id)
+            createOptions_name(timeGroupArr, timeGroupArr[0].id)
         );
         $("input[name=add_alarm_mode]").val("");
         $("#add_alarm_mode_6_time").val("");
@@ -514,9 +468,8 @@ $(document).ready(function () {
                         if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
                             var revObj = JSON.parse(this.responseText);
                             if (revObj.success > 0) {
-
                                 inputAlarmGroupTable();
-                                alert("Success delete the alarm groups");
+                                alert($.i18n.prop('i_alarmAlert_5'));
                             }
                         }
                     };

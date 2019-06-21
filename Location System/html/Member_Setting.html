@@ -2,8 +2,9 @@
 <html lang="en">
 
 <head>
-    <title>Location System</title>
     <meta charset="utf-8">
+    <title class="i18n" name='title'>Location System</title>
+    <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- JQuery -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -44,35 +45,39 @@
                 <nav class="sidebar">
                     <ul class="nav">
                         <li><a href="../index.html">
-                                <i class="fas fa-home"></i><span>首頁</span></a></li>
-                        <li class="active"><a href="../Member_Setting.html">
-                                <i class="fas fa-user-cog"></i><span>人員設置</span></a></li>
+                                <i class="fas fa-home"></i><span class="i18n" name="homePage"></span></a></li>
+                        <li class="active"><a href="#">
+                                <i class="fas fa-user-cog"></i><span class="i18n" name="member_settingPage"></span></a>
+                        </li>
                         <li><a href="../Timeline.html">
-                                <i class="fas fa-route"></i><span>歷史軌跡</span></a></li>
+                                <i class="fas fa-route"></i><span class="i18n" name="timelinePage"></span></a></li>
                         <li><a href="../Map_Setting.html">
-                                <i class="fas fa-map"></i><span>地圖設定</span></a></li>
+                                <i class="fas fa-map"></i><span class="i18n" name="map_settingPage"></span></a></li>
                         <li><a href="../Anchor_Setting.html">
-                                <i class="fas fa-anchor"></i><span>裝置設定</span></a></li>
+                                <i class="fas fa-anchor"></i><span class="i18n" name="anchor_settingPage"></span></a>
+                        </li>
                         <li><a href="../Alarm_Setting.html">
-                                <i class="fas fa-bell"></i><span>警報設定</span></a></li>
+                                <i class="fas fa-bell" style="padding-left:2px;"></i><span class="i18n"
+                                    name="alarm_settingPage"></span></a></li>
                         <li><a href="../Reference.html">
-                                <i class="fas fa-cogs"></i><span>進階設定</span></a></li>
+                                <i class="fas fa-cogs"></i><span class="i18n" name="advance_settingPage"></span></a>
+                        </li>
                         <li class="excel"><a href="#">
-                                <i class="fas fa-sign-in-alt"></i><span>匯入</span></a></li>
-                        <li class="excel"><a href="#">
-                                <i class="fas fa-sign-out-alt"></i><span>匯出</span></a></li>
+                                <i class="fas fa-file-excel" style="padding-left:2px;"></i><span class="i18n"
+                                    name="Excel_in_out"></span></a></li>
                         <hr>
                         <li class="setting-type active"><a href="#">
-                                <i class="fas fa-users"></i><span>成員設定</span></a></li>
+                                <i class="fas fa-users"></i><span class="i18n" name="i_memberSetting"></span></a></li>
                         <li class="setting-type"><a href="../Display_Setting.html">
-                                <i class="fas fa-map-marker-alt" style="padding-left:4px;"></i><span>顯示設定</span></a>
-                        </li>
+                                <i class="fas fa-map-marker-alt" style="padding-left:4px;"></i><span class="i18n"
+                                    name="i_displaySetting"></span></a></li>
                         <li class="setting-type"><a href="../Dept_Setting.html">
-                                <i class="fas fa-sitemap"></i><span>部門設定</span></a></li>
+                                <i class="fas fa-sitemap"></i><span class="i18n" name="i_deptSetting"></span></a></li>
                         <li class="setting-type"><a href="../Job_Title_Setting.html">
-                                <i class="fas fa-id-card"></i><span>職稱設定</span></a></li>
+                                <i class="fas fa-id-card"></i><span class="i18n" name="i_titleSetting"></span></a></li>
                         <li class="setting-type"><a href="../User_Type_Setting.html">
-                                <i class="fas fa-user-tag"></i><span>用戶類型設定</span></a></li>
+                                <i class="fas fa-user-tag"></i><span class="i18n" name="i_usertypeSetting"></span></a>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -81,25 +86,34 @@
         <!-- 網頁內容 -->
         <div class="row" style="display:flex;">
             <div class="col-lg-12">
+                <div style="float:right;">
+                    <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
+                    <select id="language" style="margin-top:5px;">
+                        <option value="en">English</option>
+                        <option value="zh-TW">繁體中文</option>
+                        <option value="zh-CN">简体中文</option>
+                    </select>
+                </div>
                 <div>
-                    <button id="add_col" class="btn btn-success">新增</button>
-                    <button id="delete_col" class="btn btn-danger">刪除</button>
-                    <button id="multi_edit" class="btn btn-primary">批量修改</button>
+                    <button id="add_col" class="btn btn-success i18n" name="i_add"></button>
+                    <button id="delete_col" class="btn btn-danger i18n" name="i_delete"></button>
+                    <button id="multi_edit" class="btn btn-primary i18n" name="i_batchEdit"></button>
                 </div>
                 <div class="table_member">
                     <table class="table-line" id="table_member_setting">
                         <thead>
                             <tr>
-                                <th><input type="checkbox" id="selectAll" onchange="" /> Item</th>
-                                <th>標籤編號</th>
-                                <th>工號</th>
-                                <th>名稱</th>
-                                <th>部門</th>
-                                <th>職稱</th>
-                                <th>用戶類型</th>
-                                <th>警報群組</th>
-                                <th>備註</th>
-                                <th>設置</th>
+                                <th><input type="checkbox" id="selectAll" onchange="" /> <span class="i18n"
+                                        name="i_item"></span></th>
+                                <th class="i18n" name="i_tagID"></th>
+                                <th class="i18n" name="i_number"></th>
+                                <th class="i18n" name="i_name"></th>
+                                <th class="i18n" name="i_dept"></th>
+                                <th class="i18n" name="i_jobTitle"></th>
+                                <th class="i18n" name="i_userType"></th>
+                                <th class="i18n" name="i_alarmGroup"></th>
+                                <th class="i18n" name="i_note"></th>
+                                <th class="i18n" name="i_setting"></th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -107,16 +121,22 @@
                 </div>
                 <div style="width:100%; text-align:center;">
                     <ul class="pagination" style="min-width: 730px;">
-                        <li><a id="btn0">當前 0/0 頁</a></li>
-                        <li><a>每頁 <input id="pageSize" type="text" size="1" maxlength="2"> 條</a></li>
-                        <li><a href="#" class="page-btn" id="pageSizeSet">設置</a></li>
-                        <li><a id="sjzl">總數據量 0</a></li>
+                        <li><a id="btn0">
+                                <span class="i18n" name="i_nowPage"></span> 0/0 <span class="i18n" name="i_page"></span>
+                            </a></li>
+                        <li><a><span class="i18n" name="i_everyPage"></span> <input id="pageSize" type="text" size="1"
+                                    maxlength="2"> <span class="i18n" name="i_column"></span>
+                            </a></li>
+                        <li><a href="#" class="page-btn" id="pageSizeSet"><span class="i18n" name="i_setting"></span>
+                            </a></li>
+                        <li><a id="sjzl"><span class="i18n" name="i_countData"></span> 0</a></li>
                         <li><a href="#" class="page-btn" id="btn1">&laquo;</a></li>
-                        <li><a href="#" class="page-btn" id="btn2">上一頁</a></li>
-                        <li><a href="#" class="page-btn" id="btn3">下一頁</a></li>
+                        <li><a href="#" class="page-btn i18n" id="btn2" name="i_previousPage"></a></li>
+                        <li><a href="#" class="page-btn i18n" id="btn3" name="i_nextPage"></a></li>
                         <li><a href="#" class="page-btn" id="btn4">&raquo;</a></li>
-                        <li><a>轉到 <input id="changePage" type="text" size="1" maxlength="4"> 頁</a></li>
-                        <li><a href="#" class="page-btn" id="btn5">跳轉</a></li>
+                        <li><a><span class="i18n" name="i_changeTo"></span> <input id="changePage" type="text" size="1"
+                                    maxlength="4"> <span class="i18n" name="i_page"></span></a></li>
+                        <li><a href="#" class="page-btn i18n" id="btn5" name="i_changePage"></a></li>
                     </ul>
                 </div>
             </div>
@@ -129,43 +149,52 @@
             <form>
                 <fieldset style="text-align: left;">
                     <ul id="setTab" class="nav nav-tabs">
-                        <li class="active"><a href="#mainData" data-toggle="tab">主要資料</a></li>
-                        <li><a href="#basicData" data-toggle="tab">基本資料</a></li>
-                        <li><a href="#note" data-toggle="tab">備註</a></li>
+                        <li class="active">
+                            <a href="#mainData" data-toggle="tab" class="i18n" name="i_mainData"></a></li>
+                        <li><a href="#basicData" data-toggle="tab" class="i18n" name="i_basicData"></a></li>
+                        <li><a href="#note" data-toggle="tab" class="i18n" name="i_note"></a></li>
                     </ul><br>
                     <div id="setTabContent" class="tab-content">
                         <div class="tab-pane fade in active" id="mainData">
                             <table class="noborder-block">
                                 <tr>
-                                    <td style="width:80px;"><label for="main_tag_id">標籤編號</label></td>
+                                    <td style="width:80px;"><label for="main_tag_id" class="i18n"
+                                            name="i_tagID"></label></td>
                                     <td><input type="text" id="main_tag_id" style="width:100%;"></td>
                                     <!--TagID是綁定資料的依據，故不得進行編輯，只可讀取-->
                                 </tr>
                                 <tr>
-                                    <td><label for="main_card_id">卡號</label></td>
+                                    <td><label for="main_card_id" class="i18n" name="i_cardID"></label></td>
                                     <td><input type="text" id="main_card_id" style="width:100%;"></td>
                                 </tr>
                             </table>
                             <table class="noborder-block">
                                 <tr>
                                     <td>
-                                        <p><label for="main_number" style="margin-right:48px;">工號</label>
+                                        <p><label for="main_number" style="margin-right:48px;" class="i18n"
+                                                name="i_number"></label>
                                             <input type="text" id="main_number" style="width:70%;">
                                         </p>
-                                        <p><label for="main_name" style="margin-right:48px;">名稱</label>
+                                        <p><label for="main_name" style="margin-right:48px;" class="i18n"
+                                                name="i_name"></label>
                                             <input type="text" id="main_name" style="width:70%;">
                                         </p>
-                                        <p><label for="main_department" style="margin-right:48px;">部門</label>
+                                        <p><label for="main_department" style="margin-right:48px;" class="i18n"
+                                                name="i_dept"></label>
                                             <input type="text" id="main_department" style="width:50%;" readonly />
-                                            <input type="button" id="btn_select_dept" value="選擇" />
+                                            <input type="button" id="btn_select_dept" class="i18n-input"
+                                                selectattr="value" selectname="i_select2" />
                                             <input type="hidden" id="hidden_department" value="" />
                                         </p>
-                                        <p><label for="main_jobTitle" style="margin-right:48px;">職稱</label>
+                                        <p><label for="main_jobTitle" style="margin-right:48px;" class="i18n"
+                                                name="i_jobTitle"></label>
                                             <input type="text" id="main_jobTitle" style="width:50%;" readonly />
-                                            <input type="button" id="btn_select_title" value="選擇" />
+                                            <input type="button" id="btn_select_title" class="i18n-input"
+                                                selectattr="value" selectname="i_select2" />
                                             <input type="hidden" id="hidden_jobTitle" value="" />
                                         </p>
-                                        <p><label for="main_type" style="margin-right:19px;">用戶類型</label>
+                                        <p><label for="main_type" style="margin-right:19px;" class="i18n"
+                                                name="i_userType"></label>
                                             <select id="main_type"></select>
                                         </p>
                                     </td>
@@ -175,12 +204,14 @@
                                                 <img id="main_picture_img" class="image-style">
                                             </div>
                                             <span style="margin-right:10px;">
-                                                <label for="main_picture_upload" class="custom-file-download">
+                                                <label for="main_picture_upload" class="custom-file-download i18n-input"
+                                                    selectattr="title" selectname="i_selectImage">
                                                     <img src="../image/add-image.png" style="max-width:20px;"></label>
                                                 <input type="file" id="main_picture_upload" accept=".png,.jpg,.jpeg">
                                             </span>
                                             <span>
-                                                <label for="main_picture_clear" class="custom-file-download">
+                                                <label for="main_picture_clear" class="custom-file-download i18n-input"
+                                                    selectattr="title" selectname="i_clearImage">
                                                     <img src="../image/delete.png" style="max-width:20px;"></label>
                                                 <input type="button" id="main_picture_clear" class="image-btn">
                                             </span>
@@ -190,10 +221,12 @@
                             </table>
                             <table class="noborder-block">
                                 <tr>
-                                    <td style="width:80px;"><label for="main_select_tag_color">畫點依據</label></td>
+                                    <td style="width:80px;"><label for="main_select_tag_color" class="i18n"
+                                            name="i_drawType"></label></td>
                                     <td>
                                         <select id="main_select_tag_color"></select>
-                                        <label style="margin: 0px 10px 0px 40px;">指定顏色</label>
+                                        <label style="margin: 0px 10px 0px 40px;" class="i18n"
+                                            name="i_assignColor"></label>
                                         <label for="main_input_tag_color" class="custom-file-download">
                                             <img src="../image/palette.png" style="max-width:20px;">
                                         </label>
@@ -205,7 +238,8 @@
                             </table>
                             <table class="noborder-block">
                                 <tr>
-                                    <td style="width:80px;"><label for="main_alarm_group">警報群組</label></td>
+                                    <td style="width:80px;"><label for="main_alarm_group" class="i18n"
+                                            name="i_alarmGroup"></label></td>
                                     <td><select id="main_alarm_group"></select></td>
                                 </tr>
                             </table>
@@ -213,57 +247,56 @@
                         <div class="tab-pane fade" id="basicData" class="ui-widget ui-widget-content">
                             <table class="noborder-block">
                                 <tr>
-                                    <td style="width:80px;"><label for="basic_state">工作狀態</label></td>
+                                    <td style="width:80px;">
+                                        <label for="basic_state" class="i18n" name="i_workState"></label></td>
                                     <td><select id="basic_state"></select>
                                     </td>
-                                    <td style="width:80px;"><label for="basic_gender">性別</label></td>
+                                    <td style="width:80px;">
+                                        <label for="basic_gender" class="i18n" name="i_gender"></label></td>
                                     <td><select id="basic_gender"></select>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><label for="basic_last_name">姓氏</label></td>
+                                    <td><label for="basic_last_name" class="i18n" name="i_lastName"></label></td>
                                     <td><input type="text" id="basic_last_name" style="width:100%;"></td>
-                                    <td><label for="basic_first_name">名字</label></td>
+                                    <td><label for="basic_first_name" class="i18n" name="i_firstName"></label></td>
                                     <td><input type="text" id="basic_first_name" style="width:100%;"></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="basic_english_name">英文名</label></td>
+                                    <td><label for="basic_english_name" class="i18n" name="i_englishName"></label></td>
                                     <td><input type="text" id="basic_english_name" style="width:100%;"></td>
-                                    <td><label for="basic_birthday">出生日期</label></td>
+                                    <td><label for="basic_birthday" class="i18n" name="i_birthday"></label></td>
                                     <td><input type="date" id="basic_birthday"></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="basic_job_phone">工作電話</label></td>
-                                    <td><input type="text" id="basic_job_phone" style="width:100%;" />
-                                    </td>
-                                    <td><label for="basic_self_phone">個人電話</label></td>
-                                    <td><input type="text" id="basic_self_phone" style="width:100%;" />
-                                    </td>
+                                    <td><label for="basic_job_phone" class="i18n" name="i_jobPhone"></label></td>
+                                    <td><input type="text" id="basic_job_phone" style="width:100%;" /></td>
+                                    <td><label for="basic_self_phone" class="i18n" name="i_selfPhone"></label></td>
+                                    <td><input type="text" id="basic_self_phone" style="width:100%;" /></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="basic_mail">電子郵件</label></td>
+                                    <td><label for="basic_mail" class="i18n" name="i_eMail"></label></td>
                                     <td><input type="text" id="basic_mail" style="width:100%;" /></td>
-                                    <td><label for="basic_address">住址</label></td>
-                                    <td><input type="text" id="basic_address" style="width:100%;" multiple>
-                                    </td>
+                                    <td><label for="basic_address" class="i18n" name="i_address"></label></td>
+                                    <td><input type="text" id="basic_address" style="width:100%;" multiple></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="basic_highest_education">最高學歷</label></td>
-                                    <td><select id="basic_highest_education"></select>
+                                    <td><label for="basic_highest_education" class="i18n" name="i_education"></label>
                                     </td>
-                                    <td><label for="basic_school">畢業院校</label></td>
+                                    <td><select id="basic_highest_education"></select></td>
+                                    <td><label for="basic_school" class="i18n" name="i_school"></label></td>
                                     <td><input type="text" id="basic_school" style="width:100%;"></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="basic_grade">職等</label></td>
+                                    <td><label for="basic_grade" class="i18n" name="i_grade"></label></td>
                                     <td><input type="text" id="basic_grade" style="width:100%;"></td>
-                                    <td><label for="basic_pro_level">技術等級</label></td>
+                                    <td><label for="basic_pro_level" class="i18n" name="i_proLevel"></label></td>
                                     <td><input type="text" id="basic_pro_level" style="width:100%;"></td>
                                 </tr>
                                 <tr>
-                                    <td><label for="basic_entry_date">入職日期</label></td>
+                                    <td><label for="basic_entry_date" class="i18n" name="i_entryDate"></label></td>
                                     <td><input type="date" id="basic_entry_date"></select>
-                                    <td><label for="basic_leave_date">離職日期</label></td>
+                                    <td><label for="basic_leave_date" class="i18n" name="i_leaveDate"></label></td>
                                     <td><input type="date" id="basic_leave_date"></td>
                                 </tr>
                             </table>
@@ -281,12 +314,12 @@
                 <fieldset style="text-align: center;">
                     <table id="table_multi_edit" class="ui-widget ui-widget-content block">
                         <tr>
-                            <td><label>Item</label></td>
+                            <td><label class="i18n" name="i_item"></label></td>
                             <td><select id="multi_edit_item">
-                                    <option value="">請選擇</option>
-                                    <option value="department">部門</option>
-                                    <option value="jobTitle">職稱</option>
-                                    <option value="type">用戶類型</option>
+                                    <option value="" class="i18n" name="i_select"></option>
+                                    <option value="department" class="i18n" name="i_dept"></option>
+                                    <option value="jobTitle" class="i18n" name="i_jobTitle"></option>
+                                    <option value="type" class="i18n" name="i_userType"></option>
                                 </select></td>
                         </tr>
                         <tr>
@@ -298,12 +331,12 @@
                 </fieldset>
             </form>
         </div>
-        <div id="dialog_tree_chart" title="select dept">
+        <div id="dialog_tree_chart" title="Select Node">
             <form>
                 <fieldset style="text-align: center;">
                     <div id="chart-container"></div>
                     <div id="edit-panel">
-                        <label class="selected-node-group">selected node:</label>
+                        <label class="selected-node-group" id="select_node_title"></label>
                         <input type="text" id="selected-node" class="selected-node-group" readonly>
                     </div>
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
@@ -311,6 +344,10 @@
             </form>
         </div>
     </div>
+    <!-- i18n 多語言翻譯 -->
+    <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
+    <script type="text/javascript" src="../js/i18n/language.js"></script>
+    <!-- i18n -->
 </body>
 
 </html>

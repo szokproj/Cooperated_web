@@ -1,4 +1,4 @@
-var default_color = '#4CAF50';
+var default_color = '#2eb82e';
 var command_name = [];
 
 
@@ -147,7 +147,7 @@ function getBase64Ext(urldata) {
     if (start > -1 && end > -1) {
         return urldata.substring(start + 1, end);
     } else {
-        alert("檔案格式錯誤，請檢查格式後重新上傳!");
+        alert($.i18n.prop('i_fileError_1'));
         return "";
     }
 }
@@ -163,8 +163,8 @@ $(function () {
         main_title = $("#main_jobTitle"),
         main_type = $("#main_type"),
         main_alarm_group = $("#main_alarm_group"),
-        allFields = $([]).add(main_tag_id, main_card_id, main_number,
-            main_name, main_dept, main_title, main_type, main_alarm_group);
+        allFields = $([]).add(main_tag_id).add(main_card_id).add(main_number).add(main_name)
+        .add(main_dept).add(main_title).add(main_type).add(main_alarm_group);
     //tips = $( ".validateTips" );
 
     $("#main_select_tag_color").change(selectTagColor);
@@ -235,6 +235,8 @@ $(function () {
                     var revObj = JSON.parse(this.responseText);
                     if (revObj.success > 0)
                         UpdateMemberList();
+                    else
+                        alert($.i18n.prop('i_alertError_3'));
                 }
             };
             xmlHttp.send(requestJSON);

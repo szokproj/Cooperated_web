@@ -15,30 +15,31 @@ function inputTimeGroups() {
             if (revObj.success > 0) {
                 count_time_groups = 0;
                 $("#table_time_group tbody").empty();
-                TimeGroupArr = revObj.Values.slice(0);
-                if (TimeGroupArr) {
-                    for (i = 0; i < TimeGroupArr.length; i++) {
-                        var timelist_name = [];
-                        if (TimeGroupArr[i].elements) {
-                            TimeGroupArr[i].elements.forEach(element => {
-                                timelist_name.push(element.time_slot_name);
-                            });
-                        }
-                        count_time_groups++;
-                        var tr_id = "tr_time_group_" + count_time_groups;
-                        $("#table_time_group tbody").append("<tr id=\"" + tr_id + "\">" +
-                            "<td><input type='checkbox' name=\"chkbox_time_group\" value=\"" + TimeGroupArr[i].time_group_id + "\" " +
-                            "onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_time_groups + "</td>" +
-                            "<td><label name=\"time_group_name\">" + TimeGroupArr[i].time_group_name + "</label></td>" +
-                            "<td><label name=\"time_group_slots\">" + timelist_name.toString() + "</label></td>" +
-                            "<td style='text-align:center;'><label for=\"btn_edit_time_group_" + count_time_groups +
-                            "\" class='btn-edit' title='Edit the time group'><i class='fas fa-edit' style='font-size: 18px;'></i></label>" +
-                            "<input id=\"btn_edit_time_group_" + count_time_groups + "\" type='button' class='btn-hidden'" +
-                            " onclick=\"inputTimeGroupSlots(\'" + TimeGroupArr[i].time_group_id + "\')\" /></td></tr>");
+                TimeGroupArr = ('Values' in revObj) == true ? revObj.Values.slice(0) : [];
+                getTimeGroups(TimeGroupArr);
+                inputAlarmGroupTable(); //載入警報群組已設定的內容
+                for (i = 0; i < TimeGroupArr.length; i++) {
+                    var timelist_name = [];
+                    if (TimeGroupArr[i].elements) {
+                        TimeGroupArr[i].elements.forEach(element => {
+                            timelist_name.push(element.time_slot_name);
+                        });
                     }
+                    count_time_groups++;
+                    var tr_id = "tr_time_group_" + count_time_groups;
+                    $("#table_time_group tbody").append("<tr id=\"" + tr_id + "\">" +
+                        "<td><input type='checkbox' name=\"chkbox_time_group\" value=\"" + TimeGroupArr[i].time_group_id +
+                        "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_time_groups + "</td>" +
+                        "<td><label name=\"time_group_name\">" + TimeGroupArr[i].time_group_name + "</label></td>" +
+                        "<td><label name=\"time_group_slots\">" + timelist_name.toString() + "</label></td>" +
+                        "<td style='text-align:center;'><label for=\"btn_edit_time_group_" + count_time_groups +
+                        "\" class='btn-edit' title='" + $.i18n.prop('i_editTimeSlotGroup') + "'><i class='fas fa-edit'" +
+                        " style='font-size:18px;'></i></label>" +
+                        "<input id=\"btn_edit_time_group_" + count_time_groups + "\" type='button' class='btn-hidden'" +
+                        " onclick=\"inputTimeGroupSlots(\'" + TimeGroupArr[i].time_group_id + "\')\" /></td></tr>");
                 }
             } else {
-                alert("讀取時段群組失敗，請再試一次!");
+                alert($.i18n.prop('i_alarmAlert_6'));
                 return;
             }
         }
@@ -79,20 +80,20 @@ function inputTimeGroupSlots(time_group_id) {
                             var tr_id = "tr_time_group_slot" + count_time_group_slots;
                             $("#table_time_group_slot tbody").append(
                                 "<tr id=\"" + tr_id + "\">" +
-                                "<td><input type='checkbox' name=\"chkbox_time_group_slot\" value=\"" + element.time_slot_id + "\"" +
-                                " onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_time_group_slots + "</td>" +
+                                "<td><input type='checkbox' name=\"chkbox_time_group_slot\" value=\"" + element.time_slot_id +
+                                "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_time_group_slots + "</td>" +
                                 "<td><label name=\"time_group_slot\">" + element.time_slot_name + "</label></td></tr>");
                         });
                     }
                     $("#dialog_time_group_slot").dialog("open");
                 } else {
-                    alert("讀取時段群組設定失敗，請刷新頁面再試一次!");
+                    alert($.i18n.prop('i_alarmAlert_7'));
                 }
             }
         };
         getTimesXmlHttp.send(requestJSON);
     } else {
-        alert("讀取時段群組設定失敗，請刷新頁面再試一次!");
+        alert($.i18n.prop('i_alarmAlert_7'));
     }
 }
 
@@ -109,10 +110,10 @@ $(function () {
 
     function EditTimeGroup() {
         allFields.removeClass("ui-state-error");
-        var valid = true && checkLength(add_group_name, "Not null", 1, 50);
+        var valid = true && checkLength(add_group_name, $.i18n.prop('i_alarmAlert_4'), 1, 50);
         if (valid) {
             if (add_group_slots.length == 0) {
-                alert("請至少設定一個時段!");
+                alert($.i18n.prop('i_alarmAlert_8'));
                 return false;
             }
             var requestJSON = JSON.stringify({
@@ -169,10 +170,10 @@ $(function () {
         add_group_name.removeClass("ui-state-error");
         if (add_group_name.val() == "") {
             add_group_name.addClass("ui-state-error");
-            alert("請先輸入群組名稱");
+            alert($.i18n.prop('i_alarmAlert_11'));
             return;
         }
-        $("#add_time_group_slot").html(displayNameOptions(TimeSlotArr, TimeSlotArr[0].id));
+        $("#add_time_group_slot").html(createOptions_name(TimeSlotArr, TimeSlotArr[0].id));
         $("#dialog_add_time_group_slot").dialog("open");
     });
 
@@ -191,10 +192,10 @@ $(function () {
                 });
         }
         if (delete_arr.length == 0) {
-            alert("請至少勾選一個時段!");
+            alert($.i18n.prop('i_alarmAlert_9'));
             return;
         } else if (delete_arr.length == checkboxs.length) {
-            alert("時段群組內必須保留至少一個時段!");
+            alert($.i18n.prop('i_alarmAlert_15'));
             return;
         }
         var requestJSON = JSON.stringify({
@@ -209,7 +210,7 @@ $(function () {
                 if (revObj.success > 0) {
                     inputTimeGroups();
                     inputTimeGroupSlots(add_group_id.val())
-                    alert("刪除時段成功!");
+                    alert($.i18n.prop('i_alarmAlert_12'));
                 }
             }
         };
@@ -246,9 +247,9 @@ $(function () {
                         });
                         dialog.dialog("open");
                     } else
-                        alert("請先新增至少一筆時段設定");
+                        alert($.i18n.prop('i_alarmAlert_13'));
                 } else
-                    alert("讀取時段設定失敗，請刷新頁面再試一次!");
+                    alert($.i18n.prop('i_alarmAlert_14'));
             }
         };
         getTimesXmlHttp.send(requestJSON);
@@ -268,7 +269,7 @@ $(function () {
                 });
         }
         if (delete_arr.length == 0) {
-            alert("請至少勾選一個時段群組!");
+            alert($.i18n.prop('i_alarmAlert_10'));
             return;
         }
         var requestJSON = JSON.stringify({
@@ -282,7 +283,7 @@ $(function () {
                 var revObj = JSON.parse(this.responseText);
                 if (revObj.success > 0) {
                     inputTimeGroups();
-                    alert("刪除時段群組成功!");
+                    alert($.i18n.prop('i_alarmAlert_9'));
                 }
             }
         };
@@ -301,12 +302,12 @@ $(function () {
     //tips = $( ".validateTips" );
 
     function SubmitGroup_Slot() {
-        var valid = true && checkLength(add_slot, "error: The time slot's id is empty", 1, 20); //text
+        var valid = true && checkLength(add_slot, $.i18n.prop('i_alarmAlert_28'), 1, 20); //text
         var existed_slot = document.getElementsByName("chkbox_time_group_slot");
         existed_slot.forEach(element => {
             if (element.value == add_slot.val()) {
                 valid = false;
-                alert("時段重複，請選擇其他時段!");
+                alert($.i18n.prop('i_alarmAlert_16'));
                 return;
             }
         });
@@ -348,28 +349,29 @@ $(function () {
                                             count_time_groups++;
                                             var tr_id = "tr_time_group_" + count_time_groups;
                                             $("#table_time_group tbody").append("<tr id=\"" + tr_id + "\">" +
-                                                "<td><input type='checkbox' name=\"chkbox_time_group\" value=\"" + TimeGroupArr[i].time_group_id + "\" " +
-                                                "onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_time_groups + "</td>" +
+                                                "<td><input type='checkbox' name=\"chkbox_time_group\" value=\"" + TimeGroupArr[i].time_group_id +
+                                                "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_time_groups + "</td>" +
                                                 "<td><label name=\"time_group_name\">" + TimeGroupArr[i].time_group_name + "</label></td>" +
                                                 "<td><label name=\"time_group_slots\">" + timelist_name.toString() + "</label></td>" +
                                                 "<td style='text-align:center;'><label for=\"btn_edit_time_group_" + count_time_groups +
-                                                "\" class='btn-edit' title='Edit the time group'><i class='fas fa-edit' style='font-size: 18px;'></i></label>" +
+                                                "\" class='btn-edit' title='" + $.i18n.prop('i_editTimeSlotGroup') + "'><i class='fas fa-edit'" +
+                                                " style='font-size:18px;'></i></label>" +
                                                 "<input id=\"btn_edit_time_group_" + count_time_groups + "\" type='button' class='btn-hidden'" +
                                                 " onclick=\"inputTimeGroupSlots(\'" + TimeGroupArr[i].time_group_id + "\')\" /></td></tr>");
                                         }
                                         inputTimeGroupSlots(time_group_id.val());
-                                        alert("新增時段設定成功!");
+                                        alert($.i18n.prop('i_alarmAlert_17'));
                                         dialog.dialog("close");
                                     }
                                 } else {
-                                    alert("讀取時段群組失敗，請再試一次!");
+                                    alert($.i18n.prop('i_alarmAlert_6'));
                                     return;
                                 }
                             }
                         };
                         xmlHttp.send(JSON.stringify(getRequest));
                     } else {
-                        alert("新增時段設定失敗!");
+                        alert($.i18n.prop('i_alarmAlert_18'));
                         return;
                     }
                 }
@@ -383,7 +385,7 @@ $(function () {
     function AddTimeGroup_Slot() {
         allFields.removeClass("ui-state-error");
         if (time_group_id.val() == "") {
-            var r = confirm("設定時段群組的時段，送出即綁定資料，請確定是否繼續?");
+            var r = confirm($.i18n.prop('i_alarmAlert_19'));
             if (r == false)
                 return;
             var requestJSON = JSON.stringify({
@@ -402,7 +404,7 @@ $(function () {
                         time_group_id.val(revInfo.time_gid);
                         SubmitGroup_Slot();
                     } else {
-                        alert("新增時段設定失敗");
+                        alert($.i18n.prop('i_alarmAlert_18'));
                     }
                 }
             };

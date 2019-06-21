@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title class="i18n" name='title'>Location System</title>
     <meta id="i18n_pagename" content="common">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Jquery庫 -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
@@ -41,32 +41,38 @@
                 <nav class="sidebar">
                     <ul class="nav">
                         <li class="active"><a href="#">
-                                <i class="fas fa-home"></i><span>首頁</span></a></li>
+                                <i class="fas fa-home"></i><span class="i18n" name="homePage"></span></a></li>
                         <li><a href="../Member_Setting.html">
-                                <i class="fas fa-user-cog"></i><span>人員設置</span></a></li>
+                                <i class="fas fa-user-cog"></i><span class="i18n" name="member_settingPage"></span></a>
+                        </li>
                         <li><a href="../Timeline.html">
-                                <i class="fas fa-route"></i><span>歷史軌跡</span></a></li>
+                                <i class="fas fa-route"></i><span class="i18n" name="timelinePage"></span></a></li>
                         <li><a href="../Map_Setting.html">
-                                <i class="fas fa-map"></i><span>地圖設定</span></a></li>
+                                <i class="fas fa-map"></i><span class="i18n" name="map_settingPage"></span></a></li>
                         <li><a href="../Anchor_Setting.html">
-                                <i class="fas fa-anchor"></i><span>裝置設定</span></a></li>
+                                <i class="fas fa-anchor"></i><span class="i18n" name="anchor_settingPage"></span></a>
+                        </li>
                         <li><a href="../Alarm_Setting.html">
-                                <i class="fas fa-bell"></i><span>警報設定</span></a></li>
+                                <i class="fas fa-bell" style="padding-left:2px;"></i><span class="i18n"
+                                    name="alarm_settingPage"></span></a></li>
                         <li><a href="../Reference.html">
-                                <i class="fas fa-cogs"></i><span>進階設定</span></a></li>
+                                <i class="fas fa-cogs"></i><span class="i18n" name="advance_settingPage"></span></a>
+                        </li>
                         <li class="excel"><a href="#">
-                                <i class="fas fa-sign-in-alt"></i><span>匯入</span></a></li>
-                        <li class="excel"><a href="#">
-                                <i class="fas fa-sign-out-alt"></i><span>匯出</span></a></li>
+                                <i class="fas fa-file-excel" style="padding-left:2px;"></i><span class="i18n"
+                                    name="Excel_in_out"></span></a></li>
                         <hr>
-                        <li class="alarm"><a href="javascript: alarmSidebarMove();">
+                        <li class="alarmlist"><a href="javascript: alarmSidebarMove();">
                                 <i class="fas fa-exclamation-circle" id="alarmSideBar_icon"></i>
-                                <span>Alarm List</span></a></li>
-                        <li class="member"><a href="javascript: memberSidebarMove();">
-                                <i class="fas fa-address-book"></i><span>Member List</span></a></li>
+                                <span class="i18n" name="i_alarmList"></span></a></li>
+                        <li class="taglist"><a href="javascript: tagSidebarMove();">
+                                <i class="fas fa-map-marker-alt" style="padding-left:2px;"></i><span class="i18n"
+                                    name="i_tagList"></span></a>
+                        </li>
                         </li>
                         <li class="start"><a href="javascript: StartClick();" id="btn_start">
-                                <i class="fas fa-play"></i><span>Start</span></a></li>
+                                <i class="fas fa-play" style="padding-left:2px;"></i><span class="i18n"
+                                    name="i_start"></span></a></li>
                         </li>
                     </ul>
                 </nav>
@@ -79,24 +85,23 @@
                 <div id="content" style="margin-top:5px;">
                     <!-- Top -->
                     <div style="float:right;">
-                        <label class="i18n" name="language" style="color:rgb(0, 0, 0);"></label>
+                        <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
                         <select id="language" style="margin-top:5px;">
                             <option value="en">English</option>
                             <option value="zh-TW">繁體中文</option>
                             <option value="zh-CN">简体中文</option>
                         </select>
-
-                        <label for="btn_remove" id="label_remove" class="btn-delete" title="Close the map">
+                        <label for="btn_remove" id="label_remove" class="btn-delete i18n-input" selectattr="title"
+                            selectname="i_closeMap">
                             <i class="fas fa-window-close" style='font-size:20px;'></i></label>
                         <input id="btn_remove" type="button" class="btn-hidden" onclick="closeMapTag();" />
-
                     </div>
 
                     <!-- Midden -->
                     <div class="btn-group">
-                        <div class="btn-group dropdown" id="input_map">
+                        <div class="dropdown" id="input_map">
                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                                <span class="i18n" name="input_map"></span>&nbsp;<i class="far fa-image"></i>&nbsp;
+                                <span class="i18n" name="i_input_map"></span>&nbsp;<i class="far fa-image"></i>&nbsp;
                                 <span class="caret"></span></button>
                             <ul class="dropdown-menu" role="menu" id="loadMapButtonGroup"></ul>
                         </div>
@@ -104,7 +109,7 @@
 
                     <div class="cvsBlock" id="cvsBlock">
                         <canvas id="canvas" style="height:1px; width:1px;">
-                            <span class="i18n" name="no_canvas"></span>
+                            <span class="i18n" name="i_no_canvas"></span>
                         </canvas>
                     </div>
 
@@ -112,7 +117,8 @@
                         <label for="btn_restore" id="label_restore" class="btn-icon" style="margin-right:30px;">
                             <i class="fas fa-compress" style='font-size:18px;' title="Resize the map"></i></label>
                         <input id="btn_restore" type="button" class="btn-hidden" onclick="restoreCanvas();" />
-                        Map Scale: <span id="scale_visible" style="margin-right:50px;"></span>
+                        <span class="i18n" name="i_mapScale"></span> : <span id="scale_visible"
+                            style="margin-right:50px;"></span>
                         X: <input type="text" id="x" class="coordinate" disabled>
                         Y: <input type="text" id="y" class="coordinate" disabled>
                     </div>
@@ -121,8 +127,9 @@
                 <!-- 左側邊欄(Alarm) -->
                 <div class="sideBar">
                     <div class="sideBar-left-button">
-                        <label class="btn-alarm" for="btn_unlock_alarm" title="解除定位">
-                            <i class="fas fa-lock"></i></label>
+                        <label class="btn-alarm i18n-input" for="btn_unlock_alarm" selectattr="title"
+                            selectname="i_unlock">
+                            <i class="fas fa-lock drop-shadow"></i></label>
                         <input type="button" id="btn_unlock_alarm" class="btn-hidden" onclick="unlockFocusAlarm();" />
                     </div>
                     <div class="sideBar-left">
@@ -136,23 +143,23 @@
                         <div class="main-place">
                             <ul id="sidebarRightTab" class="nav nav-tabs">
                                 <li class="active">
-                                    <a href="#sidebar_right_member" data-toggle="tab">人員名單</a>
+                                    <a href="#sidebar_right_member" data-toggle="tab" class="i18n" name="i_member"></a>
                                 </li>
-                                <li><a href="#sidebar_right_alarm" data-toggle="tab">警報</a>
+                                <li><a href="#sidebar_right_alarm" data-toggle="tab" class="i18n" name="i_alarm"></a>
                                 </li>
-                                <li><a href="#sidebar_right_search" data-toggle="tab">搜尋</a>
+                                <li><a href="#sidebar_right_search" data-toggle="tab" class="i18n" name="i_search"></a>
                                 </li>
                             </ul>
                             <div id="sidebarRightTabContent" class="tab-content">
                                 <div class="tab-pane fade in active" id="sidebar_right_member">
-                                    <div class="sidebar-table" style="max-height: 650px;">
+                                    <div class="sidebar-table">
                                         <table id="table_rightbar_member_list" class="ui-widget ui-widget-content">
                                             <thead>
                                                 <tr class="ui-widget-header">
-                                                    <th style="width: 10px;">Items</th>
-                                                    <th>Display ID</th>
-                                                    <th>Name</th>
-                                                    <th>Tag List</th>
+                                                    <th class="i18n" name="i_item"></th>
+                                                    <th class="i18n" name="i_number"></th>
+                                                    <th class="i18n" name="i_name"></th>
+                                                    <th class="i18n" name="i_tagID"></th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -160,33 +167,31 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="sidebar_right_alarm">
-                                    <div class="sidebar-table" style="max-height: 650px;">
-                                        <div style="width: 800px;">
-                                            <table id="table_rightbar_alarm_list" class="ui-widget ui-widget-content">
-                                                <thead>
-                                                    <tr class="ui-widget-header">
-                                                        <th style="width: 10px;">Items</th>
-                                                        <th>Number</th>
-                                                        <th style="width: 60px;">ID</th>
-                                                        <th>Alarm Status</th>
-                                                        <th>Time</th>
-                                                        <th>Image</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody></tbody>
-                                            </table>
-                                        </div>
+                                    <div class="sidebar-table">
+                                        <table id="table_rightbar_alarm_list" class="ui-widget ui-widget-content">
+                                            <thead>
+                                                <tr class="ui-widget-header">
+                                                    <th class="i18n" name="i_item"></th>
+                                                    <th class="i18n" name="i_number"></th>
+                                                    <th class="i18n" name="i_name"></th>
+                                                    <th class="i18n" name="i_tagID"></th>
+                                                    <th class="i18n" name="i_alarmStatus"></th>
+                                                    <th class="i18n" name="i_happenTime"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="sidebar_right_search">
-                                    <label>搜尋類型 : </label>
+                                    <label class="i18n" name="i_searchType"> : </label>
                                     <select id="search_select_type">
-                                        <option value="group" selected="selected">群組</option>
-                                        <option value="tag_id">標籤編號</option>
-                                        <option value="id">工號</option>
+                                        <option class="i18n" name="i_group" value="group" selected="selected"></option>
+                                        <option class="i18n" name="i_tagID" value="tag_id"></option>
+                                        <option class="i18n" name="i_number" value="number"></option>
                                     </select>
                                     <br>
-                                    <label>輸入資料 : </label>
+                                    <label class="i18n" name="i_inputData"> : </label>
                                     <input type="text" id="search_input_target">
                                     <br><br>
                                     <div style="text-align: center;">
@@ -198,14 +203,14 @@
                                             <table id="table_sidebar_search" class="ui-widget ui-widget-content">
                                                 <thead>
                                                     <tr class="ui-widget-header">
-                                                        <th>標籤編號</th>
-                                                        <th>工號</th>
-                                                        <th>名稱</th>
-                                                        <th>部門</th>
-                                                        <th>用戶類型</th>
-                                                        <th>門禁</th>
-                                                        <th>時段</th>
-                                                        <th>定位</th>
+                                                        <th class="i18n" name="i_tagID"></th>
+                                                        <th class="i18n" name="i_number"></th>
+                                                        <th class="i18n" name="i_name"></th>
+                                                        <th class="i18n" name="i_dept"></th>
+                                                        <th class="i18n" name="i_jobTitle"></th>
+                                                        <th class="i18n" name="i_userType"></th>
+                                                        <!--<th class="i18n" name="i_alarmGroup"></th>-->
+                                                        <th class="i18n" name="i_position"></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody></tbody>
@@ -227,10 +232,13 @@
         <div id="member_dialog" title="Tag Infomation">
             <img id="member_dialog_image" style="float: left;" src="../image/user2.png">
             <span style="display: block;">
-                <label>ID:</label>
+                <label class="i18n" name="i_tagID">:</label>
                 <label id="member_dialog_tag_id"></label>
                 <br>
-                <label>Name:</label>
+                <label class="i18n" name="i_number">:</label>
+                <label id="member_dialog_number"></label>
+                <br>
+                <label class="i18n" name="i_name">:</label>
                 <label id="member_dialog_name"></label>
             </span>
         </div>
@@ -238,29 +246,30 @@
         <div id="alarm_dialog" title="Alarm Infomation">
             <img style="float: left;" src="../image/user2.png">
             <span style="display: block;">
-                <label>Number:</label>
+                <label class="i18n" name="i_number">:</label>
                 <label id="alarm_dialog_number"></label>
                 <br>
-                <label>Name:</label>
+                <label class="i18n" name="i_name">:</label>
                 <label id="alarm_dialog_name"></label>
                 <br>
-                <label>ID:</label>
+                <label class="i18n" name="i_tagID">:</label>
                 <label id="alarm_dialog_id"></label>
                 <br>
-                <label>Date:</label>
+                <label class="i18n" name="i_date">:</label>
                 <label id="alarm_dialog_date"></label>
                 <br>
-                <label>Time:</label>
+                <label class="i18n" name="i_happenTime">:</label>
                 <label id="alarm_dialog_time"></label>
             </span>
             <h4>
-                <label>Status:</label>
+                <label class="i18n" name="i_status">:</label>
                 <label id="alarm_dialog_status"></label>
             </h4>
             <div style="text-align: center;">
-                <button type="button" id="alarm_dialog_btn_unlock" class="btn btn-primary">解除鎖定</button>
-                <button type="button" id="alarm_dialog_btn_focus" style="margin-left: 20px;" class="btn btn-info">定位 <i
-                        class="fas fa-map-marker-alt"></i>
+                <button type="button" id="alarm_dialog_btn_unlock" name="i_unlock"
+                    class="btn btn-primary i18n"></button>
+                <button type="button" id="alarm_dialog_btn_focus" style="margin-left: 20px;" class="btn btn-info">
+                    <span class="i18n" name="i_position"></span><i class="fas fa-map-marker-alt"></i>
                 </button>
             </div>
         </div>

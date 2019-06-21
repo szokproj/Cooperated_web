@@ -28,10 +28,12 @@ function loadMap() {
                             "<img src=\"" + src + "\" width=\"" + img_size.width + "\" height=\"" + img_size.height + "\">" +
                             "</div>" +
                             "<div class=\"caption\"><table style='width:100%;'><tr>" +
-                            "<th style=\"width:120px;\"><label>Map name:</label></th>" +
+                            "<th style=\"width:120px;\"><label>" + $.i18n.prop('i_mapName') + " : </label></th>" +
                             "<th style=\"width:50%;\"><label name=\"" + map + "\">" + mapArray[i].map_name + "</label></th>" +
-                            "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + mapArray[i].map_id + "\')\">設定</button></th>" +
-                            "<th><button class='btn btn-primary' onclick=\"deleteMap(\'" + mapArray[i].map_id + "\')\">刪除</button></th>" +
+                            "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + mapArray[i].map_id + "\')\">" +
+                            $.i18n.prop('i_setting') + "</button></th>" +
+                            "<th><button class='btn btn-primary' onclick=\"deleteMap(\'" + mapArray[i].map_id + "\')\">" +
+                            $.i18n.prop('i_delete') + "</button></th>" +
                             "</tr></table></div>" +
                             "</div>");
                     }
@@ -69,7 +71,7 @@ function setMapById(id) { //點擊設定:開啟設定視窗
 }
 
 function newMap() {
-    $("#map_info_id").val(""); //清空Map Information
+    $("#map_info_id").val("");
     $("#map_info_name").val("");
     $("#map_info_scale").val("");
     clearAnchorList();
@@ -80,7 +82,7 @@ function newMap() {
 }
 
 function deleteMap(id) {
-    var r = confirm("Confirm to delete the map?");
+    var r = confirm($.i18n.prop('i_mapAlert_10'));
     if (r == true) {
         var deleteMapReq = JSON.stringify({
             "Command_Type": ["Read"],
@@ -147,8 +149,7 @@ function adjustImageSize(src) {
 }
 
 function transBase64(file) {
-    //file transform base64
-    if (file) {
+    if (file) { //file transform base64
         var FR = new FileReader();
         FR.readAsDataURL(file);
         FR.onloadend = function (e) {
@@ -162,15 +163,15 @@ function checkExt(fileName) {
     var validExts = new Array(".png", ".jpg", ".jpeg"); // 可接受的副檔名
     var fileExt = fileName.substring(fileName.lastIndexOf('.'));
     if (validExts.indexOf(fileExt) < 0) {
-        alert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+        alert($.i18n.prop('i_fileError_2') + validExts.toString());
         return false;
     } else
         return true;
 }
 
 function checkImageSize(file) {
-    if (file.size / 1000 > 250) {
-        alert("檔案大小超過250KB，請重新選擇圖檔!");
+    if (file.size / 1024 > 100) {
+        alert($.i18n.prop('i_fileError_3'));
         return false;
     } else
         return true;
@@ -183,7 +184,7 @@ function getBase64Ext(urldata) {
     if (start > -1 && end > -1) {
         return urldata.substring(start + 1, end);
     } else {
-        alert("檔案格式錯誤，請檢查格式後重新上傳!");
+        alert($.i18n.prop('i_fileError_1'));
         return "";
     }
 }

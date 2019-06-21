@@ -93,15 +93,21 @@
 
 .btn-alarm {
     padding: 5px 10px 5px 10px;
-    font-size: 20px;
-    color: rgb(207, 2, 2);
+    font-size: 22px;
+    color: rgb(233, 0, 0);
     float: right;
-    background-color: rgb(196, 195, 195);
+    /*background-color: rgb(196, 195, 195);
     border: 1px solid rgb(196, 195, 195);
-    border-radius: 50%;
+    border-radius: 50%;*/
 }
 
 .btn-alarm:hover {
-    background-color: rgb(175, 175, 175);
-    border: 1px solid rgb(175, 175, 175);
+    color: rgb(184, 0, 0);
+    /*background-color: rgb(175, 175, 175);
+    border: 1px solid rgb(175, 175, 175);*/
+}
+
+.drop-shadow {
+    -webkit-filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.7));
+    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.7));
 }

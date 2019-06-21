@@ -5,6 +5,7 @@ var DeviceCheckbox = document.getElementsByName("checkbox_ipAddr");
 var networkArray = [];
 var connect_ip_array = [];
 
+window.addEventListener("load", Load, false);
 
 $(function () {
     $("#select_connect_mode").change(function () {
@@ -21,34 +22,12 @@ $(function () {
     });
 });
 
-function GetXmlHttpObject() {
-    var xmlHttp = null;
-    try { // Firefox, Opera 8.0+, Safari
-        xmlHttp = new XMLHttpRequest();
-    } catch (e) { //Internet Explorer
-        try {
-            xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
-            xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-    }
-    return xmlHttp;
-}
-
-
-window.addEventListener("load", Load, false);
-
-
 function Load() {
     var requestArray = {
         "Command_Type": ["Read"],
         "Command_Name": ["Search_net"]
     }
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
+    var xmlHttp = createJsonXmlHttp("Command")
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var response = JSON.parse(this.responseText);
@@ -66,8 +45,6 @@ function Load() {
             });
         }
     }
-    xmlHttp.open("POST", "Command", true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
     xmlHttp.send(JSON.stringify(requestArray));
 }
 
@@ -82,11 +59,7 @@ function Search() {
             "ip": [$("#local_ip").val()]
         }
     }
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
+    var xmlHttp = createJsonXmlHttp("test2")
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var udpInfo = JSON.parse(this.responseText);
@@ -135,8 +108,6 @@ function Search() {
             });
         }
     }
-    xmlHttp.open("POST", "test2", true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
     xmlHttp.send(JSON.stringify(requestArray));
 }
 
@@ -187,11 +158,7 @@ function Connect() {
     };
 
     if (checkedCount > 0) { //至少有一個IP Address被勾選
-        var xmlHttp = GetXmlHttpObject();
-        if (xmlHttp == null) {
-            alert("Browser does not support HTTP Request");
-            return;
-        }
+        var xmlHttp = createJsonXmlHttp("Command");
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 var connectedInfo = JSON.parse(this.responseText);
@@ -245,11 +212,9 @@ function Connect() {
                 });
             }
         }
-        xmlHttp.open("POST", "Command", true);
-        xmlHttp.setRequestHeader("Content-type", "application/json");
         xmlHttp.send(JSON.stringify(requestArray));
     } else {
-        alert("請至少選取1個device!");
+        alert("請至少勾選一個裝置!");
     }
 }
 
@@ -313,10 +278,10 @@ function Device_setting_write() {
             };
             setTimeout(function () {
                 Request_write(basicArray);
-            }, 100); 
+            }, 100);
         }
     } else {
-        alert("請連線至少一台裝置");
+        alert("請先連線裝置");
     }
 }
 
@@ -349,17 +314,13 @@ function RF_setting_write() {
         };
         Request_write(RF_Array);
     } else {
-        alert("請連線至少一台裝置");
+        alert("請先連線裝置");
     }
 }
 
 
 function Request_write(settingArray) {
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
+    var xmlHttp = createJsonXmlHttp("test2");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var response = JSON.parse(this.responseText);
@@ -370,8 +331,6 @@ function Request_write(settingArray) {
             }
         }
     };
-    xmlHttp.open("POST", "test2", true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
     xmlHttp.send(JSON.stringify(settingArray));
 }
 
@@ -407,16 +366,12 @@ function Device_setting_read() {
             }, 100);
         }
     } else {
-        alert("請連線至少一台裝置");
+        alert("請先連線裝置");
     }
 }
 
 function read_network(requestArray) {
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
+    var xmlHttp = createJsonXmlHttp("test2");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var response = JSON.parse(this.responseText);
@@ -433,17 +388,11 @@ function read_network(requestArray) {
             }
         }
     };
-    xmlHttp.open("POST", "test2", true); //Device_setting
-    xmlHttp.setRequestHeader("Content-type", "application/json");
     xmlHttp.send(JSON.stringify(requestArray));
 }
 
 function read_basic(requestArray) {
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
+    var xmlHttp = createJsonXmlHttp("test2");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var response = JSON.parse(this.responseText);
@@ -456,8 +405,6 @@ function read_basic(requestArray) {
             }
         }
     };
-    xmlHttp.open("POST", "test2", true); //Device_setting
-    xmlHttp.setRequestHeader("Content-type", "application/json");
     xmlHttp.send(JSON.stringify(requestArray));
 }
 
@@ -475,12 +422,7 @@ function RF_setting_read() {
                 ]
             }
         };
-
-        var xmlHttp = GetXmlHttpObject();
-        if (xmlHttp == null) {
-            alert("Browser does not support HTTP Request");
-            return;
-        }
+        var xmlHttp = createJsonXmlHttp("test2");
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 var response = JSON.parse(this.responseText);
@@ -510,11 +452,9 @@ function RF_setting_read() {
                 }
             }
         };
-        xmlHttp.open("POST", "test2", true); //DeviceNetworkSetting
-        xmlHttp.setRequestHeader("Content-type", "application/json");
         xmlHttp.send(JSON.stringify(requestArray));
     } else {
-        alert("請連線至少一台裝置");
+        alert("請先連線裝置");
     }
 }
 

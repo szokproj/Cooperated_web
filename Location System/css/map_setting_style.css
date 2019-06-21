@@ -51,6 +51,7 @@ input[type="file"] {
 label,
 input {
     display: inline-block;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
 }
 
 input[type="text"] {
@@ -103,6 +104,20 @@ h1 {
     margin: 10px;
 }
 
+.btn-add-file {
+    background-color: rgb(45, 176, 219);
+    border: 1px solid rgb(0, 142, 189);
+    width: 130px;
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+}
+
+.btn-add-file:hover {
+    background-color: rgb(0, 142, 189);
+}
+
 .new_map_block {
     width: 100%;
     height: 200px;
@@ -115,8 +130,8 @@ h1 {
 .thumbnail {
     width: 500px;
     position: relative;
-    background-color: rgb(138, 181, 182);
-    border: 1px solid rgb(103, 151, 151);
+    background-color: rgb(106, 165, 199);
+    border: 1px solid rgb(73, 112, 134);
     display: inline-block;
     margin: 10px;
 }
@@ -134,7 +149,7 @@ h1 {
     background-color: rgb(221, 221, 221);
 }
 
-.thumbnail label{
+.thumbnail label {
     font-size: 18px;
 }
 
@@ -161,13 +176,24 @@ h1 {
 
 .btn-delete {
     cursor: pointer;
-    color: rgb(255, 38, 38);
-    font-size: 20px;
-    margin: 0px 5px 0px 5px;
+    color: rgb(255, 0, 0);
+    font-size: 18px;
+    margin: 0px 5px 0px 0px;
 }
 
 .btn-delete:hover {
-    color: rgb(255, 113, 113);
+    color: rgb(255, 187, 187);
+}
+
+.btn-remove {
+    cursor: pointer;
+    color: rgb(73, 70, 70);
+    font-size: 18px;
+    margin: 0px 5px 0px 0px;
+}
+
+.btn-remove:hover {
+    color: rgb(175, 175, 175);
 }
 
 .btn-add {
@@ -178,7 +204,7 @@ h1 {
 }
 
 .btn-add:hover {
-    color: rgb(90, 158, 236);
+    color: rgb(155, 202, 255);
 }
 
 .btn-add-pos {
@@ -189,7 +215,18 @@ h1 {
 }
 
 .btn-add-pos:hover {
-    color: rgb(147, 192, 96);
+    color: rgb(179, 226, 126);
+}
+
+.btn-edit {
+    cursor: pointer;
+    color: rgb(101, 159, 185);
+    font-size: 18px;
+    margin: 0px 5px 0px 5px;
+}
+
+.btn-edit:hover {
+    color: rgb(195, 238, 255);
 }
 
 .sidebar-menu {
@@ -253,7 +290,7 @@ h1 {
 .block-list {
     overflow: auto;
     height: 414px;
-    max-width: 330px;
+    max-width: 340px;
     margin: 0px 0px 0px 10px;
 }
 

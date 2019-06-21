@@ -3,8 +3,9 @@ var cvsBlock, canvas, ctx;
 var canvasImg = {
     isPutImg: false,
     width: 0,
-    height: 0
-};
+    height: 0,
+    scale: 1
+}; //預設比例尺為1:1
 var map_id = "";
 
 // View parameters
@@ -18,12 +19,6 @@ var fitZoom = 1;
 var isFitWindow = true;
 
 var serverImg = new Image();
-
-var tag_image = {
-    isOnload: false,
-    image: new Image(),
-    size: 0
-};
 
 var pageTimer = {}; //定义计算器全局变量
 var second = 100;
@@ -49,20 +44,14 @@ function setup() {
         return dpr / bsr;
     })();
 
-    //設定並載入tag圖案
-    tag_image.image.src = '../image/location.png';
-    tag_image.image.onload = function () {
-        tag_image.isOnload = true;
-        tag_image.size = tag_image.image.height / tag_image.image.width;
-    }
-
+    canvas.addEventListener('click', handleMouseClick, false); //點擊地圖上的tag，跳出tag的訊息框
     canvas.addEventListener("mousemove", handleMouseMove, false); //滑鼠在畫布中移動的座標
     canvas.addEventListener("mousewheel", handleMouseWheel, false); //畫布縮放
-    canvas.addEventListener('click', handleMouseClick, false); //點擊地圖上的tag，跳出tag的訊息框
     cvsBlock.addEventListener("mousewheel", handleMouseWheel, false); // 畫面縮放
     cvsBlock.addEventListener("DOMMouseScroll", handleMouseWheel, false); // 畫面縮放(for Firefox)
+
     $(function () {
-        $("#canvas").mousedown(function (e) { //設置移動後的默認位置 
+        $("#canvas").mousedown(function (e) {
             //獲取div的初始位置，要注意的是需要轉整型，因為獲取到值帶px 
             var canvas_left = parseInt($("#canvas").css("margin-left"));
             var canvas_top = parseInt($("#canvas").css("margin-top"));
@@ -77,18 +66,18 @@ function setup() {
                 //計算div的最終位置 
                 var end_y = es.pageY - downy + canvas_top;
                 //帶上單位 
-                $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px")
+                $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
             });
-        });
 
-        $("#canvas").mouseup(function () {
-            //滑鼠彈起時給div取消事件 
-            $("#canvas").unbind("mousemove");
-        });
+            $("#canvas").mouseup(function () {
+                //滑鼠彈起時給div取消事件 
+                $("#canvas").unbind("mousemove");
+            });
 
-        $("#canvas").mouseleave(function () {
-            //滑鼠離開canvas時給div取消事件 
-            $("#canvas").unbind("mousemove");
+            $("#canvas").mouseleave(function () {
+                //滑鼠離開canvas時給div取消事件 
+                $("#canvas").unbind("mousemove");
+            });
         });
 
         $("#timeline_dialog").dialog({
@@ -101,22 +90,15 @@ function setup() {
         "Command_Type": ["Read"],
         "Command_Name": ["GetMaps"]
     };
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success == 1) {
-                var MapList = revObj.Values;
-                mapArray = MapList;
+                mapArray = revObj.Values.slice(0);
             }
         }
     };
-    xmlHttp.open("POST", "sql", true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
     xmlHttp.send(JSON.stringify(requestArray));
 
     /**
@@ -148,45 +130,32 @@ function setup() {
     });
 }
 
-function GetXmlHttpObject() {
-    var xmlHttp = null;
-    try { // Firefox, Opera 8.0+, Safari
-        xmlHttp = new XMLHttpRequest();
-    } catch (e) { //Internet Explorer
-        try {
-            xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
-            xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-    }
-    return xmlHttp;
-}
-
-function loadImage(map_src) {
-    serverImg.src = '../image/map/' + map_src;
+function loadImage(map_url, map_scale) {
+    map_scale = typeof (map_scale) != 'undefined' && map_scale != "" ? map_scale : 1;
+    serverImg.src = map_url;
     serverImg.onload = function () {
         cvsBlock.style.background = "none";
         canvasImg.isPutImg = true;
-        canvasImg.width = this.width;
-        canvasImg.height = this.height;
-        setCanvas(this.src, this.width, this.height);
+        canvasImg.width = serverImg.width;
+        canvasImg.height = serverImg.height;
+        canvasImg.scale = map_scale;
+        setCanvas(this.src, serverImg.width, serverImg.height);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         xleftView = 0;
         ytopView = 0;
         Zoom = zoomOriginal;
         ctx.save(); //紀錄原比例
 
-        var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
-        var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
-        var cvsSize = cvsBlock_width / cvsBlock_height;
-        var serImgSize = this.width / this.height;
-
+        var serImgSize = serverImg.width / serverImg.height;
+        var cvs_width = parseFloat($("#cvsBlock").css("width"));
+        var cvs_height = parseFloat($("#cvsBlock").css("height"));
+        var cvsSize = cvs_width / cvs_height;
         if (serImgSize > cvsSize) { //原圖比例寬邊較長
-            fitZoom = cvsBlock_width / this.width;
-            setCanvas(this.src, cvsBlock_width, this.height * fitZoom);
+            fitZoom = cvs_width / serverImg.width;
+            setCanvas(this.src, cvs_width, serverImg.height * fitZoom);
         } else {
-            fitZoom = cvsBlock_height / this.height;
-            setCanvas(this.src, this.width * fitZoom, cvsBlock_height);
+            fitZoom = cvs_height / serverImg.height;
+            setCanvas(this.src, serverImg.width * fitZoom, cvs_height);
         }
         document.getElementById("btn_start").disabled = false;
         document.getElementById("btn_restore").disabled = false;
@@ -256,8 +225,8 @@ function restartCanvas() {
         fitZoom = cvsBlock_height / canvasImg.height;
     $(function () {
         $("#canvas").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
-        setSize();
     });
+    reDrawTag(ctx);
 }
 
 function handleMouseWheel(event) {
@@ -273,8 +242,8 @@ function handleMouseWheel(event) {
         var end_x = canvas_left + xleftView; //* scale;
         var end_y = canvas_top + ytopView; //* scale;
         $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
-        reDrawTag(ctx);
     });
+    reDrawTag(ctx);
 }
 
 function handleMouseClick(event) {
@@ -338,7 +307,6 @@ function getPointOnCanvas(x, y) {
     };
 }
 
-/*-----------------------------------------------*/
 
 function drawTag(dctx, id, x, y) {
     dctx.globalCompositeOperation = "source-over";
@@ -463,24 +431,24 @@ function drawNextTime() {
     var array = timelineArray;
     if (isContinue && array.length > 0) {
         if (time == 0) {
-            loadImage(array[0].map_src);
+            loadImage(array[0].map_src, array[0].map_scale);
             restartCanvas();
             drawTag(ctx, array[0].time, array[0].x, array[0].y);
-            document.getElementById("position").value = array[0].map_name;
-            document.getElementById("draw_time").value = array[0].time;
-            document.getElementById("draw_x").value = array[0].x;
-            document.getElementById("draw_y").value = array[0].y;
+            document.getElementById("position").innerText = array[0].map_name;
+            document.getElementById("draw_time").innerText = array[0].time;
+            document.getElementById("draw_x").innerText = array[0].x;
+            document.getElementById("draw_y").innerText = array[0].y;
             time++;
         } else if (time < array.length) {
             if (array[time].map_src != array[time - 1].map_src)
-                loadImage(array[time].map_src);
+                loadImage(array[time].map_src, array[time].map_scale);
             reDrawTag(ctx);
             drawArrow(ctx, array[time - 1].x, array[time - 1].y, array[time].x, array[time].y, 30, 8, 2, '#66ccff');
             drawTag(ctx, array[time].time, array[time].x, array[time].y);
-            document.getElementById("position").value = array[time].map_name;
-            document.getElementById("draw_time").value = array[time].time;
-            document.getElementById("draw_x").value = array[time].x;
-            document.getElementById("draw_y").value = array[time].y;
+            document.getElementById("position").innerText = array[time].map_name;
+            document.getElementById("draw_time").innerText = array[time].time;
+            document.getElementById("draw_x").innerText = array[time].x;
+            document.getElementById("draw_y").innerText = array[time].y;
             time++;
         } else {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -493,7 +461,7 @@ function search() {
     var startDate = new Date($("#start_date").val() + 'T' + checkTimeLength($("#start_time").val()));
     var endDate = new Date($("#end_date").val() + 'T' + checkTimeLength($("#end_time").val()));
     if (endDate - startDate > 86400000 * 7) { //86400000 = 一天的毫秒數
-        var retVal = confirm("搜尋日期超過7天，可能會占用過多記憶體，請問仍要繼續進行?");
+        var retVal = confirm($.i18n.prop('i_alertTimeTooLong'));
         if (retVal == true) {
             timelineArray = [];
             getTimeline({
@@ -523,31 +491,27 @@ function search() {
                 "end_time": checkTimeLength($("#end_time").val())
             }
         });
-        getTimeline(requestArray);
     }
 }
 
 
 function getTimeline(request) {
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            var revInfo = revObj.Values;
+            var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
             if (revObj.success == 1) {
                 for (i = 0; i < revInfo.length; i++) {
                     var index = mapArray.findIndex(function (maps) { //抓取指定AlarmTag的位置
                         return maps.map_id == revInfo[i].map_id;
                     });
                     if (index > -1) {
-                        var map = mapArray[index];
+                        var map_info = mapArray[index];
                         timelineArray.push({
-                            map_src: getFileName(map.map_path),
-                            map_name: map.map_name,
+                            map_src: "data:image/" + map_info.map_file_ext + ";base64," + map_info.map_file,
+                            map_scale: map_info.map_scale,
+                            map_name: map_info.map_name,
                             time: revInfo[i].time,
                             x: parseInt(revInfo[i].coordinate_x, 10),
                             y: parseInt(revInfo[i].coordinate_y, 10)
@@ -568,22 +532,12 @@ function getTimeline(request) {
                             "end_time": revObj.end_time
                         }
                     });
-                } else return;
+                } else
+                    alert($.i18n.prop('i_searchOver'));
             }
         }
     };
-    xmlHttp.open("POST", "sql", true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
     xmlHttp.send(JSON.stringify(request));
-}
-
-function getFileName(src) {
-    var pos1 = src.lastIndexOf("\\");
-    var pos2 = src.lastIndexOf("/");
-    var pos = -1;
-    if (pos1 > -1) pos = pos1;
-    else if (pos2 > -1) pos = pos2;
-    return src.substring(pos + 1);
 }
 
 function checkTimeLength(time) {

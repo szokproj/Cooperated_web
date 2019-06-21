@@ -44,8 +44,6 @@ aside button {
 }
 
 .page-main>aside .main-place #sidebar_right_member {
-    overflow: auto;
-    height: 630px;
     margin: 5px;
 }
 

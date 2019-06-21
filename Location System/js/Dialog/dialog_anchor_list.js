@@ -26,10 +26,10 @@ function inputAnchorList(anchorList) {
                 "</td><td>" +
                 "<input type=\"text\" name=\"list_main_anchor_y\" value=\"" + anchorList[i].set_y + "\" style=\"max-width:60px;\" readonly/>" +
                 "</td><td>" +
-                "<label for=\"btn_edit_anchor_" + i + "\" class='btn-edit' title='Edit the anchor'>" +
+                "<label for=\"btn_edit_anchor_" + i + "\" class='btn-edit' title='" + $.i18n.prop('i_editAnchor') + "'>" +
                 "<i class='fas fa-edit' style='font-size:18px;'></i></label><input id=\"btn_edit_anchor_" + i + "\" type='button'" +
                 " class='btn-hidden' onclick=\"editAnchorInfo(\'" + anchorList[i].anchor_id + "\')\" />" +
-                "<label for=\"btn_delete_main_anchor_" + i + "\"  class='btn-delete' style='margin-left:10px;' title='Delete the anchor'>" +
+                "<label for=\"btn_delete_main_anchor_" + i + "\"  class='btn-remove' style='margin-left:10px;' title='" + $.i18n.prop('i_deleteAnchor') + "'>" +
                 "<i class='fas fa-trash-alt' style='font-size:18px;'></i></label><input id=\"btn_delete_main_anchor_" + i + "\" type='button'" +
                 " class='btn-hidden' onclick=\"deleteMainAnchor(\'" + anchorList[i].anchor_id + "\')\" />" +
                 "</td></tr>");
@@ -43,10 +43,10 @@ function inputAnchorList(anchorList) {
                 "</td><td>" +
                 "<input type=\"text\" name=\"list_anchor_y\" value=\"" + anchorList[i].set_y + "\" style=\"max-width:60px;\" readonly/>" +
                 "</td><td>" +
-                "<label for=\"btn_edit_anchor_" + i + "\" class='btn-edit' title='Edit the anchor'>" +
+                "<label for=\"btn_edit_anchor_" + i + "\" class='btn-edit' title='" + $.i18n.prop('i_editAnchor') + "'>" +
                 "<i class='fas fa-edit' style='font-size:18px;'></i></label><input id=\"btn_edit_anchor_" + i + "\" type='button'" +
                 " class='btn-hidden' onclick=\"editAnchorInfo(\'" + anchorList[i].anchor_id + "\')\" />" +
-                "<label for=\"btn_delete_anchor_" + i + "\" class='btn-delete' style='margin-left:10px;' title='Delete anchor'>" +
+                "<label for=\"btn_delete_anchor_" + i + "\" class='btn-remove' style='margin-left:10px;' title='" + $.i18n.prop('i_deleteAnchor') + "'>" +
                 "<i class='fas fa-trash-alt' style='font-size:18px;'></i></label><input id=\"btn_delete_anchor_" + i + "\" type='button'" +
                 " class='btn-hidden' onclick=\"deleteAnchor(\'" + anchorList[i].anchor_id + "\')\" />" +
                 "</td></tr>");
@@ -66,7 +66,7 @@ function editAnchorInfo(id) {
         $("#edit_anchor_y").val(anchorsInfoArray[index].set_y);
         $("#dialog_edit_anchor").dialog("open");
     } else {
-        alert("資料錯誤，請刷新頁面再試一次");
+        alert($.i18n.prop('i_mapAlert_1'));
     }
 }
 
@@ -91,8 +91,9 @@ function deleteMainAnchor(id) {
                 getXmlHttp.onreadystatechange = function () {
                     if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
+                        var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
                         if (revObj.success > 0) {
-                            revObj.Values.forEach(element => {
+                            revInfo.forEach(element => {
                                 if (element.main_anchor_id == id) {
                                     var resetGroupInfo = {
                                         "group_id": element.group_id,
@@ -106,6 +107,7 @@ function deleteMainAnchor(id) {
                                 }
                             });
                             getMapGroups();
+                            draw();
                         }
                     }
                 };
@@ -220,9 +222,9 @@ $(function () {
         if ($(this).val().length > 0) {
             var repeat = allAnchorArray.indexOf($(this).val());
             if (repeat > -1)
-                $("#anchor_id_alert").text("已存在").css('color', 'red');
+                $("#anchor_id_alert").text($.i18n.prop('i_existed')).css('color', 'red');
             else
-                $("#anchor_id_alert").text("可新增").css('color', 'green');
+                $("#anchor_id_alert").text($.i18n.prop('i_canAdd')).css('color', 'green');
         } else {
             $("#anchor_id_alert").empty();
         }
@@ -231,9 +233,9 @@ $(function () {
         if ($(this).val().length > 0) {
             var repeat = allGroupsArray.indexOf($(this).val());
             if (repeat > -1)
-                $("#group_id_alert").text("已存在").css('color', 'red');
+                $("#group_id_alert").text($.i18n.prop('i_existed')).css('color', 'red');
             else
-                $("#group_id_alert").text("可新增").css('color', 'green');
+                $("#group_id_alert").text($.i18n.prop('i_canAdd')).css('color', 'green');
         } else {
             $("#group_id_alert").empty();
         }
@@ -254,30 +256,30 @@ $(function () {
     function addAnchor() {
         var valid = true;
         allFields.removeClass("ui-state-error");
-        valid = valid && checkLength(anchor_id, "Min number:1, Max number:65535", 1, 5);
+        valid = valid && checkLength(anchor_id, $.i18n.prop('i_mapAlert_14'), 1, 5);
         allAnchorArray.forEach(element => { //驗證Anchor ID是否重複
             if (element == anchor_id.val()) {
                 valid = false;
                 anchor_id.addClass("ui-state-error");
-                alert("Anchor ID已存在，請更換!");
+                alert($.i18n.prop('i_mapAlert_16'));
             }
         });
-        valid = valid && checkLength(anchor_x, "Not null", 1, 10);
-        valid = valid && checkLength(anchor_y, "Not null", 1, 10);
+        valid = valid && checkLength(anchor_x, $.i18n.prop('i_mapAlert_13'), 1, 10);
+        valid = valid && checkLength(anchor_y, $.i18n.prop('i_mapAlert_13'), 1, 10);
         if (anchor_type.val() == "main") {
-            valid = valid && checkLength(input_group_id, "Not null", 1, 5);
+            valid = valid && checkLength(input_group_id, $.i18n.prop('i_mapAlert_13'), 1, 5);
             allGroupsArray.forEach(element => { //驗證Group ID是否重複
                 if (element == input_group_id.val()) {
                     valid = false;
                     input_group_id.addClass("ui-state-error");
-                    alert("Group ID已存在，請更換!");
+                    alert($.i18n.prop('i_mapAlert_11'));
                 }
             });
-            valid = valid && checkLength(input_group_name, "Not null", 1, 50);
+            valid = valid && checkLength(input_group_name, $.i18n.prop('i_mapAlert_13'), 1, 50);
         } else {
             if (!select_group.children().is("option"))
-                alert("請先增加至少一個Group(可以新增MainAnchor時綁定，也可以到GroupList新增)");
-            valid = valid && checkLength(select_group, "Not null", 1, 5);
+                alert($.i18n.prop('i_mapAlert_15'));
+            valid = valid && checkLength(select_group, $.i18n.prop('i_mapAlert_13'), 1, 5);
         }
 
         if (valid) {
@@ -399,8 +401,8 @@ $(function () {
     function editAnchor() {
         allFields.removeClass("ui-state-error");
         var valid = true;
-        valid = valid && checkLength(anchor_x, "Not null", 1, 10);
-        valid = valid && checkLength(anchor_y, "Not null", 1, 10);
+        valid = valid && checkLength(anchor_x, $.i18n.prop('i_mapAlert_13'), 1, 10);
+        valid = valid && checkLength(anchor_y, $.i18n.prop('i_mapAlert_13'), 1, 10);
         if (valid) {
             var request = {
                 "Command_Type": ["Write"],

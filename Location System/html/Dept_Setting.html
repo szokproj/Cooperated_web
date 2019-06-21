@@ -2,8 +2,9 @@
 <html lang="en">
 
 <head>
-    <title>Location System</title>
     <meta charset="utf-8">
+    <title class="i18n" name='title'>Location System</title>
+    <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- JQuery -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -30,6 +31,7 @@
     <script type="text/javascript" src="../js/create_dept_chart.js"></script>
     <!-- JQuery UI - Dialog -->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 </head>
 
 <body>
@@ -40,35 +42,39 @@
                 <nav class="sidebar">
                     <ul class="nav">
                         <li><a href="../index.html">
-                                <i class="fas fa-home"></i><span>首頁</span></a></li>
-                        <li class="active"><a href="../Member_Setting.html">
-                                <i class="fas fa-user-cog"></i><span>人員設置</span></a></li>
+                                <i class="fas fa-home"></i><span class="i18n" name="homePage"></span></a></li>
+                        <li class="active"><a href="#">
+                                <i class="fas fa-user-cog"></i><span class="i18n" name="member_settingPage"></span></a>
+                        </li>
                         <li><a href="../Timeline.html">
-                                <i class="fas fa-route"></i><span>歷史軌跡</span></a></li>
+                                <i class="fas fa-route"></i><span class="i18n" name="timelinePage"></span></a></li>
                         <li><a href="../Map_Setting.html">
-                                <i class="fas fa-map"></i><span>地圖設定</span></a></li>
+                                <i class="fas fa-map"></i><span class="i18n" name="map_settingPage"></span></a></li>
                         <li><a href="../Anchor_Setting.html">
-                                <i class="fas fa-anchor"></i><span>裝置設定</span></a></li>
+                                <i class="fas fa-anchor"></i><span class="i18n" name="anchor_settingPage"></span></a>
+                        </li>
                         <li><a href="../Alarm_Setting.html">
-                                <i class="fas fa-bell"></i><span>警報設定</span></a></li>
+                                <i class="fas fa-bell" style="padding-left:2px;"></i><span class="i18n"
+                                    name="alarm_settingPage"></span></a></li>
                         <li><a href="../Reference.html">
-                                <i class="fas fa-cogs"></i><span>進階設定</span></a></li>
+                                <i class="fas fa-cogs"></i><span class="i18n" name="advance_settingPage"></span></a>
+                        </li>
                         <li class="excel"><a href="#">
-                                <i class="fas fa-sign-in-alt"></i><span>匯入</span></a></li>
-                        <li class="excel"><a href="#">
-                                <i class="fas fa-sign-out-alt"></i><span>匯出</span></a></li>
+                                <i class="fas fa-file-excel" style="padding-left:2px;"></i><span class="i18n"
+                                    name="Excel_in_out"></span></a></li>
                         <hr>
                         <li class="setting-type"><a href="../Member_Setting.html">
-                                <i class="fas fa-users"></i><span>成員設定</span></a></li>
+                                <i class="fas fa-users"></i><span class="i18n" name="i_memberSetting"></span></a></li>
                         <li class="setting-type"><a href="../Display_Setting.html">
-                                <i class="fas fa-map-marker-alt" style="padding-left:4px;"></i><span>顯示設定</span></a>
-                        </li>
+                                <i class="fas fa-map-marker-alt" style="padding-left:4px;"></i>
+                                <span class="i18n" name="i_displaySetting"></span></a></li>
                         <li class="setting-type active"><a href="#">
-                                <i class="fas fa-sitemap"></i><span>部門設定</span></a></li>
+                                <i class="fas fa-sitemap"></i><span class="i18n" name="i_deptSetting"></span></a></li>
                         <li class="setting-type"><a href="../Job_Title_Setting.html">
-                                <i class="fas fa-id-card"></i><span>職稱設定</span></a></li>
+                                <i class="fas fa-id-card"></i><span class="i18n" name="i_titleSetting"></span></a></li>
                         <li class="setting-type"><a href="../User_Type_Setting.html">
-                                <i class="fas fa-user-tag"></i><span>用戶類型設定</span></a></li>
+                                <i class="fas fa-user-tag"></i><span class="i18n" name="i_usertypeSetting"></span></a>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -76,19 +82,27 @@
 
         <div class="row" style="display:flex;">
             <div class="col-lg-12">
+                <div style="float:right;">
+                    <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
+                    <select id="language" style="margin-top:5px;">
+                        <option value="en">English</option>
+                        <option value="zh-TW">繁體中文</option>
+                        <option value="zh-CN">简体中文</option>
+                    </select>
+                </div>
                 <div id="chart-container"></div>
                 <div id="edit-panel">
-                    <label class="selected-node-group">selected node:</label>
+                    <label class="selected-node-group i18n" name="i_selectDept"></label> : 
                     <input type="text" id="selected-node" class="selected-node-group" readonly>
                     <span id="node-type-panel" class="radio-panel">
                         <input type="radio" name="node-type" id="rd-child" value="children">
-                        <label for="rd-child">Child</label>
+                        <label for="rd-child" class="i18n" name="i_child"></label>
                         <input type="radio" name="node-type" id="rd-sibling" value="siblings">
-                        <label for="rd-sibling">Sibling</label>
+                        <label for="rd-sibling" class="i18n" name="i_sibling"></label>
                     </span>
-                    <button type="button" id="btn-add-nodes">Add</button>
-                    <button type="button" id="btn-delete-nodes">Delete</button>
-                    <button type="button" id="btn-edit-nodes">Edit</button>
+                    <button type="button" id="btn-add-nodes" class="i18n" name="i_add"></button>
+                    <button type="button" id="btn-delete-nodes" class="i18n" name="i_delete"></button>
+                    <button type="button" id="btn-edit-nodes" class="i18n" name="i_edit"></button>
                 </div>
             </div>
         </div>
@@ -101,11 +115,11 @@
                     <br>
                     <table id="table_edit_node" class="ui-widget ui-widget-content block">
                         <tr>
-                            <td>Name</td>
+                            <td class="i18n" name="i_name"></td>
                             <td><input type="text" id="edit_type_name" style="width:100%;"></td>
                         </tr>
                         <tr>
-                            <td>Color</td>
+                            <td class="i18n" name="i_color"></td>
                             <td>
                                 <label for="edit_dot_color" class="custom-file-download">
                                     <img src="../image/palette.png" style="max-width:20px;">
@@ -121,6 +135,10 @@
             </form>
         </div>
     </div>
+    <!-- i18n 多語言翻譯 -->
+    <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
+    <script type="text/javascript" src="../js/i18n/language.js"></script>
+    <!-- i18n -->
 </body>
 
 </html>

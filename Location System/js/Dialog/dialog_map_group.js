@@ -70,7 +70,7 @@ $(function () {
                     if (revObj.success == 1) {
                         alert("成功更新 Group List:" + revInfo.length + "筆\n" +
                             "失敗:" + (revInfo.length - row_count) + "筆");
-                        inputMapGroupList(revInfo, map_array, group_array)
+                        inputMapGroupList(revInfo, map_array, group_array);
                     }
                 }
             };

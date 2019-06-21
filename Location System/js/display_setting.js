@@ -1,4 +1,4 @@
-var default_color = '#4CAF50';
+var default_color = '#2eb82e';
 var use_color = '';
 
 $(function () {
@@ -44,7 +44,7 @@ function updateTypeColorList(index) {
     $("#table_display_type tbody").empty();
     switch (index) {
         case 0: //部門
-            $("#row_name").text("部門");
+            $("#row_name").text($.i18n.prop('i_dept'));
             var request = {
                 "Command_Type": ["Read"],
                 "Command_Name": ["GetDepartment_relation_list"]
@@ -73,7 +73,7 @@ function updateTypeColorList(index) {
             xmlHttp.send(JSON.stringify(request));
             break;
         case 1: //職稱
-            $("#row_name").text("職稱");
+            $("#row_name").text($.i18n.prop('i_jobTitle'));
             var request = {
                 "Command_Type": ["Read"],
                 "Command_Name": ["GetJobTitle_relation_list"]
@@ -102,7 +102,7 @@ function updateTypeColorList(index) {
             xmlHttp.send(JSON.stringify(request));
             break;
         case 2: //用戶類型
-            $("#row_name").text("用戶類型");
+            $("#row_name").text($.i18n.prop('i_userType'));
             var request = {
                 "Command_Type": ["Read"],
                 "Command_Name": ["GetUserTypes"]
@@ -131,7 +131,7 @@ function updateTypeColorList(index) {
             xmlHttp.send(JSON.stringify(request));
             break;
         case 3: //自訂
-            $("#row_name").text("工號");
+            $("#row_name").text($.i18n.prop('i_number'));
             var request = {
                 "Command_Type": ["Read"],
                 "Command_Name": ["GetStaffs"]
@@ -143,7 +143,7 @@ function updateTypeColorList(index) {
                     var revInfo = revObj.Values;
                     if (revObj.success > 0) {
                         for (i = 0; i < revInfo.length; i++) {
-                            if (revInfo[i].color_type == "自訂") {
+                            if (revInfo[i].color_type == 'Custom') {
                                 $("#table_display_type").append("<tr id='tr_display_type_" + i + "'>" +
                                     "<td>" + revInfo[i].number + "</td>" +
                                     "<td>" + revInfo[i].color + "</td>" +
@@ -164,27 +164,6 @@ function updateTypeColorList(index) {
         default:
             break;
     }
-}
-
-
-function createJsonXmlHttp(url) {
-    var newXmlHttp = null;
-    try { // Firefox, Opera 8.0+, Safari
-        newXmlHttp = new XMLHttpRequest();
-    } catch (e) { //Internet Explorer
-        try {
-            newXmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
-            newXmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-    }
-    if (newXmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
-    newXmlHttp.open("POST", url, true);
-    newXmlHttp.setRequestHeader("Content-type", "application/json");
-    return newXmlHttp;
 }
 
 function drawPosition(color, size) {
@@ -341,7 +320,7 @@ function submitSize(size) {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0)
-                alert("設定新的點大小成功!");
+                alert($.i18n.prop('i_alertError_4'));
         }
     };
     xmlHttp.send(JSON.stringify(request));

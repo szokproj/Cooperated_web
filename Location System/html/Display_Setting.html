@@ -2,8 +2,9 @@
 <html lang="en">
 
 <head>
-    <title>Location System</title>
     <meta charset="utf-8">
+    <title class="i18n" name='title'>Location System</title>
+    <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- JQuery庫 -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -22,6 +23,7 @@
     <!--Edit css -->
     <link rel="stylesheet" type="text/css" href="../css/member_setting_style.css">
     <!--Edit js-->
+    <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/palette.js"></script>
     <script type="text/javascript" src="../js/display_setting.js"></script>
 </head>
@@ -33,62 +35,80 @@
                 <nav class="sidebar">
                     <ul class="nav">
                         <li><a href="../index.html">
-                                <i class="fas fa-home"></i><span>首頁</span></a></li>
-                        <li class="active"><a href="../Member_Setting.html">
-                                <i class="fas fa-user-cog"></i><span>人員設置</span></a></li>
+                                <i class="fas fa-home"></i><span class="i18n" name="homePage"></span></a></li>
+                        <li class="active"><a href="#">
+                                <i class="fas fa-user-cog"></i><span class="i18n" name="member_settingPage"></span></a>
+                        </li>
                         <li><a href="../Timeline.html">
-                                <i class="fas fa-route"></i><span>歷史軌跡</span></a></li>
+                                <i class="fas fa-route"></i><span class="i18n" name="timelinePage"></span></a></li>
                         <li><a href="../Map_Setting.html">
-                                <i class="fas fa-map"></i><span>地圖設定</span></a></li>
+                                <i class="fas fa-map"></i><span class="i18n" name="map_settingPage"></span></a></li>
                         <li><a href="../Anchor_Setting.html">
-                                <i class="fas fa-anchor"></i><span>裝置設定</span></a></li>
+                                <i class="fas fa-anchor"></i><span class="i18n" name="anchor_settingPage"></span></a>
+                        </li>
                         <li><a href="../Alarm_Setting.html">
-                                <i class="fas fa-bell"></i><span>警報設定</span></a></li>
+                                <i class="fas fa-bell" style="padding-left:2px;"></i><span class="i18n"
+                                    name="alarm_settingPage"></span></a></li>
                         <li><a href="../Reference.html">
-                                <i class="fas fa-cogs"></i><span>進階設定</span></a></li>
+                                <i class="fas fa-cogs"></i><span class="i18n" name="advance_settingPage"></span></a>
+                        </li>
                         <li class="excel"><a href="#">
-                                <i class="fas fa-sign-in-alt"></i><span>匯入</span></a></li>
-                        <li class="excel"><a href="#">
-                                <i class="fas fa-sign-out-alt"></i><span>匯出</span></a></li>
+                                <i class="fas fa-file-excel" style="padding-left:2px;"></i><span class="i18n"
+                                    name="Excel_in_out"></span></a></li>
                         <hr>
                         <li class="setting-type"><a href="../Member_Setting.html">
-                                <i class="fas fa-users"></i><span>成員設定</span></a></li>
+                                <i class="fas fa-users"></i><span class="i18n" name="i_memberSetting"></span></a></li>
                         <li class="setting-type active"><a href="#">
-                                <i class="fas fa-map-marker-alt" style="padding-left:4px;"></i><span>顯示設定</span></a>
-                        </li>
+                                <i class="fas fa-map-marker-alt" style="padding-left:4px;"></i>
+                                <span class="i18n" name="i_displaySetting"></span></a></li>
                         <li class="setting-type"><a href="../Dept_Setting.html">
-                                <i class="fas fa-sitemap"></i><span>部門設定</span></a></li>
+                                <i class="fas fa-sitemap"></i><span class="i18n" name="i_deptSetting"></span></a></li>
                         <li class="setting-type"><a href="../Job_Title_Setting.html">
-                                <i class="fas fa-id-card"></i><span>職稱設定</span></a></li>
+                                <i class="fas fa-id-card"></i><span class="i18n" name="i_titleSetting"></span></a></li>
                         <li class="setting-type"><a href="../User_Type_Setting.html">
-                                <i class="fas fa-user-tag"></i><span>用戶類型設定</span></a></li>
+                                <i class="fas fa-user-tag"></i><span class="i18n" name="i_usertypeSetting"></span></a>
+                        </li>
                     </ul>
                 </nav>
             </div>
         </aside>
 
-        <div class="row" style="display:flex;">
+        <div class="row">
+            <div class="col-lg-12">
+                <div style="float:right;">
+                    <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
+                    <select id="language" style="margin-top:5px;">
+                        <option value="en">English</option>
+                        <option value="zh-TW">繁體中文</option>
+                        <option value="zh-CN">简体中文</option>
+                    </select>
+                </div>
+
+                <label class="i18n" name="i_classification"></label> : 
+                <select id="display_type_select">
+                    <option value="Dept" class="i18n" name="Dept"></option>
+                    <option value="JobTitle" class="i18n" name="JobTitle"></option>
+                    <option value="UserType" class="i18n" name="UserType"></option>
+                    <option value="Custom" class="i18n" name="Custom"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-lg-6">
                 <div>
-                    <label>分類依據 : </label>
-                    <select id="display_type_select">
-                        <option value="部門">部門</option>
-                        <option value="職稱">職稱</option>
-                        <option value="用戶類型">用戶類型</option>
-                        <option value="自訂">自訂</option>
-                    </select>
                     <table class="table-line" id="table_display_type" style="margin-right:10px;">
                         <thead>
                             <tr>
-                                <th style="min-width:80px;" id="row_name">名稱</th>
-                                <th style="min-width:80px;">顏色</th>
-                                <th style="min-width:50px;">預覽</th>
+                                <th style="min-width:80px;" class="i18n" name="i_name" id="row_name"></th>
+                                <th style="min-width:80px;" class="i18n" name="i_color"></th>
+                                <th style="min-width:50px;" class="i18n" name="i_preview"></th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
                     <br>
-                    <label>畫點大小 : </label>
+                    <label class="i18n" name="i_dotSize"></label> : 
                     <input type="text" id="dot_size_display" value="10"
                         style="border:0; color:#f6931f; font-weight:bold; width:20px;">
                     <label style="color:#f6931f;">px</label>
@@ -97,21 +117,26 @@
                             <td>
                                 <div id="dot_size_slider" style="width:150px"></div>
                             </td>
-                            <td><input type="button" id="btn_size_submit" value="送出"></td>
+                            <td><input type="button" id="btn_size_submit" class="i18n-input" selectAttr="value"
+                                    selectName="i_submit"></td>
                         </tr>
                     </table>
                 </div>
             </div>
-            <div class="col-lg-6" style="top:50px;">
+            <div class="col-lg-6">
                 <canvas id="canvas_preview" class="draw-map"></canvas>
                 <br>
-                <label for="load_image" class="load-file">
+                <!--<label for="load_image" class="load-file">
                     載入測試地圖&nbsp;<i class="far fa-images"></i>
-                </label>
-                <input type="file" id="load_image" accept="image/*" onchange="loadFile(this)">
+                </label
+                <input type="file" id="load_image" accept="image/*" onchange="loadFile(this)">>-->
             </div>
         </div>
     </div>
+    <!-- i18n 多語言翻譯 -->
+    <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
+    <script type="text/javascript" src="../js/i18n/language.js"></script>
+    <!-- i18n -->
 </body>
 
 </html>

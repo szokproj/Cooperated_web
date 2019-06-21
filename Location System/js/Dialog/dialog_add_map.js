@@ -23,7 +23,7 @@ $(function () {
 
 
     function SubmitNewMap() {
-        var r = confirm("Confirm to add the map?");
+        var r = confirm($.i18n.prop('i_mapAlert_17'), );
         if (r == true) {
             var valid = true,
                 map_ext = "",
@@ -31,7 +31,7 @@ $(function () {
 
             allFields.removeClass("ui-state-error");
 
-            valid = valid && checkLength(map_name, "not null", 1, 50);
+            valid = valid && checkLength(map_name, $.i18n.prop('i_mapAlert_13'), 1, 50);
 
             if (map_image.attr("src").length > 0) {
                 var map_file = map_image.attr("src").split(",");
@@ -70,7 +70,7 @@ $(function () {
                                     "<img src=\"" + src + "\" width=\"" + img_size.width + "\" height=\"" + img_size.height + "\">" +
                                     "</div>" +
                                     "<div class=\"caption\"><table style='width:100%;'><tr>" +
-                                    "<th style=\"width:90px;\">Map Name:</th>" +
+                                    "<th style=\"width:90px;\"><label>" + $.i18n.prop('i_mapName') + "</label> : </th>" +
                                     "<th style=\"width:50%;\"><span name=\"" + map + "\">" + mapArray[i].map_name + "</span></th>" +
                                     "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + mapArray + "\',\'" + mapArray[i].map_id + "\')\">設定</button></th>" +
                                     "<th><button class='btn btn-primary' onclick=\"deleteMap(\'" + mapArray[i].map_id + "\')\">刪除</button></th>" +

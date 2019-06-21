@@ -14,8 +14,8 @@ function displayBar(table) {
     direct = 0;
     displayPage(table); //显示第一页
 
-    document.getElementById("btn0").innerHTML = "當前 " + curPage + "/" + page + " 頁"; //显示当前多少页
-    document.getElementById("sjzl").innerHTML = "總數據量 " + len + ""; //显示数据量
+    document.getElementById("btn0").innerHTML = $.i18n.prop('i_nowPage') + " " + curPage + "/" + page + " " + $.i18n.prop('i_page'); //显示当前多少页
+    document.getElementById("sjzl").innerHTML = $.i18n.prop('i_countData') + len + ""; //显示数据量
     document.getElementById("pageSize").value = pageSize;
 
 
@@ -40,11 +40,11 @@ function displayBar(table) {
     $("#btn5").click(function changePage() { //转页
         curPage = document.getElementById("changePage").value * 1;
         if (!/^[1-9]\d*$/.test(curPage)) {
-            alert("請輸入正整數");
+            alert($.i18n.prop('i_pageBar_3'));
             return;
         }
         if (curPage > page) {
-            alert("超出數據頁面");
+            alert($.i18n.prop('i_pageBar_4'));
             return;
         }
         direct = 0;
@@ -53,7 +53,7 @@ function displayBar(table) {
     $("#pageSizeSet").click(function setPageSize() { //设置每页显示多少条记录
         pageSize = document.getElementById("pageSize").value; //每页显示的记录条数
         if (!/^[1-9]\d*$/.test(pageSize)) {
-            alert("請輸入正整數");
+            alert($.i18n.prop('i_pageBar_3'));
             return;
         }
         len = $("#" + table + " tr").length - 1;
@@ -67,11 +67,11 @@ function displayBar(table) {
 function displayPage(table) {
     if (curPage <= 1 && direct == -1) {
         direct = 0;
-        alert("已經是第一頁了");
+        alert($.i18n.prop('i_pageBar_2'));
         return;
     } else if (curPage >= page && direct == 1) {
         direct = 0;
-        alert("已經是最後一頁了");
+        alert($.i18n.prop('i_pageBar_1'));
         return;
     }
 
@@ -83,7 +83,7 @@ function displayPage(table) {
     else
         curPage = 1;
 
-    document.getElementById("btn0").innerHTML = "當前 " + curPage + "/" + page + " 頁"; //显示当前多少页
+    document.getElementById("btn0").innerHTML = $.i18n.prop('i_nowPage') + " " + curPage + "/" + page + " " + $.i18n.prop('i_page'); //显示当前多少页
     begin = (curPage - 1) * pageSize + 1; //起始记录号
     end = begin + 1 * pageSize - 1; //末尾记录号
 

@@ -1,5 +1,5 @@
 var size = 10,
-    default_color = '#4CAF50',
+    default_color = '#2eb82e',
     change = "",
     usertypeNameArray = [];
 
@@ -62,7 +62,7 @@ function SendResult() {
             if (v == $("#set_type_name").val()) {
                 valid = false;
                 $("#set_type_name").addClass("ui-state-error");
-                updateTips("此用戶類型已存在，請變更名稱");
+                updateTips($.i18n.prop('i_alertError_5'));
             }
         });
     }
@@ -97,7 +97,7 @@ function SendResult() {
                 if (revObj.success > 0) {
                     updateTypeList();
                 } else {
-                    alert("操作失敗，不可儲存重複的type(儲存時會刪除字串內的空白，請用\"_\"代替)!");
+                    alert($.i18n.prop('i_alertError_6'));
                 }
             }
         };
@@ -134,7 +134,7 @@ function updateTypeList() {
                         "<label for=\"btn_delete_" + i + "\" class=\"custom-file-download\">" +
                         "<img src=\"../image/remove.png\" style=\"max-width:20px;\" ></label>" +
                         "<input type=\"button\" class=\"image-btn\" id=\"btn_delete_" + i + "\"" +
-                        " onclick=\"delectType(\'" + revInfo[i].type + "\')\">" +
+                        " onclick=\"deleteType(\'" + revInfo[i].type + "\')\">" +
                         "</td></tr>");
                     usertypeNameArray.push(revInfo[i].type);
                 }
@@ -163,7 +163,7 @@ function editType(name, color) {
     change = "edit";
     $("#set_type_name").val(name);
     $("#set_type_name").attr("disabled", true);
-    $("#edit_tip").text("Type為Key，不可修改");
+    $("#edit_tip").text($.i18n.prop('i_alertError_7'));
     var hex_color = colorToHex(color);
     $("#set_dot_color").val(hex_color);
     $("#set_dot_color").css('background-color', hex_color);
@@ -172,7 +172,7 @@ function editType(name, color) {
 }
 
 
-function delectType(name) {
+function deleteType(name) {
     name = typeof (name) != 'undefined' ? name : "";
     var request_delete = {
         "Command_Type": ["Read"],
@@ -188,33 +188,12 @@ function delectType(name) {
             if (revObj.success > 0) {
                 updateTypeList();
             } else {
-                alert("Operating failed!");
+                alert($.i18n.prop('i_alertError_8'));
             }
             return;
         }
     };
     xmlHttp.send(JSON.stringify(request_delete));
-}
-
-
-function createJsonXmlHttp(url) {
-    var xmlHttp = null;
-    try { // Firefox, Opera 8.0+, Safari
-        xmlHttp = new XMLHttpRequest();
-    } catch (e) { //Internet Explorer
-        try {
-            xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
-            xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-    }
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
-    xmlHttp.open("POST", url, true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
-    return xmlHttp;
 }
 
 function colorToHex(color) {

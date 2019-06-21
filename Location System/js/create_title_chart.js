@@ -1,6 +1,6 @@
 $(function () {
     var size = 10;
-    var default_color = '#4CAF50';
+    var default_color = '#2eb82e';
     var datascource = {
         'name': 'JobTitle',
         'id': '0',
@@ -23,7 +23,7 @@ $(function () {
         drawPosition($(this).val(), size);
     });
 
-    var xmlHttp = createJsonXmlHttp();
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
@@ -67,15 +67,15 @@ $(function () {
                 var $node = $('#selected-node').data('node');
                 var nodeType = $('input[name="node-type"]:checked');
                 if (!$node) {
-                    alert('Please select one node in orgchart');
+                    alert($.i18n.prop('i_alertChart_5'));
                     return;
                 }
                 if (!nodeType.length) {
-                    alert('Please select a node type');
+                    alert($.i18n.prop('i_alertChart_6'));
                     return;
                 }
                 if (!$('.orgchart').length) {
-                    alert('Please creat the root node firstly when you want to build up the orgchart from the scratch');
+                    alert($.i18n.prop('i_alertChart_1'));
                     return;
                 }
 
@@ -119,7 +119,7 @@ $(function () {
                         return;
                     }
                     if (!nodeVals.length) {
-                        alert('Please input value for node name');
+                        alert($.i18n.prop('i_alertChart_2'));
                         return;
                     }
                     var addColor = colorToHex($("#edit_dot_color").css('background-color'));
@@ -130,7 +130,7 @@ $(function () {
                     var addXmlHttp = createJsonXmlHttp();
                     if (nodeType.val() === 'siblings') { //增加同層節點
                         if ($node[0].id === oc.$chart.find('.node:first')[0].id) {
-                            alert('You are not allowed to directly add sibling nodes to root node');
+                            alert($.i18n.prop('i_alertChart_3'));
                             return;
                         }
                         addXmlHttp.onreadystatechange = function () {
@@ -200,10 +200,10 @@ $(function () {
             $('#btn-delete-nodes').on('click', function () {
                 var $node = $('#selected-node').data('node');
                 if (!$node) {
-                    alert('Please select one node in orgchart');
+                    alert($.i18n.prop('i_alertChart_5'));
                     return;
                 } else if ($node[0] === $('.orgchart').find('.node:first')[0]) {
-                    if (!window.confirm('Are you sure to delete the whole chart?')) {
+                    if (!window.confirm($.i18n.prop('i_alertChart_4'))) {
                         return;
                     }
                 }
@@ -236,7 +236,7 @@ $(function () {
             $('#btn-edit-nodes').on('click', function () {
                 var $node = $('#selected-node').data('node');
                 if (!$node) {
-                    alert('Please select one node in orgchart');
+                    alert($.i18n.prop('i_alertChart_5'));
                     return;
                 }
                 var nodeTitle = $node.children('.title');
@@ -315,17 +315,6 @@ $(function () {
         }
     };
     xmlHttp.send(JSON.stringify(requestArray));
-
-    function createJsonXmlHttp() {
-        var newXmlHttp = GetXmlHttpObject();
-        if (newXmlHttp == null) {
-            alert("Browser does not support HTTP Request");
-            return;
-        }
-        newXmlHttp.open("POST", "sql", true);
-        newXmlHttp.setRequestHeader("Content-type", "application/json");
-        return newXmlHttp;
-    }
 
     function colorToHex(color) {
         color = typeof (color) != "string" ? color.toString() : color;

@@ -2,14 +2,15 @@
 <html>
 
 <head>
-    <title>Location System</title>
     <meta charset="utf-8">
+    <title class="i18n" name='title'>Location System</title>
+    <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--BootStrap3-->
+    <!-- BootStrap3 -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <!--JQuery庫-->
+    <!-- JQuery -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!-- Add icon library -->
@@ -20,6 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
     <!-- Edit css -->
     <link rel=stylesheet type="text/css" href="../css/map_setting_style.css">
+    <!-- Edit js -->
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/map_setting_load.js"></script>
     <script type="text/javascript" src="../js/group_setting.js"></script>
@@ -41,24 +43,26 @@
                 <nav class="sidebar">
                     <ul class="nav">
                         <li><a href="../index.html">
-                                <i class="fas fa-home"></i><span>首頁</span></a></li>
+                                <i class="fas fa-home"></i><span class="i18n" name="homePage"></span></a></li>
                         <li><a href="../Member_Setting.html">
-                                <i class="fas fa-user-cog"></i><span>人員設置</span></a></li>
+                                <i class="fas fa-user-cog"></i><span class="i18n" name="member_settingPage"></span></a>
+                        </li>
                         <li><a href="../Timeline.html">
-                                <i class="fas fa-route"></i><span>歷史軌跡</span></a></li>
+                                <i class="fas fa-route"></i><span class="i18n" name="timelinePage"></span></a></li>
                         <li class="active"><a href="#">
-                                <i class="fas fa-map"></i><span>地圖設定</span></a></li>
+                                <i class="fas fa-map"></i><span class="i18n" name="map_settingPage"></span></a></li>
                         <li><a href="../Anchor_Setting.html">
-                                <i class="fas fa-anchor"></i><span>裝置設定</span></a></li>
+                                <i class="fas fa-anchor"></i><span class="i18n" name="anchor_settingPage"></span></a>
+                        </li>
                         <li><a href="../Alarm_Setting.html">
-                                <i class="fas fa-bell"></i><span>警報設定</span></a></li>
+                                <i class="fas fa-bell" style="padding-left:2px;"></i><span class="i18n"
+                                    name="alarm_settingPage"></span></a></li>
                         <li><a href="../Reference.html">
-                                <i class="fas fa-cogs"></i><span>進階設定</span></a></li>
+                                <i class="fas fa-cogs"></i><span class="i18n" name="advance_settingPage"></span></a>
+                        </li>
                         <li class="excel"><a href="#">
-                                <i class="fas fa-sign-in-alt"></i><span>匯入</span></a></li>
-                        <li class="excel"><a href="#">
-                                <i class="fas fa-sign-out-alt"></i><span>匯出</span></a></li>
-                        <hr>
+                                <i class="fas fa-file-excel" style="padding-left:2px;"></i><span class="i18n"
+                                    name="Excel_in_out"></span></a></li>
                     </ul>
                 </nav>
             </div>
@@ -67,9 +71,23 @@
         <!-- Web Content -->
         <div class="row">
             <div class="col-lg-12">
+                <div style="float:right;">
+                    <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
+                    <select id="language" style="margin-top:5px;">
+                        <option value="en">English</option>
+                        <option value="zh-TW">繁體中文</option>
+                        <option value="zh-CN">简体中文</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
                 <div id="maps_gallery"></div>
                 <label for="add_new_map" class="custom-file-download">
-                    <div class="new_map_block" id="new_map_block"></div>New Map <i class="far fa-images"></i>
+                    <div class="new_map_block" id="new_map_block"></div>
+                    <span class="i18n" name="i_addMap"></span> <i class="far fa-images"></i>
                 </label>
                 <input id="add_new_map" type="button" class="btn-hidden" />
             </div>
@@ -82,13 +100,15 @@
         <div id="dialog_add_map" title="Add New Map">
             <form>
                 <fieldset style="text-align: left;">
-                    <label>Map Name : </label>
+                    <label class="i18n" name="i_mapName"></label> : 
                     <input type="text" id="add_map_name" value="" style="max-width:100px;">
                     <br><br>
                     <!--Load Map-->
                     <span class="block-add-file">
-                        <label for="add_map_file" class="btn-add-file" title="load new map">
-                            Select Map Image <i class="far fa-image" style='font-size:18px;'></i></label>
+                        <label for="add_map_file" class="btn-add-file i18n-input" selectattr="title"
+                            selectname="i_inputNewMap">
+                            <span class="i18n" name="i_selectMapImage"></span> <i class="far fa-image"
+                                style='font-size:18px;'></i></label>
                         <input id="add_map_file" type="file" accept="image/*" />
                     </span>
                     <br><br>
@@ -106,13 +126,13 @@
                     <div style="height:490px; float:left;">
                         <div class="cvsBlock" id="mapBlock">
                             <canvas id="canvas_map" style="height:1px; width:1px;">
-                                此瀏覽器不支援canvas，請更換成Chrome瀏覽器
+                                <span class="i18n" name="i_no_canvas"></span>
                             </canvas>
                         </div>
                         <div style="height:40px;">
                             <span style="float:left;">
-                                X:<label id="x" style="width:100px;"></label>
-                                Y:<label id="y" style="width:100px;"></label>
+                                <span class="i18n" name="i_posX"></span> : <label id="x" style="width:100px;"></label>
+                                <span class="i18n" name="i_posY"></span> : <label id="y" style="width:100px;"></label>
                             </span>
                         </div>
                     </div>
@@ -121,32 +141,34 @@
                             <nav class="sidebar-menu">
                                 <ul class="nav">
                                     <!--Load Map-->
-                                    <li><label for="menu_load_map" class="btn-sidebar" title="load new map">
+                                    <li><label for="menu_load_map" class="btn-sidebar i18n-input" selectattr="title"
+                                            selectname="i_input_map">
                                             <i class="far fa-image" style='font-size:20px;'></i></label>
                                         <input id="menu_load_map" type="file" accept="image/*" /></li>
                                     <!--Restore Size-->
-                                    <li><label for="menu_resize" id="label_resize" class="btn-sidebar"
-                                            title="Restore original size">
+                                    <li><label for="menu_resize" id="label_resize" class="btn-sidebar i18n-input"
+                                            selectattr="title" selectname="i_restore_scale">
                                             <i class="fas fa-expand" style='font-size:20px;'></i></label>
                                         <input id="menu_resize" type="button" class="btn-hidden" /></li>
                                     <!--Map Info-->
-                                    <li><label for="menu_map_info" id="label_map_info" class="btn-sidebar"
-                                            title="Map Information">
+                                    <li><label for="menu_map_info" id="label_map_info" class="btn-sidebar i18n-input"
+                                            selectattr="title" selectname="i_mapInfo">
                                             <i class="fas fa-info-circle" style='font-size:20px;'></i></label>
                                         <input id="menu_map_info" type="button" class="btn-hidden" /></li>
                                     <!--Anchor List-->
-                                    <li><label for="menu_anchor_list" id="label_anchor_list" class="btn-sidebar"
-                                            title="Anchor List">
+                                    <li><label for="menu_anchor_list" id="label_anchor_list"
+                                            class="btn-sidebar i18n-input" selectattr="title" selectname="i_anchorList">
                                             <i class="fas fa-map-pin" style='font-size:20px;'></i></label>
                                         <input id="menu_anchor_list" type="button" class="btn-hidden" /></li>
                                     <!--Group List-->
-                                    <li><label for="menu_group_list" id="label_group_list" class="btn-sidebar"
-                                            title="Group Setting">
+                                    <li><label for="menu_group_list" id="label_group_list"
+                                            class="btn-sidebar i18n-input" selectattr="title" selectname="i_groupList">
                                             <i class="fas fa-draw-polygon" style='font-size:20px;'></i></label>
                                         <input id="menu_group_list" type="button" class="btn-hidden" /></li>
                                     <!--Anchor Group-->
-                                    <li><label for="menu_anchor_group" id="label_anchor_group" class="btn-sidebar"
-                                            title="Anchor Group">
+                                    <li><label for="menu_anchor_group" id="label_anchor_group"
+                                            class="btn-sidebar i18n-input" selectattr="title"
+                                            selectname="i_anchorGroup">
                                             <i class="far fa-object-ungroup" style='font-size:20px;'></i></label>
                                         <input id="menu_anchor_group" type="button" class="btn-hidden" /></li>
                                 </ul>
@@ -155,21 +177,22 @@
 
                         <div id="block_info" style="margin-left:10px; padding:20px;">
                             <input type="hidden" id="map_info_id" />
-                            <label>Map Name:&nbsp;</label>
+                            <label class="i18n" name="i_mapName"></label> :&nbsp;
                             <input type="text" id="map_info_name" style="width:120px;" />
                             <br><br>
-                            <label>Map Scale:&nbsp;&nbsp;&nbsp;1 : </label>
+                            <label class="i18n" name="i_mapScale"></label> :&nbsp;&nbsp;&nbsp;1 :
                             <input type="text" id="map_info_scale" style="width:100px;" />
                         </div>
                         <div id="block_anchor_list">
                             <span style="margin: 0px 0px 0px 10px">
                                 <!--Add Pos-->
-                                <label for="btn_anchor_position" id="label_anchor_position" class="btn-add-pos"
-                                    title="Start anchor position"><i class="fas fa-map-marked-alt"
-                                        style='font-size:20px;'></i></label>
+                                <label for="btn_anchor_position" id="label_anchor_position"
+                                    class="btn-add-pos i18n-input" selectattr="title" selectname="i_anchorPosition">
+                                    <i class="fas fa-map-marked-alt" style='font-size:20px;'></i></label>
                                 <input id="btn_anchor_position" type="button" class="btn-hidden" />
                                 <!--Add-->
-                                <label for="btn_add_anchor" id="label_add_anchor" class="btn-add" title="Add anchor">
+                                <label for="btn_add_anchor" id="label_add_anchor" class="btn-add i18n-input"
+                                    selectattr="title" selectname="i_addAnchor">
                                     <i class="fas fa-map-marker-alt" style='font-size:20px;'></i></label>
                                 <input id="btn_add_anchor" type="button" class="btn-hidden" />
                             </span>
@@ -177,10 +200,10 @@
                                 <table id="table_main_anchor_list" class="table-line">
                                     <thead>
                                         <tr class="ui-widget-header">
-                                            <th>Main Anchor ID</th>
-                                            <th>X</th>
-                                            <th>Y</th>
-                                            <th>operate</th>
+                                            <th style="min-width:90px;" class="i18n" name="i_mainAnchorID"></th>
+                                            <th class="i18n" name="i_posX"></th>
+                                            <th class="i18n" name="i_posY"></th>
+                                            <th style="min-width:80px;" class="i18n" name="i_operate"></th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -189,10 +212,10 @@
                                 <table id="table_anchor_list" class="table-line">
                                     <thead>
                                         <tr class="ui-widget-header">
-                                            <th>Anchor ID</th>
-                                            <th>X</th>
-                                            <th>Y</th>
-                                            <th>operate</th>
+                                            <th style="min-width:90px;" class="i18n" name="i_anchorID"></th>
+                                            <th class="i18n" name="i_posX"></th>
+                                            <th class="i18n" name="i_posY"></th>
+                                            <th style="min-width:80px;" class="i18n" name="i_operate"></th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -201,11 +224,12 @@
                         </div>
                         <div id="block_group_list">
                             <span style="margin: 0px 0px 0px 10px">
-                                <label for="btn_add_group" id="label_add_group" class="btn-add" title="Add group">
+                                <label for="btn_add_group" id="label_add_group" class="btn-add i18n-input"
+                                    selectattr="title" selectname="i_addGroup">
                                     <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
                                 <input id="btn_add_group" type="button" class="btn-hidden" />
-                                <label for="btn_delete_group" id="label_delete_group" class="btn-delete"
-                                    title="Delete group"><i class="fas fa-minus-square"
+                                <label for="btn_delete_group" id="label_delete_group" class="btn-delete i18n-input"
+                                    selectattr="title" selectname="i_deleteGroup"><i class="fas fa-minus-square"
                                         style='font-size:20px;'></i></label>
                                 <input id="btn_delete_group" type="button" class="btn-hidden" />
                             </span>
@@ -213,10 +237,10 @@
                                 <table id="table_group_list" class="table-line">
                                     <thead>
                                         <tr class="ui-widget-header ">
-                                            <th>Item</th>
-                                            <th>Group</th>
-                                            <th>Main Anchor</th>
-                                            <th>Edit</th>
+                                            <th class="i18n" name="i_item"></th>
+                                            <th class="i18n" name="i_groupName"></th>
+                                            <th class="i18n" name="i_mainAnchorID"></th>
+                                            <th class="i18n" name="i_edit"></th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -225,23 +249,23 @@
                         </div>
                         <div id="block_anchor_group">
                             <span style="margin: 0px 0px 0px 10px">
-                                <label for="btn_add_anchor_group" id="label_add_anchor_group" class="btn-add"
-                                    title="Add anchor group">
+                                <label for="btn_add_anchor_group" id="label_add_anchor_group" class="btn-add i18n-input"
+                                    selectattr="title" selectname="i_addAnchorGroup">
                                     <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
                                 <input id="btn_add_anchor_group" type="button" class="btn-hidden" />
-                                <label for="btn_delete_anchor_group" id="label_delete_anchor_group" class="btn-delete"
-                                    title="Delete anchor group"><i class="fas fa-minus-square"
-                                        style='font-size:20px;'></i></label>
+                                <label for="btn_delete_anchor_group" id="label_delete_anchor_group"
+                                    class="btn-delete i18n-input" selectattr="title" selectname="i_deleteAnchorGroup"><i
+                                        class="fas fa-minus-square" style='font-size:20px;'></i></label>
                                 <input id="btn_delete_anchor_group" type="button" class="btn-hidden" />
                             </span>
                             <div class="block-list">
                                 <table id="table_anchor_group" class="table-line">
                                     <thead>
                                         <tr class="ui-widget-header">
-                                            <th style="min-width: 60px;">Item</th>
-                                            <th>Group</th>
-                                            <th>Main Anchor</th>
-                                            <th>Anchor</th>
+                                            <th class="i18n" name="i_item" style="min-width: 60px;"></th>
+                                            <th class="i18n" name="i_group"></th>
+                                            <th class="i18n" name="i_mainAnchor"></th>
+                                            <th class="i18n" name="i_anchor"></th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -253,35 +277,35 @@
             </form>
         </div>
         <!-- Following is a dialog to add a new anchor -->
-        <div id="dialog_add_new_anchor" title="Add New Anchor">
+        <div id="dialog_add_new_anchor" title="Add Anchor">
             <form>
                 <fieldset style="text-align: left;">
-                    <label for="anchor_type">Anchor Type : </label>
+                    <label for="anchor_type" class="i18n" name="i_anchorType"></label> :
                     <select id="anchor_type">
-                        <option value="" selected="selected">Anchor</option>
-                        <option value="main">Main Anchor</option>
+                        <option value="" selected="selected" class="i18n" name="i_anchor"></option>
+                        <option value="main" class="i18n" name="i_mainAnchor"></option>
                     </select>
                     <br><br>
-                    <label>Anchor ID : </label>
+                    <label class="i18n" name="i_anchorID"></label> :
                     <input type="text" id="anchor_id" value="" style="max-width:100px;">
                     <label id="anchor_id_alert"></label>
                     <br>(0 ~ 65535)<br><br>
-                    <label>X : </label>
+                    <label class="i18n" name="i_posX"> : </label>
                     <input type="text" id="anchor_x" value="" style="max-width:100px;">
                     <br><br>
-                    <label>Y : </label>
+                    <label class="i18n" name="i_posY"> : </label>
                     <input type="text" id="anchor_y" value="" style="max-width:100px;">
                     <br><br>
                     <div id="anchor_input_group">
-                        <label>Group ID : </label>
+                        <label class="i18n" name="i_groupID"></label> :
                         <input type="text" id="anchor_input_group_id" value="" style="max-width:100px;">
                         <label id="group_id_alert"></label>
                         <br>(0 ~ 65535)<br><br>
-                        <label>Group Name : </label>
+                        <label class="i18n" name="i_groupName"></label> :
                         <input type="text" id="anchor_input_group_name" value="" style="max-width:100px;">
                     </div>
                     <div id="anchor_select_group">
-                        <label>Group ID : </label>
+                        <label class="i18n" name="i_groupID"></label> :
                         <select id="anchor_select_group_id"></select>
                     </div>
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->
@@ -290,19 +314,19 @@
             </form>
         </div>
         <!-- Following is a dialog to edit the anchor -->
-        <div id="dialog_edit_anchor" title="Edit The Anchor">
+        <div id="dialog_edit_anchor" title="Edit Anchor">
             <form>
                 <fieldset style="text-align: left;">
-                    <label>Anchor Type : </label>
+                    <label class="i18n" name="i_anchorType"></label> :
                     <label id="edit_anchor_type"></label>
                     <br><br>
-                    <label>Anchor ID : </label>
+                    <label class="i18n" name="i_anchorID"></label> :
                     <label id="edit_anchor_id"></label>
                     <br><br>
-                    <label>X : </label>
+                    <label class="i18n" name="i_posX"> : </label>
                     <input type="text" id="edit_anchor_x" value="" style="max-width:100px;">
                     <br><br>
-                    <label>Y : </label>
+                    <label class="i18n" name="i_posY"> : </label>
                     <input type="text" id="edit_anchor_y" value="" style="max-width:100px;">
                     <br><br>
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->
@@ -311,17 +335,17 @@
             </form>
         </div>
         <!-- Following is a dialog to add group's main anchor -->
-        <div id="dialog_add_group_list" title="Add Group List">
+        <div id="dialog_add_group_list" title="Add Group">
             <form>
                 <fieldset style="text-align: left;">
-                    <label for="add_grouplist_id">Group ID : </label>
+                    <label for="add_grouplist_id" class="i18n" name="i_groupID"></label> :
                     <input type="text" id="add_grouplist_id" value="" style="max-width:100px;">
                     <label id="add_group_id_alert"></label>
                     <br>(0 ~ 65535)<br><br>
-                    <label for="add_grouplist_name">Group Name : </label>
+                    <label for="add_grouplist_name" class="i18n" name="i_groupName"></label> :
                     <input type="text" id="add_grouplist_name" value="" style="max-width:100px;">
                     <br><br>
-                    <label for="add_grouplist_main_anchor">Main Anchor ID : </label>
+                    <label for="add_grouplist_main_anchor" class="i18n" name="i_mainAnchorID"></label> :
                     <select id="add_grouplist_main_anchor"></select>
                     <br><br>
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->
@@ -330,16 +354,16 @@
             </form>
         </div>
         <!-- Following is a dialog to edit group's main anchor -->
-        <div id="dialog_edit_group_list" title="Edit Group List">
+        <div id="dialog_edit_group_list" title="Edit Group">
             <form>
                 <fieldset style="text-align: left;">
-                    <label>Group ID : </label>
+                    <label class="i18n" name="i_groupID"></label> :
                     <label id="edit_grouplist_id"></label>
                     <br><br>
-                    <label>Group Name : </label>
+                    <label class="i18n" name="i_groupName"></label> :
                     <input type="text" id="edit_grouplist_name" value="" style="max-width:100px;">
                     <br><br>
-                    <label>Main Anchor ID : </label>
+                    <label class="i18n" name="i_mainAnchorID"></label> :
                     <select id="edit_grouplist_main_anchor"></select>
                     <br><br>
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->
@@ -347,22 +371,26 @@
                 </fieldset>
             </form>
         </div>
-        <!-- Following is a dialog to add a new group -->
-        <div id="dialog_add_anchor_group" title="Add Anchor Group">
+        <!-- Following is a dialog to create the connection between anchor and group -->
+        <div id="dialog_add_anchor_group" title="Connect Anchor and Group">
             <form>
                 <fieldset style="text-align: left;">
-                    <label>Group:</label>
+                    <label class="i18n" name="i_group"></label> :
                     <select id="add_group_id"></select>
                     <br><br>
-                    <label>Main Anchor ID:</label>
+                    <label class="i18n" name="i_mainAnchorID"></label> :
                     <span id="add_group_main_anchor"></span>
                     <br><br>
-                    <label>Anchor ID:</label>
+                    <label class="i18n" name="i_anchorID"></label> :
                     <select id="add_group_anchor"></select>
                 </fieldset>
             </form>
         </div>
     </div>
+    <!-- i18n 多語言翻譯 -->
+    <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
+    <script type="text/javascript" src="../js/i18n/language.js"></script>
+    <!-- i18n -->
 </body>
 
 </html>

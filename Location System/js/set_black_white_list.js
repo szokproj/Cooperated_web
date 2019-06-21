@@ -38,7 +38,7 @@ function getMemberList() {
                         "</tr>");
                 }
             } else {
-                alert("取得人員資料失敗!");
+                alert($.i18n.prop('i_alertError_1'));
             }
         }
     };

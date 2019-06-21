@@ -20,8 +20,14 @@ var isPosition = false;
 var serverImg = new Image();
 var map_id = "";
 var mapArray = [];
+//var anchorArray = [];
+var anchorGroupArray = [];
+var groupArray = [];
 var fenceArray = [];
 var fenceDotArray = [];
+var addFenceDotArray = [];
+var addFenceContainGroup = [];
+
 var pageTimer = {}; //定義計時器全域變數
 
 window.addEventListener("load", setupCanvas, false);
@@ -47,43 +53,28 @@ function setupCanvas() {
     $(function () {
         resetBlockDisplay();
         $("#block_fence_info").show();
-        $("#label_fence_info").css('background-color', 'rgb(40, 108, 197)');
+        loadMaps();
+        getMemberList();
         $("#menu_fence_info").on('click', function () {
             resetBlockDisplay();
             $("#block_fence_info").show();
-            $("#label_fence_info").css('background-color', 'rgb(40, 108, 197)');
-        });
-        $("#menu_fence_dot_list").on('click', function () {
-            resetBlockDisplay();
-            $("#block_fence_dot_list").show();
-            $("#label_fence_dot_list").css('background-color', 'rgb(40, 108, 197)');
         });
         $("#menu_BW_list").on('click', function () {
             resetBlockDisplay();
             $("#block_BW_list").show();
-            $("#label_BW_list").css('background-color', 'rgb(40, 108, 197)');
         });
         $("#menu_resize").on('click', resizeCanvas);
         $("#select_map").on('change', function () {
-            if ($(this).val() == '')
-                resetCanvas();
-            else
-                setMapById($(this).val());
+            setMapById($(this).val());
         });
-        loadMaps();
-
-        getMemberList();
+        $("#btn_fence_dot_position").on('click', startFencePosition);
         $("#btn_BW_list_add").on('click', addMembers);
     });
 }
 
 function resetBlockDisplay() {
     $("#block_fence_info").hide();
-    $("#block_fence_dot_list").hide();
     $("#block_BW_list").hide();
-    $("#label_fence_info").css('background-color', 'rgb(57, 143, 255)');
-    $("#label_fence_dot_list").css('background-color', 'rgb(57, 143, 255)');
-    $("#label_BW_list").css('background-color', 'rgb(57, 143, 255)');
 }
 
 function loadMaps() {
@@ -96,9 +87,9 @@ function loadMaps() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
-                var revInfo = revObj.Values;
+                var revInfo = 'Values' in revObj == true ? revObj.Values.slice(0) : [];
                 mapArray = [];
-                $("#select_map").html("<option value=\"''\" selected=\"selected\">請選擇</option>")
+                $("#select_map").empty()
                 revInfo.forEach(v => {
                     mapArray.push({
                         id: v.map_id,
@@ -107,7 +98,9 @@ function loadMaps() {
                         file_ext: v.map_file_ext,
                         scale: v.map_scale
                     });
-                    $("#select_map").append("<option value=\"" + v.map_id + "\">" + v.map_name + "</option>");
+                    $("#select_map").append("<li><input type=\"button\" id=\"map_btn_" + v.map_id + "\" " +
+                        "value=\"" + v.map_name + "\"" +
+                        "onclick=\"setMapById(\'" + v.map_id + "\')\"></li>");
                 });
             }
         }
@@ -124,8 +117,12 @@ function setMapById(id) { //選擇地圖(下拉選單)後，依據map_id抓取�
     if (index > -1) {
         var dataUrl = "data:image/" + mapArray[index].file_ext + ";base64," + mapArray[index].file;
         setMap(dataUrl, mapArray[index].scale);
+        $("#select_map_id").val(mapArray[index].id);
+        $("#select_map_name").val(mapArray[index].name);
     } else {
-        return;
+        resetCanvas();
+        $("#select_map_id").val('');
+        $("#select_map_name").val('');
     }
 }
 
@@ -147,8 +144,7 @@ function setMap(map_url, map_scale) {
 
         var serImgSize = serverImg.width / serverImg.height;
         var cvs_width = parseFloat($("#mapBlock").css("width")) - 2;
-        var cvs_height = parseFloat($("#mapBlock").css("height")) - 2;
-        console.log(cvs_width + "," + cvs_height);
+        var cvs_height = parseFloat($("#mapBlock").css("height")) - 7;
         var cvsSize = cvs_width / cvs_height;
         if (serImgSize > cvsSize) { //原圖比例寬邊較長
             fitZoom = cvs_width / serverImg.width;
@@ -157,7 +153,8 @@ function setMap(map_url, map_scale) {
             fitZoom = cvs_height / serverImg.height;
             setCanvas(this.src, serverImg.width * fitZoom, cvs_height);
         }
-        inputFences();
+        getGroups();
+        updateFenceTable();
     };
 }
 
@@ -208,6 +205,10 @@ function setSize() {
 }
 
 function resizeCanvas() {
+    if (map_id == '') {
+        alert($.i18n.prop('i_alarmAlert_29'));
+        return;
+    }
     xleftView = 0;
     ytopView = 0;
     Zoom = zoomOriginal;
@@ -216,18 +217,18 @@ function resizeCanvas() {
         ctx.restore();
         ctx.save();
         isFitWindow = false; //目前狀態:原比例 
-        document.getElementById("label_resize").innerHTML = "<i class=\"fas fa-compress\" style='font-size:20px;'></i>";
-        document.getElementById("label_resize").title = "符合視窗大小";
+        document.getElementById("menu_resize").innerHTML = "<i class=\"fas fa-compress\" style='font-size:20px;'></i>";
+        document.getElementById("menu_resize").title = $.i18n.prop('i_fit_window');
     } else { //依比例拉伸(Fit in Window)
         var cvs_width = parseFloat($("#mapBlock").css("width")) - 2;
-        var cvs_height = parseFloat($("#mapBlock").css("height")) - 2;
+        var cvs_height = parseFloat($("#mapBlock").css("height")) - 7;
         if ((serverImg.width / serverImg.height) > (cvs_width / cvs_height)) //原圖比例寬邊較長
             fitZoom = cvs_width / serverImg.width;
         else
             fitZoom = cvs_height / serverImg.height;
         isFitWindow = true; //目前狀態:依比例拉伸
-        document.getElementById("label_resize").innerHTML = "<i class=\"fas fa-expand\" style='font-size:20px;'></i>";
-        document.getElementById("label_resize").title = "恢復原比例";
+        document.getElementById("menu_resize").innerHTML = "<i class=\"fas fa-expand\" style='font-size:20px;'></i>";
+        document.getElementById("menu_resize").title = $.i18n.prop('i_restore_scale');
     }
     draw();
 }
@@ -287,166 +288,242 @@ function getPointOnCanvas(x, y) {
     };
 }
 
-
-function inputFences() {
-    var requestArray = {
+function updateFenceTable() {
+    var request = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetFences"],
+        "Command_Name": ["GetFencesInMap"],
         "Value": {
             "map_id": map_id
         }
     };
-    var xmlHttp = createJsonXmlHttp("GetFences");
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
-                var revList = revObj.Values;
-                fenceArray = [];
-                revList.forEach(v => {
-                    fenceArray.push({
-                        id: v.id,
-                        name: v.name
-                    });
-                });
-                updateFenceArr();
-                inputFenceDots(map_id);
-            } else {
-                alert("獲取圍籬資訊失敗，請再試一次!");
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(requestArray));
-}
-
-function inputFenceDots() {
-    var requestArray = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["GetFenceDots"],
-        "Value": {
-            "map_id": map_id
-        }
-    };
-    var xmlHttp = createJsonXmlHttp("GetFenceDots");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            var revList = revObj.Values;
-            if (revObj.success > 0) {
+                fenceArray = 'Values' in revObj == true ? revObj.Values.slice(0) : [];
+                $("#table_fence_setting tbody").empty();
                 fenceDotArray = [];
-                revList.forEach(v => {
-                    fenceDotArray.push({
-                        fence_id: v.fence_id,
-                        id: v.id,
-                        x: v.x,
-                        y: v.y
-                    });
-                });
-                updateFenceDotsArr();
-                setSize();
-                drawFences(fenceArray, fenceDotArray);
-                fenceDotArray.forEach(function (v) {
-                    drawDot(ctx, v.fence_id, v.x, v.y);
-                });
+                for (i = 0; i < fenceArray.length; i++) {
+                    var tr_id = "tr_fence_setting_" + (i + 1);
+                    $("#table_fence_setting tbody").append("<tr id=\"" + tr_id + "\"><td>" +
+                        "<input type=\"checkbox\" name=\"chkbox_fence_setting\" value=\"" + fenceArray[i].fence_id + "\"" +
+                        " onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (i + 1) + "</td>" +
+                        "<td name=\"fence_id\">" + fenceArray[i].fence_id + "</td>" +
+                        "<td name=\"fence_name\">" + fenceArray[i].fence_name + "</td>" +
+                        "<td><label for=\"btn_edit_fence_" + i + "\" class='btn-edit' title='" + $.i18n.prop('i_editFence') + "'>" +
+                        "<i class='fas fa-edit' style='font-size:18px;'></i></label><input id=\"btn_edit_fence_" + i + "\"" +
+                        " type='button' class='btn-hidden' onclick=\"editFenceInfo(\'" + fenceArray[i].fence_id + "\');\" />" +
+                        "</td></tr>");
+                    getFencePointArray(fenceArray[i].fence_id);
+                }
             } else {
-                alert("獲取圍籬座標點失敗，請再試一次!");
+                alert($.i18n.prop('i_alarmAlert_30'));
             }
         }
     };
-    xmlHttp.send(JSON.stringify(requestArray));
+    xmlHttp.send(JSON.stringify(request));
 }
 
-function updateFenceArr() {
-    $("#table_fence_setting tbody").empty();
-    for (i = 0; i < fenceArray.length; i++) {
-        var tr_id = "tr_fence_setting_" + (i + 1);
-        $("#table_fence_setting tbody").append("<tr id=\"" + tr_id + "\"><td>" +
-            "<input type=\"checkbox\" name=\"chkbox_fence_setting\" value=\"" + fenceArray[i].id + "\"" +
-            " onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (i + 1) + "</td>" +
-            "<td><label name=\"fence_id\">" + fenceArray[i].id + "</label></td>" +
-            "<td><label name=\"fence_name\">" + fenceArray[i].name + "</label></td></tr>");
-    }
-    //return fenceArray;
+function getFencePointArray(fence_id) {
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetFence_point"],
+        "Value": {
+            "fence_id": fence_id
+        }
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                var arr = 'Values' in revObj == true ? revObj.Values.slice(0) : [];
+                for (i = 0; i < arr.length; i++)
+                    fenceDotArray.push(arr[i]);
+                draw();
+            } else {
+                alert($.i18n.prop('i_alarmAlert_30'));
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
 }
 
 function updateFenceDotsArr() {
     $("#table_fence_dot_setting tbody").empty();
-    for (j = 0; j < fenceDotArray.length; j++) {
-        var tr_id = "tr_fence_dot_setting_" + (j + 1);
+    for (j = 0; j < addFenceDotArray.length; j++) {
+        var tr_id = "tr_fence_dot_setting_" + addFenceDotArray[j].number;
         $("#table_fence_dot_setting tbody").append("<tr id=\"" + tr_id + "\"><td>" +
-            "<input type=\"checkbox\" name=\"chkbox_fence_dot_setting\" value=\"" + fenceDotArray[j].id +
+            "<input type=\"checkbox\" name=\"chkbox_fence_dot_setting\" value=\"" + addFenceDotArray[j].number +
             "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (j + 1) + "</td>" +
-            "<td><label name=\"dot_fence_id\">" + fenceDotArray[j].fence_id + "</label></td>" +
-            "<td><label name=\"dot_x\">" + fenceDotArray[j].x + "</label></td>" +
-            "<td><label name=\"dot_y\">" + fenceDotArray[j].y + "</label></td></tr>");
+            "<td><label name=\"dot_x\">" + addFenceDotArray[j].x + "</label></td>" +
+            "<td><label name=\"dot_y\">" + addFenceDotArray[j].y + "</label></td></tr>");
     }
-    //return fenceDotArray;
 }
 
-function Fence() {
-    var fence_dot_array = [];
-    this.setFenceDot = function (id, x, y) {
-        fence_dot_array.push({
-            id: id,
-            x: x,
-            y: y
-        });
+function getGroups() {
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetMaps_Groups"]
     };
-    this.drawFence = function () {
-        var canvas = document.getElementById("canvas_map");
-        var ctx = canvas.getContext("2d");
-        var len = fence_dot_array.length;
-        var displace = 5 / canvasImg.scale;
-        ctx.beginPath();
-        fence_dot_array.forEach(function (v, i, arr) {
-            if (i == len - 1) {
-                ctx.lineTo(v.x + displace, v.y + displace);
-                ctx.lineTo(arr[0].x + displace, arr[0].y + displace);
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                var mapGroups = ('Values' in revObj) ? revObj.Values : [];
+                groupArray = [];
+                mapGroups.forEach(element => {
+                    if (element.map_id == map_id)
+                        groupArray.push(element.group_id);
+                });
+                getAnchor_Group();
             } else {
-                ctx.lineTo(v.x + displace, v.y + displace);
+                alert($.i18n.prop('i_alarmAlert_31'));
+                return;
             }
-        });
-        ctx.strokeStyle = "rgb(255, 123, 0)";
-        ctx.stroke();
-        ctx.fillStyle = "rgba(255, 153, 0, 0.61)";
-        ctx.fill();
-        //在圍籬中間畫出群組名稱
-        ctx.fillStyle = "blue";
-        ctx.font = 60 / canvasImg.scale + 'px serif';
-        var arr = fence_dot_array;
-        var displace_x = (arr[2].x - arr[0].x) / 2;
-        var displace_y = (arr[2].y - arr[0].y) / 2;
-        ctx.fillText(arr[0].id, arr[0].x + displace_x - 15, arr[0].y + displace_y - 6);
-        ctx.closePath();
+        }
     };
+    xmlHttp.send(JSON.stringify(request));
 }
 
-function drawFences(fen_arr, fen_dot_arr) {
-    /*var fenceArray = updateFenceArr();
-    var fenceDotArray = updateFenceDotsArr();*/
-    fen_arr.forEach(function (fence_info) {
-        var fence = new Fence();
-        fen_dot_arr.forEach(dot_info => {
-            if (dot_info.fence_id == fence_info.id) {
-                fence.setFenceDot(
-                    fence_info.name,
-                    dot_info.x / canvasImg.scale,
-                    canvasImg.height - dot_info.y / canvasImg.scale
-                );
+function getAnchor_Group() {
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetAnchorsInMap"],
+        "Value": {
+            "map_id": map_id
+        }
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                anchorGroupArray = ('Values' in revObj) ? revObj.Values.slice(0) : [];
+            } else {
+                alert($.i18n.prop('i_alarmAlert_31'));
+                return;
             }
-        });
-        fence.drawFence();
-    });
+            draw();
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
 }
 
 function draw() {
-    var arr = fenceArray;
-    var dot_arr = fenceDotArray;
     setSize();
-    drawFences(arr, dot_arr);
-    dot_arr.forEach(function (v) {
+    drawAnchor_Group();
+    drawFences();
+    drawSettingFence();
+    inputFenceGroup();
+    /*dot_arr.forEach(function (v) {
         drawDot(ctx, v.fence_id, v.x, v.y);
+    });*/
+}
+
+function drawAnchor_Group() {
+    groupArray.forEach(function (group_id) {
+        var group = new Group();
+        var group_pos_arr = [];
+        var containDots = 0;
+        var containPolygon = 0;
+        var group_name = "";
+        anchorGroupArray.forEach(element => {
+            if (element.group_id == group_id) {
+                group_name = element.group_name;
+                var point = {
+                    x: element.set_x,
+                    y: element.set_y
+                };
+                var x = element.set_x / canvasImg.scale;
+                var y = canvasImg.height - element.set_y / canvasImg.scale
+                group.setAnchor(element.anchor_id, x, y);
+                if (addFenceDotArray.length >= 3)
+                    containDots += checkInside(point, addFenceDotArray) == true ? 1 : 0;
+                group_pos_arr.push(point);
+            }
+        });
+        containPolygon += checkPP(group_pos_arr, addFenceDotArray) == true ? 1 : 0;
+        if (containDots > 0 || containPolygon > 0) {
+            //console.log("contain groups : " + group_id);
+            var repeat = addFenceContainGroup.findIndex(function (groupInfo) {
+                return groupInfo.g_id == group_id;
+            });
+            if (repeat == -1)
+                addFenceContainGroup.push({
+                    g_id: group_id,
+                    g_name: group_name
+                });
+        }
+        group.drawGroup();
     });
+    /*anchorArray.forEach(function (v) {
+        drawAnchor(ctx, v.id, v.type, v.x, v.y);
+    });*/
+}
+
+function drawFences() {
+    fenceArray.forEach(fence_info => {
+        var fence = new Fence();
+        var count = 0;
+        fenceDotArray.forEach(dot_info => {
+            if (dot_info.fence_id == fence_info.fence_id) {
+                fence.setFenceDot(
+                    fence_info.fence_name,
+                    dot_info.point_x / canvasImg.scale,
+                    canvasImg.height - dot_info.point_y / canvasImg.scale
+                );
+                count++;
+            }
+        });
+        if (count > 0)
+            fence.drawFence();
+    });
+}
+
+function drawSettingFence() {
+    var s_fence = new SettingFence();
+    addFenceDotArray.forEach(dot_info => {
+        s_fence.setFenceDot(
+            dot_info.x / canvasImg.scale,
+            canvasImg.height - dot_info.y / canvasImg.scale
+        );
+        var point = {
+            x: dot_info.x,
+            y: dot_info.y
+        };
+        groupArray.forEach(function (group_id) {
+            var containDots = 0;
+            var polygon = [];
+            var group_name = "";
+            anchorGroupArray.forEach(element => {
+                if (element.group_id == group_id) {
+                    group_name = element.group_name;
+                    polygon.push({
+                        x: element.set_x,
+                        y: element.set_y
+                    });
+                    if (polygon.length >= 3)
+                        containDots += checkInside(point, polygon) == true ? 1 : 0;
+                }
+            });
+            if (containDots > 0) {
+                //console.log("contain groups : " + group_id);
+                var repeat = addFenceContainGroup.findIndex(function (groupInfo) {
+                    return groupInfo.g_id == group_id;
+                });
+                if (repeat == -1)
+                    addFenceContainGroup.push({
+                        g_id: group_id,
+                        g_name: group_name
+                    });
+            }
+        });
+    });
+    s_fence.drawFence();
+    s_fence.drawFenceDots();
 }
 
 function drawDot(dctx, id, x, y) {
@@ -467,72 +544,192 @@ function drawDotPosition(dctx, x, y) {
     dctx.fill();
 }
 
-function catchAnchors() {
-    var main_id = document.getElementsByName("list_main_anchor_id"),
-        main_x = document.getElementsByName("list_main_anchor_x"),
-        main_y = document.getElementsByName("list_main_anchor_y"),
-        a_id = document.getElementsByName("list_anchor_id"),
-        a_x = document.getElementsByName("list_anchor_x"),
-        a_y = document.getElementsByName("list_anchor_y");
-    anchorArray = [];
-    for (i = 0; i < main_id.length; i++) {
-        anchorArray.push({
-            id: main_id[i].value,
-            type: "main",
-            x: main_x[i].value / canvasImg.scale,
-            y: canvasImg.height - main_y[i].value / canvasImg.scale //因為Server回傳的座標為左下原點
-        });
-    }
-    for (j = 0; j < a_id.length; j++) {
-        anchorArray.push({
-            id: a_id[j].value,
-            type: "",
-            x: a_x[j].value / canvasImg.scale,
-            y: canvasImg.height - a_y[j].value / canvasImg.scale //因為Server回傳的座標為左下原點
-        });
-    }
-    draw();
-}
-
-function addDotArray(id, x, y) {
-    anchorArray.push({
-        id: id,
-        x: x / canvasImg.scale,
-        y: canvasImg.height - y / canvasImg.scale
-    });
-    draw();
-}
-
-function handleDotPosition() {
-    $(function () {
-        $("#add_dot_fence_id").val("");
-        $("#add_dot_x").val($("#x").val());
-        $("#add_dot_y").val($("#y").val());
-        $("#dialog_add_fence_dot").dialog("open");
-    });
-}
-
 function startFencePosition() {
     if (!isPosition) {
         isPosition = true;
-        document.getElementById("label_fence_position").innerHTML = "<i class='fas fa-map-marked' style='font-size:20px;'></i>";
-        document.getElementById("label_fence_position").title = "Stop fence position set";
+        document.getElementById("label_fence_dot_position").innerHTML = "<i class='fas fa-map-marked' style='font-size:20px;'></i>";
+        document.getElementById("label_fence_dot_position").title = $.i18n.prop('i_stopFencePointPos');
         var delaytime = 100; //0.1s
         pageTimer["timer1"] = setTimeout(function request() {
             draw();
-            var posX = lastX * Zoom / fitZoom;
-            var posY = ((canvas.height - lastY) * Zoom / fitZoom);
-            drawAnchorPosition(ctx, posX, posY);
+            var posX = lastX * Zoom / fitZoom * canvasImg.scale;
+            var posY = lastY * Zoom / fitZoom * canvasImg.scale;
+            drawDotPosition(ctx, posX, posY);
             pageTimer["timer1"] = setTimeout(request, delaytime);
         }, delaytime);
-        canvas.addEventListener("click", handleAnchorPosition);
+        canvas.addEventListener("click", handleDotPosition);
     } else {
         isPosition = false;
-        document.getElementById("label_fence_position").innerHTML = "<i class='fas fa-map-marked-alt' style='font-size:20px;'></i>";
-        document.getElementById("label_fence_position").title = "Start fence position set";
+        document.getElementById("label_fence_dot_position").innerHTML = "<i class='fas fa-map-marked-alt' style='font-size:20px;'></i>";
+        document.getElementById("label_fence_dot_position").title = $.i18n.prop('i_startFencePointPos');
         for (var each in pageTimer)
             clearTimeout(pageTimer[each]);
         draw();
-        canvas.removeEventListener("click", handleAnchorPosition);
+        canvas.removeEventListener("click", handleDotPosition);
     }
+}
+
+function resetFencePosition() {
+    if (isPosition) {
+        isPosition = false;
+        document.getElementById("label_fence_dot_position").innerHTML = "<i class='fas fa-map-marked-alt' style='font-size:20px;'></i>";
+        document.getElementById("label_fence_dot_position").title = $.i18n.prop('i_startFencePointPos');
+        for (var each in pageTimer)
+            clearTimeout(pageTimer[each]);
+        draw();
+        canvas.removeEventListener("click", handleDotPosition);
+    }
+}
+
+
+function Fence() {
+    var fence_dot_array = [];
+    this.setFenceDot = function (fence_name, x, y) {
+        fence_dot_array.push({
+            fence_name: fence_name,
+            x: x,
+            y: y
+        });
+    };
+    this.drawFence = function () {
+        var canvas = document.getElementById("canvas_map");
+        var ctx = canvas.getContext("2d");
+        var len = fence_dot_array.length;
+        var displace = 5 / canvasImg.scale;
+        ctx.beginPath();
+        fence_dot_array.forEach(function (v, i, arr) {
+            ctx.lineTo(v.x + displace, v.y + displace);
+            if (i == len - 1)
+                ctx.lineTo(arr[0].x + displace, arr[0].y + displace);
+        })
+        ctx.strokeStyle = "rgb(0, 153, 51)";
+        ctx.stroke();
+        ctx.fillStyle = "rgba(0, 153, 51, 0.61)";
+        ctx.fill();
+        //在圍籬中間畫出群組名稱
+        ctx.fillStyle = "blue";
+        ctx.font = 60 / canvasImg.scale + 'px serif';
+        var arr = fence_dot_array;
+        var displace_x = (arr[2].x - arr[0].x) / 2;
+        var displace_y = (arr[2].y - arr[0].y) / 2;
+        ctx.fillText(arr[0].fence_name, arr[0].x + displace_x - 15, arr[0].y + displace_y - 6);
+        ctx.closePath();
+    };
+}
+
+function SettingFence() {
+    var fence_dot_array = [];
+    var canvas = document.getElementById("canvas_map");
+    var ctx = canvas.getContext("2d");
+    var displace = 5 / canvasImg.scale;
+    this.setFenceDot = function (x, y) {
+        fence_dot_array.push({
+            x: x,
+            y: y
+        });
+    };
+    this.drawFence = function () {
+        var len = fence_dot_array.length;
+        ctx.beginPath();
+        fence_dot_array.forEach(function (v, i, arr) {
+            if (i == len - 1) {
+                ctx.lineTo(v.x + displace, v.y + displace);
+                ctx.lineTo(arr[0].x + displace, arr[0].y + displace);
+            } else {
+                ctx.lineTo(v.x + displace, v.y + displace);
+            }
+        })
+        ctx.strokeStyle = "rgb(255, 80, 80)";
+        ctx.stroke();
+        ctx.fillStyle = "rgba(255, 80, 80, 0.61)";
+        ctx.fill();
+        ctx.closePath();
+    };
+    this.drawFenceDots = function () {
+        fence_dot_array.forEach(function (v) {
+            ctx.fillStyle = "rgb(255, 80, 80)";
+            ctx.fillRect(v.x - displace, v.y - displace, 30 / canvasImg.scale, 30 / canvasImg.scale); //10*3
+        });
+    };
+}
+
+function addDotArray(num, x, y) {
+    addFenceDotArray.push({
+        id: num,
+        x: x,
+        y: y
+    });
+    updateFenceDotsArr();
+    draw();
+}
+
+function deleteDotArray(id) {
+    var del_index = addFenceDotArray.findIndex(function (info) {
+        return id == info.id;
+    });
+    addFenceDotArray.splice(del_index, 1);
+    addFenceContainGroup = [];
+}
+
+function resetDotArray() {
+    addFenceDotArray = [];
+}
+
+function resetDotGroup() {
+    addFenceContainGroup = [];
+}
+
+function Group() {
+    var anchor_array = [];
+    this.setAnchor = function (id, x, y) {
+        anchor_array.push({
+            id: id,
+            x: x,
+            y: y
+        });
+    }
+    this.drawGroup = function () {
+        var canvas = document.getElementById("canvas_map");
+        var ctx = canvas.getContext("2d");
+        var len = anchor_array.length;
+        ctx.beginPath();
+        anchor_array.forEach(function (v, i, arr) {
+            if (i == len - 1) {
+                ctx.lineTo(v.x, v.y);
+                ctx.lineTo(arr[0].x, arr[0].y);
+            } else {
+                ctx.lineTo(v.x, v.y);
+            }
+        });
+        ctx.strokeStyle = "rgb(255, 123, 0)";
+        ctx.stroke();
+        ctx.fillStyle = "rgba(255, 153, 0, 0.61)";
+        ctx.fill();
+        ctx.closePath();
+    }
+}
+
+function drawAnchor(dctx, id, type, x, y) {
+    if (type == "main")
+        dctx.fillStyle = "red";
+    else
+        dctx.fillStyle = "blue";
+    dctx.font = 13 * 3 / canvasImg.scale + 'px serif';
+    dctx.fillText(id, x - 15, y - 6); //anchorID
+    dctx.fillRect(x - 5, y - 5, 10 * 3 / canvasImg.scale, 10 * 3 / canvasImg.scale);
+}
+
+function handleDotPosition() {
+    $("#add_dot_x").val($("#x").val());
+    $("#add_dot_y").val($("#y").val());
+    $("#dialog_add_fence_dot").dialog("open");
+}
+
+function inputFenceGroup() {
+    $("#table_fence_group tbody").empty();
+    addFenceContainGroup.forEach(function (groupInfo, index) {
+        $("#table_fence_group tbody").append("<tr><td>" + (index + 1) + "</td>" +
+            "<td name=\"fence_groups\">" + groupInfo.g_name + "</td></tr>");
+    });
+    updateFenceGroup(addFenceContainGroup);
 }

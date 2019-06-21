@@ -22,16 +22,16 @@ function getMapGroups() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            var mapGroups = revObj.Values;
             if (revObj.success > 0) {
                 var groupArr = [];
+                var mapGroups = 'Values' in revObj == true ? revObj.Values : [];
                 mapGroups.forEach(element => {
                     if (element.map_id == map_id)
                         groupArr.push(element.group_id);
                 });
                 inputGroupList(groupArr);
             } else {
-                alert("獲取GroupList失敗，請再試一次!");
+                alert($.i18n.prop('i_mapAlert_12'));
                 return;
             }
         }
@@ -40,6 +40,7 @@ function getMapGroups() {
 }
 
 function inputGroupList(groupArray) {
+    allGroupsArray = []; //Reset array
     var request = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetGroups"]
@@ -48,41 +49,36 @@ function inputGroupList(groupArray) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            var groupList = revObj.Values;
             if (revObj.success > 0) {
-                var map_mainAnchors = [];
-                allGroupsArray = []; //Reset array
+                var groupList = 'Values' in revObj == true ? revObj.Values : [];
                 clearGroupList();
-                if (groupList) {
-                    groupList.forEach(info => {
-                        allGroupsArray.push(info.group_id);
-                        var hasGroup = groupArray.indexOf(info.group_id);
-                        if (hasGroup > -1) {
-                            info.group_name = typeof (info.group_name) != 'undefined' ? info.group_name : "";
-                            count_grouplist++;
-                            var tr_id = "tr_group_list_" + count_grouplist;
-                            $("#table_group_list tbody").append("<tr id=\"" + tr_id + "\"><td>" +
-                                "<input type=\"checkbox\" name=\"chkbox_group_list\" value=\"" + info.group_id + "\"" +
-                                " onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_grouplist +
-                                "</td><td>" +
-                                "<input type=\"text\" name=\"grouplist_name\" value=\"" + info.group_name +
-                                "\" style=\"max-width:80px;\" readonly/>" +
-                                "</td><td>" +
-                                "<input type=\"text\" name=\"grouplist_main_anchor\" value=\"" + info.main_anchor_id +
-                                "\" style=\"max-width:80px;\" readonly/>" +
-                                "</td><td>" +
-                                "<label for=\"btn_edit_grouplist_" + count_grouplist + "\" class='btn-edit' title='Edit the group'>" +
-                                "<i class='fas fa-edit' style='font-size:18px;'></i></label><input id=\"btn_edit_grouplist_" +
-                                count_grouplist + "\" type='button' class='btn-hidden' onclick=\"editGroupList(\'" + info.group_id +
-                                "\',\'" + info.group_name + "\',\'" + info.main_anchor_id + "\')\" />" +
-                                "</td></tr>");
-                            map_mainAnchors.push(info.main_anchor_id);
-                        }
-                    });
-                }
-                inputAnchorGroup(map_mainAnchors);
+                groupList.forEach(info => {
+                    allGroupsArray.push(info.group_id);
+                    var hasGroup = groupArray.indexOf(info.group_id);
+                    if (hasGroup > -1) {
+                        info.group_name = typeof (info.group_name) != 'undefined' ? info.group_name : "";
+                        count_grouplist++;
+                        var tr_id = "tr_group_list_" + count_grouplist;
+                        $("#table_group_list tbody").append("<tr id=\"" + tr_id + "\"><td>" +
+                            "<input type=\"checkbox\" name=\"chkbox_group_list\" value=\"" + info.group_id + "\"" +
+                            " onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_grouplist +
+                            "</td><td>" +
+                            "<input type=\"text\" name=\"grouplist_name\" value=\"" + info.group_name +
+                            "\" style=\"max-width:80px;\" readonly/>" +
+                            "</td><td>" +
+                            "<input type=\"text\" name=\"grouplist_main_anchor\" value=\"" + info.main_anchor_id +
+                            "\" style=\"max-width:80px;\" readonly/>" +
+                            "</td><td>" +
+                            "<label for=\"btn_edit_grouplist_" + count_grouplist + "\" class='btn-edit' title='" +
+                            $.i18n.prop('i_editGroup') + "'><i class='fas fa-edit' style='font-size:18px;'></i></label>" +
+                            "<input id=\"btn_edit_grouplist_" + count_grouplist + "\" type='button' class='btn-hidden'" +
+                            " onclick=\"editGroupList(\'" + info.group_id + "\',\'" + info.group_name + "\',\'" +
+                            info.main_anchor_id + "\')\" /></td></tr>");
+                    }
+                });
+                inputAnchorGroup();
             } else {
-                alert("獲取GroupList失敗，請再試一次!");
+                alert($.i18n.prop('i_mapAlert_12'));
                 return;
             }
         }
@@ -115,85 +111,19 @@ function EditGroupInfo(editInfo) {
     editXmlHttp.send(JSON.stringify(editRequest));
 }
 
-function catchMainAnchorList() {
-    var main_anc_ids = document.getElementsByName("list_main_anchor_id");
-    allMainAnchorsArray = [];
-    main_anc_ids.forEach(element => {
-        allMainAnchorsArray.push(element.value);
-    });
-}
 
 $(function () {
     $("#btn_add_group").on('click', function () {
-        catchMainAnchorList();
+        var main_anc_ids = document.getElementsByName("list_main_anchor_id");
+        allMainAnchorsArray = [];
+        main_anc_ids.forEach(element => {
+            allMainAnchorsArray.push(element.value);
+        });
         $("#add_grouplist_main_anchor").html(makeOptions(allMainAnchorsArray, allMainAnchorsArray[0]));
         $("#dialog_add_group_list").dialog("open");
     });
+
     $("#btn_delete_group").on('click', function () {
-        deleteGroupList();
-    });
-    $("#add_grouplist_id").on('change', function () {
-        if ($(this).val().length > 0) {
-            var repeat = allGroupsArray.indexOf($(this).val());
-            if (repeat > -1)
-                $("#add_group_id_alert").text("已存在").css('color', 'red');
-            else
-                $("#add_group_id_alert").text("可新增").css('color', 'green');
-        } else {
-            $("#add_group_id_alert").empty();
-        }
-    });
-
-
-    var dialog, form,
-        add_grouplist_id = $("#add_grouplist_id"),
-        add_grouplist_name = $("#add_grouplist_name"),
-        add_main_anchor = $("#add_grouplist_main_anchor"),
-        allFields = $([]).add(add_grouplist_id).add(add_grouplist_name).add(add_main_anchor);
-
-    function addGrouplist() {
-        allFields.removeClass("ui-state-error");
-        var valid = true;
-        valid = valid && checkLength(add_grouplist_id, "GroupList", 1, 5);
-        allGroupsArray.forEach(element => { //驗證Group ID是否重複
-            if (element == add_grouplist_id.val()) {
-                valid = false;
-                add_grouplist_id.addClass("ui-state-error");
-                alert("Group ID已存在，請更換!");
-            }
-        });
-        valid = valid && checkLength(add_grouplist_name, "GroupList", 1, 50);
-        valid = valid && checkLength(add_main_anchor, "GroupList", 1, 5);
-        if (valid) {
-            var request = {
-                "Command_Type": ["Write"],
-                "Command_Name": ["AddListGroup"],
-                "Value": [{
-                    "group_id": add_grouplist_id.val(),
-                    "group_name": add_grouplist_name.val(),
-                    "main_anchor_id": add_main_anchor.val(),
-                    "mode": "normal",
-                    "mode_value": "0",
-                    "fence": "0"
-                }]
-            };
-            var xmlHttp = createJsonXmlHttp("sql");
-            xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0) {
-                        getMapGroups();
-                        dialog.dialog("close");
-                    }
-                }
-            };
-            xmlHttp.send(JSON.stringify(request));
-            dialog.dialog("close");
-        }
-        return valid;
-    }
-
-    function deleteGroupList() {
         var checkboxs = document.getElementsByName("chkbox_group_list");
         var deleteArr = [];
         var deleteMapGroupArr = [];
@@ -208,6 +138,10 @@ $(function () {
                     "group_id": checkboxs[j].value
                 })
             }
+        }
+        if (deleteArr.length == 0) {
+            alert($.i18n.prop('i_mapAlert_9'));
+            return;
         }
         var deleteRequest = {
             "Command_Type": ["Read"],
@@ -240,7 +174,69 @@ $(function () {
             }
         };
         deleteXmlHttp.send(JSON.stringify(deleteRequest));
+    });
+
+    $("#add_grouplist_id").on('change', function () {
+        if ($(this).val().length > 0) {
+            var repeat = allGroupsArray.indexOf($(this).val());
+            if (repeat > -1)
+                $("#add_group_id_alert").text($.i18n.prop('i_existed')).css('color', 'red');
+            else
+                $("#add_group_id_alert").text($.i18n.prop('i_canAdd')).css('color', 'green');
+        } else {
+            $("#add_group_id_alert").empty();
+        }
+    });
+
+
+    var dialog, form,
+        add_grouplist_id = $("#add_grouplist_id"),
+        add_grouplist_name = $("#add_grouplist_name"),
+        add_main_anchor = $("#add_grouplist_main_anchor"),
+        allFields = $([]).add(add_grouplist_id).add(add_grouplist_name).add(add_main_anchor);
+
+    function addGrouplist() {
+        allFields.removeClass("ui-state-error");
+        var valid = true;
+        valid = valid && checkLength(add_grouplist_id, $.i18n.prop('i_mapAlert_14'), 1, 5);
+        allGroupsArray.forEach(element => { //驗證Group ID是否重複
+            if (element == add_grouplist_id.val()) {
+                valid = false;
+                add_grouplist_id.addClass("ui-state-error");
+                alert($.i18n.prop('i_mapAlert_11'));
+            }
+        });
+        valid = valid && checkLength(add_grouplist_name, $.i18n.prop('i_mapAlert_13'), 1, 50);
+        valid = valid && checkLength(add_main_anchor, $.i18n.prop('i_mapAlert_14'), 1, 5);
+        if (valid) {
+            var request = {
+                "Command_Type": ["Write"],
+                "Command_Name": ["AddListGroup"],
+                "Value": [{
+                    "group_id": add_grouplist_id.val(),
+                    "group_name": add_grouplist_name.val(),
+                    "main_anchor_id": add_main_anchor.val(),
+                    "mode": "normal",
+                    "mode_value": "0",
+                    "fence": "0"
+                }]
+            };
+            var xmlHttp = createJsonXmlHttp("sql");
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    var revObj = JSON.parse(this.responseText);
+                    if (revObj.success > 0) {
+                        getMapGroups();
+                        dialog.dialog("close");
+                    }
+                }
+            };
+            xmlHttp.send(JSON.stringify(request));
+            dialog.dialog("close");
+        }
+        return valid;
     }
+
 
     dialog = $("#dialog_add_group_list").dialog({
         autoOpen: false,
@@ -275,8 +271,8 @@ $(function () {
     function editGrouplist() {
         allFields.removeClass("ui-state-error");
         var valid = true;
-        valid = valid && checkLength(edit_grouplist_name, "GroupList", 1, 50);
-        valid = valid && checkLength(edit_main_anchor, "GroupList", 1, 5);
+        valid = valid && checkLength(edit_grouplist_name, $.i18n.prop('i_mapAlert_13'), 1, 50);
+        valid = valid && checkLength(edit_main_anchor, $.i18n.prop('i_mapAlert_14'), 1, 5);
         if (valid) {
             var requestArray = {
                 "Command_Type": ["Read"],

@@ -11,7 +11,6 @@ $(function () {
     hiddenBlock();
     $("#block_info").show();
     $("#label_map_info").css('background-color', 'rgb(40, 108, 197)');
-
     $("#menu_load_map").on("change", function () {
         var file = this.files[0];
         var valid = checkExt(this.value);
@@ -67,14 +66,15 @@ $(function () {
         mapinfo_name = $("#map_info_name"),
         mapinfo_scale = $("#map_info_scale"),
         allFields = $([]).add(mapinfo_image).add(mapinfo_name).add(mapinfo_scale);
-    //tips = $( ".validateTips" );
 
     function SubmitResult() {
         allFields.removeClass("ui-state-error");
         var valid = true;
-        valid = valid && checkLength(mapinfo_id, "Please enter the ID of this map.", 1, 50);
-        valid = valid && checkLength(mapinfo_name, "Please enter the name of this map.", 1, 50);
-        valid = valid && checkLength(mapinfo_scale, "Please enter the scale of this map.", 1, 3);
+        var alert1 = $.i18n.prop('i_mapAlert_1');
+        var alert2 = $.i18n.prop('i_mapAlert_2');
+        valid = valid && checkLength(mapinfo_id, $.i18n.prop('i_mapAlert_1'), 1, 50);
+        valid = valid && checkLength(mapinfo_name, $.i18n.prop('i_mapAlert_2'), 1, 50);
+        valid = valid && checkLength(mapinfo_scale, $.i18n.prop('i_mapAlert_3'), 1, 5);
         if (mapinfo_image.css("backgroundImage").length > 0) {
             var mapinfo_file = mapinfo_image.css("backgroundImage").split(",");
             mapinfo_ext = getBase64Ext(mapinfo_file[0]);
@@ -106,7 +106,7 @@ $(function () {
                         loadMap();
                         dialog.dialog("close");
                         resetDialog();
-                        alert("地圖資訊設定完成");
+                        alert($.i18n.prop('i_mapAlert_5'));
                     }
                 }
             };
@@ -131,8 +131,8 @@ $(function () {
         width: 1000,
         modal: true,
         buttons: {
-            "Confirm": function () {
-                var r = confirm("Confirm to send the map setting?");
+            Confirm: function () {
+                var r = confirm($.i18n.prop('i_mapAlert_4'));
                 if (r == true)
                     SubmitResult();
                 else
@@ -150,7 +150,7 @@ $(function () {
 
     form = dialog.find("form").on("submit", function (event) {
         event.preventDefault();
-        var r = confirm("Confirm to send the map setting?");
+        var r = confirm($.i18n.prop('i_mapAlert_4'));
         if (r == true)
             SubmitResult();
         else
