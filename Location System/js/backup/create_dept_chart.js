@@ -10,7 +10,7 @@ $(function () {
         "Command_Name": ["GetDepartment_relation"]
     };
 
-    var xmlHttp = createJsonXmlHttp();
+    var xmlHttp = createJsonXmlHttp('sql');
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
@@ -55,7 +55,7 @@ $(function () {
                     "Command_Type": ["Read"],
                     "Command_Name": ["AddDepartment"]
                 };
-                var addXmlHttp = createJsonXmlHttp();
+                var addXmlHttp = createJsonXmlHttp('sql');
 
                 $('#new-nodelist').find('.new-node').each(function (index, item) {
                     var validVal = item.value.trim();
@@ -167,7 +167,7 @@ $(function () {
                     "Command_Name": ["DeleteDepartment"],
                     "Value": nodeIds
                 };
-                var deleteXmlHttp = createJsonXmlHttp();
+                var deleteXmlHttp = createJsonXmlHttp('sql');
                 deleteXmlHttp.onreadystatechange = function () {
                     if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
@@ -210,7 +210,7 @@ $(function () {
                         "color": colorToHex(editColor)
                     }
                 };
-                var editXmlHttp = createJsonXmlHttp();
+                var editXmlHttp = createJsonXmlHttp('sql');
                 editXmlHttp.onreadystatechange = function () {
                     if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
@@ -255,17 +255,6 @@ $(function () {
         }
     };
     xmlHttp.send(JSON.stringify(requestArray));
-
-    function createJsonXmlHttp() {
-        var newXmlHttp = GetXmlHttpObject();
-        if (newXmlHttp == null) {
-            alert("Browser does not support HTTP Request");
-            return;
-        }
-        newXmlHttp.open("POST", "sql", true);
-        newXmlHttp.setRequestHeader("Content-type", "application/json");
-        return newXmlHttp;
-    }
 
     function colorToHex(color) {
         color = typeof (color) != "string" ? color.toString() : color;

@@ -311,10 +311,10 @@ function getPointOnCanvas(x, y) {
 function drawTag(dctx, id, x, y) {
     dctx.globalCompositeOperation = "source-over";
     dctx.beginPath();
-    dctx.fillStyle = '#99ff66';
+    dctx.fillStyle = '#66ccff';
     dctx.arc(x, y, 5, 0, Math.PI * 2, true); // circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
     dctx.fill(); //填滿圓形
-    dctx.strokeStyle = '#66ccff';
+    dctx.strokeStyle = '#0084ff';
     dctx.stroke(); //畫圓形的線
     dctx.closePath();
     //dctx.font = '10px serif';
@@ -333,7 +333,7 @@ function reDrawTag(dctx) {
         if (i == 0)
             drawTag(dctx, array[0].time, array[0].x, array[0].y);
         else {
-            drawArrow(dctx, array[i - 1].x, array[i - 1].y, array[i].x, array[i].y, 30, 8, 2, '#66ccff');
+            drawArrow(dctx, array[i - 1].x, array[i - 1].y, array[i].x, array[i].y, 30, 8, 2, '#0084ff');
             drawTag(dctx, array[i].time, array[i].x, array[i].y);
         }
     }
@@ -443,7 +443,7 @@ function drawNextTime() {
             if (array[time].map_src != array[time - 1].map_src)
                 loadImage(array[time].map_src, array[time].map_scale);
             reDrawTag(ctx);
-            drawArrow(ctx, array[time - 1].x, array[time - 1].y, array[time].x, array[time].y, 30, 8, 2, '#66ccff');
+            drawArrow(ctx, array[time - 1].x, array[time - 1].y, array[time].x, array[time].y, 30, 8, 2, '#0084ff');
             drawTag(ctx, array[time].time, array[time].x, array[time].y);
             document.getElementById("position").innerText = array[time].map_name;
             document.getElementById("draw_time").innerText = array[time].time;

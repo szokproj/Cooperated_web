@@ -104,10 +104,33 @@
         }
 
         .noborder-block label {
-            background: lightblue;
-            padding: 3px;
+            background: #fc8e10;
+            padding: 6px;
             border: 0;
             border-radius: 5px;
+        }
+
+        .btn-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        .btn-icon {
+            cursor: pointer;
+            background: #ffffff !important;
+            color: #fc8e10;;
+            font-size: 20px;
+            margin: 0px 5px 0px 5px;
+        }
+
+        .btn-icon:hover {
+            color: #ffdaaf;
         }
     </style>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -123,7 +146,7 @@
                 <nav class="sidebar">
                     <ul class="nav">
                         <li><a href="../index.html">
-                                <i class="fas fa-home"></i><span class="i18n" name="homePage"></span></a></li>
+                                <i class="fas fa-satellite-dish"></i><span class="i18n" name="homePage"></span></a></li>
                         <li><a href="../Member_Setting.html">
                                 <i class="fas fa-user-cog"></i><span class="i18n" name="member_settingPage"></span></a>
                         </li>
@@ -140,9 +163,6 @@
                         <li><a href="../Reference.html">
                                 <i class="fas fa-cogs"></i><span class="i18n" name="advance_settingPage"></span></a>
                         </li>
-                        <li class="excel"><a href="#">
-                                <i class="fas fa-file-excel" style="padding-left:2px;"></i><span class="i18n"
-                                    name="Excel_in_out"></span></a></li>
                     </ul>
                 </nav>
             </div>
@@ -163,7 +183,7 @@
 
         <!-- Web content -->
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-12">
                 <div id="cvsBlock">
                     <canvas id="canvas">
                         <span class="i18n" name="i_no_canvas"></span>
@@ -175,6 +195,39 @@
                     <span class="i18n" name="i_posY"></span> : <label id="draw_y" style="margin-right:20px;"></label>
                     <span class="i18n" name="i_time"></span> : <label id="draw_time" style="margin-right:20px;"></label>
                 </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-lg-5" style="text-align: left;">
+                <table class="noborder-block">
+                    <tr>
+                        <td><label class="i18n" name="i_search"></label></td>
+                        <td><select id="search_type">
+                                <option value="Tag_ID" selected="selected" class="i18n" name="i_tagID"></option>
+                                <option value="Name" class="i18n" name="i_name"></option>
+                            </select> <input type="text" id="search_target" value="000000000000000C">
+                            <label for="btn_search" class="btn-icon">
+                                <i class="fas fa-search" style='font-size:22px;'></i></label>
+                            <input id="btn_search" type="button" class="btn-hidden" onclick="search()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class="i18n" name="i_start"></label></td>
+                        <td><span class="i18n" name="i_date"></span> : <input type="date" id="start_date"
+                                value="2019-03-29"> <span class="i18n" name="i_time"></span> : <input type="time"
+                                id="start_time" step="01" value="00:00:00"></td>
+                    </tr>
+                    <tr>
+                        <td><label class="i18n" name="i_end"></label></td>
+                        <td><span class="i18n" name="i_date"></span> : <input type="date" id="end_date"
+                                value="2019-03-29"> <span class="i18n" name="i_time"></span> : <input type="time"
+                                id="end_time" step="01" value="23:59:59"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-lg-7">
                 <div style="margin:10px 0px 10px 0px;">
                     <label><span class="i18n" name="i_intervals"></span> : <input type="text" id="interval"
                             style="border:0; color:#f6931f; font-weight:bold; width:40px;" />
@@ -198,34 +251,7 @@
 
                 </div>
             </div>
-            <div class="col-lg-4" style="text-align: left;">
-                <table class="noborder-block">
-                    <tr>
-                        <td><label class="i18n" name="i_search"></label></td>
-                        <td><select id="search_type">
-                                <option value="Tag_ID" selected="selected" class="i18n" name="i_tagID"></option>
-                                <option value="Name" class="i18n" name="i_name"></option>
-                            </select> <input type="text" id="search_target" value="000000000000000C"></td>
-                    </tr>
-                    <tr>
-                        <td><label class="i18n" name="i_start"></label></td>
-                        <td><span class="i18n" name="i_date"></span> : <input type="date" id="start_date"
-                                value="2019-03-29"> <span class="i18n" name="i_time"></span> : <input type="time"
-                                id="start_time" step="01" value="00:00:00"></td>
-                    </tr>
-                    <tr>
-                        <td><label class="i18n" name="i_end"></label></td>
-                        <td><span class="i18n" name="i_date"></span> : <input type="date" id="end_date"
-                                value="2019-03-29"> <span class="i18n" name="i_time"></span> : <input type="time"
-                                id="end_time" step="01" value="23:59:59"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><button class="btn btn-primary" id="btn_search" style="margin-left: 160px;"
-                                onclick="search()"><span class="i18n" name="i_search"></span></button></td>
-                    </tr>
-                </table>
-            </div>
+
         </div>
     </div>
 

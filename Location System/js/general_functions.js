@@ -55,9 +55,13 @@ function updateTips(t) {
 
 function checkLength(o, n, min, max) {
     if (o.val().length) {
-        if (o.val().length > max || o.val().length < min) {
+        if (min != 0 && o.val().length < min) {
             o.addClass("ui-state-error");
-            alert("Test");
+            alert(n);
+            return false;
+        } else if (max != 0 && o.val().length > max) {
+            o.addClass("ui-state-error");
+            alert(n);
             return false;
         } else {
             if (checkRegexp2(o, n, min, max)) {
@@ -81,7 +85,7 @@ function checkRegexp2(o, n, min, max) { // Check sql injection or not.
     if (OK) { // This is sql injection.
         o.addClass("ui-state-error");
         //updateTips( n );
-        alert(n);
+        alert($.i18n.prop('i_alertTextRegularity'));
         return false;
     } else { // Legal SQL string
         return true;

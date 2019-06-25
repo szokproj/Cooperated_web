@@ -196,9 +196,9 @@ $(function () {
                 "Command_Type": ["Write"],
                 "Command_Name": command_name,
                 "Value": [{
+                    "number": main_number.val(),
                     "tag_id": main_tag_id.val(),
                     "card_id": main_card_id.val(),
-                    "number": main_number.val(),
                     "Name": main_name.val(),
                     "department_id": $("#hidden_department").val(),
                     "jobTitle_id": $("#hidden_jobTitle").val(),
@@ -247,7 +247,7 @@ $(function () {
 
     dialog = $("#dialog_edit_member").dialog({
         autoOpen: false,
-        height: 620,
+        height: 640,
         width: 600,
         modal: true,
         buttons: {

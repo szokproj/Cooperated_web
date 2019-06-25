@@ -15,7 +15,7 @@ function displayBar(table) {
     displayPage(table); //显示第一页
 
     document.getElementById("btn0").innerHTML = $.i18n.prop('i_nowPage') + " " + curPage + "/" + page + " " + $.i18n.prop('i_page'); //显示当前多少页
-    document.getElementById("sjzl").innerHTML = $.i18n.prop('i_countData') + len + ""; //显示数据量
+    document.getElementById("sjzl").innerHTML = $.i18n.prop('i_countData') + " : " + len; //显示数据量
     document.getElementById("pageSize").value = pageSize;
 
 

@@ -123,8 +123,8 @@ h1 {
     height: 200px;
     max-width: 490px;
     max-height: 200px;
-    background-color: rgb(167, 166, 166);
     margin-bottom: 10px;
+    background-color: rgb(167, 166, 166);
 }
 
 .thumbnail {

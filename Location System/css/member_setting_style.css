@@ -40,6 +40,17 @@ input[type="file"] {
     border: 0;
 }
 
+.btn-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
 .custom-file-selected {
     display: inline-block;
     cursor: pointer;
@@ -82,9 +93,9 @@ thead tr {
     background: #7ab8ff;
 }
 
-.table_member tbody tr:hover {
+/*.table_member tbody tr:hover {
     background-color: #ffff66;
-}
+}*/
 
 .table_member {
     width: 100%;
@@ -146,12 +157,16 @@ thead tr {
 .pagination li a,
 .pagination li a:hover {
     font-weight: bold;
-    background-color: rgb(143, 187, 201);
-    color: rgb(60, 79, 92);
+    background-color: #7ab8ff;
+    color: rgb(37, 37, 37);
+}
+
+.page-btn {
+    background-color: #7ab8ff !important;
 }
 
 .page-btn:hover {
-    background-color: rgb(107, 136, 145) !important;
+    background-color: #b0d5ff !important;
 }
 
 .changeBgColor {
@@ -162,14 +177,19 @@ thead tr {
 
 .load-file {
     /*border: 1px solid rgb(44, 64, 80);*/
-    background-color: rgb(58, 138, 204);
-    display: inline-block;
-    padding: 6px 12px;
     cursor: pointer;
-    border-radius: 5px;
+    background-color: rgb(58, 138, 204);
+    padding: 6px 12px 8px 12px;
+    border-radius: 3px;
     color: rgb(255, 255, 255);
-    font-weight: bold;
-    font-family: 'Microsoft JhengHei', 'sans-serif';
+    margin: 0px;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+.load-file:hover{
+    background-color: rgb(41, 93, 136);
+    color: rgb(219, 218, 218);
 }
 
 .draw-map {
@@ -201,5 +221,5 @@ thead tr {
 
 .sidebar ul .setting-type:hover a,
 .sidebar ul .setting-type.active a {
-    background: rgb(11, 74, 168)
+    background: rgb(11, 74, 168);
 }

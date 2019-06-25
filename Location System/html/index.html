@@ -41,7 +41,7 @@
                 <nav class="sidebar">
                     <ul class="nav">
                         <li class="active"><a href="#">
-                                <i class="fas fa-home"></i><span class="i18n" name="homePage"></span></a></li>
+                                <i class="fas fa-satellite-dish"></i><span class="i18n" name="homePage"></span></a></li>
                         <li><a href="../Member_Setting.html">
                                 <i class="fas fa-user-cog"></i><span class="i18n" name="member_settingPage"></span></a>
                         </li>
@@ -58,9 +58,6 @@
                         <li><a href="../Reference.html">
                                 <i class="fas fa-cogs"></i><span class="i18n" name="advance_settingPage"></span></a>
                         </li>
-                        <li class="excel"><a href="#">
-                                <i class="fas fa-file-excel" style="padding-left:2px;"></i><span class="i18n"
-                                    name="Excel_in_out"></span></a></li>
                         <hr>
                         <li class="alarmlist"><a href="javascript: alarmSidebarMove();">
                                 <i class="fas fa-exclamation-circle" id="alarmSideBar_icon"></i>
@@ -114,8 +111,9 @@
                     </div>
 
                     <div style="text-align:right;">
-                        <label for="btn_restore" id="label_restore" class="btn-icon" style="margin-right:30px;">
-                            <i class="fas fa-compress" style='font-size:18px;' title="Resize the map"></i></label>
+                        <label for="btn_restore" id="label_restore" class="btn-icon i18n-input" selectattr="title"
+                            selectname="i_restore_scale" style="margin-right:30px;"><i class="fas fa-compress"
+                                style='font-size:18px;'></i></label>
                         <input id="btn_restore" type="button" class="btn-hidden" onclick="restoreCanvas();" />
                         <span class="i18n" name="i_mapScale"></span> : <span id="scale_visible"
                             style="margin-right:50px;"></span>

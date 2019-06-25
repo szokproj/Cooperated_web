@@ -127,7 +127,7 @@ $(function () {
                         "Command_Type": ["Read"],
                         "Command_Name": ["AddJobTitle"]
                     };
-                    var addXmlHttp = createJsonXmlHttp();
+                    var addXmlHttp = createJsonXmlHttp('sql');
                     if (nodeType.val() === 'siblings') { //增加同層節點
                         if ($node[0].id === oc.$chart.find('.node:first')[0].id) {
                             alert($.i18n.prop('i_alertChart_3'));
@@ -219,7 +219,7 @@ $(function () {
                     "Command_Name": ["DeleteJobTitle"],
                     "Value": nodeIds
                 };
-                var deleteXmlHttp = createJsonXmlHttp();
+                var deleteXmlHttp = createJsonXmlHttp('sql');
                 deleteXmlHttp.onreadystatechange = function () {
                     if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
@@ -291,7 +291,7 @@ $(function () {
                             "color": colorToHex(editColor)
                         }
                     };
-                    var editXmlHttp = createJsonXmlHttp();
+                    var editXmlHttp = createJsonXmlHttp('sql');
                     editXmlHttp.onreadystatechange = function () {
                         if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
                             var revObj = JSON.parse(this.responseText);

@@ -186,16 +186,13 @@ function editAlarmGroup(id) {
 }
 
 
-
-
 $(document).ready(function () {
-    /*$('input[type=time]').timepicker({
-        minTime: '00:00:00',
-        maxHour: 23,
-        maxMinutes: 59,
-        startTime: '12:00:00'
-    }); //設定Jquery日期元件*/
-
+    $('.timepicker').bootstrapMaterialDatePicker({
+        date: false,
+        clearButton: true,
+        lang: 'en',
+        format: 'HH:mm'
+    });
 
     $("#btn_submit_alarm_setting").button().on("click", function () {
         var request = {

@@ -19,6 +19,10 @@
     <!-- jOrgChart -->
     <link rel="stylesheet" type="text/css" href="../css/jOrgChart/jquery.orgchart.css">
     <link rel="stylesheet" type="text/css" href="../css/j_orgchart_mini.css">
+    <!-- Excel -->
+    <script src="http://oss.sheetjs.com/js-xlsx/xlsx.full.min.js"></script>
+    <script type="text/javascript" src="../js/excel_import.js"></script>
+    <script type="text/javascript" src="../js/excel_export.js"></script>
     <!-- Icon Navbar -->
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
@@ -29,6 +33,7 @@
     <script type="text/javascript" src="../js/table_Page.js"></script>
     <script type="text/javascript" src="../js/palette.js"></script>
     <script type="text/javascript" src="../js/member_setting.js"></script>
+    <script type="text/javascript" src="../js/member_excel.js"></script>
     <!-- JQuery UI - Dialog -->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_member_setting.js"></script>
@@ -45,7 +50,7 @@
                 <nav class="sidebar">
                     <ul class="nav">
                         <li><a href="../index.html">
-                                <i class="fas fa-home"></i><span class="i18n" name="homePage"></span></a></li>
+                                <i class="fas fa-satellite-dish"></i><span class="i18n" name="homePage"></span></a></li>
                         <li class="active"><a href="#">
                                 <i class="fas fa-user-cog"></i><span class="i18n" name="member_settingPage"></span></a>
                         </li>
@@ -62,9 +67,6 @@
                         <li><a href="../Reference.html">
                                 <i class="fas fa-cogs"></i><span class="i18n" name="advance_settingPage"></span></a>
                         </li>
-                        <li class="excel"><a href="#">
-                                <i class="fas fa-file-excel" style="padding-left:2px;"></i><span class="i18n"
-                                    name="Excel_in_out"></span></a></li>
                         <hr>
                         <li class="setting-type active"><a href="#">
                                 <i class="fas fa-users"></i><span class="i18n" name="i_memberSetting"></span></a></li>
@@ -98,6 +100,10 @@
                     <button id="add_col" class="btn btn-success i18n" name="i_add"></button>
                     <button id="delete_col" class="btn btn-danger i18n" name="i_delete"></button>
                     <button id="multi_edit" class="btn btn-primary i18n" name="i_batchEdit"></button>
+                    <label for="excel_import" class="load-file i18n" name="i_excel_import"></label>
+                    <input type="file" id="excel_import" onchange="importf(this)" />
+                    <label for="excel_export" class="load-file i18n" name="i_excel_export"></label>
+                    <input type="button" id="excel_export" class="btn-hidden" />
                 </div>
                 <div class="table_member">
                     <table class="table-line" id="table_member_setting">
@@ -105,8 +111,8 @@
                             <tr>
                                 <th><input type="checkbox" id="selectAll" onchange="" /> <span class="i18n"
                                         name="i_item"></span></th>
-                                <th class="i18n" name="i_tagID"></th>
                                 <th class="i18n" name="i_number"></th>
+                                <th class="i18n" name="i_tagID"></th>
                                 <th class="i18n" name="i_name"></th>
                                 <th class="i18n" name="i_dept"></th>
                                 <th class="i18n" name="i_jobTitle"></th>
@@ -129,7 +135,7 @@
                             </a></li>
                         <li><a href="#" class="page-btn" id="pageSizeSet"><span class="i18n" name="i_setting"></span>
                             </a></li>
-                        <li><a id="sjzl"><span class="i18n" name="i_countData"></span> 0</a></li>
+                        <li><a id="sjzl"><span class="i18n" name="i_countData"></span> : 0</a></li>
                         <li><a href="#" class="page-btn" id="btn1">&laquo;</a></li>
                         <li><a href="#" class="page-btn i18n" id="btn2" name="i_previousPage"></a></li>
                         <li><a href="#" class="page-btn i18n" id="btn3" name="i_nextPage"></a></li>
@@ -168,66 +174,72 @@
                                     <td><input type="text" id="main_card_id" style="width:100%;"></td>
                                 </tr>
                             </table>
-                            <table class="noborder-block">
-                                <tr>
-                                    <td>
-                                        <p><label for="main_number" style="margin-right:48px;" class="i18n"
-                                                name="i_number"></label>
-                                            <input type="text" id="main_number" style="width:70%;">
-                                        </p>
-                                        <p><label for="main_name" style="margin-right:48px;" class="i18n"
-                                                name="i_name"></label>
-                                            <input type="text" id="main_name" style="width:70%;">
-                                        </p>
-                                        <p><label for="main_department" style="margin-right:48px;" class="i18n"
-                                                name="i_dept"></label>
-                                            <input type="text" id="main_department" style="width:50%;" readonly />
+
+                            <div style="display:flex">
+                                <table class="noborder-block" style="width:55%;">
+                                    <tr>
+                                        <td><label for="main_number" class="i18n" name="i_number"></label></td>
+                                        <td><input type="text" id="main_number" style="width:100%;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="main_name" class="i18n" name="i_name"></label></td>
+                                        <td> <input type="text" id="main_name" style="width:100%;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="main_department" class="i18n" name="i_dept"></label></td>
+                                        <td><input type="text" id="main_department" style="width:120px;" readonly />
                                             <input type="button" id="btn_select_dept" class="i18n-input"
                                                 selectattr="value" selectname="i_select2" />
-                                            <input type="hidden" id="hidden_department" value="" />
-                                        </p>
-                                        <p><label for="main_jobTitle" style="margin-right:48px;" class="i18n"
-                                                name="i_jobTitle"></label>
-                                            <input type="text" id="main_jobTitle" style="width:50%;" readonly />
+                                            <input type="hidden" id="hidden_department" value="" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="main_jobTitle" class="i18n" name="i_jobTitle"></label></td>
+                                        <td><input type="text" id="main_jobTitle" style="width:120px;" readonly />
                                             <input type="button" id="btn_select_title" class="i18n-input"
                                                 selectattr="value" selectname="i_select2" />
-                                            <input type="hidden" id="hidden_jobTitle" value="" />
-                                        </p>
-                                        <p><label for="main_type" style="margin-right:19px;" class="i18n"
-                                                name="i_userType"></label>
-                                            <select id="main_type"></select>
-                                        </p>
-                                    </td>
-                                    <td style="width:45%;">
-                                        <div id="main_picture">
-                                            <div class="thumb-block" id="main_picture_block">
-                                                <img id="main_picture_img" class="image-style">
+                                            <input type="hidden" id="hidden_jobTitle" value="" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="main_type" class="i18n" name="i_userType"></label></td>
+                                        <td><select id="main_type"></select></td>
+                                    </tr>
+                                </table>
+
+                                <table class="noborder-block" style="width:45%; float: right;">
+                                    <tr>
+                                        <td>
+                                            <div id="main_picture">
+                                                <div class="thumb-block" id="main_picture_block">
+                                                    <img id="main_picture_img" class="image-style">
+                                                </div>
+                                                <span style="margin-right:10px;">
+                                                    <label for="main_picture_upload"
+                                                        class="custom-file-download i18n-input" selectattr="title"
+                                                        selectname="i_selectImage">
+                                                        <img src="../image/add-image.png"
+                                                            style="max-width:20px;"></label>
+                                                    <input type="file" id="main_picture_upload"
+                                                        accept=".png,.jpg,.jpeg">
+                                                </span>
+                                                <span>
+                                                    <label for="main_picture_clear"
+                                                        class="custom-file-download i18n-input" selectattr="title"
+                                                        selectname="i_clearImage">
+                                                        <img src="../image/delete.png" style="max-width:20px;"></label>
+                                                    <input type="button" id="main_picture_clear" class="image-btn">
+                                                </span>
                                             </div>
-                                            <span style="margin-right:10px;">
-                                                <label for="main_picture_upload" class="custom-file-download i18n-input"
-                                                    selectattr="title" selectname="i_selectImage">
-                                                    <img src="../image/add-image.png" style="max-width:20px;"></label>
-                                                <input type="file" id="main_picture_upload" accept=".png,.jpg,.jpeg">
-                                            </span>
-                                            <span>
-                                                <label for="main_picture_clear" class="custom-file-download i18n-input"
-                                                    selectattr="title" selectname="i_clearImage">
-                                                    <img src="../image/delete.png" style="max-width:20px;"></label>
-                                                <input type="button" id="main_picture_clear" class="image-btn">
-                                            </span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
                             <table class="noborder-block">
                                 <tr>
-                                    <td style="width:80px;"><label for="main_select_tag_color" class="i18n"
-                                            name="i_drawType"></label></td>
-                                    <td>
-                                        <select id="main_select_tag_color"></select>
-                                        <label style="margin: 0px 10px 0px 40px;" class="i18n"
-                                            name="i_assignColor"></label>
-                                        <label for="main_input_tag_color" class="custom-file-download">
+                                    <td><label for="main_select_tag_color" class="i18n" name="i_drawType"></label></td>
+                                    <td><select id="main_select_tag_color"></select></td>
+                                    <td><label class="i18n" name="i_assignColor"></label></td>
+                                    <td><label for="main_input_tag_color" class="custom-file-download">
                                             <img src="../image/palette.png" style="max-width:20px;">
                                         </label>
                                         <input type="hidden" class="palette" id="main_input_tag_color"
@@ -235,26 +247,21 @@
                                         <input type="text" id="main_display_color" style="max-width:30px;" readonly>
                                     </td>
                                 </tr>
-                            </table>
-                            <table class="noborder-block">
                                 <tr>
-                                    <td style="width:80px;"><label for="main_alarm_group" class="i18n"
-                                            name="i_alarmGroup"></label></td>
+                                    <td><label for="main_alarm_group" class="i18n" name="i_alarmGroup"></label></td>
                                     <td><select id="main_alarm_group"></select></td>
                                 </tr>
                             </table>
                         </div>
-                        <div class="tab-pane fade" id="basicData" class="ui-widget ui-widget-content">
+                        <div class="tab-pane fade" id="basicData">
                             <table class="noborder-block">
                                 <tr>
                                     <td style="width:80px;">
                                         <label for="basic_state" class="i18n" name="i_workState"></label></td>
-                                    <td><select id="basic_state"></select>
-                                    </td>
+                                    <td><select id="basic_state"></select></td>
                                     <td style="width:80px;">
                                         <label for="basic_gender" class="i18n" name="i_gender"></label></td>
-                                    <td><select id="basic_gender"></select>
-                                    </td>
+                                    <td><select id="basic_gender"></select></td>
                                 </tr>
                                 <tr>
                                     <td><label for="basic_last_name" class="i18n" name="i_lastName"></label></td>
@@ -339,6 +346,17 @@
                         <label class="selected-node-group" id="select_node_title"></label>
                         <input type="text" id="selected-node" class="selected-node-group" readonly>
                     </div>
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+        <div id="dialog_repeat_question" title="Number is repeat">
+            <form>
+                <fieldset style="text-align: center;">
+                    <button class="btn btn-primary" id="btn_repeat_cover">覆蓋</button>
+                    <button class="btn btn-primary" id="btn_repeat_delete">刪除</button>
+                    <button class="btn btn-primary" id="btn_repeat_all_cover">全部覆蓋</button>
+                    <button class="btn btn-primary" id="btn_repeat_all_delete">全部刪除</button>
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                 </fieldset>
             </form>

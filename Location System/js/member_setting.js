@@ -1,4 +1,5 @@
 var default_color = '#2eb82e';
+var memberArray = [];
 var deptColorArray = [];
 var titleColorArray = [];
 var userTypeColorArray = [];
@@ -104,9 +105,23 @@ $(function () {
         $("#select_node_title").text($.i18n.prop('i_selectJobtitle') + ' : ');
         $("#dialog_tree_chart").dialog("open");
     });
+    $("#excel_export").click(function () {
+        $("#dvjson").excelexportjs({
+            containerid: "dvjson",
+            datatype: 'json',
+            dataset: memberArray,
+            columns: getColumns(memberArray),
+            worksheetName: "Member Data"
+        });
+    });
 });
 
-
+function checkUndefined(data) {
+    if (data && typeof (data) != 'undefined')
+        return data;
+    else
+        return "";
+}
 
 function UpdateMemberList() {
     var getAlarmGroupReq = {
@@ -136,7 +151,8 @@ function UpdateMemberList() {
                         var revObj = JSON.parse(this.responseText);
                         if (revObj.success > 0) {
                             $("#table_member_setting tbody").empty(); //先重置表格
-                            var memberArray = revObj.Values;
+                            //var memberArray = revObj.Values;
+                            memberArray = revObj.Values.slice(0);
                             if (memberArray) {
                                 for (var i = 0; i < memberArray.length; i++) {
                                     var tr_id = "tr_member_" + i;
@@ -148,8 +164,8 @@ function UpdateMemberList() {
                                     $("#table_member_setting tbody").append("<tr id=\"" + tr_id + "\">" +
                                         "<td><input type=\"checkbox\" name=\"chkbox_members\" value=\"" + number +
                                         "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (i + 1) + "</td>" +
-                                        "<td>" + memberArray[i].tag_id + "</td>" +
                                         "<td>" + number + "</td>" +
+                                        "<td>" + memberArray[i].tag_id + "</td>" +
                                         "<td>" + memberArray[i].Name + "</td>" +
                                         "<td>" + memberArray[i].department + "</td>" +
                                         "<td>" + memberArray[i].jobTitle + "</td>" +
@@ -174,7 +190,6 @@ function UpdateMemberList() {
     };
     getXmlHttp.send(JSON.stringify(getAlarmGroupReq));
 }
-
 
 
 function editMemberData(number) {

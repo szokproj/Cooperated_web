@@ -6,7 +6,7 @@
  * 																*
 ****************************************************************/
 body,html{font-weight: bold;font-family: 'Microsoft JhengHei', 'sans-serif';}
-.sidebar ul li.active a,.sidebar ul li:hover a{background: rgb(128, 192, 201)}
+.sidebar ul li.active a,.sidebar ul li:hover a{background: rgb(107, 178, 185)}
 .sidebar>.nav>li.active{border-left: 3px solid rgb(255, 234, 189)}
 .menu{z-index: 1000;position: fixed;width: 52px;top: 0;left: 0;bottom: 0;line-height: 2.5;-webkit-backface-visibility: hidden;-moz-backface-visibility: hidden;backface-visibility: hidden;background-color: rgb(0, 0, 0);-webkit-transition: width .2s cubic-bezier(.35,0,.25,1),translate .2s cubic-bezier(.35,0,.25,1);-o-transition: width .2s cubic-bezier(.35,0,.25,1),translate .2s cubic-bezier(.35,0,.25,1);transition: width .2s cubic-bezier(.35,0,.25,1),translate .2s cubic-bezier(.35,0,.25,1)}
 .menu .menu-left{background: rgb(0, 0, 0);transition: .5s;height: 100%;width: 52px;overflow: hidden}
@@ -33,4 +33,4 @@ body,html{font-weight: bold;font-family: 'Microsoft JhengHei', 'sans-serif';}
 
 /* custom */
 .sidebar ul .excel a  {background: transparent}
-.sidebar ul .excel:hover a {background: rgb(128, 192, 201)}
+.sidebar ul .excel:hover a {background: rgb(107, 178, 185)}

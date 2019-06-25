@@ -386,6 +386,8 @@ function setSize() {
 }
 
 function restoreCanvas() {
+    if (!canvasImg.isPutImg)
+        return;
     var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
     var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
     xleftView = 0;
@@ -993,7 +995,7 @@ function StartClick() {
             isStart = true;
             requestArray.Value = "Start";
             document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-pause\">" +
-                "</i><span>" + $.i18n.prop('stop') + "</span>";
+                "</i><span>" + $.i18n.prop('i_stop') + "</span>";
             //設定計時器
             //pageTimer["timer1"] = setInterval("autoSendRequest()", delaytime);
             pageTimer["timer1"] = setTimeout(function request() {
@@ -1004,7 +1006,7 @@ function StartClick() {
             isStart = false;
             requestArray.Value = "Stop";
             document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\">" +
-                "</i><span>" + $.i18n.prop('start') + "</span>";
+                "</i><span>" + $.i18n.prop('i_start') + "</span>";
             for (var each in pageTimer) {
                 //clearInterval(pageTimer[each]);
                 clearTimeout(pageTimer[each]);
