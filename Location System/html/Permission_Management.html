@@ -1,0 +1,386 @@
+<!--Permission management page, only the Administrator can enter-->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title class="i18n" name='i_pageTitle'>Location System</title>
+    <meta id="i18n_pagename" content="common">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--BootStrap3-->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!--JQuery庫-->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Add icon library -->
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'
+        integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+    <!-- Icon Navbar-->
+    <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
+    <!--Edit css-->
+    <style>
+        .container {
+            width: 100%;
+            height: 100%;
+            font-weight: bold;
+            font-family: 'Microsoft JhengHei', 'sans-serif';
+        }
+
+        .row {
+            margin-left: 40px;
+        }
+
+        .nav-tabs {
+            margin: 10px 0px 0px 50px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            font-weight: bold;
+            font-family: 'Microsoft JhengHei', 'sans-serif';
+            border: 1px solid rgb(219, 219, 219);
+            padding: 5px;
+        }
+
+        thead th {
+            background-color: rgb(211, 211, 211);
+
+            text-align: center;
+        }
+
+        label {
+            font-weight: bold;
+            font-family: 'Microsoft JhengHei', 'sans-serif';
+        }
+
+        input[type="file"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        .table-hover {
+            cursor: pointer;
+        }
+
+        .table-line tr:hover {
+            background-color: rgb(179, 215, 238);
+            cursor: pointer;
+        }
+
+        .table-line th {
+            border: 1px solid rgb(0, 105, 175);
+            background: rgb(1, 79, 131);
+            color: white;
+            text-align: center;
+        }
+
+        .table-line td {
+            border: 1px solid rgb(0, 105, 175);
+        }
+
+
+        .noborder-block {
+            border: none;
+            padding: 0px;
+        }
+
+        .noborder-block th,
+        .noborder-block td {
+            border: none;
+        }
+
+        .btn-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="../js/general_functions.js"></script>
+    <script type="text/javascript" src="../js/permission_manage.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <aside class="menu">
+            <div class="menu-left">
+                <nav class="sidebar">
+                    <ul class="nav">
+                        <li><a href="../index.html">
+                                <i class="fas fa-satellite-dish"></i><span class="i18n" name="homePage"></span></a></li>
+                        <li><a href="../Member_Setting.html">
+                                <i class="fas fa-user-cog"></i><span class="i18n" name="member_settingPage"></span></a>
+                        </li>
+                        <li class="active"><a href="#">
+                                <i class="fas fa-route"></i><span class="i18n" name="timelinePage"></span></a></li>
+                        <li><a href="../Map_Setting.html">
+                                <i class="fas fa-map"></i><span class="i18n" name="map_settingPage"></span></a></li>
+                        <li><a href="../Anchor_Setting.html">
+                                <i class="fas fa-anchor"></i><span class="i18n" name="anchor_settingPage"></span></a>
+                        </li>
+                        <li><a href="../Alarm_Setting.html">
+                                <i class="fas fa-bell" style="padding-left:2px;"></i><span class="i18n"
+                                    name="alarm_settingPage"></span></a></li>
+                        <li><a href="../Reference.html">
+                                <i class="fas fa-cogs"></i><span class="i18n" name="advance_settingPage"></span></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div style="float:right;">
+                    <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
+                    <select id="language" style="margin-top:5px;">
+                        <option value="en">English</option>
+                        <option value="zh-TW">繁體中文</option>
+                        <option value="zh-CN">简体中文</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Web content -->
+        <div class="row">
+            <div class="col-lg-8" style="background-color:white;">
+                <table class="table-line" id="table_account">
+                    <thead>
+                        <tr>
+                            <th>Account</th>
+                            <th>Password</th>
+                            <th>Permission</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>a123</td>
+                            <td>123456</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>bewr</td>
+                            <td>asd45689</td>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td>frbee</td>
+                            <td>erw9835</td>
+                            <td>3</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+            </div>
+            <div class="col-lg-4" style="background-color:white;">
+                <table class="table table-hover" id="table_permission">
+                    <thead>
+                        <tr>
+                            <th>Permission</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--<ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab" href="#tab_account_manage" class="i18n" name="i_accountManage"></a></li>
+            <li><a data-toggle="tab" href="#tab_permission_manage" class="i18n" name="i_permissionManage"></a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="tab_account_manage" class="tab-pane fade in active">
+                <div class="row">
+                    <div class="col-lg-12" style="background-color:white;">
+
+                    </div>
+                </div>
+            </div>
+            <div id="tab_permission_manage" class="tab-pane fade">
+                <div class="row">
+                    <div class="col-lg-12" style="background-color:white;">
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        -->
+    </div>
+
+    <!-- Hidden Dialog -->
+    <div id="dialog_account_setting" title="Set Account Information">
+        <form>
+            <fieldset style="text-align: left;">
+                <table id="table_account_setting" class="noborder-block">
+                    <tr>
+                        <td><span class="i18n" name="i_account"></span> : </td>
+                        <td><input type="text" id="edit_account" /></td>
+                    </tr>
+                    <tr>
+                        <td><span class="i18n" name="i_password"></span> : </td>
+                        <td><input type="text" id="edit_password" /></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="checkbox" id="edit_setnewpass" />
+                            <span class="i18n" name="i_setNewPass"></span></td>
+                    </tr>
+                    <tr id="tr_newpassword">
+                        <td><span class="i18n" name="i_newPassword"></span> : </td>
+                        <td><input type="text" id="edit_newpassword" /></td>
+                    </tr>
+                    <tr>
+                        <td><span class="i18n" name="i_permission"></span> : </td>
+                        <td><select id="edit_permission">
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                            </select></td>
+                    </tr>
+                </table>
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </fieldset>
+        </form>
+    </div>
+    <div id="dialog_permission_setting" title="Set Permission">
+        <form>
+            <label class="i18n" name="i_addPermission"></label> : <input type="text" id="permission_name" />
+            <br><br>
+            <fieldset style="text-align: left;">
+                <table id="table_permission_setting" class="ui-widget ui-widget-content">
+                    <thead>
+                        <tr class="ui-widget-header">
+                            <th class="i18n" name="i_pageName"></th>
+                            <th class="i18n" name="i_pageHtml"></th>
+                            <th class="i18n" name="i_operate"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" id="chkbox_permission_1" name="chkbox_permission"
+                                    value="radio_permission_1" />
+                                <span class="i18n" name="homePage"></span></td>
+                            <td>index.html</td>
+                            <td>
+                                <input type="radio" name="radio_permission_1" value="readOnly" />
+                                <span class="i18n" name="i_readOnly"></span><br>
+                                <input type="radio" name="radio_permission_1" value="readAndWrite" />
+                                <span class="i18n" name="i_readAndWrite"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" id="chkbox_permission_2" name="chkbox_permission"
+                                    value="radio_permission_2" />
+                                <span class="i18n" name="member_settingPage"></span></td>
+                            <td>Member_Setting.html</td>
+                            <td>
+                                <input type="radio" name="radio_permission_2" value="readOnly" />
+                                <span class="i18n" name="i_readOnly"></span><br>
+                                <input type="radio" name="radio_permission_2" value="readAndWrite" />
+                                <span class="i18n" name="i_readAndWrite"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" id="chkbox_permission_3" name="chkbox_permission"
+                                    value="radio_permission_3" />
+                                <span class="i18n" name="timelinePage"></span></td>
+                            <td>Timeline.html</td>
+                            <td>
+                                <input type="radio" name="radio_permission_3" value="readOnly" />
+                                <span class="i18n" name="i_readOnly"></span><br>
+                                <input type="radio" name="radio_permission_3" value="readAndWrite" />
+                                <span class="i18n" name="i_readAndWrite"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" id="chkbox_permission_4" name="chkbox_permission"
+                                    value="radio_permission_4" />
+                                <span class="i18n" name="map_settingPage"></span></td>
+                            <td>Map_Setting.html</td>
+                            <td>
+                                <input type="radio" name="radio_permission_4" value="readOnly" />
+                                <span class="i18n" name="i_readOnly"></span><br>
+                                <input type="radio" name="radio_permission_4" value="readAndWrite" />
+                                <span class="i18n" name="i_readAndWrite"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" id="chkbox_permission_5" name="chkbox_permission"
+                                    value="radio_permission_5" />
+                                <span class="i18n" name="anchor_settingPage"></span></td>
+                            <td>Anchor_Setting.html</td>
+                            <td><input type="radio" name="radio_permission_5" value="readOnly" />
+                                <span class="i18n" name="i_readOnly"></span><br>
+                                <input type="radio" name="radio_permission_5" value="readAndWrite" />
+                                <span class="i18n" name="i_readAndWrite"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" id="chkbox_permission_6" name="chkbox_permission"
+                                    value="radio_permission_6" />
+                                <span class="i18n" name="alarm_settingPage"></span></td>
+                            <td>Alarm_Setting.html</td>
+                            <td>
+                                <input type="radio" name="radio_permission_6" value="readOnly" />
+                                <span class="i18n" name="i_readOnly"></span><br>
+                                <input type="radio" name="radio_permission_6" value="readAndWrite" />
+                                <span class="i18n" name="i_readAndWrite"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" id="chkbox_permission_7" name="chkbox_permission"
+                                    value="radio_permission_7" />
+                                <span class="i18n" name="advance_settingPage"></span></td>
+                            <td>Advance_cmd.html</td>
+                            <td>
+                                <input type="radio" name="radio_permission_7" value="readOnly" />
+                                <span class="i18n" name="i_readOnly"></span><br>
+                                <input type="radio" name="radio_permission_7" value="readAndWrite" />
+                                <span class="i18n" name="i_readAndWrite"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </fieldset>
+        </form>
+    </div>
+    <!-- i18n 多語言翻譯 -->
+    <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
+    <script type="text/javascript" src="../js/i18n/language.js"></script>
+    <!-- i18n -->
+</body>
+
+</html>

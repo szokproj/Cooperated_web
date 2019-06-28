@@ -34,12 +34,6 @@ var isFocus = true,
     focusAlarmIndex = -1,
     focusAlarmTag_ID = "";
 
-/*var alarm_image = {
-    isOnload: false,
-    image: new Image(),
-    size: 0
-};*/
-
 
 window.addEventListener("load", setup, false);
 
@@ -64,12 +58,6 @@ function setup() {
     cvsBlock.addEventListener("mousewheel", handleMouseWheel, false); // 畫面縮放
     cvsBlock.addEventListener("DOMMouseScroll", handleMouseWheel, false); // 畫面縮放(for Firefox)
 
-    //設定並載入alarmTag圖案
-    /*alarm_image.image.src = '../image/alarm_dot.png';
-    alarm_image.image.onload = function () {
-        alarm_image.isOnload = true;
-        alarm_image.size = alarm_image.image.height / alarm_image.image.width;
-    }*/
 
 
     $(function () {
@@ -545,7 +533,7 @@ function updateAlarmList() {
                     items = i;
                     list += "<tr><td>" + (items + 1) +
                         "</td><td>" + revObj[i].tag_alarm_type +
-                        "</td><td>" + revObj[i].tag_id +
+                        "</td><td>" + parseInt(revObj[i].tag_id.substring(8), 16) +
                         "</td><td>" + revObj[i].tag_time +
                         "</td></tr>";
                 }
@@ -599,7 +587,7 @@ function updateAlarmList() {
                         "<td>" +
                         "<p>Number: " + (items + 1) + "</p>" +
                         "<p>Name: " + revObj[items].name + "</p>" +
-                        "<p>ID: " + revObj[items].tag_id + "</p>" +
+                        "<p>ID: " + parseInt(revObj[items].tag_id.substring(8), 16) + "</p>" +
                         "<p>Date: " + time_arr.date + "</p>" +
                         "<p>Time: " + time_arr.time + "</p>" +
                         "<p>Status: " + revObj[items].tag_alarm_type + "</p>" +
@@ -637,7 +625,7 @@ function updateAlarmList() {
                     $("#alarm_dialog_btn_focus").unbind();
                     $("#alarm_dialog_number").text(items + 1);
                     $("#alarm_dialog_name").text(revObj[items].name);
-                    $("#alarm_dialog_id").text(parseInt(revObj[items].tag_id, 16));
+                    $("#alarm_dialog_id").text(parseInt(revObj[items].tag_id.substring(8), 16));
                     $("#alarm_dialog_date").text(time_arr.date);
                     $("#alarm_dialog_time").text(time_arr.time);
                     $("#alarm_dialog_status").text(revObj[items].tag_alarm_type);
@@ -697,9 +685,9 @@ function updateTagList() {
 
                     //update member list
                     tbody.append("<tr><td>" + (i + 1) +
+                        "</td><td>" + revObj[i].tag_id +
                         "</td><td>" + revObj[i].number +
                         "</td><td>" + revObj[i].Name +
-                        "</td><td>" + revObj[i].tag_id +
                         "</td></tr>");
                 }
 

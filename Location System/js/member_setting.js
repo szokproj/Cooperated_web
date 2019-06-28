@@ -12,6 +12,33 @@ var educationArr = ['PrimarySchool', 'MiddleSchool', 'HighSchool', 'JuniorSchool
 
 
 $(function () {
+    /**
+     * Check this page's permission and load navbar
+     */
+    var permission = getPermissionOfPage("Member_Setting");
+    switch (permission) {
+        case "":
+            alert("No permission");
+            history.back();
+            break;
+        case "R":
+            $("#add_col").attr("disabled", true);
+            $("#delete_col").attr("disabled", true);
+            $("#multi_edit").attr("disabled", true);
+            //$("#excel_import").attr("disabled", true);
+            break;
+        case "RW":
+            break;
+        default:
+            alert("網頁錯誤，將跳回上一頁");
+            history.back();
+            break;
+    }
+    setNavBar("Member_Setting", "Member_Setting");
+
+    /**
+     * this page's js start
+     */
     UpdateMemberList();
     //Set deptColorArray
     var deptXmlHttp = createJsonXmlHttp('sql');
@@ -60,6 +87,18 @@ $(function () {
         "Command_Type": ["Read"],
         "Command_Name": ["GetUserTypes"]
     }));
+    $("#selectAll").change(function () {
+        var checks = document.getElementsByName("chkbox_members");
+        if ($(this).prop("checked")) {
+            $("input[name='chkbox_members']").prop("checked", true);
+            for (i in checks)
+                $("#tr_member_" + i).addClass("changeBgColor");
+        } else {
+            $("input[name='chkbox_members']").prop("checked", false);
+            for (i in checks)
+                $("#tr_member_" + i).removeClass("changeBgColor");
+        }
+    });
     $("#main_type").change(function () {
         var type = typeof ($(this).val()) != 'undefined' ? $(this).val() : "";
         var index = $("#main_select_tag_color").children('option:selected').index();
@@ -80,21 +119,13 @@ $(function () {
         valid = valid && checkImageSize(file); //" KB"
         if (valid)
             transBase64(file);
-        else
-            return;
     });
     $("#main_picture_clear").click(function () {
         $("#main_picture_img").attr('src', '');
     });
-    $("#add_col").click(function () {
-        addMemberData();
-    });
-    $("#delete_col").click(function () {
-        removeMemberDatas();
-    });
-    $("#multi_edit").click(function () {
-        multiEditData();
-    });
+    $("#add_col").click(addMemberData);
+    $("#delete_col").click(removeMemberDatas);
+    $("#multi_edit").click(multiEditData);
     $("#btn_select_dept").click(function () {
         createChart("dept");
         $("#select_node_title").text($.i18n.prop('i_selectDept') + ' : ');
@@ -104,6 +135,14 @@ $(function () {
         createChart("jobTitle");
         $("#select_node_title").text($.i18n.prop('i_selectJobtitle') + ' : ');
         $("#dialog_tree_chart").dialog("open");
+    });
+    $("#excel_import").change(function () {
+        var permission = getPermissionOfPage("member_settingPage");
+        if (permission == "RW") {
+            importf(this);
+        } else {
+            alert("No write permission!")
+        }
     });
     $("#excel_export").click(function () {
         $("#dvjson").excelexportjs({
@@ -156,6 +195,7 @@ function UpdateMemberList() {
                             if (memberArray) {
                                 for (var i = 0; i < memberArray.length; i++) {
                                     var tr_id = "tr_member_" + i;
+                                    var user_id = parseInt(memberArray[i].tag_id.substring(8), 16);
                                     var number = memberArray[i].number;
                                     var alarm_index = alarmGroupArr.findIndex(function (array) {
                                         return array.id == memberArray[i].alarm_group_id;
@@ -165,7 +205,7 @@ function UpdateMemberList() {
                                         "<td><input type=\"checkbox\" name=\"chkbox_members\" value=\"" + number +
                                         "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (i + 1) + "</td>" +
                                         "<td>" + number + "</td>" +
-                                        "<td>" + memberArray[i].tag_id + "</td>" +
+                                        "<td>" + user_id + "</td>" +
                                         "<td>" + memberArray[i].Name + "</td>" +
                                         "<td>" + memberArray[i].department + "</td>" +
                                         "<td>" + memberArray[i].jobTitle + "</td>" +
@@ -206,7 +246,8 @@ function editMemberData(number) {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
                 var revInfo = revObj.Values[0]
-                $("#main_tag_id").val(revInfo.tag_id);
+                $("#main_tid_id").val(parseInt(revInfo.tag_id.substring(0, 8), 16));
+                $("#main_user_id").val(parseInt(revInfo.tag_id.substring(8), 16));
                 $("#main_card_id").val(revInfo.card_id);
                 $("#main_number").val(revInfo.number);
                 $("#main_name").val(revInfo.Name);
@@ -352,7 +393,8 @@ function adjustImageSize(src) {
 
 function addMemberData() {
     //restore all fields
-    $("#main_tag_id").val("");
+    $("#main_tid_id").val("");
+    $("#main_user_id").val("");
     $("#main_card_id").val("");
     $("#main_number").val("");
     $("#main_name").val("");

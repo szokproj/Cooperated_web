@@ -1,36 +1,3 @@
-$(function () {
-    var dialog, form;
-    dialog = $("#dialog_repeat_question").dialog({
-        autoOpen: false,
-        height: 170,
-        width: 350,
-        modal: true,
-        buttons: {
-            Cancel: function () {
-                coverArr = [];
-                addArr = [];
-                allCover = false;
-                allDelete = false;
-                form[0].reset();
-                allFields.removeClass("ui-state-error");
-                dialog.dialog("close");
-            }
-        },
-        close: function () {
-            coverArr = [];
-            addArr = [];
-            allCover = false;
-            allDelete = false;
-            form[0].reset();
-            allFields.removeClass("ui-state-error");
-        }
-    });
-
-    form = dialog.find("form").on("submit", function (event) {
-        event.preventDefault();
-    });
-});
-
 function excelImportTable(jsonData) {
     if (jsonData) {
         var coverArr = [];
@@ -77,17 +44,17 @@ function excelImportTable(jsonData) {
                     if (!isStop) {
                         if (addArr.length > 0) {
                             addArr.forEach(element => {
-                                setTimeout(function () {
-                                    sendMemberData("AddStaff", element);
-                                }, 10);
+                                //setTimeout(function () {
+                                sendMemberData("AddStaff", element);
+                                //}, 100);
                                 //sendMemberData("AddStaff", element);
                             });
                         }
                         if (coverArr.length > 0) {
                             coverArr.forEach(element => {
-                                setTimeout(function () {
-                                    sendMemberData("EditStaff", element);
-                                }, 10);
+                                //setTimeout(function () {
+                                sendMemberData("EditStaff", element);
+                                //}, 100);
                                 //sendMemberData("EditStaff", element);
                             });
                         }

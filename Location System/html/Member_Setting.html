@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title class="i18n" name='title'>Location System</title>
+    <title class="i18n" name='i_pageTitle'>Location System</title>
     <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- JQuery -->
@@ -30,6 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../css/member_setting_style.css">
     <!-- Edit js -->
     <script type="text/javascript" src="../js/general_functions.js"></script>
+    <script type="text/javascript" src="../js/check_permission.js"></script>
     <script type="text/javascript" src="../js/table_Page.js"></script>
     <script type="text/javascript" src="../js/palette.js"></script>
     <script type="text/javascript" src="../js/member_setting.js"></script>
@@ -45,7 +46,7 @@
 <body>
     <div class="container">
         <!--icon navbar-->
-        <aside class="menu">
+        <!--<aside class="menu">
             <div class="menu-left">
                 <nav class="sidebar">
                     <ul class="nav">
@@ -83,7 +84,8 @@
                     </ul>
                 </nav>
             </div>
-        </aside>
+        </aside>-->
+        <div id="navbarHtml"></div>
 
         <!-- 網頁內容 -->
         <div class="row" style="display:flex;">
@@ -101,7 +103,7 @@
                     <button id="delete_col" class="btn btn-danger i18n" name="i_delete"></button>
                     <button id="multi_edit" class="btn btn-primary i18n" name="i_batchEdit"></button>
                     <label for="excel_import" class="load-file i18n" name="i_excel_import"></label>
-                    <input type="file" id="excel_import" onchange="importf(this)" />
+                    <input type="file" id="excel_import" />
                     <label for="excel_export" class="load-file i18n" name="i_excel_export"></label>
                     <input type="button" id="excel_export" class="btn-hidden" />
                 </div>
@@ -109,10 +111,10 @@
                     <table class="table-line" id="table_member_setting">
                         <thead>
                             <tr>
-                                <th><input type="checkbox" id="selectAll" onchange="" /> <span class="i18n"
-                                        name="i_item"></span></th>
+                                <th><input type="checkbox" id="selectAll" onchange="" />
+                                    <span class="i18n" name="i_item"></span></th>
                                 <th class="i18n" name="i_number"></th>
-                                <th class="i18n" name="i_tagID"></th>
+                                <th class="i18n" name="i_userID"></th>
                                 <th class="i18n" name="i_name"></th>
                                 <th class="i18n" name="i_dept"></th>
                                 <th class="i18n" name="i_jobTitle"></th>
@@ -163,11 +165,15 @@
                     <div id="setTabContent" class="tab-content">
                         <div class="tab-pane fade in active" id="mainData">
                             <table class="noborder-block">
+                                <!--TagID由TID與EPC(UserID)合成 -->
                                 <tr>
-                                    <td style="width:80px;"><label for="main_tag_id" class="i18n"
-                                            name="i_tagID"></label></td>
-                                    <td><input type="text" id="main_tag_id" style="width:100%;"></td>
-                                    <!--TagID是綁定資料的依據，故不得進行編輯，只可讀取-->
+                                    <td style="width:90px;"><label for="main_tid_id" class="i18n"
+                                            name="i_tidID"></label></td>
+                                    <td><input type="text" id="main_tid_id" style="width:100%;"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="main_user_id" class="i18n" name="i_userID"></label></td>
+                                    <td><input type="text" id="main_user_id" style="width:100%;"></td>
                                 </tr>
                                 <tr>
                                     <td><label for="main_card_id" class="i18n" name="i_cardID"></label></td>
@@ -312,7 +318,6 @@
                             <textarea id="note_text" style="width:100%; height:410px; overflow:auto"></textarea>
                         </div>
                     </div>
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                 </fieldset>
             </form>
         </div>
@@ -346,17 +351,6 @@
                         <label class="selected-node-group" id="select_node_title"></label>
                         <input type="text" id="selected-node" class="selected-node-group" readonly>
                     </div>
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
-        <div id="dialog_repeat_question" title="Number is repeat">
-            <form>
-                <fieldset style="text-align: center;">
-                    <button class="btn btn-primary" id="btn_repeat_cover">覆蓋</button>
-                    <button class="btn btn-primary" id="btn_repeat_delete">刪除</button>
-                    <button class="btn btn-primary" id="btn_repeat_all_cover">全部覆蓋</button>
-                    <button class="btn btn-primary" id="btn_repeat_all_delete">全部刪除</button>
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                 </fieldset>
             </form>

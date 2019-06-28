@@ -11,6 +11,37 @@ aside button {
     outline: none;
 }
 
+.nav-tabs a,
+.tab-pane th,
+.tab-pane td {
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+.sidebar-table {
+    overflow: auto;
+    max-width: 300px;
+    margin: 10px 10px 0px 0px;
+}
+
+.sidebar-table thead {
+    background-color: rgb(211, 211, 211);
+}
+
+.member-table {
+    height: 615px;
+    max-height: 615px;
+}
+
+.alarm-table {
+    height: 646px;
+    max-height: 646px;
+}
+
+.search-table {
+    height: 600px;
+    max-height: 600px;
+}
+
 .page-main {
     position: relative;
 }

@@ -155,7 +155,8 @@ function getBase64Ext(urldata) {
 
 $(function () {
     var dialog, form,
-        main_tag_id = $("#main_tag_id"),
+        main_tid_id = $("#main_tid_id"),
+        main_user_id = $("#main_user_id"),
         main_card_id = $("#main_card_id"),
         main_number = $("#main_number"),
         main_name = $("#main_name"),
@@ -163,24 +164,33 @@ $(function () {
         main_title = $("#main_jobTitle"),
         main_type = $("#main_type"),
         main_alarm_group = $("#main_alarm_group"),
-        allFields = $([]).add(main_tag_id).add(main_card_id).add(main_number).add(main_name)
+        allFields = $([]).add(main_tid_id).add(main_user_id).add(main_number).add(main_name)
         .add(main_dept).add(main_title).add(main_type).add(main_alarm_group);
     //tips = $( ".validateTips" );
 
     $("#main_select_tag_color").change(selectTagColor);
 
     var SendResult = function () {
-        allFields.removeClass("ui-state-error");
+        var permission = getPermissionOfPage("member_settingPage");
+        if (permission != "RW"){
+            alert("No write permission!")
+            return;
+        }
+
         var valid = true,
             photo_ext = "",
             photo_base64 = "";
-        valid = valid && checkLength(main_tag_id, "main set", 1, 20);
-        valid = valid && checkLength(main_number, "main set", 1, 50);
-        valid = valid && checkLength(main_name, "main set", 1, 50);
-        valid = valid && checkLength(main_dept, "main set", 1, 50);
-        valid = valid && checkLength(main_title, "main set", 1, 50);
-        valid = valid && checkLength(main_type, "main set", 1, 50);
-        valid = valid && checkLength(main_alarm_group, "main set", 1, 50);
+        allFields.removeClass("ui-state-error");
+        valid = valid && checkLength(main_tid_id, $.i18n.prop('i_alertError_10'), 1, 10);
+        valid = valid && checkLength(main_user_id, $.i18n.prop('i_alertError_10'), 1, 10);
+        valid = valid && checkLength(main_number, $.i18n.prop('i_alertError_10'), 1, 50);
+        valid = valid && checkLength(main_name, $.i18n.prop('i_alertError_10'), 1, 50);
+        valid = valid && checkLength(main_dept, $.i18n.prop('i_alertError_10'), 1, 50);
+        valid = valid && checkLength(main_title, $.i18n.prop('i_alertError_10'), 1, 50);
+        valid = valid && checkLength(main_type, $.i18n.prop('i_alertError_10'), 1, 50);
+        valid = valid && checkLength(main_alarm_group, $.i18n.prop('i_alertError_10'), 1, 50);
+
+        var tag_id = combineToTagID(main_tid_id.val(), main_user_id.val());
 
         if ($("#main_picture_img").attr("src").length > 0) {
             var photo_file = $("#main_picture_img").attr("src").split(",");
@@ -197,7 +207,7 @@ $(function () {
                 "Command_Name": command_name,
                 "Value": [{
                     "number": main_number.val(),
-                    "tag_id": main_tag_id.val(),
+                    "tag_id": tag_id,
                     "card_id": main_card_id.val(),
                     "Name": main_name.val(),
                     "department_id": $("#hidden_department").val(),
@@ -264,8 +274,17 @@ $(function () {
         }
     });
 
-    form = dialog.find("form").on("submit", function (event) {
-        event.preventDefault();
-        SendResult();
-    });
+    form = dialog.find("form");
 });
+
+function combineToTagID(tid_id, user_id) {
+    var tid_hex = parseInt(tid_id, 10).toString(16).toUpperCase(),
+        tid_zero = "",
+        user_hex = parseInt(user_id, 10).toString(16).toUpperCase(),
+        user_zero = "";
+    for (var i = 0; i < 8 - tid_hex.length; i++)
+        tid_zero += "0";
+    for (var j = 0; j < 8 - user_hex.length; j++)
+        user_zero += "0";
+    return tid_zero + tid_hex + user_zero + user_hex;
+}

@@ -255,26 +255,6 @@ thead th {
     font-size: 12px;
 }
 
-.nav-tabs a,
-.tab-pane th,
-.tab-pane td {
-    font-family: 'Microsoft JhengHei', 'sans-serif';
-}
-
-.sidebar-table {
-    overflow: auto;
-    width: 300px;
-    max-width: 300px;
-    height: 700px;
-    max-height: 700px;
-    margin: 10px 10px 0px 0px;
-}
-
-.sidebar-table table{
-    width: 500px;
-    height: 700px;
-}
-
 .coordinate {
     background-color: white;
     max-width: 100px;

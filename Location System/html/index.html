@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title class="i18n" name='title'>Location System</title>
+    <title class="i18n" name='i_pageTitle'></title>
     <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Jquery庫 -->
@@ -20,13 +20,16 @@
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
     <!-- Edit css -->
-    <link rel="stylesheet" type="text/css" href="../css/jquery_right_side_nav.css">
-    <link rel="stylesheet" type="text/css" href="../css/alarm_sideBar.css">
-    <link rel="stylesheet" type="text/css" href="../css/index_style.css">
+    <link rel="stylesheet" type="text/css" href="../css/jquery_right_side_nav.css" />
+    <link rel="stylesheet" type="text/css" href="../css/alarm_sideBar.css" />
+    <link rel="stylesheet" type="text/css" href="../css/index_style.css" />
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.6/css/bootstrap-material-design.css" />-->
+    <!-- Edit js -->
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/sideBar.js"></script>
     <script type="text/javascript" src="../js/canvas_request.js"></script>
     <script type="text/javascript" src="../js/sidebar_search.js"></script>
+    <script type="text/javascript" src="../js/table_filter.js"></script>
     <!-- JQuery UI - Dialog -->
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -64,13 +67,10 @@
                                 <span class="i18n" name="i_alarmList"></span></a></li>
                         <li class="taglist"><a href="javascript: tagSidebarMove();">
                                 <i class="fas fa-map-marker-alt" style="padding-left:2px;"></i><span class="i18n"
-                                    name="i_tagList"></span></a>
-                        </li>
-                        </li>
+                                    name="i_tagList"></span></a></li>
                         <li class="start"><a href="javascript: StartClick();" id="btn_start">
                                 <i class="fas fa-play" style="padding-left:2px;"></i><span class="i18n"
                                     name="i_start"></span></a></li>
-                        </li>
                     </ul>
                 </nav>
             </div>
@@ -150,14 +150,17 @@
                             </ul>
                             <div id="sidebarRightTabContent" class="tab-content">
                                 <div class="tab-pane fade in active" id="sidebar_right_member">
-                                    <div class="sidebar-table">
-                                        <table id="table_rightbar_member_list" class="ui-widget ui-widget-content">
+                                    <span class="i18n" name="i_search"></span>：<input type="search"
+                                        class="light-table-filter i18n-input" data-table="order-table"
+                                        selectattr="placeholder" selectname="i_inputKeyword">
+                                    <div class="sidebar-table member-table">
+                                        <table id="table_rightbar_member_list" style="width: 500px;">
                                             <thead>
-                                                <tr class="ui-widget-header">
+                                                <tr>
                                                     <th class="i18n" name="i_item"></th>
+                                                    <th class="i18n" name="i_userID"></th>
                                                     <th class="i18n" name="i_number"></th>
                                                     <th class="i18n" name="i_name"></th>
-                                                    <th class="i18n" name="i_tagID"></th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -165,14 +168,14 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="sidebar_right_alarm">
-                                    <div class="sidebar-table">
-                                        <table id="table_rightbar_alarm_list" class="ui-widget ui-widget-content">
+                                    <div class="sidebar-table alarm-table">
+                                        <table id="table_rightbar_alarm_list" style="width: 800px;">
                                             <thead>
-                                                <tr class="ui-widget-header">
+                                                <tr>
                                                     <th class="i18n" name="i_item"></th>
                                                     <th class="i18n" name="i_number"></th>
                                                     <th class="i18n" name="i_name"></th>
-                                                    <th class="i18n" name="i_tagID"></th>
+                                                    <th class="i18n" name="i_userID"></th>
                                                     <th class="i18n" name="i_alarmStatus"></th>
                                                     <th class="i18n" name="i_happenTime"></th>
                                                 </tr>
@@ -182,38 +185,37 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="sidebar_right_search">
-                                    <label class="i18n" name="i_searchType"> : </label>
+                                    <label class="i18n" name="i_searchType"></label> :
                                     <select id="search_select_type">
                                         <option class="i18n" name="i_group" value="group" selected="selected"></option>
-                                        <option class="i18n" name="i_tagID" value="tag_id"></option>
+                                        <option class="i18n" name="i_userID" value="user_id"></option>
                                         <option class="i18n" name="i_number" value="number"></option>
                                     </select>
                                     <br>
-                                    <label class="i18n" name="i_inputData"> : </label>
+                                    <label class="i18n" name="i_inputData"></label> :
                                     <input type="text" id="search_input_target">
                                     <br><br>
                                     <div style="text-align: center;">
-                                        <input type="button" id="search_start" value="搜尋">
+                                        <input type="button" id="search_start" class="i18n-input" selectattr="value"
+                                            selectname="i_search">
                                     </div>
                                     <br><br>
-                                    <div class="sidebar-table" style="max-height: 500px;">
-                                        <div style="width: 800px;">
-                                            <table id="table_sidebar_search" class="ui-widget ui-widget-content">
-                                                <thead>
-                                                    <tr class="ui-widget-header">
-                                                        <th class="i18n" name="i_tagID"></th>
-                                                        <th class="i18n" name="i_number"></th>
-                                                        <th class="i18n" name="i_name"></th>
-                                                        <th class="i18n" name="i_dept"></th>
-                                                        <th class="i18n" name="i_jobTitle"></th>
-                                                        <th class="i18n" name="i_userType"></th>
-                                                        <!--<th class="i18n" name="i_alarmGroup"></th>-->
-                                                        <th class="i18n" name="i_position"></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody></tbody>
-                                            </table>
-                                        </div>
+                                    <div class="sidebar-table search-table" style="max-height: 500px;">
+                                        <table id="table_sidebar_search" style="width: 700px;">
+                                            <thead>
+                                                <tr>
+                                                    <th class="i18n" name="i_userID"></th>
+                                                    <th class="i18n" name="i_number"></th>
+                                                    <th class="i18n" name="i_name"></th>
+                                                    <th class="i18n" name="i_dept"></th>
+                                                    <th class="i18n" name="i_jobTitle"></th>
+                                                    <th class="i18n" name="i_userType"></th>
+                                                    <!--<th class="i18n" name="i_alarmGroup"></th>-->
+                                                    <th class="i18n" name="i_position"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
