@@ -245,11 +245,19 @@ function Device_setting_write() {
             if (document.getElementsByName("network_setting_mode")[0].checked) { //DHCP
                 set_mode = "DHCP";
                 networkArray.Value.function = ["dev_Client_IP"];
+                //test
+                networkArray.Value.dev_IP = ["0", "0", "0", "0"];
+                networkArray.Value.dev_Mask = ["0", "0", "0", "0"];
+                networkArray.Value.dev_GW = ["0", "0", "0", "0"];
+                //end test
                 networkArray.Value.dev_Client_IP = client_ip;
-            } else { //Fixed IP
-                set_mode = "Fixed IP";
+            } else { //Static IP
+                set_mode = "Static IP";
                 if ($("#is_multiple_settings").is(":checked")) { //多選s
                     networkArray.Value.function = ["dev_Mask", "dev_GW", "dev_Client_IP"];
+                    //test
+                    networkArray.Value.dev_IP = ["0", "0", "0", "0"];
+                    //end test
                     networkArray.Value.dev_Mask = mask_address;
                     networkArray.Value.dev_GW = gateway_address;
                     networkArray.Value.dev_Client_IP = client_ip;

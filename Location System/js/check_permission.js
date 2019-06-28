@@ -77,8 +77,7 @@ function setNavBar(parent_page, child_page) {
     var navbar = new Navbar(permission_obj);
     if (parent_page != "") {
         navbar.setFirstFloor(parent_page);
-        if (child_page != "")
-            navbar.setSecondFloor(parent_page, child_page);
+        navbar.setSecondFloor(parent_page, child_page);
         navbar.loadNavbar();
     } else {
         alert("Loading navbar failed!");
@@ -205,10 +204,10 @@ function Navbar(permission_obj) {
     };
     this.loadNavbar = function () {
         navbarHtml += "</ul></nav></div></aside>";
-        $("#navbarHtml").html(navbarHtml);
+        $("#NavbarHtml").html(navbarHtml);
         if (parent_order > -1)
-            $("#navbarHtml ul.nav li").eq(parent_order).addClass("active").children("a").prop("href", "#");
+            $("#NavbarHtml ul.nav li").eq(parent_order).addClass("active").children("a").prop("href", "#");
         if (child_order > -1)
-            $("#navbarHtml ul.nav li").eq(child_order).addClass("active").children("a").prop("href", "#");
+            $("#NavbarHtml ul.nav li").eq(child_order).addClass("active").children("a").prop("href", "#");
     };
 }

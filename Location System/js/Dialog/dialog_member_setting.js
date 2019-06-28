@@ -171,8 +171,8 @@ $(function () {
     $("#main_select_tag_color").change(selectTagColor);
 
     var SendResult = function () {
-        var permission = getPermissionOfPage("member_settingPage");
-        if (permission != "RW"){
+        var permission = getPermissionOfPage("Member_Setting");
+        if (permission != "RW") {
             alert("No write permission!")
             return;
         }

@@ -1,4 +1,25 @@
 $(function () {
+    /**
+     * Check this page's permission and load navbar
+     */
+    var permission = getPermissionOfPage("Member_Setting");
+    switch (permission) {
+        case "":
+            alert("No permission");
+            history.back();
+            break;
+        case "R":
+            break;
+        case "RW":
+            break;
+        default:
+            alert("網頁錯誤，將跳回上一頁");
+            history.back();
+            break;
+    }
+    setNavBar("Member_Setting", "Job_Title_Setting");
+
+
     var size = 10;
     var default_color = '#2eb82e';
     var datascource = {

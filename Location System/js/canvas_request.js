@@ -34,8 +34,65 @@ var isFocus = true,
     focusAlarmIndex = -1,
     focusAlarmTag_ID = "";
 
+$(function () {
+    /**
+     * Check this page's permission and load navbar
+     */
+    var permission = getPermissionOfPage("index");
+    switch (permission) {
+        case "":
+            alert("No permission");
+            history.back();
+            break;
+        case "R":
+            break;
+        case "RW":
+            break;
+        default:
+            alert("網頁錯誤，將跳回上一頁");
+            history.back();
+            break;
+    }
+    setNavBar("index", "");
 
-window.addEventListener("load", setup, false);
+    //預設彈跳視窗載入後隱藏
+    $("#member_dialog").dialog({
+        autoOpen: false
+    });
+    $("#alarm_dialog").dialog({
+        autoOpen: false
+    });
+    //設置移動後的默認位置 
+    $("#canvas").mousedown(function (e) {
+        //獲取div的初始位置，要注意的是需要轉整型，因為獲取到值帶px 
+        var canvas_left = parseInt($("#canvas").css("margin-left"));
+        var canvas_top = parseInt($("#canvas").css("margin-top"));
+        //獲取滑鼠按下時的坐標，區別於下面的es.pageX,es.pageY 
+        var downx = e.pageX;
+        var downy = e.pageY;
+        //pageY的y要大寫，必須大寫！！
+        // 滑鼠按下時給div掛事件 
+        $("#canvas").bind("mousemove", function (es) {
+            //es.pageX,es.pageY:獲取滑鼠移動後的坐標 
+            var end_x = es.pageX - downx + canvas_left;
+            //計算div的最終位置 
+            var end_y = es.pageY - downy + canvas_top;
+            //帶上單位 
+            $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
+        });
+
+        $("#canvas").mouseup(function () {
+            //滑鼠彈起時給div取消事件 
+            $("#canvas").unbind("mousemove");
+        });
+
+        $("#canvas").mouseleave(function () {
+            //滑鼠離開canvas時給div取消事件 
+            $("#canvas").unbind("mousemove");
+        });
+    });
+    setup();
+});
 
 function setup() {
     cvsBlock = document.getElementById("cvsBlock");
@@ -50,7 +107,6 @@ function setup() {
             ctx.backingStorePixelRatio || 1;
         return dpr / bsr;
     })();
-
     canvas.addEventListener("mousemove", handleMouseMove, false); //滑鼠在畫布中移動的座標
     canvas.addEventListener("mousewheel", handleMouseWheel, false); //畫布縮放
     //canvas.addEventListener("dblclick", handleDblClick, false); // 快速放大點擊位置
@@ -58,85 +114,30 @@ function setup() {
     cvsBlock.addEventListener("mousewheel", handleMouseWheel, false); // 畫面縮放
     cvsBlock.addEventListener("DOMMouseScroll", handleMouseWheel, false); // 畫面縮放(for Firefox)
 
-
-
-    $(function () {
-        //多階下拉清單按鈕
-        /*$('.dropdown').mouseover(function (e) {
-            $(this).children('ul').show();
-        });
-        $('.dropdown').mouseleave(function (e) {
-            $(this).children('ul').hide();
-        });
-        $('.dropdown ul').hover(function () {
-            $(this).show();
-        }, function () {
-            $(this).hide();
-        });*/
-        //預設彈跳視窗載入後隱藏
-        $("#member_dialog").dialog({
-            autoOpen: false
-        });
-        $("#alarm_dialog").dialog({
-            autoOpen: false
-        });
-        //設置移動後的默認位置 
-        $("#canvas").mousedown(function (e) {
-            //獲取div的初始位置，要注意的是需要轉整型，因為獲取到值帶px 
-            var canvas_left = parseInt($("#canvas").css("margin-left"));
-            var canvas_top = parseInt($("#canvas").css("margin-top"));
-            //獲取滑鼠按下時的坐標，區別於下面的es.pageX,es.pageY 
-            var downx = e.pageX;
-            var downy = e.pageY;
-            //pageY的y要大寫，必須大寫！！
-            // 滑鼠按下時給div掛事件 
-            $("#canvas").bind("mousemove", function (es) {
-                //es.pageX,es.pageY:獲取滑鼠移動後的坐標 
-                var end_x = es.pageX - downx + canvas_left;
-                //計算div的最終位置 
-                var end_y = es.pageY - downy + canvas_top;
-                //帶上單位 
-                $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
-            });
-
-            $("#canvas").mouseup(function () {
-                //滑鼠彈起時給div取消事件 
-                $("#canvas").unbind("mousemove");
-            });
-
-            $("#canvas").mouseleave(function () {
-                //滑鼠離開canvas時給div取消事件 
-                $("#canvas").unbind("mousemove");
-            });
-        });
-
-        var requestArray = {
-            "Command_Type": ["Read"],
-            "Command_Name": ["GetMaps"]
-        };
-        //接收並載入Server的地圖設定到按鈕
-        var xmlHttp = createJsonXmlHttp("sql");
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
-                    var MapList = revObj.Values;
-                    mapArray = MapList.slice(0); //Copy array
-                    var html = "";
-                    for (i = 0; i < MapList.length; i++) {
-                        html += "<li><input type=\"button\" id=\"map_btn_" + MapList[i].map_id + "\" " +
-                            "value=\"" + MapList[i].map_name + "\"" +
-                            "onclick=\"addMapTab(\'" + MapList[i].map_id + "\',\'" + MapList[i].map_name +
-                            "\')\"></li>";
-                    }
-                    document.getElementById("loadMapButtonGroup").innerHTML = html;
-                } else {
-                    alert($.i18n.prop('i_failed_loadMap'));
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                var MapList = revObj.Values;
+                mapArray = MapList.slice(0); //Copy array
+                var html = "";
+                for (i = 0; i < MapList.length; i++) {
+                    html += "<li><input type=\"button\" id=\"map_btn_" + MapList[i].map_id + "\" " +
+                        "value=\"" + MapList[i].map_name + "\"" +
+                        "onclick=\"addMapTab(\'" + MapList[i].map_id + "\',\'" + MapList[i].map_name +
+                        "\')\"></li>";
                 }
+                document.getElementById("loadMapButtonGroup").innerHTML = html;
+            } else {
+                alert($.i18n.prop('i_failed_loadMap'));
             }
-        };
-        xmlHttp.send(JSON.stringify(requestArray));
-    });
+        }
+    };
+    xmlHttp.send(JSON.stringify({
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetMaps"]
+    })); //接收並載入Server的地圖設定到按鈕
 }
 
 function addMapTab(map_id, map_name) {
@@ -470,7 +471,7 @@ function clickEvent(p) { //滑鼠點擊事件
         if (p && ctx.isPointInPath(p.x, p.y)) {
             //如果傳入了事件坐標，就用isPointInPath判斷一下
             $(function () {
-                $("#member_dialog_tag_id").text(parseInt(v.id, 16));
+                $("#member_dialog_tag_id").text(parseInt(v.id.substring(8), 16));
                 $("#member_dialog_name").text(v.name);
                 $("#member_dialog_image").text(v.image);
                 $("#member_dialog").dialog("open");
@@ -677,15 +678,15 @@ function updateTagList() {
                 for (i in revObj) {
                     //update tag array
                     tagArray.push({
-                        x: revObj[i].tag_id,
-                        y: revObj[i].tag_x / canvasImg.scale,
-                        id: canvasImg.height - revObj[i].tag_y / canvasImg.scale,
+                        id: revObj[i].tag_id,
+                        x: revObj[i].tag_x / canvasImg.scale,
+                        y: canvasImg.height - revObj[i].tag_y / canvasImg.scale,
                         system_time: revObj[i].tag_time
                     });
 
                     //update member list
                     tbody.append("<tr><td>" + (i + 1) +
-                        "</td><td>" + revObj[i].tag_id +
+                        "</td><td>" + parseInt(revObj[i].tag_id.substring(8), 16) +
                         "</td><td>" + revObj[i].number +
                         "</td><td>" + revObj[i].Name +
                         "</td></tr>");

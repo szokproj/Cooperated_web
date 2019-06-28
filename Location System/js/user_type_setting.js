@@ -4,6 +4,26 @@ var size = 10,
     usertypeNameArray = [];
 
 $(function () {
+    /**
+     * Check this page's permission and load navbar
+     */
+    var permission = getPermissionOfPage("Member_Setting");
+    switch (permission) {
+        case "":
+            alert("No permission");
+            history.back();
+            break;
+        case "R":
+            break;
+        case "RW":
+            break;
+        default:
+            alert("網頁錯誤，將跳回上一頁");
+            history.back();
+            break;
+    }
+    setNavBar("Member_Setting", "User_Type_Setting");
+
     var dialog, form,
         sel_name = $("#set_type_name"),
         sel_color = $("#set_dot_color"),

@@ -26,20 +26,21 @@
     <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.6/css/bootstrap-material-design.css" />-->
     <!-- Edit js -->
     <script type="text/javascript" src="../js/general_functions.js"></script>
+    <script type="text/javascript" src="../js/check_permission.js"></script>
     <script type="text/javascript" src="../js/sideBar.js"></script>
     <script type="text/javascript" src="../js/canvas_request.js"></script>
     <script type="text/javascript" src="../js/sidebar_search.js"></script>
     <script type="text/javascript" src="../js/table_filter.js"></script>
     <!-- JQuery UI - Dialog -->
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_alarm_set.js"></script>
 </head>
 
 <body>
     <div class="container">
+
         <!--icon navbar-->
-        <aside class="menu">
+        <!--<aside class="menu">
             <div class="menu-left">
                 <nav class="sidebar">
                     <ul class="nav">
@@ -74,7 +75,8 @@
                     </ul>
                 </nav>
             </div>
-        </aside>
+        </aside>-->
+        <div id="NavbarHtml"></div>
 
         <div class="row">
             <div class="col-lg-12" style="background: #ffffff;">
@@ -232,13 +234,13 @@
         <div id="member_dialog" title="Tag Infomation">
             <img id="member_dialog_image" style="float: left;" src="../image/user2.png">
             <span style="display: block;">
-                <label class="i18n" name="i_tagID">:</label>
+                <label class="i18n" name="i_tagID"></label> :
                 <label id="member_dialog_tag_id"></label>
                 <br>
-                <label class="i18n" name="i_number">:</label>
+                <label class="i18n" name="i_number"></label> :
                 <label id="member_dialog_number"></label>
                 <br>
-                <label class="i18n" name="i_name">:</label>
+                <label class="i18n" name="i_name"></label> :
                 <label id="member_dialog_name"></label>
             </span>
         </div>
@@ -246,23 +248,23 @@
         <div id="alarm_dialog" title="Alarm Infomation">
             <img style="float: left;" src="../image/user2.png">
             <span style="display: block;">
-                <label class="i18n" name="i_number">:</label>
+                <label class="i18n" name="i_number"></label> :
                 <label id="alarm_dialog_number"></label>
                 <br>
-                <label class="i18n" name="i_name">:</label>
+                <label class="i18n" name="i_name"></label> :
                 <label id="alarm_dialog_name"></label>
                 <br>
-                <label class="i18n" name="i_tagID">:</label>
+                <label class="i18n" name="i_tagID"></label> :
                 <label id="alarm_dialog_id"></label>
                 <br>
-                <label class="i18n" name="i_date">:</label>
+                <label class="i18n" name="i_date"></label> :
                 <label id="alarm_dialog_date"></label>
                 <br>
-                <label class="i18n" name="i_happenTime">:</label>
+                <label class="i18n" name="i_happenTime"></label> :
                 <label id="alarm_dialog_time"></label>
             </span>
             <h4>
-                <label class="i18n" name="i_status">:</label>
+                <label class="i18n" name="i_status"></label> :
                 <label id="alarm_dialog_status"></label>
             </h4>
             <div style="text-align: center;">
