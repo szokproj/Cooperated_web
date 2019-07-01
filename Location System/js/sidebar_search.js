@@ -43,5 +43,5 @@ $(function () {
             }
         };
         xmlHttp.send(JSON.stringify(request));
-    })
+    });
 });

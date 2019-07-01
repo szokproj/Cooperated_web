@@ -34,7 +34,12 @@ var isFocus = true,
     focusAlarmIndex = -1,
     focusAlarmTag_ID = "";
 
+var memberArray = [];
+
 $(function () {
+    //https://www.minwt.com/webdesign-dev/js/16298.html
+
+
     /**
      * Check this page's permission and load navbar
      */
@@ -205,6 +210,8 @@ function setMap(map_id) {
 
         //在設定好地圖後，導入Anchors & Groups & Tags' setting
         getAnchors(map_id);
+        getMemberDate();
+        Start();
     };
 }
 
@@ -223,6 +230,7 @@ function resetCanvas_Anchor() {
     document.getElementById('scale_visible').innerText = "";
     document.getElementById('x').value = "";
     document.getElementById('y').value = "";
+    Start();
 }
 
 function getAnchors(map_id) {
@@ -348,6 +356,34 @@ function getMapGroup(groupArray) {
         }
     };
     xmlHttp.send(JSON.stringify(requestArray));
+}
+
+function getMemberDate() {
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetStaffs"]
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                //data => tag_id number Name department jobTitle type
+                memberArray = 'Values' in revObj == true ? revObj.Values.slice(0) : [];
+                /*revInfo.forEach(element => {
+                    if (key == "user_id") {
+                        var user_id = parseInt(element["tag_id"].substring(8), 16);
+                        if (user_id == value)
+                            memberArray.push(element);
+                    } else if (element[key]) {
+                        if (element[key] == value)
+                            memberArray.push(element);
+                    }
+                });*/
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
 }
 
 function setCanvas(img_src, width, height) {
@@ -529,12 +565,17 @@ function updateAlarmList() {
             var revObj = JSON.parse(this.responseText);
             var list = "",
                 items = 0;
-            $(function () {
-                for (var i = 0; i < revObj.id.length; i++) {
+            $(".thumbnail_columns").empty();
+            $(function () {  //getMemberDate 
+                if (!revObj)
+                    return false;
+                for (var i = 0; i < revObj.length; i++) {
                     items = i;
                     list += "<tr><td>" + (items + 1) +
-                        "</td><td>" + revObj[i].tag_alarm_type +
+                        "</td><td>" +
+                        "</td><td>" +
                         "</td><td>" + parseInt(revObj[i].tag_id.substring(8), 16) +
+                        "</td><td>" + revObj[i].tag_alarm_type +
                         "</td><td>" + revObj[i].tag_time +
                         "</td></tr>";
                 }
@@ -563,16 +604,16 @@ function updateAlarmList() {
                     var thumb_focus_btn_id = "alarmCard_focus_btn_" + items;
                     var color = "";
                     switch (revObj[items].tag_alarm_type) {
-                        case "Low Power Alarm":
+                        case "low_power":
                             color = "#33cc00";
                             break;
-                        case "Help Alarm":
+                        case "help":
                             color = "#ff848467";
                             break;
-                        case "Still Alarm":
+                        case "still":
                             color = "#FF6600";
                             break;
-                        case "Active Alarm":
+                        case "active":
                             color = "#FF6600";
                             break;
                         default:
@@ -587,7 +628,7 @@ function updateAlarmList() {
                         "</td>" +
                         "<td>" +
                         "<p>Number: " + (items + 1) + "</p>" +
-                        "<p>Name: " + revObj[items].name + "</p>" +
+                        "<p>Name: " + "" + "</p>" +
                         "<p>ID: " + parseInt(revObj[items].tag_id.substring(8), 16) + "</p>" +
                         "<p>Date: " + time_arr.date + "</p>" +
                         "<p>Time: " + time_arr.time + "</p>" +
@@ -610,13 +651,6 @@ function updateAlarmList() {
                         changeFocusAlarm(revObj[items].tag_id);
                         changeAlarmLight();
                     });
-
-                    /*{
-                        "tag_alarm_type": "low_power",
-                        "tag_id": "0000000000000017",
-                        "tag_time": "2019/05/31/16:06:12:44"
-                    }*/
-
 
                     /*
                      *  Alarm Dialog
@@ -648,7 +682,7 @@ function updateAlarmList() {
 
 function TimeToArray(time_str) {
     if (time_str.length > 0) {
-        var break_index = time_str.lastIndexOf("/");
+        var break_index = time_str.lastIndexOf(" ");
         return {
             date: time_str.substring(0, break_index),
             time: time_str.substring(break_index + 1, time_str.length)
@@ -671,11 +705,13 @@ function updateTagList() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
+            if (!revObj)
+                return false;
             if (canvasImg.isPutImg) {
                 var tbody = $("#table_rightbar_member_list tbody");
                 tbody.empty();
                 tagArray = [];
-                for (i in revObj) {
+                for (var i = 0; i < revObj.length; i++) {
                     //update tag array
                     tagArray.push({
                         id: revObj[i].tag_id,
@@ -940,7 +976,7 @@ function draw() {
         drawAlarmTags(ctx, v.id, v.x, v.y);
     });
     //drawAlarm();
-    var numberOfAlarms = alarmID_array.length;
+    /*var numberOfAlarms = alarmID_array.length;
     if (numberOfAlarms > 0) {
         if (isFocusNewAlarm) {
             focusAlarmTag(alarmArray[alarmArray.length - 1].x, alarmArray[alarmArray.length - 1].y);
@@ -949,70 +985,29 @@ function draw() {
         }
     } else {
         isFocus = false;
-    }
+    }*/
 }
 
 
 function autoSendRequest() {
-    /*if (!AnchorPosition) {
-        //updateAlarmList()
-        updateTagList();
-        draw();
-        canvas.removeEventListener("click", handleAnchorPosition);
-        //cvsBlock.style.overflow = 'hidden';
-    } else {
-        draw();
-        var posX = lastX;
-        var posY = (canvas.height - lastY);
-        drawAnchorPosition(ctx, posX, posY);
-        canvas.addEventListener("click", handleAnchorPosition);
-        //cvsBlock.style.overflow = 'auto';
-    }*/
-
+    updateAlarmList();
     updateTagList();
     draw();
 }
 
-function StartClick() {
+function Start() {
     var delaytime = 100;
-    var requestArray = {
-        "Command_Type": ["Write"],
-        "Command_Name": ["Launch"]
-    };
     if (canvasImg.isPutImg) {
-        if (!isStart) {
-            isStart = true;
-            requestArray.Value = "Start";
-            document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-pause\">" +
-                "</i><span>" + $.i18n.prop('i_stop') + "</span>";
-            //設定計時器
-            //pageTimer["timer1"] = setInterval("autoSendRequest()", delaytime);
-            pageTimer["timer1"] = setTimeout(function request() {
-                autoSendRequest();
-                pageTimer["timer1"] = setTimeout(request, delaytime);
-            }, delaytime);
-        } else {
-            isStart = false;
-            requestArray.Value = "Stop";
-            document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\">" +
-                "</i><span>" + $.i18n.prop('i_start') + "</span>";
-            for (var each in pageTimer) {
-                //clearInterval(pageTimer[each]);
-                clearTimeout(pageTimer[each]);
-            }
+        //設定計時器
+        pageTimer["timer1"] = setInterval("autoSendRequest()", delaytime);
+        /*pageTimer["timer1"] = setTimeout(function request() {
+            autoSendRequest();
+            pageTimer["timer1"] = setTimeout(request, delaytime);
+        }, delaytime);*/
+    } else {
+        for (var each in pageTimer) {
+            clearInterval(pageTimer[each]);
+            //clearTimeout(pageTimer[each]);
         }
-        var xmlHttp = GetXmlHttpObject();
-        if (xmlHttp == null) {
-            alert("Browser does not support HTTP Request");
-            return;
-        }
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                return 0;
-            }
-        };
-        xmlHttp.open("POST", "test2", true);
-        xmlHttp.setRequestHeader("Content-type", "application/json");
-        xmlHttp.send(JSON.stringify(requestArray));
     }
 }

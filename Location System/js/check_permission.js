@@ -145,10 +145,7 @@ function Navbar(permission_obj) {
                 "<span class=\"i18n\" name=\"i_alarmList\"></span></a></li>" +
                 "<li class=\"taglist\"><a href=\"javascript: tagSidebarMove();\">" +
                 "<i class=\"fas fa-map-marker-alt\" style=\"padding-left:2px;\"></i>" +
-                "<span class=\"i18n\" name=\"i_tagList\"></span></a></li>" +
-                "<li class=\"start\"><a href=\"javascript: StartClick();\" id=\"btn_start\">" +
-                "<i class=\"fas fa-play\" style=\"padding-left:2px;\"></i>" +
-                "<span class=\"i18n\" name=\"i_start\"></span></a></li>";
+                "<span class=\"i18n\" name=\"i_tagList\"></span></a></li>";
         } else if (parent_page == "Member_Setting") {
             navbarHtml += "<li class=\"setting-type\"><a href=\"../Member_Setting.html\"><i class=\"fas fa-users\"></i>" +
                 "<span class=\"i18n\" name=\"i_memberSetting\"></span></a></li>" +
@@ -182,11 +179,14 @@ function Navbar(permission_obj) {
             }
         } else if (parent_page == "Reference") {
             navbarHtml += "<li class=\"setting-type\"><a href=\"../Reference.html\">" +
-                "<i class=\"fas fa-satellite-dish\"></i><span>Reference</span></a></li>" +
-                "<li class=\"setting-type active\"><a href=\"../Advance_cmd.html\">" +
-                "<i class=\"fas fa-code\"></i><span>Advance cmd</span></a></li>" +
+                "<i class=\"fas fa-satellite-dish\"></i><span class=\"i18n\" name=\"i_reference\"></span></a></li>" +
+                "<li class=\"setting-type\"><a href=\"../Advance_cmd.html\">" +
+                "<i class=\"fas fa-code\"></i><span class=\"i18n\" name=\"i_advance_cmd\"></span></a></li>" +
                 "<li class=\"setting-type\"><a href=\"../Update.html\">" +
-                "<i class=\"fas fa-download\"></i><span>Update</span></a></li>";
+                "<i class=\"fas fa-download\"></i><span class=\"i18n\" name=\"i_update\"></span></a></li>" +
+                "<li class=\"start\"><a href=\"javascript: StartClick();\" id=\"btn_start\">" +
+                "<i class=\"fas fa-play\" style=\"padding-left:2px;\"></i>" +
+                "<span class=\"i18n\" name=\"i_start\"></span></a></li>";
             switch (child_page) {
                 case "Reference":
                     child_order = ParentPageArray.length;

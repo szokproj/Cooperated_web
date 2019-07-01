@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Location System</title>
     <meta charset="utf-8">
+    <title class="i18n" name='i_pageTitle'>Location System</title>
+    <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--BootStrap3-->
-    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <!--JQuery庫-->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -74,22 +75,66 @@
             font-family: Sans-serif;
             padding: 10px 15px 10px 50px;
         }
+
+        .menu-left ul .start a {
+            background: transparent;
+        }
+
+        .menu-left ul .start:hover a {
+            background: rgb(4, 143, 124)
+        }
     </style>
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="../js/general_functions.js"></script>
+    <script type="text/javascript" src="../js/check_permission.js"></script>
     <script type="text/javascript">
-        function GetXmlHttpObject() {
-            var xmlHttp = null;
-            try { // Firefox, Opera 8.0+, Safari
-                xmlHttp = new XMLHttpRequest();
-            } catch (e) { //Internet Explorer
-                try {
-                    xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-                } catch (e) {
-                    xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-                }
+        var isStart = false;
+
+        $(function () {
+            /*
+             * Check this page's permission and load navbar
+             */
+            var permission = getPermissionOfPage("Reference");
+            switch (permission) {
+                case "":
+                    alert("No permission");
+                    history.back();
+                    break;
+                case "R":
+                    break;
+                case "RW":
+                    break;
+                default:
+                    alert("網頁錯誤，將跳回上一頁");
+                    history.back();
+                    break;
             }
-            return xmlHttp;
+            setNavBar("Reference", "Reference");
+        });
+
+        function StartClick() {
+            var delaytime = 100;
+            var requestArray = {
+                "Command_Type": ["Write"],
+                "Command_Name": ["Launch"]
+            };
+            if (!isStart) {
+                isStart = true;
+                requestArray.Value = "Start";
+                document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-pause\">" +
+                    "</i><span>" + $.i18n.prop('i_stop') + "</span>";
+            } else {
+                isStart = false;
+                requestArray.Value = "Stop";
+                document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\">" +
+                    "</i><span>" + $.i18n.prop('i_start') + "</span>";
+            }
+            var xmlHttp = createJsonXmlHttp("test2");
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    return 0;
+                }
+            };
+            xmlHttp.send(JSON.stringify(requestArray));
         }
     </script>
 </head>
@@ -97,37 +142,22 @@
 <body>
     <div class="container">
         <!--icon navbar-->
-        <aside class="menu">
-            <div class="menu-left">
-                <nav class="sidebar">
-                    <ul class="nav">
-                        <li><a href="../index.html">
-                                <i class="fas fa-satellite-dish"></i><span>首頁</span></a></li>
-                        <li><a href="../Member_Setting.html">
-                                <i class="fas fa-user-cog"></i><span>人員設置</span></a></li>
-                        <li><a href="../Timeline.html">
-                                <i class="fas fa-route"></i><span>歷史軌跡</span></a></li>
-                        <li><a href="../Map_Setting.html">
-                                <i class="fas fa-map"></i><span>地圖設定</span></a></li>
-                        <li><a href="../Anchor_Setting.html">
-                                <i class="fas fa-anchor"></i><span>裝置設定</span></a></li>
-                        <li><a href="../Alarm_Setting.html">
-                                <i class="fas fa-bell" style="padding-left:2px;"></i><span>警報設定</span></a></li>
-                        <li class="active"><a href="#">
-                                <i class="fas fa-cogs"></i><span>進階設定</span></a></li>
-                        <hr>
-                        <li class="setting-type active"><a href="#">
-                                <i class="fas fa-satellite-dish"></i><span>Reference</span></a></li>
-                        <li class="setting-type"><a href="../Advance_cmd.html">
-                                <i class="fas fa-code"></i><span>Advance cmd</span></a></li>
-                        <li class="setting-type"><a href="../Update.html">
-                                <i class="fas fa-download"></i><span>Update</span></a></li>
-                    </ul>
-                </nav>
-            </div>
-        </aside>
+        <div id="NavbarHtml"></div>
 
-        <!-- 網頁內容 -->
+        <!-- Web Content -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div style="float:right;">
+                    <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
+                    <select id="language" style="margin-top:5px;">
+                        <option value="en">English</option>
+                        <option value="zh-TW">繁體中文</option>
+                        <option value="zh-CN">简体中文</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-lg-8" style="background-color:white;">
                 <div style="overflow-y:auto; margin:5px; height:100%">
@@ -172,8 +202,10 @@
                 </div>
             </div>
         </div>
-
     </div>
+    <!-- i18n -->
+    <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
+    <script type="text/javascript" src="../js/i18n/language.js"></script>
 </body>
 
 </html>

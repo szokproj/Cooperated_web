@@ -116,7 +116,6 @@ canvas:active {
     font-size: 12px;
 }
 
-
 .dropdown input,
 .dropdown label {
     color: #000000;
@@ -263,8 +262,7 @@ thead th {
 
 /* icon navbar */
 .menu-left ul .alarmlist a,
-.menu-left ul .taglist a,
-.menu-left ul .start a {
+.menu-left ul .taglist a {
     background: transparent;
 }
 
@@ -274,8 +272,4 @@ thead th {
 
 .menu-left ul .taglist:hover a {
     background: rgb(219, 157, 43)
-}
-
-.menu-left ul .start:hover a {
-    background: rgb(4, 143, 124)
 }
