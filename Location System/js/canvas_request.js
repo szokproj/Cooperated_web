@@ -31,10 +31,11 @@ var AnchorPosition = false,
 
 var isFocus = true,
     isFocusNewAlarm = false,
-    focusAlarmIndex = -1,
-    focusAlarmTag_ID = "";
+    focusAlarmIndex = -1;
 
-var memberArray = [];
+var memberArray = [],
+    member_color = {},
+    alarmFilterArr = [];
 
 $(function () {
     //https://www.minwt.com/webdesign-dev/js/16298.html
@@ -368,18 +369,11 @@ function getMemberDate() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
-                //data => tag_id number Name department jobTitle type
+                //data => tag_id number Name department jobTitle type color
                 memberArray = 'Values' in revObj == true ? revObj.Values.slice(0) : [];
-                /*revInfo.forEach(element => {
-                    if (key == "user_id") {
-                        var user_id = parseInt(element["tag_id"].substring(8), 16);
-                        if (user_id == value)
-                            memberArray.push(element);
-                    } else if (element[key]) {
-                        if (element[key] == value)
-                            memberArray.push(element);
-                    }
-                });*/
+                memberArray.forEach(info => {
+                    member_color[info.tag_id] = info.color;
+                });
             }
         }
     };
@@ -503,7 +497,7 @@ function getEventPosition(ev) { //獲取滑鼠點擊位置
 
 function clickEvent(p) { //滑鼠點擊事件
     tagArray.forEach(function (v, i) {
-        drawTags(ctx, v.id, v.x, v.y);
+        drawTags(ctx, v.id, v.x, v.y, v.color);
         if (p && ctx.isPointInPath(p.x, p.y)) {
             //如果傳入了事件坐標，就用isPointInPath判斷一下
             $(function () {
@@ -552,7 +546,7 @@ function getPointOnCanvas(x, y) {
 /*            接收並處理Alarm           */
 /*------------------------------------*/
 
-var alarm_dialog_count = -1;
+var alarm_thumbnail_count = -1;
 
 function updateAlarmList() {
     var request = {
@@ -563,118 +557,161 @@ function updateAlarmList() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
+            if (!revObj)
+                return false;
+
             var list = "",
                 items = 0;
-            $(".thumbnail_columns").empty();
-            $(function () {  //getMemberDate 
-                if (!revObj)
-                    return false;
+
+            $(function () { //getMemberDate 
                 for (var i = 0; i < revObj.length; i++) {
                     items = i;
-                    list += "<tr><td>" + (items + 1) +
-                        "</td><td>" +
-                        "</td><td>" +
+                    var member_index = memberArray.findIndex(function (info) {
+                        return info.tag_id == revObj[i].tag_id;
+                    });
+                    var number = member_index > -1 ? memberArray[member_index].number : "";
+                    var name = member_index > -1 ? memberArray[member_index].Name : "";
+                    list += "<tr><td>" + (i + 1) +
+                        "</td><td>" + number +
+                        "</td><td>" + name +
                         "</td><td>" + parseInt(revObj[i].tag_id.substring(8), 16) +
                         "</td><td>" + revObj[i].tag_alarm_type +
                         "</td><td>" + revObj[i].tag_time +
                         "</td></tr>";
+                    var repeat = alarmFilterArr.findIndex(function (info) {
+                        return info.id == revObj[i].tag_id;
+                    });
+                    if (repeat > -1) {
+                        if (alarmFilterArr[repeat].alarm_type != revObj[i].tag_alarm_type) {
+                            items++;
+                            alarmFilterArr.push({
+                                order: items,
+                                id: revObj[i].tag_id,
+                                alarm_type: revObj[i].tag_alarm_type,
+                                time: revObj[i].tag_time
+                            });
+                        }
+                    } else {
+                        items++;
+                        alarmFilterArr.push({
+                            order: items,
+                            id: revObj[i].tag_id,
+                            alarm_type: revObj[i].tag_alarm_type,
+                            time: revObj[i].tag_time
+                        });
+                    }
                 }
                 $("#table_rightbar_alarm_list tbody").html(list);
 
                 changeAlarmLight();
 
-                if (items > alarm_dialog_count) {
+                if (items > alarm_thumbnail_count) {
                     isFocus = true;
                     isFocusNewAlarm = true;
-                    var alarmID_new = revObj[items].tag_id;
+                    //var alarmID_new = revObj[items].tag_id;
                     //依照更新順序放入alarmTag的ID到變數   
                     //如果變數(alarm的ID)已經儲存進了alarm陣列中，那麼刪除已存在的第index項
                     //再把此alarm的ID值push到alarm陣列裡面
-                    var index = alarmID_array.indexOf(alarmID_new);
-                    if (index > -1)
+
+                    /*var index = alarmID_array.indexOf(alarmID_new);
+                    if (index > -1){
                         alarmID_array.splice(index, 1);
-                    alarmID_array.push(alarmID_new);
+                    }
+
+                    alarmID_array.push(alarmID_new);*/
+                    //var index = alarmID_array
 
                     /*
                      * Alarm Card
                      */
-                    var time_arr = TimeToArray(revObj[items].tag_time);
-                    var thumb_id = "alarmCard_" + items;
-                    var thumb_unlock_btn_id = "alarmCard_unlock_btn_" + items;
-                    var thumb_focus_btn_id = "alarmCard_focus_btn_" + items;
-                    var color = "";
-                    switch (revObj[items].tag_alarm_type) {
-                        case "low_power":
-                            color = "#33cc00";
-                            break;
-                        case "help":
-                            color = "#ff848467";
-                            break;
-                        case "still":
-                            color = "#FF6600";
-                            break;
-                        case "active":
-                            color = "#FF6600";
-                            break;
-                        default:
-                            color = "#FFFFFF"; //unknown
-                    }
-                    $(".thumbnail_columns").append("<div class=\"thumbnail\" id=\"" + thumb_id + "\"" +
-                        "style=\"background:" + color + "\">" +
-                        "<table>" +
-                        "<tr>" +
-                        "<td>" +
-                        "<img src=\"../image/user2.png\">" +
-                        "</td>" +
-                        "<td>" +
-                        "<p>Number: " + (items + 1) + "</p>" +
-                        "<p>Name: " + "" + "</p>" +
-                        "<p>ID: " + parseInt(revObj[items].tag_id.substring(8), 16) + "</p>" +
-                        "<p>Date: " + time_arr.date + "</p>" +
-                        "<p>Time: " + time_arr.time + "</p>" +
-                        "<p>Status: " + revObj[items].tag_alarm_type + "</p>" +
-                        "<button type=\"button\" class=\"btn btn-success\"" +
-                        " id=\"" + thumb_unlock_btn_id + "\">" + $.i18n.prop('i_releasePosition') + "</button>" +
-                        "<button type=\"button\" class=\"btn btn-info\" style=\"margin-left: 10px;\"" +
-                        " id=\"" + thumb_focus_btn_id + "\">" + $.i18n.prop('i_position') +
-                        "<i class=\"fas fa-map-marker-alt\"></i></button>" +
-                        "</td>" +
-                        "</tr>" +
-                        "</table>" +
-                        "</div>");
-                    $("#" + thumb_unlock_btn_id).click(function () {
-                        releaseFocusAlarm(revObj[items].tag_id);
-                        $("#" + thumb_id).hide(); //警告卡片會消失
-                        changeAlarmLight();
-                    });
-                    $("#" + thumb_focus_btn_id).click(function () {
-                        changeFocusAlarm(revObj[items].tag_id);
-                        changeAlarmLight();
-                    });
+                    $(".thumbnail_columns").empty();
+                    alarmFilterArr.forEach(function (element, i) {
+                        var time_arr = TimeToArray(element.time);
+                        var thumb_id = "alarmCard_" + i;
+                        var thumb_unlock_btn_id = "alarmCard_unlock_btn_" + i;
+                        var thumb_focus_btn_id = "alarmCard_focus_btn_" + i;
+                        var color = "",
+                            status = "";
+                        switch (element.alarm_type) {
+                            case "low_power":
+                                color = "#33cc00";
+                                status = $.i18n.prop('i_lowPowerAlarm');
+                                break;
+                            case "help":
+                                color = "#ff8484";
+                                status = $.i18n.prop('i_helpAlarm');
+                                break;
+                            case "still":
+                                color = "#FF6600";
+                                status = $.i18n.prop('i_stillAlarm');
+                                break;
+                            case "active":
+                                color = "#FF6600";
+                                status = $.i18n.prop('i_activeAlarm');
+                                break;
+                            default:
+                                color = "#FFFFFF"; //unknown
+                                status = "";
+                        }
+                        var member_index = memberArray.findIndex(function (info) {
+                            return info.tag_id == element.id;
+                        });
+                        var number = member_index > -1 ? memberArray[member_index].number : "";
+                        var name = member_index > -1 ? memberArray[member_index].Name : "";
+                        $(".thumbnail_columns").append("<div class=\"thumbnail\" id=\"" + thumb_id + "\"" +
+                            "style=\"background:" + color + "\">" +
+                            "<table><tr><td>" +
+                            "<img src=\"../image/user2.png\">" +
+                            "</td><td>" +
+                            "<p>" + $.i18n.prop('i_number') + " : " + number + "</p>" +
+                            "<p>" + $.i18n.prop('i_name') + " : " + name + "</p>" +
+                            "<p>" + $.i18n.prop('i_userID') + " : " + parseInt(element.id.substring(8), 16) + "</p>" +
+                            "<p>" + $.i18n.prop('i_date') + " : " + time_arr.date + "</p>" +
+                            "<p>" + $.i18n.prop('i_time') + " : " + time_arr.time + "</p>" +
+                            "<p>" + $.i18n.prop('i_status') + " : " + status + "</p>" +
+                            "</td></tr></table>" +
+                            "<div style=\"text-align:center;\">" +
+                            "<button type=\"button\" class=\"btn btn-primary\"" +
+                            " id=\"" + thumb_unlock_btn_id + "\">" + $.i18n.prop('i_releasePosition') + "</button>" +
+                            "<button type=\"button\" class=\"btn btn-primary\" style=\"margin-left: 10px;\"" +
+                            " id=\"" + thumb_focus_btn_id + "\">" + $.i18n.prop('i_position') +
+                            " <i class=\"fas fa-map-marker-alt\"></i></button>" +
+                            "</div></div>");
+                        $("#" + thumb_unlock_btn_id).click(function () {
+                            releaseFocusAlarm(element.order);
+                            $("#" + thumb_id).hide(); //警告卡片會消失
+                            changeAlarmLight();
+                        });
+                        $("#" + thumb_focus_btn_id).click(function () {
+                            changeFocusAlarm(element.order);
+                            changeAlarmLight();
+                        });
 
-                    /*
-                     *  Alarm Dialog
-                     */
-                    $("#alarm_dialog").css('background-color', color);
-                    $("#alarm_dialog_btn_unlock").unbind();
-                    $("#alarm_dialog_btn_focus").unbind();
-                    $("#alarm_dialog_number").text(items + 1);
-                    $("#alarm_dialog_name").text(revObj[items].name);
-                    $("#alarm_dialog_id").text(parseInt(revObj[items].tag_id.substring(8), 16));
-                    $("#alarm_dialog_date").text(time_arr.date);
-                    $("#alarm_dialog_time").text(time_arr.time);
-                    $("#alarm_dialog_status").text(revObj[items].tag_alarm_type);
-                    $("#alarm_dialog_btn_unlock").click(function () {
-                        releaseFocusAlarm(revObj[items].tag_id);
-                        $("#alarm_dialog").dialog("close");
+
+                        /*
+                         *  Alarm Dialog
+                         */
+                        $("#alarm_dialog").css('background-color', color);
+                        $("#alarm_dialog_btn_unlock").unbind();
+                        $("#alarm_dialog_btn_focus").unbind();
+                        $("#alarm_dialog_number").text(number);
+                        $("#alarm_dialog_name").text(name);
+                        $("#alarm_dialog_id").text(parseInt(element.id.substring(8), 16));
+                        $("#alarm_dialog_date").text(time_arr.date);
+                        $("#alarm_dialog_time").text(time_arr.time);
+                        $("#alarm_dialog_status").text(status);
+                        $("#alarm_dialog_btn_unlock").click(function () {
+                            releaseFocusAlarm(element.order);
+                            $("#alarm_dialog").dialog("close");
+                        });
+                        $("#alarm_dialog_btn_focus").click(function () {
+                            changeFocusAlarm(element.order);
+                        });
+                        $("#alarm_dialog").dialog("open");
                     });
-                    $("#alarm_dialog_btn_focus").click(function () {
-                        changeFocusAlarm(revObj[items].tag_id);
-                    });
-                    $("#alarm_dialog").dialog("open");
+                    alarm_thumbnail_count = items;
                 }
             });
-            alarm_dialog_count = items;
         }
     };
     xmlHttp.send(JSON.stringify(request));
@@ -717,7 +754,8 @@ function updateTagList() {
                         id: revObj[i].tag_id,
                         x: revObj[i].tag_x / canvasImg.scale,
                         y: canvasImg.height - revObj[i].tag_y / canvasImg.scale,
-                        system_time: revObj[i].tag_time
+                        system_time: revObj[i].tag_time,
+                        color: revObj[i].tag_id in member_color ? member_color[revObj[i].tag_id] : ""
                     });
 
                     //update member list
@@ -731,14 +769,21 @@ function updateTagList() {
                 //定時比對tagArray更新alarmArray
                 var alarmIndex = -1;
                 alarmArray = []; //每次更新都必須重置alarmArray
-                if (alarmID_array.length > 0) {
-                    for (j in alarmID_array) {
+                if (alarmFilterArr.length > 0) {
+                    for (j in alarmFilterArr) {
                         alarmIndex = tagArray.findIndex(function (tags) {
-                            return tags.id == alarmID_array[j]; // 比對Alarm與Tag的ID
+                            return tags.id == alarmFilterArr[j].id; // 比對Alarm與Tag的ID
                         });
-                        if (alarmIndex > -1)
-                            alarmArray.push(tagArray[alarmIndex]); //依序將Tag資料放入AlarmArray中
+                        if (alarmIndex > -1) {
+                            alarmArray.push({ //依序將Tag資料放入AlarmArray中
+                                order: alarmFilterArr[j].order,
+                                id: tagArray[alarmIndex].id,
+                                x: tagArray[alarmIndex].x,
+                                y: tagArray[alarmIndex].y
+                            });
+                        }
                     }
+                    focusAlarmIndex = alarmArray[alarmArray.length - 1].order;
                 }
             }
         }
@@ -756,16 +801,16 @@ function drawAnchor(dctx, id, type, x, y) {
     dctx.fillRect(x - 5, y - 5, 10 * 3 / canvasImg.scale, 10 * 3 / canvasImg.scale);
 }
 
-function drawTags(dctx, id, x, y) {
+function drawTags(dctx, id, x, y, color) {
     var radius = 10; //半徑
     dctx.beginPath();
     //circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
     dctx.arc(x, y - radius * 2, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);
     dctx.lineTo(x, y);
     dctx.closePath();
-    dctx.strokeStyle = '#145214';
-    dctx.stroke()
-    dctx.fillStyle = '#2eb82e';
+    dctx.strokeStyle = '#000000';
+    dctx.stroke();
+    dctx.fillStyle = color != "" ? color : '#2eb82e';
     dctx.fill();
     dctx.beginPath();
     dctx.arc(x, y - radius * 2, radius / 2.5, 0, Math.PI * 2, true);
@@ -773,47 +818,6 @@ function drawTags(dctx, id, x, y) {
     dctx.fillStyle = '#ffffff';
     dctx.fill();
 }
-
-/*function drawAlarm() { //test
-    if (alarm_image.isOnload) {
-        if (focusAlarmTag_ID == "") {
-            alarmArray.forEach(function (v) {
-                ctx.drawImage(alarm_image.image, v.x - 13, v.y - 22, 25, 25 * alarm_image.size);
-            });
-        } else {
-            var array = {};
-            var f_index = alarmArray.findIndex(function (tags) {
-                return tags.id == focusAlarmTag_ID; // 比對Alarm與Tag的ID
-            });
-            alarmArray.forEach(function (v) {
-                if (v.id != focusAlarmTag_ID)
-                    array.push(v);
-            });
-            array.push(alarmArray[f_index]);
-            array.forEach(function (v) {
-                ctx.drawImage(alarm_image.image, v.x - 13, v.y - 22, 25, 25 * alarm_image.size);
-            });
-        }
-    }
-}*/
-
-/*function drawAlarmTags(dctx, id, x, y) {
-    if (alarm_image.isOnload) {
-        if (id != focusAlarmTag_ID) {
-            dctx.drawImage(alarm_image.image, x - 13, y - 22, 25, 25 * alarm_image.size);
-        } else {
-            //dctx.drawImage(bling_image.image, x - 13, y - 22, 25, 25 * alarm_image.size);
-            var image = new Image();
-            image.src = '../image/alarm_dot.png';
-            image.onload = function () {
-                dctx.drawImage(this, x - 13, y - 22, 25, 25 * alarm_image.size);
-            };
-        }
-        //dctx.fillStyle = '#ff8c1a';
-        //dctx.font = '10px serif';
-        //dctx.strokeText(id, x, y); //tagID
-    }
-}*/
 
 function drawAlarmTags(dctx, id, x, y) {
     var radius = 10; //半徑
@@ -823,6 +827,8 @@ function drawAlarmTags(dctx, id, x, y) {
     dctx.arc(x, y - radius * 2, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);
     dctx.lineTo(x, y);
     dctx.closePath();
+    dctx.strokeStyle = '#000000';
+    dctx.stroke();
     dctx.fillStyle = '#ff3333';
     dctx.fill();
 
@@ -918,10 +924,10 @@ function focusAlarmTag(x, y) {
     }
 }
 
-function changeFocusAlarm(alarm_id) { //改變鎖定定位的Alarm目標
+function changeFocusAlarm(alarm_order) { //改變鎖定定位的Alarm目標
     isFocus = true;
     isFocusNewAlarm = false; //先解除鎖定在最新一筆AlarmTag
-    var index = alarmArray.findIndex(function (tags) { //抓取指定AlarmTag的位置
+    /*var index = alarmArray.findIndex(function (tags) { //抓取指定AlarmTag的位置
         return tags.id == alarm_id;
     });
     if (index > -1) {
@@ -936,16 +942,22 @@ function changeFocusAlarm(alarm_id) { //改變鎖定定位的Alarm目標
             alarmArray.push(tagArray[alarmIndex]); //新增成alarmArray的最新一筆
             focusAlarmIndex = alarmArray.length - 1; //所以抓取最後一筆
         }
-    }
-    focusAlarmTag_ID = alarm_id;
+    }*/
+
+    var index = alarmFilterArr.findIndex(function (info) { //抓取指定AlarmTag的位置
+        return info.order == alarm_order;
+    });
+    focusAlarmIndex = alarmFilterArr[index].order
 }
 
-function releaseFocusAlarm(alarm_id) { //解除指定的alarm
+function releaseFocusAlarm(alarm_order) { //解除指定的alarm
     isFocusNewAlarm = true;
-    focusAlarmTag_ID = "";
-    var index = alarmID_array.indexOf(alarm_id);
-    if (index > -1)
-        alarmID_array.splice(index, 1);
+    focusAlarmIndex = focusAlarmIndex - 1;
+    /*var index = alarmFilterArr.findIndex(function (info) {
+        return info.order == alarm_order;
+    });
+    if (index > -1)*/
+    alarmFilterArr.splice(parseInt(alarm_order, 10), 1);
 }
 
 function unlockFocusAlarm() { //解除定位
@@ -970,22 +982,21 @@ function draw() {
         drawAnchor(ctx, v.id, v.type, v.x, v.y);
     });
     tagArray.forEach(function (v) {
-        drawTags(ctx, v.id, v.x, v.y);
+        drawTags(ctx, v.id, v.x, v.y, v.color);
     });
     alarmArray.forEach(function (v) {
         drawAlarmTags(ctx, v.id, v.x, v.y);
     });
-    //drawAlarm();
-    /*var numberOfAlarms = alarmID_array.length;
-    if (numberOfAlarms > 0) {
-        if (isFocusNewAlarm) {
-            focusAlarmTag(alarmArray[alarmArray.length - 1].x, alarmArray[alarmArray.length - 1].y);
-        } else {
-            focusAlarmTag(alarmArray[focusAlarmIndex].x, alarmArray[focusAlarmIndex].y);
-        }
+
+    if (alarmArray.length > 0) {
+        var index = alarmArray.findIndex(function (info) {
+            return info.order == focusAlarmIndex;
+        });
+        drawAlarmTags(ctx, alarmArray[index].id, alarmArray[index].x, alarmArray[index].y);
+        focusAlarmTag(alarmArray[index].x, alarmArray[index].y);
     } else {
         isFocus = false;
-    }*/
+    }
 }
 
 
