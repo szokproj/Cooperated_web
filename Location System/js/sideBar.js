@@ -7,7 +7,7 @@ function alarmSidebarMove() {
         if (!leftSide_isOpen) {
             $('#content').addClass('left_open');
             $('.sideBar').animate({
-                left: '50px'
+                left: '30px'
             }, 370); //0
         } else {
             //側邊欄由右向左滑動
@@ -26,12 +26,12 @@ function tagSidebarMove() {
         if (!rightSide_isOpen) {
             $('#content').addClass('right_open');
             $aside.stop(true).animate({
-                right: '-80px'
-            }, 370);
+                right: '0px'
+            }, 350);
         } else {
             $('#content').removeClass('right_open');
             $aside.stop(true).animate({
-                right: '-400px'
+                right: '-350px'
             }, 310);
         }
         rightSide_isOpen = !rightSide_isOpen;

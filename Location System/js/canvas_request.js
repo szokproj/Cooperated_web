@@ -30,16 +30,20 @@ var AnchorPosition = false,
     pageTimer = {}; //定義計時器全域變數
 
 var isFocus = true,
-    isFocusNewAlarm = false,
-    focusAlarmIndex = -1;
+    alarm_count = 0;
 
 var memberArray = [],
-    member_color = {},
     alarmFilterArr = [];
 
 $(function () {
     //https://www.minwt.com/webdesign-dev/js/16298.html
-
+    var h = screen.availHeight;
+    var w = screen.availWidth;
+    console.log("Height: " + h + "\nWidth: " + w);
+    $(".cvsBlock").css("height", h * 0.8 + "px");
+    $(".member-table").css("max-height", h * 0.71 + "px");
+    $(".alarm-table").css("max-height", h * 0.75 + "px");
+    $(".search-table").css("max-height", h * 0.7 + "px");
 
     /**
      * Check this page's permission and load navbar
@@ -76,24 +80,22 @@ $(function () {
         //獲取滑鼠按下時的坐標，區別於下面的es.pageX,es.pageY 
         var downx = e.pageX;
         var downy = e.pageY;
-        //pageY的y要大寫，必須大寫！！
-        // 滑鼠按下時給div掛事件 
+        //pageY的y要大寫，一定要大寫！
         $("#canvas").bind("mousemove", function (es) {
-            //es.pageX,es.pageY:獲取滑鼠移動後的坐標 
+            //滑鼠按下時=>div綁定事件 
             var end_x = es.pageX - downx + canvas_left;
-            //計算div的最終位置 
             var end_y = es.pageY - downy + canvas_top;
-            //帶上單位 
+            //es.pageX,es.pageY:獲取滑鼠移動後的坐標 
+            //計算div的最終位置
             $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
+            //加上單位 
         });
-
         $("#canvas").mouseup(function () {
-            //滑鼠彈起時給div取消事件 
+            //滑鼠彈起時=>div取消事件 
             $("#canvas").unbind("mousemove");
         });
-
         $("#canvas").mouseleave(function () {
-            //滑鼠離開canvas時給div取消事件 
+            //滑鼠離開canvas時=>div取消事件 
             $("#canvas").unbind("mousemove");
         });
     });
@@ -148,8 +150,8 @@ function setup() {
 
 function addMapTab(map_id, map_name) {
     var tab_map_id = "map_tab_" + map_id;
-    $("#input_map").before("<button type=\"button\" name=\"map_tab\" class=\"btn btn-primary\" id=\"" + tab_map_id +
-        "\" onclick=\"setMap(\'" + map_id + "\')\">" +
+    $("#input_map").before("<button type=\"button\" name=\"map_tab\" class=\"btn btn-primary\" id=\"" +
+        tab_map_id + "\" onclick=\"setMap(\'" + map_id + "\')\">" +
         map_name + "</button></li>");
     setMap(map_id);
     $("#map_btn_" + map_id).prop('disabled', true).css('color', 'lightgray');
@@ -369,11 +371,36 @@ function getMemberDate() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
-                //data => tag_id number Name department jobTitle type color
+                //member_data => tag_id number Name department jobTitle type color
                 memberArray = 'Values' in revObj == true ? revObj.Values.slice(0) : [];
-                memberArray.forEach(info => {
-                    member_color[info.tag_id] = info.color;
-                });
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
+}
+
+function getMemberPhone(img_id, number) {
+    var pictureBox = $("#" + img_id);
+    pictureBox.attr('src', ""); //reset
+    if (number == "")
+        return;
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetOneStaff"],
+        "Value": {
+            "number": number
+        }
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0 && "Values" in revObj) {
+                var revInfo = revObj.Values[0];
+                if (revInfo.file_ext != "" && revInfo.photo != "") {
+                    var src = "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
+                    pictureBox.attr('src', src);
+                }
             }
         }
     };
@@ -491,20 +518,75 @@ function getEventPosition(ev) { //獲取滑鼠點擊位置
     return {
         x: x,
         y: y
-    };
-    //注：如果使用此方法無效的話，需要給Canvas元素的position設為absolute。
+    }; //注：如果使用此方法無效的話，需要給Canvas元素的position設為absolute。
 }
 
 function clickEvent(p) { //滑鼠點擊事件
     tagArray.forEach(function (v, i) {
-        drawTags(ctx, v.id, v.x, v.y, v.color);
+        drawInvisiblePoints(ctx, v.id, v.x, v.y, 5);
         if (p && ctx.isPointInPath(p.x, p.y)) {
             //如果傳入了事件坐標，就用isPointInPath判斷一下
             $(function () {
                 $("#member_dialog_tag_id").text(parseInt(v.id.substring(8), 16));
+                $("#member_dialog_number").text(v.number);
                 $("#member_dialog_name").text(v.name);
-                $("#member_dialog_image").text(v.image);
+                getMemberPhone("member_dialog_image", v.number);
                 $("#member_dialog").dialog("open");
+            });
+        }
+    });
+    alarmArray.forEach(function (v) {
+        drawInvisiblePoints(ctx, v.id, v.x, v.y, 7);
+        if (p && ctx.isPointInPath(p.x, p.y)) {
+            //如果傳入了事件坐標，就用isPointInPath判斷一下
+            $(function () {
+                var color = "",
+                    status = "";
+                switch (v.status) {
+                    case "low_power":
+                        color = "#72ac1b";
+                        status = $.i18n.prop('i_lowPowerAlarm');
+                        break;
+                    case "help":
+                        color = "#ff8484";
+                        status = $.i18n.prop('i_helpAlarm');
+                        break;
+                    case "still":
+                        color = "#FF6600";
+                        status = $.i18n.prop('i_stillAlarm');
+                        break;
+                    case "active":
+                        color = "#FF6600";
+                        status = $.i18n.prop('i_activeAlarm');
+                        break;
+                    default:
+                        color = "#FFFFFF"; //unknown
+                        status = "";
+                }
+                var member_index = memberArray.findIndex(function (info) {
+                    return info.tag_id == v.id;
+                });
+                var number = member_index > -1 ? memberArray[member_index].number : "";
+                var name = member_index > -1 ? memberArray[member_index].Name : "";
+                var time_arr = TimeToArray(v.time);
+                $("#alarm_dialog").css('background-color', color);
+                getMemberPhone("alarm_dialog_image", number);
+                $("#alarm_dialog_number").text(number);
+                $("#alarm_dialog_name").text(name);
+                $("#alarm_dialog_id").text(parseInt(v.id.substring(8), 16));
+                $("#alarm_dialog_date").text(time_arr.date);
+                $("#alarm_dialog_time").text(time_arr.time);
+                $("#alarm_dialog_status").text(status);
+                $("#alarm_dialog_btn_unlock").unbind();
+                $("#alarm_dialog_btn_unlock").click(function () {
+                    releaseFocusAlarm(v.order);
+                    $("#alarm_dialog").dialog("close");
+                });
+                $("#alarm_dialog_btn_focus").unbind();
+                $("#alarm_dialog_btn_focus").click(function () {
+                    changeFocusAlarm(v.order);
+                });
+                $("#alarm_dialog").dialog("open");
             });
         }
     });
@@ -525,6 +607,7 @@ function handleMouseMove(event) {
         lastY = loc.y;
         document.getElementById('x').value = (lastX / Zoom / fitZoom * canvasImg.scale).toFixed(2);
         document.getElementById('y').value = (lastY / Zoom / fitZoom * canvasImg.scale).toFixed(2);
+        //console.log("x : " + (lastX).toFixed(2) + ", y : " + (lastY).toFixed(2));
     }
 }
 
@@ -546,7 +629,7 @@ function getPointOnCanvas(x, y) {
 /*            接收並處理Alarm           */
 /*------------------------------------*/
 
-var alarm_thumbnail_count = -1;
+
 
 function updateAlarmList() {
     var request = {
@@ -560,12 +643,14 @@ function updateAlarmList() {
             if (!revObj)
                 return false;
 
-            var list = "",
-                items = 0;
-
-            $(function () { //getMemberDate 
+            if (revObj.length > alarm_count) {
+                alarm_count = revObj.length;
+                isFocus = true; //happen new alarm
+                changeAlarmLight();
+                alarmFilterArr = [];
+                var list = "";
+                var items = 0;
                 for (var i = 0; i < revObj.length; i++) {
-                    items = i;
                     var member_index = memberArray.findIndex(function (info) {
                         return info.tag_id == revObj[i].tag_id;
                     });
@@ -581,137 +666,111 @@ function updateAlarmList() {
                     var repeat = alarmFilterArr.findIndex(function (info) {
                         return info.id == revObj[i].tag_id;
                     });
-                    if (repeat > -1) {
-                        if (alarmFilterArr[repeat].alarm_type != revObj[i].tag_alarm_type) {
-                            items++;
-                            alarmFilterArr.push({
-                                order: items,
-                                id: revObj[i].tag_id,
-                                alarm_type: revObj[i].tag_alarm_type,
-                                time: revObj[i].tag_time
-                            });
-                        }
-                    } else {
-                        items++;
-                        alarmFilterArr.push({
-                            order: items,
-                            id: revObj[i].tag_id,
-                            alarm_type: revObj[i].tag_alarm_type,
-                            time: revObj[i].tag_time
-                        });
-                    }
+                    if (repeat > -1 && alarmFilterArr[repeat].alarm_type == revObj[i].tag_alarm_type)
+                        alarmFilterArr.splice(repeat, 1);
+                    items++;
+                    alarmFilterArr.push({
+                        order: items,
+                        id: revObj[i].tag_id,
+                        alarm_type: revObj[i].tag_alarm_type,
+                        time: revObj[i].tag_time
+                    });
                 }
                 $("#table_rightbar_alarm_list tbody").html(list);
 
-                changeAlarmLight();
-
-                if (items > alarm_thumbnail_count) {
-                    isFocus = true;
-                    isFocusNewAlarm = true;
-                    //var alarmID_new = revObj[items].tag_id;
-                    //依照更新順序放入alarmTag的ID到變數   
-                    //如果變數(alarm的ID)已經儲存進了alarm陣列中，那麼刪除已存在的第index項
-                    //再把此alarm的ID值push到alarm陣列裡面
-
-                    /*var index = alarmID_array.indexOf(alarmID_new);
-                    if (index > -1){
-                        alarmID_array.splice(index, 1);
+                /*
+                 * Alarm Card
+                 */
+                $(".thumbnail_columns").empty();
+                alarmFilterArr.forEach(function (element, i) {
+                    var time_arr = TimeToArray(element.time);
+                    var thumb_id = "alarmCard_" + i;
+                    var thumb_img = "alarmCard_img_" + i;
+                    var thumb_unlock_btn_id = "alarmCard_unlock_btn_" + i;
+                    var thumb_focus_btn_id = "alarmCard_focus_btn_" + i;
+                    var color = "",
+                        status = "";
+                    switch (element.alarm_type) {
+                        case "low_power":
+                            color = "#72ac1b";
+                            status = $.i18n.prop('i_lowPowerAlarm');
+                            break;
+                        case "help":
+                            color = "#ff8484";
+                            status = $.i18n.prop('i_helpAlarm');
+                            break;
+                        case "still":
+                            color = "#FF6600";
+                            status = $.i18n.prop('i_stillAlarm');
+                            break;
+                        case "active":
+                            color = "#FF6600";
+                            status = $.i18n.prop('i_activeAlarm');
+                            break;
+                        default:
+                            color = "#FFFFFF"; //unknown
+                            status = "";
                     }
+                    var member_index = memberArray.findIndex(function (info) {
+                        return info.tag_id == element.id;
+                    });
+                    var number = member_index > -1 ? memberArray[member_index].number : "";
+                    var name = member_index > -1 ? memberArray[member_index].Name : "";
+                    $(".thumbnail_columns").append("<div class=\"thumbnail\" id=\"" + thumb_id + "\"" +
+                        "style=\"background:" + color + "\">" +
+                        "<table><tr><td>" +
+                        "<img id=\"" + thumb_img + "\" class=\"member_photo\" src=\"\">" +
+                        "</td><td>" +
+                        "<label>" + $.i18n.prop('i_number') + " : " + number + "</label><br>" +
+                        "<label>" + $.i18n.prop('i_name') + " : " + name + "</label><br>" +
+                        "<label>" + $.i18n.prop('i_userID') + " : " + parseInt(element.id.substring(8), 16) + "</label><br>" +
+                        "<label>" + $.i18n.prop('i_date') + " : " + time_arr.date + "</label><br>" +
+                        "<label>" + $.i18n.prop('i_time') + " : " + time_arr.time + "</label>" +
+                        "</td></tr></table>" +
+                        "<label style=\"margin-left:10px; color:white;\">" + $.i18n.prop('i_status') + " : " + status + "</label>" +
+                        "<br><div style=\"text-align:center; margin:5px;\">" +
+                        "<button type=\"button\" class=\"btn btn-primary\"" +
+                        " id=\"" + thumb_unlock_btn_id + "\">" + $.i18n.prop('i_releasePosition') + "</button>" +
+                        "<button type=\"button\" class=\"btn btn-primary\" style=\"margin-left: 10px;\"" +
+                        " id=\"" + thumb_focus_btn_id + "\">" + $.i18n.prop('i_position') +
+                        " <i class=\"fas fa-map-marker-alt\"></i></button>" +
+                        "</div></div>");
+                    getMemberPhone(thumb_img, number);
+                    $("#" + thumb_unlock_btn_id).click(function () {
+                        releaseFocusAlarm(element.order);
+                        $("#" + thumb_id).hide(); //警告卡片會消失
+                        changeAlarmLight();
+                    });
+                    $("#" + thumb_focus_btn_id).click(function () {
+                        changeFocusAlarm(element.order);
+                        changeAlarmLight();
+                    });
 
-                    alarmID_array.push(alarmID_new);*/
-                    //var index = alarmID_array
 
                     /*
-                     * Alarm Card
+                     *  Alarm Dialog
                      */
-                    $(".thumbnail_columns").empty();
-                    alarmFilterArr.forEach(function (element, i) {
-                        var time_arr = TimeToArray(element.time);
-                        var thumb_id = "alarmCard_" + i;
-                        var thumb_unlock_btn_id = "alarmCard_unlock_btn_" + i;
-                        var thumb_focus_btn_id = "alarmCard_focus_btn_" + i;
-                        var color = "",
-                            status = "";
-                        switch (element.alarm_type) {
-                            case "low_power":
-                                color = "#33cc00";
-                                status = $.i18n.prop('i_lowPowerAlarm');
-                                break;
-                            case "help":
-                                color = "#ff8484";
-                                status = $.i18n.prop('i_helpAlarm');
-                                break;
-                            case "still":
-                                color = "#FF6600";
-                                status = $.i18n.prop('i_stillAlarm');
-                                break;
-                            case "active":
-                                color = "#FF6600";
-                                status = $.i18n.prop('i_activeAlarm');
-                                break;
-                            default:
-                                color = "#FFFFFF"; //unknown
-                                status = "";
-                        }
-                        var member_index = memberArray.findIndex(function (info) {
-                            return info.tag_id == element.id;
-                        });
-                        var number = member_index > -1 ? memberArray[member_index].number : "";
-                        var name = member_index > -1 ? memberArray[member_index].Name : "";
-                        $(".thumbnail_columns").append("<div class=\"thumbnail\" id=\"" + thumb_id + "\"" +
-                            "style=\"background:" + color + "\">" +
-                            "<table><tr><td>" +
-                            "<img src=\"../image/user2.png\">" +
-                            "</td><td>" +
-                            "<p>" + $.i18n.prop('i_number') + " : " + number + "</p>" +
-                            "<p>" + $.i18n.prop('i_name') + " : " + name + "</p>" +
-                            "<p>" + $.i18n.prop('i_userID') + " : " + parseInt(element.id.substring(8), 16) + "</p>" +
-                            "<p>" + $.i18n.prop('i_date') + " : " + time_arr.date + "</p>" +
-                            "<p>" + $.i18n.prop('i_time') + " : " + time_arr.time + "</p>" +
-                            "<p>" + $.i18n.prop('i_status') + " : " + status + "</p>" +
-                            "</td></tr></table>" +
-                            "<div style=\"text-align:center;\">" +
-                            "<button type=\"button\" class=\"btn btn-primary\"" +
-                            " id=\"" + thumb_unlock_btn_id + "\">" + $.i18n.prop('i_releasePosition') + "</button>" +
-                            "<button type=\"button\" class=\"btn btn-primary\" style=\"margin-left: 10px;\"" +
-                            " id=\"" + thumb_focus_btn_id + "\">" + $.i18n.prop('i_position') +
-                            " <i class=\"fas fa-map-marker-alt\"></i></button>" +
-                            "</div></div>");
-                        $("#" + thumb_unlock_btn_id).click(function () {
-                            releaseFocusAlarm(element.order);
-                            $("#" + thumb_id).hide(); //警告卡片會消失
-                            changeAlarmLight();
-                        });
-                        $("#" + thumb_focus_btn_id).click(function () {
-                            changeFocusAlarm(element.order);
-                            changeAlarmLight();
-                        });
-
-
-                        /*
-                         *  Alarm Dialog
-                         */
-                        $("#alarm_dialog").css('background-color', color);
-                        $("#alarm_dialog_btn_unlock").unbind();
-                        $("#alarm_dialog_btn_focus").unbind();
-                        $("#alarm_dialog_number").text(number);
-                        $("#alarm_dialog_name").text(name);
-                        $("#alarm_dialog_id").text(parseInt(element.id.substring(8), 16));
-                        $("#alarm_dialog_date").text(time_arr.date);
-                        $("#alarm_dialog_time").text(time_arr.time);
-                        $("#alarm_dialog_status").text(status);
-                        $("#alarm_dialog_btn_unlock").click(function () {
-                            releaseFocusAlarm(element.order);
-                            $("#alarm_dialog").dialog("close");
-                        });
-                        $("#alarm_dialog_btn_focus").click(function () {
-                            changeFocusAlarm(element.order);
-                        });
-                        $("#alarm_dialog").dialog("open");
+                    $("#alarm_dialog").css('background-color', color);
+                    getMemberPhone("alarm_dialog_image", number);
+                    $("#alarm_dialog_number").text(number);
+                    $("#alarm_dialog_name").text(name);
+                    $("#alarm_dialog_id").text(parseInt(element.id.substring(8), 16));
+                    $("#alarm_dialog_date").text(time_arr.date);
+                    $("#alarm_dialog_time").text(time_arr.time);
+                    $("#alarm_dialog_status").text(status);
+                    $("#alarm_dialog_btn_unlock").unbind();
+                    $("#alarm_dialog_btn_unlock").click(function () {
+                        unlockFocusAlarm();
+                        //releaseFocusAlarm(element.order);
+                        $("#alarm_dialog").dialog("close");
                     });
-                    alarm_thumbnail_count = items;
-                }
-            });
+                    $("#alarm_dialog_btn_focus").unbind();
+                    $("#alarm_dialog_btn_focus").click(function () {
+                        changeFocusAlarm(element.order);
+                    });
+                    $("#alarm_dialog").dialog("open");
+                });
+            }
         }
     };
     xmlHttp.send(JSON.stringify(request));
@@ -749,29 +808,40 @@ function updateTagList() {
                 tbody.empty();
                 tagArray = [];
                 for (var i = 0; i < revObj.length; i++) {
+                    var member_index = memberArray.findIndex(function (info) {
+                        return info.tag_id == revObj[i].tag_id;
+                    });
+                    var number = member_index > -1 ? memberArray[member_index].number : "";
+                    var name = member_index > -1 ? memberArray[member_index].Name : "";
+                    var color = member_index > -1 ? memberArray[member_index].color : "";
+
                     //update tag array
                     tagArray.push({
                         id: revObj[i].tag_id,
-                        x: revObj[i].tag_x / canvasImg.scale,
-                        y: canvasImg.height - revObj[i].tag_y / canvasImg.scale,
+                        x: revObj[i].tag_x / canvasImg.scale, //* fitZoom * Zoom,
+                        y: canvasImg.height - revObj[i].tag_y / canvasImg.scale, //* fitZoom * Zoom,
                         system_time: revObj[i].tag_time,
-                        color: revObj[i].tag_id in member_color ? member_color[revObj[i].tag_id] : ""
+                        color: color,
+                        number: number,
+                        name: name
                     });
+                    /*if (revObj[i].tag_id == "0000000000000012")
+                        console.log("tag_x : " + revObj[i].tag_x + ", tag_y : " + revObj[i].tag_y);*/
 
                     //update member list
                     tbody.append("<tr><td>" + (i + 1) +
                         "</td><td>" + parseInt(revObj[i].tag_id.substring(8), 16) +
-                        "</td><td>" + revObj[i].number +
-                        "</td><td>" + revObj[i].Name +
+                        "</td><td>" + number +
+                        "</td><td>" + name +
                         "</td></tr>");
                 }
+                tableFilter("table_filter_member", "table_rightbar_member_list");
 
                 //定時比對tagArray更新alarmArray
-                var alarmIndex = -1;
                 alarmArray = []; //每次更新都必須重置alarmArray
                 if (alarmFilterArr.length > 0) {
-                    for (j in alarmFilterArr) {
-                        alarmIndex = tagArray.findIndex(function (tags) {
+                    for (var j = 0; j < alarmFilterArr.length; j++) {
+                        var alarmIndex = tagArray.findIndex(function (tags) {
                             return tags.id == alarmFilterArr[j].id; // 比對Alarm與Tag的ID
                         });
                         if (alarmIndex > -1) {
@@ -779,136 +849,17 @@ function updateTagList() {
                                 order: alarmFilterArr[j].order,
                                 id: tagArray[alarmIndex].id,
                                 x: tagArray[alarmIndex].x,
-                                y: tagArray[alarmIndex].y
+                                y: tagArray[alarmIndex].y,
+                                status: alarmFilterArr[j].alarm_type,
+                                time: alarmFilterArr[j].time
                             });
                         }
                     }
-                    focusAlarmIndex = alarmArray[alarmArray.length - 1].order;
                 }
             }
         }
     };
     xmlHttp.send();
-}
-
-function drawAnchor(dctx, id, type, x, y) {
-    if (type == "main")
-        dctx.fillStyle = "red";
-    else
-        dctx.fillStyle = "blue";
-    dctx.font = 13 * 3 / canvasImg.scale + 'px serif';
-    dctx.fillText(id, x - 15, y - 6); //anchorID
-    dctx.fillRect(x - 5, y - 5, 10 * 3 / canvasImg.scale, 10 * 3 / canvasImg.scale);
-}
-
-function drawTags(dctx, id, x, y, color) {
-    var radius = 10; //半徑
-    dctx.beginPath();
-    //circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
-    dctx.arc(x, y - radius * 2, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);
-    dctx.lineTo(x, y);
-    dctx.closePath();
-    dctx.strokeStyle = '#000000';
-    dctx.stroke();
-    dctx.fillStyle = color != "" ? color : '#2eb82e';
-    dctx.fill();
-    dctx.beginPath();
-    dctx.arc(x, y - radius * 2, radius / 2.5, 0, Math.PI * 2, true);
-    dctx.closePath();
-    dctx.fillStyle = '#ffffff';
-    dctx.fill();
-}
-
-function drawAlarmTags(dctx, id, x, y) {
-    var radius = 10; //半徑
-
-    //畫倒水滴形
-    dctx.beginPath();
-    dctx.arc(x, y - radius * 2, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);
-    dctx.lineTo(x, y);
-    dctx.closePath();
-    dctx.strokeStyle = '#000000';
-    dctx.stroke();
-    dctx.fillStyle = '#ff3333';
-    dctx.fill();
-
-    //畫中心白色圓形
-    dctx.beginPath();
-    dctx.arc(x, y - radius * 2, radius * 2 / 3, 0, Math.PI * 2, true);
-    dctx.closePath();
-    dctx.fillStyle = '#ffffff';
-    dctx.fill();
-
-    //畫驚嘆號
-    dctx.fillStyle = '#e60000';
-    dctx.beginPath();
-
-    var start = {
-        x: x - radius * 0.1,
-        y: y + radius * (-1.9)
-    };
-    var cp1 = {
-        x: x - radius * 0.3,
-        y: y - radius * 2.46
-    };
-    var cp2 = {
-        x: x - radius * 0.1,
-        y: y - radius * 2.48
-    };
-    var end = {
-        x: x,
-        y: y - radius * 2.5
-    };
-
-    dctx.lineTo(start.x, start.y);
-    dctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
-
-    start = {
-        x: x,
-        y: y - radius * 2.5
-    };
-    cp1 = {
-        x: x + radius * 0.1,
-        y: y - radius * 2.48
-    };
-    cp2 = {
-        x: x + radius * 0.3,
-        y: y - radius * 2.46
-    };
-    end = {
-        x: x + radius * 0.1,
-        y: y + radius * (-1.9)
-    };
-
-    dctx.lineTo(start.x, start.y);
-    dctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
-
-    start = {
-        x: x + radius * 0.1,
-        y: y + radius * (-1.9)
-    };
-    cp1 = {
-        x: x + radius * 0.04,
-        y: y + radius * (-1.8)
-    };
-    cp2 = {
-        x: x - radius * 0.04,
-        y: y + radius * (-1.8)
-    };
-    end = {
-        x: x - radius * 0.1,
-        y: y + radius * (-1.9)
-    };
-
-    dctx.lineTo(start.x, start.y);
-    dctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
-    dctx.fill();
-
-    //畫驚嘆號的圓點
-    dctx.beginPath();
-    dctx.arc(x, y + radius * (-1.6), radius * 0.1, 0, Math.PI * 2, true);
-    dctx.fill();
-    dctx.closePath();
 }
 
 function focusAlarmTag(x, y) {
@@ -926,38 +877,19 @@ function focusAlarmTag(x, y) {
 
 function changeFocusAlarm(alarm_order) { //改變鎖定定位的Alarm目標
     isFocus = true;
-    isFocusNewAlarm = false; //先解除鎖定在最新一筆AlarmTag
-    /*var index = alarmArray.findIndex(function (tags) { //抓取指定AlarmTag的位置
-        return tags.id == alarm_id;
-    });
-    if (index > -1) {
-        focusAlarmIndex = index;
-        console.log("focusAlarmIndex: " + focusAlarmIndex);
-    } else {
-        var alarmIndex = tagArray.findIndex(function (tags) {
-            return tags.id == alarm_id; // 比對Alarm與Tag的ID
-        });
-        if (alarmIndex > -1) {
-            alarmID_array.push(alarm_id); //新增成alarmID_array的最新一筆
-            alarmArray.push(tagArray[alarmIndex]); //新增成alarmArray的最新一筆
-            focusAlarmIndex = alarmArray.length - 1; //所以抓取最後一筆
-        }
-    }*/
-
     var index = alarmFilterArr.findIndex(function (info) { //抓取指定AlarmTag的位置
         return info.order == alarm_order;
     });
-    focusAlarmIndex = alarmFilterArr[index].order
+    var temp = alarmFilterArr[index];
+    alarmFilterArr.splice(index, 1);
+    alarmFilterArr.push(temp);
 }
 
 function releaseFocusAlarm(alarm_order) { //解除指定的alarm
-    isFocusNewAlarm = true;
-    focusAlarmIndex = focusAlarmIndex - 1;
-    /*var index = alarmFilterArr.findIndex(function (info) {
+    var index = alarmFilterArr.findIndex(function (info) {
         return info.order == alarm_order;
     });
-    if (index > -1)*/
-    alarmFilterArr.splice(parseInt(alarm_order, 10), 1);
+    alarmFilterArr.splice(index, 1);
 }
 
 function unlockFocusAlarm() { //解除定位
@@ -985,15 +917,11 @@ function draw() {
         drawTags(ctx, v.id, v.x, v.y, v.color);
     });
     alarmArray.forEach(function (v) {
-        drawAlarmTags(ctx, v.id, v.x, v.y);
+        drawAlarmTags(ctx, v.id, v.x, v.y, v.status);
     });
-
     if (alarmArray.length > 0) {
-        var index = alarmArray.findIndex(function (info) {
-            return info.order == focusAlarmIndex;
-        });
-        drawAlarmTags(ctx, alarmArray[index].id, alarmArray[index].x, alarmArray[index].y);
-        focusAlarmTag(alarmArray[index].x, alarmArray[index].y);
+        var last = alarmArray.length - 1;
+        focusAlarmTag(alarmArray[last].x, alarmArray[last].y);
     } else {
         isFocus = false;
     }
@@ -1011,14 +939,9 @@ function Start() {
     if (canvasImg.isPutImg) {
         //設定計時器
         pageTimer["timer1"] = setInterval("autoSendRequest()", delaytime);
-        /*pageTimer["timer1"] = setTimeout(function request() {
-            autoSendRequest();
-            pageTimer["timer1"] = setTimeout(request, delaytime);
-        }, delaytime);*/
     } else {
         for (var each in pageTimer) {
             clearInterval(pageTimer[each]);
-            //clearTimeout(pageTimer[each]);
         }
     }
 }

@@ -129,6 +129,7 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
+    <script type="text/javascript" src="../js/table_filter.js"></script>
     <script type="text/javascript" src="../js/anchor_setting_load.js"></script>
     <script type="text/javascript" src="../js/anchor_setting_request.js"></script>
 </head>
@@ -208,15 +209,18 @@
                         <div class="mode_ethernet">
                             <input type="checkbox" style="margin-left:10px;" id="is_multiple_settings">
                             <label>Multiple Settings</label>
+                            <span style="float:right; margin-right:5px;">
+                                <span class="i18n" name="i_filterRows"></span>：<input type="search"
+                                    class="light-table-filter i18n-input" data-table="order-table"
+                                    selectattr="placeholder" selectname="i_inputKeyword">
+                            </span>
                             <div class="middle">
                                 <div style="width: 1800px;">
-                                    <table id="table_ip_address_info" class="ui-widget ui-widget-content">
+                                    <table id="table_ip_address_info" class="ui-widget ui-widget-content order-table">
                                         <thead>
                                             <tr class="ui-widget-header">
                                                 <th>Check</th>
                                                 <th>Status</th>
-                                                <th>Machine Number</th>
-                                                <th>Model Name</th>
                                                 <th>Anchor ID</th>
                                                 <th>IP Address</th>
                                                 <th>Gateway</th>
@@ -227,6 +231,8 @@
                                                 <th>Udp Server Port</th>
                                                 <th>Tcp Client Src Port</th>
                                                 <th>Tcp Client Des Port</th>
+                                                <th>Machine Number</th>
+                                                <th>Model Name</th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>

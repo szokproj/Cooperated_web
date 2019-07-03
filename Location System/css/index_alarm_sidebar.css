@@ -19,48 +19,42 @@
 }
 
 .sideBar {
-    width: 300px;
     position: fixed;
     top: 0px;
-    left: -330px;
-    display: block;
-    /*background-color: rgba(204, 204, 204, 0.452);*/
+    left: -300px;
+    width: 300px;
 }
 
 .sideBar .sideBar-left-button {
     /*解除定位按鈕*/
-    height: 50px;
-}
-
-.sideBar-left-button button {
-    margin: 10px;
+    height: 30px;
 }
 
 .sideBar .sideBar-left {
-    width: 300px;
-    height: 90%;
-    background-color: transparent;
+    padding-top: 10px;
     position: fixed;
+    display: inline-block;
     overflow-x: hidden;
     overflow-y: auto;
-}
-
-.sideBar .nav-icon:hover {
-    cursor: pointer;
+    margin-left: 30px;
+    width: 300px;
+    height: 100%;
 }
 
 /*Alarm Dialog*/
 
 .thumbnail {
-    display: inline-block;
-    background: #ff3333;
-    width: 320px;
+    display: block;
+    background: #ff8484;
+    width: 280px;
+    /*height: 150px;*/
+    border-radius: 5px;
+    border: 1px solid white;
 }
 
 .thumbnail:hover {
-    background: gray;
-    border: 1px solid white;
-    cursor: pointer;
+    border: 1px solid rgb(124, 124, 124);
+    /*cursor: pointer;*/
 }
 
 .thumbnail td {
@@ -69,13 +63,12 @@
 
 .thumbnail img {
     background: white;
-    height: 100px;
     width: 100px;
 }
 
-.thumbnail p {
-    font-weight: bold;
-    line-height: 7px;
+.thumbnail label {
+    color: black;
+    margin: 0px;
 }
 
 /***************/
@@ -93,7 +86,7 @@
 
 .btn-alarm {
     padding: 5px 10px 5px 10px;
-    font-size: 22px;
+    font-size: 20px;
     color: rgb(233, 0, 0);
     float: right;
     /*background-color: rgb(196, 195, 195);

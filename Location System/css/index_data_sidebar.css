@@ -19,27 +19,13 @@ aside button {
 
 .sidebar-table {
     overflow: auto;
-    max-width: 300px;
+    height: 100%;
+    max-width: 310px;
     margin: 10px 10px 0px 0px;
 }
 
 .sidebar-table thead {
     background-color: rgb(211, 211, 211);
-}
-
-.member-table {
-    height: 615px;
-    max-height: 615px;
-}
-
-.alarm-table {
-    height: 646px;
-    max-height: 646px;
-}
-
-.search-table {
-    height: 600px;
-    max-height: 600px;
 }
 
 .page-main {
@@ -48,23 +34,11 @@ aside button {
 
 .page-main>aside {
     background-color: #fff;
-    width: 400px;
+    width: 340px;
     height: 100%;
     top: 0;
-    right: -400px;
+    right: -340px;
     position: fixed;
-}
-
-.page-main>aside button {
-    background-color: rgba(0, 0, 0, 0);
-    display: block;
-    position: absolute;
-    right: 420px;
-    width: 30px;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    border: none;
 }
 
 .page-main>aside .main-place {

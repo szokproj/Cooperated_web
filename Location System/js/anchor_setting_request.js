@@ -66,11 +66,9 @@ function Search() {
             var list = "";
             networkArray = [];
             for (var i = 0; i < udpInfo.length; i++) {
-                list += "<tr><td>" + "<input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" +
+                list += "<tr><td><input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" +
                     udpInfo[i].IP_address + "\" />" +
                     "</td><td>" + RED_LIGHT +
-                    "</td><td>" + udpInfo[i].Machine_Number +
-                    "</td><td>" + udpInfo[i].Model +
                     "</td><td>" + " " +
                     "</td><td>" + udpInfo[i].IP_address +
                     "</td><td>" + udpInfo[i].Gateway_address +
@@ -81,6 +79,8 @@ function Search() {
                     "</td><td>" + udpInfo[i].UDP_Serve_Port +
                     "</td><td>" + udpInfo[i].TCP_Client_Src_Port +
                     "</td><td>" + udpInfo[i].TCP_Client_Des_Port +
+                    "</td><td>" + udpInfo[i].Machine_Number +
+                    "</td><td>" + udpInfo[i].Model +
                     "</td></tr>";
                 networkArray.push({
                     Status: 0,
@@ -100,6 +100,8 @@ function Search() {
             }
             tbody[0].innerHTML = list;
             $(function () {
+                //tableFilter("table_filter_member", "table_rightbar_member_list");
+                LightTableFilter.init();
                 $("input[name=checkbox_ipAddr]").change(checked_trans);
                 if ($("#is_multiple_settings").is(":checked")) //多選
                     $("input[name=checkbox_ipAddr]").unbind('click', singleCheck);
@@ -253,7 +255,7 @@ function Device_setting_write() {
                 networkArray.Value.dev_Client_IP = client_ip;
             } else { //Static IP
                 set_mode = "Static IP";
-                if ($("#is_multiple_settings").is(":checked")) { //多選s
+                if ($("#is_multiple_settings").is(":checked")) { //多選
                     networkArray.Value.function = ["dev_Mask", "dev_GW", "dev_Client_IP"];
                     //test
                     networkArray.Value.dev_IP = ["0", "0", "0", "0"];

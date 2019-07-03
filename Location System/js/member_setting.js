@@ -245,7 +245,7 @@ function editMemberData(number) {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
-                var revInfo = revObj.Values[0]
+                var revInfo = revObj.Values[0];
                 $("#main_tid_id").val(parseInt(revInfo.tag_id.substring(0, 8), 16));
                 $("#main_user_id").val(parseInt(revInfo.tag_id.substring(8), 16));
                 $("#main_card_id").val(revInfo.card_id);

@@ -60,11 +60,17 @@ fieldset {
 }
 
 #content.right_open {
-    padding-right: 310px;
+    padding-right: 330px;
 }
 
 #content.left_open {
-    padding-left: 300px;
+    padding-left: 305px;
+}
+
+.member_photo {
+    float: left;
+    max-width: 130px;
+    margin-right: 10px;
 }
 
 .cvsBlock {
