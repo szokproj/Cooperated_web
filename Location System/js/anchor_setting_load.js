@@ -14,21 +14,13 @@ function checkbox_single_multiple() {
         $("#btn_selectAll").prop('disabled', false).removeClass("disable_color");
         $("#btn_device_read").prop('disabled', true).addClass("disable_color");
         $("#btn_rf_read").prop('disabled', true).addClass("disable_color");
-        $("#is_basic_setting").prop({ 'disabled': true, 'checked': false });
     } else { //單選
         $("input[name=checkbox_ipAddr]").click(singleCheck);
         $("#btn_deselectAll").prop('disabled', true).addClass("disable_color");
         $("#btn_selectAll").prop('disabled', true).addClass("disable_color");
         $("#btn_device_read").prop('disabled', false).removeClass("disable_color");
         $("#btn_rf_read").prop('disabled', false).removeClass("disable_color");
-        $("#is_basic_setting").prop('disabled', false);
     }
-    $("input[name=network_setting_mode]").change(disable_DHCP);
-    $("#is_network_setting").change(disable_network);
-    $("#is_basic_setting").change(disable_basic);
-    disable_network();
-    disable_basic();
-    disable_DHCP();
 }
 
 function disable_DHCP() {
@@ -64,7 +56,6 @@ function disable_DHCP() {
 
 function disable_network() {
     if (!$("#is_network_setting").prop("checked")) {
-        $("input[name=network_setting_mode]").attr('disabled', true); //禁用RadioButton: DHCP/Fixed IP
         $(".table_network_setting label").eq(0).addClass("disable_color"); //Label: DHCP
         $(".table_network_setting label").eq(1).addClass("disable_color"); //Label: Fixed IP
         for (i = 1; i < 5; i++) {
@@ -78,7 +69,6 @@ function disable_network() {
             $("#client_ip_" + i).prop('disabled', true).addClass("disable_color"); //input: Client IP
         }
     } else {
-        $("input[name=network_setting_mode]").attr('disabled', false);
         $(".table_network_setting label").eq(0).removeClass("disable_color"); //Label: DHCP
         $(".table_network_setting label").eq(1).removeClass("disable_color"); //Label: Fixed IP
         disable_DHCP();
