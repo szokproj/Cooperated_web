@@ -1,6 +1,5 @@
 var RED_LIGHT = "<img src=\"../image/redLight.png\"/>";
 var GREEN_LIGHT = "<img src=\"../image/greenLight.png\"/>";
-var tbody = document.getElementsByTagName("tbody");
 var DeviceCheckbox = document.getElementsByName("checkbox_ipAddr");
 var networkArray = [];
 var connect_ip_array = [];
@@ -70,11 +69,11 @@ function Search() {
                     udpInfo[i].IP_address + "\" />" +
                     "</td><td>" + RED_LIGHT +
                     "</td><td>" + " " +
+                    "</td><td>" + udpInfo[i].MAC_address +
                     "</td><td>" + udpInfo[i].IP_address +
                     "</td><td>" + udpInfo[i].Gateway_address +
                     "</td><td>" + udpInfo[i].Mask_address +
                     "</td><td>" + udpInfo[i].Client_ip_addr +
-                    "</td><td>" + udpInfo[i].MAC_address +
                     "</td><td>" + udpInfo[i].TCP_Serve_Port +
                     "</td><td>" + udpInfo[i].UDP_Serve_Port +
                     "</td><td>" + udpInfo[i].TCP_Client_Src_Port +
@@ -98,10 +97,9 @@ function Search() {
                     TCP_Client_Des_Port: udpInfo[i].TCP_Client_Des_Port
                 });
             }
-            tbody[0].innerHTML = list;
             $(function () {
-                //tableFilter("table_filter_member", "table_rightbar_member_list");
-                LightTableFilter.init();
+                $("#table_ip_address_info tbody").html(list);
+                //LightTableFilter.init();
                 $("input[name=checkbox_ipAddr]").change(checked_trans);
                 if ($("#is_multiple_settings").is(":checked")) //多選
                     $("input[name=checkbox_ipAddr]").unbind('click', singleCheck);
@@ -165,7 +163,8 @@ function Connect() {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 var connectedInfo = JSON.parse(this.responseText);
                 var index = -1,
-                    list = "";
+                    list = "",
+                    device_table = "";
 
                 networkArray.forEach(function (v) {
                     v.Status = 0;
@@ -183,29 +182,61 @@ function Connect() {
                     }
                 }
 
+                var count_conn_devices = 0;
                 networkArray.forEach(function (v) {
                     var light = RED_LIGHT;
-                    if (v.Status == 1)
+                    if (v.Status == 1) {
                         light = GREEN_LIGHT;
-                    list += "<tr><td>" + "<input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" +
+                        //input device (network and basic) setting
+                        device_table += "<tr><td>" + v.Anchor_ID + "</td>" +
+                            "<td><select name=\"connected_dhcp\"><option value=\"DHCP\">DHCP</option>" +
+                            "<option value=\"Static IP\">Static IP</option></select></td>" +
+                            "<td><input type=\"text\" name=\"connected_ip_addr\"" +
+                            " value=\"" + v.IP_address + "\" /></td>" +
+                            "<td><input type=\"text\" name=\"connected_gateway_addr\"" +
+                            " value=\"" + v.Gateway_address + "\" /></td>" +
+                            "<td><input type=\"text\" name=\"connected_mask_addr\"" +
+                            " value=\"" + v.Mask_address + "\" /></td>" +
+                            "<td><input type=\"text\" name=\"connected_client_ip_addr\"" +
+                            " value=\"" + v.Client_ip_addr + "\" /></td>" +
+                            "</tr>";
+                        count_conn_devices++;
+                    }
+
+                    list += "<tr><td><input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" +
                         v.IP_address + "\" />" +
                         "</td><td>" + light +
-                        "</td><td>" + v.Machine_Number +
-                        "</td><td>" + v.Model +
                         "</td><td>" + v.Anchor_ID +
+                        "</td><td>" + v.MAC_address +
                         "</td><td>" + v.IP_address +
                         "</td><td>" + v.Gateway_address +
                         "</td><td>" + v.Mask_address +
                         "</td><td>" + v.Client_ip_addr +
-                        "</td><td>" + v.MAC_address +
                         "</td><td>" + v.TCP_Serve_Port +
                         "</td><td>" + v.UDP_Serve_Port +
                         "</td><td>" + v.TCP_Client_Src_Port +
                         "</td><td>" + v.TCP_Client_Des_Port +
+                        "</td><td>" + v.Machine_Number +
+                        "</td><td>" + v.Model +
                         "</td></tr>";
                 });
-                tbody[0].innerHTML = list; //此tbody在html文件中所有tbody標籤的排序(0開頭)-->0
+
                 $(function () {
+                    $("#table_ip_address_info tbody").html(list);
+                    $("#table_device_setting tbody").html(device_table);
+                    for (var i = 0; i < count_conn_devices; i++) {
+                        $("select[name='connected_dhcp']").eq(i).change(function () {
+                            if ($(this).eq(i).value == "DHCP") {
+                                $("select[name='connected_ip_addr']").eq(i).attr('disabled', true);
+                                $("select[name='connected_gateway_addr']").eq(i).attr('disabled', true);
+                                $("select[name='connected_mask_addr']").eq(i).attr('disabled', true);
+                            } else {
+                                $("select[name='connected_ip_addr']").eq(i).attr('disabled', false);
+                                $("select[name='connected_gateway_addr']").eq(i).attr('disabled', false);
+                                $("select[name='connected_mask_addr']").eq(i).attr('disabled', false);
+                            }
+                        });
+                    }
                     $("input[name=checkbox_ipAddr]").change(checked_trans);
                     if ($("#is_multiple_settings").is(":checked")) //多選
                         $("input[name=checkbox_ipAddr]").unbind('click', singleCheck);
@@ -218,6 +249,10 @@ function Connect() {
     } else {
         alert("請至少勾選一個裝置!");
     }
+}
+
+function setSwitch_DHCP() {
+
 }
 
 function Device_setting_write() {

@@ -35,16 +35,78 @@
         }
 
         table {
+            table-layout: fixed;
             border-collapse: collapse;
             width: 100%;
         }
 
         th,
         td {
-            padding: 8px;
-            text-align: left;
-            border: 1px solid #b9b0b0;
+            padding: 5px;
+            text-align: center;
+            background: white;
+            outline: 2px solid #b9b0b0;
+            outline-offset: -1px;
         }
+
+        td:nth-child(1),
+        th:nth-child(1) {
+            position: -webkit-sticky;
+            position: sticky;
+            width: 55px;
+            left: 0px;
+            z-index: 1;
+            background: #e6f5ff;
+        }
+
+        td:nth-child(2),
+        th:nth-child(2) {
+            position: -webkit-sticky;
+            position: sticky;
+            width: 80px;
+            left: 55px;
+            z-index: 1;
+            background: #e6f5ff;
+        }
+
+        td:nth-child(3),
+        th:nth-child(3) {
+            position: -webkit-sticky;
+            position: sticky;
+            width: 100px;
+            left: 135px;
+            z-index: 1;
+            background: #e6f5ff;
+        }
+
+        td:nth-child(4),
+        th:nth-child(4) {
+            position: -webkit-sticky;
+            position: sticky;
+            width: 150px;
+            left: 235px;
+            z-index: 1;
+            background: #e6f5ff;
+        }
+
+        thead tr th {
+            top: 0px;
+            position: sticky;
+            position: -webkit-sticky;
+            background: #cecece;
+            outline: 2px solid #777777;
+            outline-offset: -1px;
+        }
+
+        th:nth-child(1),
+        th:nth-child(2),
+        th:nth-child(3),
+        th:nth-child(4) {
+            z-index: 2;
+            background: #97b8ce;
+        }
+
+
 
         #table_ip_address_infos tr:hover {
             background-color: #f5f5f5;
@@ -216,17 +278,17 @@
                             </span>
                             <div class="middle">
                                 <div style="width: 1800px;">
-                                    <table id="table_ip_address_info" class="ui-widget ui-widget-content order-table">
+                                    <table id="table_ip_address_info">
                                         <thead>
-                                            <tr class="ui-widget-header">
+                                            <tr>
                                                 <th>Check</th>
                                                 <th>Status</th>
                                                 <th>Anchor ID</th>
+                                                <th>MAC Address</th>
                                                 <th>IP Address</th>
                                                 <th>Gateway</th>
                                                 <th>Subnet Mask</th>
                                                 <th>Client IP</th>
-                                                <th>MAC Address</th>
                                                 <th>TCP Server Port</th>
                                                 <th>Udp Server Port</th>
                                                 <th>Tcp Client Src Port</th>
@@ -273,21 +335,33 @@
             </div>
             <div class="tab-pane fade" id="content_device_setting">
                 <div class="row">
-                    <div class="col-lg-6" style="background-color:white;">
+                    <div class="col-lg-12" style="background-color:white;">
                         <div>
                             <div class="checkBox_block">
                                 <input type="checkbox" id="is_network_setting"> Network Setting:<br>
+                                <form>
+                                    <input type="radio" name="network_setting_mode" value="DHCP" checked>
+                                    <label style="margin-right: 20px;">DHCP</label>
+                                    <input type="radio" name="network_setting_mode" value="Static IP">
+                                    <label>Static IP</label><br>
+                                </form>
                             </div>
-                            <div class="line_block">
-                                <table class="table_network_setting">
-                                    <tr>
+                            <div>
+                                <table id="table_device_setting">
+                                    <thead>
+                                        <tr>
+                                            <th>Device ID</th>
+                                            <th>Type</th>
+                                            <th>IP Address</th>
+                                            <th>Mask Address</th>
+                                            <th>Gateway Address</th>
+                                            <th>Client IP</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <!--<tr>
                                         <th>
-                                            <form>
-                                                <input type="radio" name="network_setting_mode" value="DHCP" checked>
-                                                <label style="margin-right: 20px;">DHCP</label>
-                                                <input type="radio" name="network_setting_mode" value="Static IP">
-                                                <label>Static IP</label><br>
-                                            </form>
+                                            
                                         </th>
                                     </tr>
                                     <tr>
@@ -374,7 +448,7 @@
                                         <th>
                                             <input type="text" id="device_id" value="65535" style="max-width: 120px;">
                                         </th>
-                                    </tr>
+                                    </tr>-->
                                 </table>
                             </div>
                         </div>
