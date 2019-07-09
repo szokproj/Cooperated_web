@@ -96,7 +96,6 @@
     <script type="text/javascript" src="../js/check_permission.js"></script>
     <script type="text/javascript">
         var isStart = false;
-
         $(function () {
             /*
              * Check this page's permission and load navbar
@@ -117,6 +116,8 @@
                     break;
             }
             setNavBar("Reference", "Advance_cmd");
+
+            //loadCmdList();
         });
 
         function StartClick() {
@@ -143,6 +144,30 @@
                 }
             };
             xmlHttp.send(JSON.stringify(requestArray));
+        }
+
+        function loadCmdList() {
+            var xmlHttp = createJsonXmlHttp('sql');
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    var revObj = JSON.parse(this.responseText);
+                    if (revObj.success > 0) {
+                        for (i = 0; i < revObj.Values.length; i++) {
+                            $("#table_advance_cmd tbody").append("<tr>" +
+                                "<td>" + (i + 1) + "</td>" +
+                                "<td></td>" +
+                                "<td></td></tr>"
+                            );
+                        }
+                    } else {
+                        alert("載入指令列表失敗");
+                    }
+                }
+            };
+            xmlHttp.send(JSON.stringify({
+                "Command_Type": ["Read"],
+                "Command_Name": ["getCommandList"]
+            }));
         }
     </script>
 </head>
@@ -172,13 +197,12 @@
                     <table id="table_advance_cmd" class="ui-widget ui-widget-content">
                         <thead>
                             <tr class="ui-widget-header" style="background:lightgray;">
-                                <th>Item</th>
-                                <th>Source ID</th>
-                                <th>Anchor ID</th>
+                                <th>Items</th>
+                                <th>Cmd Name</th>
+                                <th>Description</th>
                             </tr>
                         </thead>
-                        <tbody>
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>

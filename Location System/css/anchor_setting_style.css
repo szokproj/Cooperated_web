@@ -30,7 +30,11 @@ td {
 table.sticky-table {
     table-layout: fixed;
     border-collapse: collapse;
-    width: 4000px;
+    width: 100%;
+}
+
+.sticky-table th{
+    width:150px;
 }
 
 .sticky-table th,

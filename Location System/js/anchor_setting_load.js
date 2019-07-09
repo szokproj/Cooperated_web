@@ -1,7 +1,53 @@
 $(function () { //Load==>
     $("#is_multiple_settings").click(checkbox_single_multiple);
     checkbox_single_multiple();
+
+    var dialog, form;
+    var SendResult = function () {
+        var valid = true;
+        if (valid) {
+            displaySelectedRows();
+            dialog.dialog("close");
+        }
+        return valid;
+    };
+
+    dialog = $("#dialog_set_table_display").dialog({
+        autoOpen: false,
+        height: 580,
+        width: 400,
+        modal: true,
+        buttons: {
+            "Confirm": SendResult,
+            Cancel: function () {
+                form[0].reset();
+                dialog.dialog("close");
+            }
+        },
+        close: function () {
+            form[0].reset();
+        }
+    });
+
+    form = dialog.find("form").on("submit", function (event) {
+        event.preventDefault();
+        SendResult();
+    });
+
+    $("#open_dialog_set").click(function () {
+        dialog.dialog("open");
+    });
 });
+
+function displaySelectedRows() {
+    var rows = document.getElementsByName("display_rows");
+    for (i = 0; i < rows.length; i++) {
+        if (rows[i].checked)
+            $("." + rows[i].value).show();
+        else
+            $("." + rows[i].value).hide();
+    }
+}
 
 function singleCheck() {
     $("input[name=checkbox_ipAddr]").not(this).prop("checked", false);

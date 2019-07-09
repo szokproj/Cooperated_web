@@ -21,12 +21,12 @@
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
     <!--edit css-->
     <link rel="stylesheet" type="text/css" href="../css/anchor_setting_style.css" />
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/table_filter.js"></script>
     <script type="text/javascript" src="../js/anchor_setting_load.js"></script>
     <script type="text/javascript" src="../js/anchor_setting_request.js"></script>
+    <!-- JQuery UI - Dialog -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
 
 <body>
@@ -97,6 +97,7 @@
                         <span class="i18n" name="i_filterRows"></span>：<input type="search"
                             class="light-table-filter i18n-input" data-table="order-table" selectattr="placeholder"
                             selectname="i_inputKeyword">
+                        <button id="open_dialog_set">Set <i class='fas fa-cog'></i></button>
                     </span>
                     <div class="middle">
                         <div>
@@ -107,32 +108,32 @@
                                         <th>Status</th>
                                         <th>Anchor ID</th>
                                         <th>MAC Address</th>
-                                        <th>IP Address</th>
-                                        <th>Gateway</th>
-                                        <th>Subnet Mask</th>
-                                        <th>Client IP</th>
-                                        <th>TCP Server Port</th>
-                                        <th>Udp Server Port</th>
-                                        <th>Tcp Client Src Port</th>
-                                        <th>Tcp Client Des Port</th>
-                                        <th>Machine Number</th>
-                                        <th>Model Name</th>
+                                        <th class="row_ip_addr">IP Address</th>
+                                        <th class="row_gateway_addr">Gateway</th>
+                                        <th class="row_mask_addr">Subnet Mask</th>
+                                        <th class="row_client_ip_addr">Client IP</th>
+                                        <th class="row_tcp_server_port">TCP Server Port</th>
+                                        <th class="row_udp_server_port">Udp Server Port</th>
+                                        <th class="row_tcp_client_src_port">Tcp Client Src Port</th>
+                                        <th class="row_tcp_client_des_port">Tcp Client Des Port</th>
+                                        <th class="row_machine_number">Machine Number</th>
+                                        <th class="row_model">Model Name</th>
                                         <th style="width:3px; padding:0px;"></th>
-                                        <th>MODE</th>
-                                        <th>Version</th>
-                                        <th style="width:200px;">Channel</th>
-                                        <th>Datarate</th>
-                                        <th>PRF</th>
-                                        <th>PreambleCode</th>
-                                        <th>PreambleLength</th>
-                                        <th>PAC</th>
-                                        <th>TX PGdelay</th>
-                                        <th style="width:200px;">TX Power</th>
-                                        <th>NSD</th>
-                                        <th>SDF_timeoutr</th>
-                                        <th>SMARTPOWER</th>
-                                        <th>NTM</th>
-                                        <th>MULT</th>
+                                        <th class="row_rf_mode">MODE</th>
+                                        <th class="row_rf_version">Version</th>
+                                        <th class="row_rf_channel" style="width:200px;">Channel</th>
+                                        <th class="row_rf_datarate">Datarate</th>
+                                        <th class="row_rf_prf">PRF</th>
+                                        <th class="row_rf_preamble_code">PreambleCode</th>
+                                        <th class="row_rf_preamble_len">PreambleLength</th>
+                                        <th class="row_rf_pac">PAC</th>
+                                        <th class="row_rf_pg_delay">TX PGdelay</th>
+                                        <th class="row_rf_power" style="width:200px;">TX Power</th>
+                                        <th class="row_rf_nsd">NSD</th>
+                                        <th class="row_rf_sdf_timeoutr">SDF_timeoutr</th>
+                                        <th class="row_rf_smartpower">SMARTPOWER</th>
+                                        <th class="row_rf_ntm">NTM</th>
+                                        <th class="row_rf_mult">MULT</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -168,6 +169,67 @@
             </div>
         </div>
 
+    </div>
+    <div class="hidden_dialog">
+        <div id="dialog_set_table_display" title="Check the display field name">
+            <form>
+                <fieldset style="text-align: left;">
+                    <label style="color:rgb(0, 70, 201);">Network Setting: </label>
+                    <table>
+                        <tr>
+                            <th style="color:rgb(87, 142, 179);">Basic</th>
+                            <th style="color:rgb(87, 142, 179);">Advance</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="display_rows" value="row_ip_addr" /> IP Address<br>
+                                <input type="checkbox" name="display_rows" value="row_gateway_addr" /> Gateway<br>
+                                <input type="checkbox" name="display_rows" value="row_mask_addr" /> Subnet Mask<br>
+                                <input type="checkbox" name="display_rows" value="row_client_ip_addr" /> Client IP<br>
+                                <input type="checkbox" name="display_rows" value="row_machine_number" /> Machine Number<br>
+                                <input type="checkbox" name="display_rows" value="row_model" /> Model Name
+                            </td>
+                            <td>
+                                <input type="checkbox" name="display_rows" value="row_tcp_server_port" /> TCP Server Port<br>
+                                <input type="checkbox" name="display_rows" value="row_udp_server_port" /> UDP Server Port<br>
+                                <input type="checkbox" name="display_rows" value="row_tcp_client_src_port" /> TCP Client Src Port<br>
+                                <input type="checkbox" name="display_rows" value="row_tcp_client_des_port" /> TCP Client Des Port
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <label style="color:rgb(0, 70, 201);">RF Setting : </label>
+                    <table>
+                        <tr>
+                            <th style="color:rgb(87, 142, 179);">Basic</th>
+                            <th style="color:rgb(87, 142, 179);">Advance</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="display_rows" value="row_rf_mode" /> MODE<br>
+                                <input type="checkbox" name="display_rows" value="row_rf_version" /> Version<br>
+                                <input type="checkbox" name="display_rows" value="row_rf_channel" /> Channel<br>
+                                <input type="checkbox" name="display_rows" value="row_rf_datarate" /> Datarate<br>
+                                <input type="checkbox" name="display_rows" value="row_rf_preamble_code" /> Preamble Code<br>
+                                <input type="checkbox" name="display_rows" value="row_rf_preamble_len" /> Preamble Length<br>
+                                <input type="checkbox" name="display_rows" value="row_rf_pac" /> PAC<br>
+                                <input type="checkbox" name="display_rows" value="row_rf_sdf_timeoutr" /> SDF_timeoutr
+                            </td>
+                            <td>
+                                <input type="checkbox" name="display_rows" value="row_rf_prf" /> PRF<br>
+                                <input type="checkbox" name="display_rows" value="row_rf_pg_delay" /> TX PGdelay<br>
+                                <input type="checkbox" name="display_rows" value="row_rf_power" /> TX Power<br>
+                                <input type="checkbox" name="display_rows" value="row_rf_nsd" /> NSD<br>
+                                <input type="checkbox" name="display_rows" value="row_rf_smartpower" /> SMARTPOWER<br>
+                                <input type="checkbox" name="display_rows" value="row_rf_ntm" /> NTM<br>
+                                <input type="checkbox" name="display_rows" value="row_rf_mult" /> MULT
+                            </td>
+                        </tr>
+                    </table>
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
     </div>
     <!-- i18n 多語言翻譯 -->
     <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>

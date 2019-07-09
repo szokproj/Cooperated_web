@@ -9,6 +9,41 @@ var dotTypeArr = ['Dept', 'JobTitle', 'UserType', 'Custom'];
 var statusArr = ['OnJob', 'LeaveJob'];
 var genderArr = ['Male', 'Female'];
 var educationArr = ['PrimarySchool', 'MiddleSchool', 'HighSchool', 'JuniorSchool', 'College', 'GraduateSchool'];
+var exampleArray = [{
+    EnglishName: "",
+    Name: "",
+    address: "",
+    alarm_group_id: "",
+    birthday: "",
+    card_id: "",
+    color: "",
+    color_type: "",
+    dateEntry: "",
+    dateLeave: "",
+    department: "",
+    department_color: "",
+    department_id: "",
+    education: "",
+    exist: "",
+    file_ext: "",
+    firstName: "",
+    gender: "",
+    grade: "",
+    jobTitle: "",
+    jobTitle_color: "",
+    jobTitle_id: "",
+    lastName: "",
+    mail: "",
+    note: "",
+    number: "",
+    phoneJob: "",
+    phoneSelf: "",
+    school: "",
+    status: "",
+    tag_id: "",
+    tech_grade: "",
+    type: ""
+}];
 
 
 $(function () {
@@ -151,6 +186,15 @@ $(function () {
             dataset: memberArray,
             columns: getColumns(memberArray),
             worksheetName: "Member Data"
+        });
+    });
+    $("#excel_example").click(function () {
+        $("#dvjson").excelexportjs({
+            containerid: "dvjson",
+            datatype: 'json',
+            dataset: exampleArray,
+            columns: getColumns(exampleArray),
+            worksheetName: "Member Data Example"
         });
     });
 });

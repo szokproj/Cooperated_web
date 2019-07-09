@@ -210,16 +210,16 @@ function Connect() {
                             "<td>" + GREEN_LIGHT + "</td>" +
                             "<td><input type='text' name=\"conn_anchor_id\" value=\"" + element.Anchor_ID + "\" /></td>" +
                             "<td name=\"conn_mac_addr\">" + element.MAC_address + "</td>" +
-                            "<td><input type='text' name=\"conn_ip_addr\" value=\"" + element.IP_address + "\" /></td>" +
-                            "<td><input type='text' name=\"conn_gateway_addr\" value=\"" + element.Gateway_address + "\" /></td>" +
-                            "<td><input type='text' name=\"conn_mask_addr\" value=\"" + element.Mask_address + "\" /></td>" +
-                            "<td><input type='text' name=\"conn_client_ip_addr\" value=\"" + element.Client_ip_addr + "\" /></td>" +
-                            "<td><input type='text' name=\"conn_tcp_server_port\" value=\"" + element.TCP_Serve_Port + "\" /></td>" +
-                            "<td><input type='text' name=\"conn_udp_server_port\" value=\"" + element.UDP_Serve_Port + "\" /></td>" +
-                            "<td><input type='text' name=\"conn_tcp_client_src_port\" value=\"" + element.TCP_Client_Src_Port + "\" /></td>" +
-                            "<td><input type='text' name=\"conn_tcp_client_des_port\" value=\"" + element.TCP_Client_Des_Port + "\" /></td>" +
-                            "<td><input type='text' name=\"conn_machine_number\" value=\"" + element.Machine_Number + "\" /></td>" +
-                            "<td><input type='text' name=\"conn_model\" value=\"" + element.Model + "\" /></td>" +
+                            "<td class=\"row_ip_addr\"><input type='text' name=\"conn_ip_addr\" value=\"" + element.IP_address + "\" /></td>" +
+                            "<td class=\"row_gateway_addr\"><input type='text' name=\"conn_gateway_addr\" value=\"" + element.Gateway_address + "\" /></td>" +
+                            "<td class=\"row_mask_addr\"><input type='text' name=\"conn_mask_addr\" value=\"" + element.Mask_address + "\" /></td>" +
+                            "<td class=\"row_client_ip_addr\"><input type='text' name=\"conn_client_ip_addr\" value=\"" + element.Client_ip_addr + "\" /></td>" +
+                            "<td class=\"row_tcp_server_port\"><input type='text' name=\"conn_tcp_server_port\" value=\"" + element.TCP_Serve_Port + "\" /></td>" +
+                            "<td class=\"row_udp_server_port\"><input type='text' name=\"conn_udp_server_port\" value=\"" + element.UDP_Serve_Port + "\" /></td>" +
+                            "<td class=\"row_tcp_client_src_port\"><input type='text' name=\"conn_tcp_client_src_port\" value=\"" + element.TCP_Client_Src_Port + "\" /></td>" +
+                            "<td class=\"row_tcp_client_des_port\"><input type='text' name=\"conn_tcp_client_des_port\" value=\"" + element.TCP_Client_Des_Port + "\" /></td>" +
+                            "<td class=\"row_machine_number\"><input type='text' name=\"conn_machine_number\" value=\"" + element.Machine_Number + "\" /></td>" +
+                            "<td class=\"row_model\"><input type='text' name=\"conn_model\" value=\"" + element.Model + "\" /></td>" +
                             "<td></td></tr>");
                         count_connected_device++
                         var num = connect_ip_array.length - count_connected_device;
@@ -233,47 +233,19 @@ function Connect() {
                             "</td><td>" + RED_LIGHT +
                             "</td><td>" + element.Anchor_ID +
                             "</td><td>" + element.MAC_address +
-                            "</td><td>" + element.IP_address +
-                            "</td><td>" + element.Gateway_address +
-                            "</td><td>" + element.Mask_address +
-                            "</td><td>" + element.Client_ip_addr +
-                            "</td><td>" + element.TCP_Serve_Port +
-                            "</td><td>" + element.UDP_Serve_Port +
-                            "</td><td>" + element.TCP_Client_Src_Port +
-                            "</td><td>" + element.TCP_Client_Des_Port +
-                            "</td><td>" + element.Machine_Number +
-                            "</td><td>" + element.Model +
-                            "</td><td> </td></tr>");
+                            "</td><td class=\"row_ip_addr\">" + element.IP_address +
+                            "</td><td class=\"row_gateway_addr\">" + element.Gateway_address +
+                            "</td><td class=\"row_mask_addr\">" + element.Mask_address +
+                            "</td><td class=\"row_client_ip_addr\">" + element.Client_ip_addr +
+                            "</td><td class=\"row_tcp_server_port\">" + element.TCP_Serve_Port +
+                            "</td><td class=\"row_udp_server_port\">" + element.UDP_Serve_Port +
+                            "</td><td class=\"row_tcp_client_src_port\">" + element.TCP_Client_Src_Port +
+                            "</td><td class=\"row_tcp_client_des_port\">" + element.TCP_Client_Des_Port +
+                            "</td><td class=\"row_machine_number\">" + element.Machine_Number +
+                            "</td><td class=\"row_model\">" + element.Model +
+                            "</td><td></td></tr>");
                     }
                 });
-
-                var count = document.getElementsByName("conn_rf_mode").length - 1;
-                for (var k = 0; k < count; k++) {
-                    $("select[name='conn_rf_preamble_len']").eq(k).click(function () {
-                        var value = $("select[name='conn_rf_preamble_len']").eq(k).value();
-                        switch (value) {
-                            case "64":
-                            case "128":
-                                $("select[name='conn_rf_pac']").eq(k).value("8");
-                                break;
-                            case "258":
-                                $("select[name='conn_rf_pac']").eq(k).value("16");
-                                break;
-                            case "512":
-                            case "1024":
-                            case "1536":
-                                $("select[name='conn_rf_pac']").eq(k).value("32");
-                                break;
-                            case "2048":
-                            case "4096":
-                                $("select[name='conn_rf_pac']").eq(k).value("64");
-                                break;
-                            default:
-                                break;
-                        }
-                    });
-                }
-
 
                 //LightTableFilter.init();
                 $("input[name=checkbox_ipAddr]").change(checked_trans);
@@ -288,6 +260,8 @@ function Connect() {
         alert("Please check at least one device!");
     }
 }
+
+var count_connected = -1;
 
 function inputTable_RF_info(num, ip_address) {
     var rf_Request = {
@@ -310,23 +284,68 @@ function inputTable_RF_info(num, ip_address) {
             if (typeof (response[0]) == 'undefined')
                 return;
             if (response[0].Command_status == 1) { //Add RF Setting
+                count_connected++;
                 $("#table_ip_address_info tbody tr").eq(num).append(
-                    "<td name=\"conn_rf_mode\">" + response[0].rf_MODE + "</td>" +
-                    "<td name=\"conn_rf_version\">" + response[0].Version_Name + "</td>" +
-                    "<td><select name=\"conn_rf_channel\">" + makeOptions(rf_Channel_arr, response[0].rf_channel) + "</select></td>" +
-                    "<td><select name=\"conn_rf_datarate\">" + makeOptions(rf_Datarate_arr, response[0].rf_datarate) + "</select></td>" +
-                    "<td><select name=\"conn_rf_prf\">" + makeOptions(rf_PRF_arr, response[0].rf_prf) + "</select></td>" +
-                    "<td><select name=\"conn_rf_preamble_code\">" + makeOptions(rf_PreambleCode_arr, response[0].rf_preambleCode) + "</select></td>" +
-                    "<td><select name=\"conn_rf_preamble_len\">" + makeOptions(rf_PreambleLength_arr, response[0].rf_preambleLength) + "</select></td>" +
-                    "<td><select name=\"conn_rf_pac\">" + makeOptions(rf_PAC_arr, response[0].rf_PAC) + "</select></td>" +
-                    "<td><select name=\"conn_rf_pg_delay\">" + makeOptions(rf_TX_PGdelay_arr, response[0].rf_PGdelay) + "</select></td>" +
-                    "<td><select name=\"conn_rf_power\">" + makeOptions(rf_TX_Power_arr, response[0].rf_Power) + "</select></td>" +
-                    "<td><select name=\"conn_rf_nsd\">" + makeOptions(rf_NSD_arr, response[0].rf_NSD) + "</select></td>" +
-                    "<td><select name=\"conn_rf_sdf_timeoutr\">" + makeOptions(rf_SDF_timeoutr_arr, response[0].rf_SFD_timeout) + "</select></td>" +
-                    "<td><select name=\"conn_rf_smartpower\">" + makeOptions(rf_SMARTPOWER_arr, response[0].rf_SMARTPOWER) + "</select></td>" +
-                    "<td><select name=\"conn_rf_ntm\">" + makeOptions(rf_NTM_arr, response[0].rf_NTM_value) + "</select></td>" +
-                    "<td><select name=\"conn_rf_mult\">" + makeOptions(rf_MULT_arr, response[0].rf_PMULT_value) + "</select></td>");
+                    "<td class=\"row_rf_mode\" name=\"conn_rf_mode\">" + response[0].rf_MODE + "</td>" +
+                    "<td class=\"row_rf_version\" name=\"conn_rf_version\">" + response[0].Version_Name + "</td>" +
+                    "<td class=\"row_rf_channel\"><select id=\"conn_rf_channel_" + count_connected + "\">" + makeOptions(rf_Channel_arr, response[0].rf_channel) + "</select></td>" +
+                    "<td class=\"row_rf_datarate\"><select id=\"conn_rf_datarate_" + count_connected + "\">" + makeOptions(rf_Datarate_arr, response[0].rf_datarate) + "</select></td>" +
+                    "<td class=\"row_rf_prf\"><select id=\"conn_rf_prf_" + count_connected + "\">" + makeOptions(rf_PRF_arr, response[0].rf_prf) + "</select></td>" +
+                    "<td class=\"row_rf_preamble_code\"><select id=\"conn_rf_preamble_code_" + count_connected + "\">" + makeOptions(rf_PreambleCode_arr, response[0].rf_preambleCode) + "</select></td>" +
+                    "<td class=\"row_rf_preamble_len\"><select id=\"conn_rf_preamble_len_" + count_connected + "\">" + makeOptions(rf_PreambleLength_arr, response[0].rf_preambleLength) + "</select></td>" +
+                    "<td class=\"row_rf_pac\"><select id=\"conn_rf_pac_" + count_connected + "\">" + makeOptions(rf_PAC_arr, response[0].rf_PAC) + "</select></td>" +
+                    "<td class=\"row_rf_pg_delay\"><select id=\"conn_rf_pg_delay_" + count_connected + "\">" + makeOptions(rf_TX_PGdelay_arr, response[0].rf_PGdelay) + "</select></td>" +
+                    "<td class=\"row_rf_power\"><select id=\"conn_rf_power_" + count_connected + "\">" + makeOptions(rf_TX_Power_arr, response[0].rf_Power) + "</select></td>" +
+                    "<td class=\"row_rf_nsd\"><select id=\"conn_rf_nsd_" + count_connected + "\">" + makeOptions(rf_NSD_arr, response[0].rf_NSD) + "</select></td>" +
+                    "<td class=\"row_rf_sdf_timeoutr\"><input type='text' id=\"conn_rf_sdf_timeoutr_" + count_connected + "\" value=\"" + response[0].rf_SFD_timeout + "\" /></td>" +
+                    "<td class=\"row_rf_smartpower\"><select id=\"conn_rf_smartpower_" + count_connected + "\">" + makeOptions(rf_SMARTPOWER_arr, response[0].rf_SMARTPOWER) + "</select></td>" +
+                    "<td class=\"row_rf_ntm\"><select id=\"conn_rf_ntm_" + count_connected + "\">" + makeOptions(rf_NTM_arr, response[0].rf_NTM_value) + "</select></td>" +
+                    "<td class=\"row_rf_mult\"><select id=\"conn_rf_mult_" + count_connected + "\">" + makeOptions(rf_MULT_arr, response[0].rf_PMULT_value) + "</select></td>");
             }
+            $("#conn_rf_channel_" + count_connected).change(function () {
+                var option_index = $(this).get(0).selectedIndex;
+                $("#conn_rf_pg_delay_" + count_connected).val(rf_TX_PGdelay_arr[option_index]);
+            });
+            $("#conn_rf_datarate_" + count_connected).change(function () {
+                if ($(this).val() == "6.8Mbps") {
+                    $("#conn_rf_preamble_len_" + count_connected).val("128");
+                    $("#conn_rf_pac_" + count_connected).val("8");
+                } else if ($(this).val() == "850Kbps") {
+                    $("#conn_rf_preamble_len_" + count_connected).val("512");
+                    $("#conn_rf_pac_" + count_connected).val("32");
+                } else if ($(this).val() == "110Kbps") {
+                    $("#conn_rf_preamble_len_" + count_connected).val("1024");
+                    $("#conn_rf_pac_" + count_connected).val("32");
+                }
+            });
+            $("#conn_rf_preamble_code_" + count_connected).change(function () {
+                var preamble_len = parseInt($("#conn_rf_preamble_len_" + count_connected).val(), 10);
+                $("#conn_rf_sdf_timeoutr_" + count_connected).val(parseInt($(this).val(), 10) + preamble_len + 1);
+            });
+            $("#conn_rf_preamble_len_" + count_connected).change(function () {
+                var preamble_code = parseInt($("#conn_rf_preamble_code_" + count_connected).val(), 10);
+                $("#conn_rf_sdf_timeoutr_" + count_connected).val(parseInt($(this).val(), 10) + preamble_code + 1);
+                switch ($(this).val()) {
+                    case "64":
+                    case "128":
+                        $("#conn_rf_pac_" + count_connected).val("8");
+                        break;
+                    case "256":
+                        $("#conn_rf_pac_" + count_connected).val("16");
+                        break;
+                    case "512":
+                    case "1024":
+                    case "1536":
+                        $("#conn_rf_pac_" + count_connected).val("32");
+                        break;
+                    case "2048":
+                    case "4096":
+                        $("#conn_rf_pac_" + count_connected).val("64");
+                        break;
+                    default:
+                        break;
+                }
+            });
         }
     };
     RF_XmlHttp.send(JSON.stringify(rf_Request));
