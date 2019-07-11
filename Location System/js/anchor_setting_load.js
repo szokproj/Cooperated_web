@@ -1,6 +1,24 @@
 $(function () { //Load==>
-    $("#is_multiple_settings").click(checkbox_single_multiple);
-    checkbox_single_multiple();
+    /**
+     * Check this page's permission and load navbar
+     */
+    var permission = getPermissionOfPage("Anchor_Setting");
+    switch (permission) {
+        case "":
+            alert("No permission");
+            history.back();
+            break;
+        case "R":
+            break;
+        case "RW":
+            break;
+        default:
+            alert("網頁錯誤，將跳回上一頁");
+            history.back();
+            break;
+    }
+    setNavBar("Anchor_Setting", "");
+
 
     var dialog, form;
     var SendResult = function () {
@@ -37,6 +55,29 @@ $(function () { //Load==>
     $("#open_dialog_set").click(function () {
         dialog.dialog("open");
     });
+
+    $("#select_connect_mode").change(function () {
+        var opt = $(this).children('option:selected').val();
+        if (opt == "ethernet") {
+            $(".mode_ethernet").show();
+            $(".mode_comport").hide();
+            $("#btn_search").show();
+        } else {
+            $(".mode_ethernet").hide();
+            $(".mode_comport").show();
+            $("#btn_search").hide();
+        }
+    });
+
+    Load();
+
+    $("#btn_submit").click(function () {
+        var r = confirm('Are you sure to submit the settings of devices?');
+        if (r == true)
+            Device_setting_write();
+        else
+            return;
+    });
 });
 
 function displaySelectedRows() {
@@ -49,25 +90,6 @@ function displaySelectedRows() {
     }
 }
 
-function singleCheck() {
-    $("input[name=checkbox_ipAddr]").not(this).prop("checked", false);
-}
-
-function checkbox_single_multiple() {
-    if ($("#is_multiple_settings").is(":checked")) { //多選
-        $("input[name=checkbox_ipAddr]").unbind('click', singleCheck);
-        $("#btn_deselectAll").prop('disabled', false).removeClass("disable_color");
-        $("#btn_selectAll").prop('disabled', false).removeClass("disable_color");
-        $("#btn_device_read").prop('disabled', true).addClass("disable_color");
-        $("#btn_rf_read").prop('disabled', true).addClass("disable_color");
-    } else { //單選
-        $("input[name=checkbox_ipAddr]").click(singleCheck);
-        $("#btn_deselectAll").prop('disabled', true).addClass("disable_color");
-        $("#btn_selectAll").prop('disabled', true).addClass("disable_color");
-        $("#btn_device_read").prop('disabled', false).removeClass("disable_color");
-        $("#btn_rf_read").prop('disabled', false).removeClass("disable_color");
-    }
-}
 
 function disable_DHCP() {
     if (document.getElementsByName("network_setting_mode")[0].checked) { //DHCP
@@ -83,16 +105,11 @@ function disable_DHCP() {
         }
     } else { //Fixed IP
         for (i = 1; i < 5; i++) {
-            if ($("#is_multiple_settings").is(":checked")) { //多選的Fixed IP設定
-                $(".table_network_setting label").eq(i + 1).addClass("disable_color");
-                $("#ip_address_" + i).prop('disabled', true).addClass("disable_color");
-            } else { //單選的Fixed IP設定
-                $(".table_network_setting label").eq(i + 1).removeClass("disable_color");
-                $("#ip_address_" + i).prop('disabled', false).removeClass("disable_color");
-            }
+            $(".table_network_setting label").eq(i + 1).removeClass("disable_color");
             $(".table_network_setting label").eq(i + 5).removeClass("disable_color");
             $(".table_network_setting label").eq(i + 9).removeClass("disable_color");
             $(".table_network_setting label").eq(i + 13).removeClass("disable_color");
+            $("#ip_address_" + i).prop('disabled', false).removeClass("disable_color");
             $("#mask_address_" + i).prop('disabled', false).removeClass("disable_color");
             $("#gateway_address_" + i).prop('disabled', false).removeClass("disable_color");
             $("#client_ip_" + i).prop('disabled', false).removeClass("disable_color");

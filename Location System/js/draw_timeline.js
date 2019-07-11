@@ -28,7 +28,63 @@ var timelineArray = [];
 var time = 0;
 var isContinue = false;
 
-window.addEventListener("load", setup, false);
+
+$(function () {
+    /**
+     * Check this page's permission and load navbar
+     */
+    var permission = getPermissionOfPage("Timeline");
+    switch (permission) {
+        case "":
+            alert("No permission");
+            history.back();
+            break;
+        case "R":
+            break;
+        case "RW":
+            break;
+        default:
+            alert("網頁錯誤，將跳回上一頁");
+            history.back();
+            break;
+    }
+    setNavBar("Timeline", "");
+
+    $("#canvas").mousedown(function (e) {
+        //獲取div的初始位置，要注意的是需要轉整型，因為獲取到值帶px 
+        var canvas_left = parseInt($("#canvas").css("margin-left"));
+        var canvas_top = parseInt($("#canvas").css("margin-top"));
+        //獲取滑鼠按下時的坐標，區別於下面的es.pageX,es.pageY 
+        var downx = e.pageX;
+        var downy = e.pageY;
+        //pageY的y要大寫，必須大寫！！
+        // 滑鼠按下時給div掛事件 
+        $("#canvas").bind("mousemove", function (es) {
+            //es.pageX,es.pageY:獲取滑鼠移動後的坐標 
+            var end_x = es.pageX - downx + canvas_left;
+            //計算div的最終位置 
+            var end_y = es.pageY - downy + canvas_top;
+            //帶上單位 
+            $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
+        });
+
+        $("#canvas").mouseup(function () {
+            //滑鼠彈起時給div取消事件 
+            $("#canvas").unbind("mousemove");
+        });
+
+        $("#canvas").mouseleave(function () {
+            //滑鼠離開canvas時給div取消事件 
+            $("#canvas").unbind("mousemove");
+        });
+    });
+
+    $("#timeline_dialog").dialog({
+        autoOpen: false
+    });
+
+    setup();
+});
 
 function setup() {
     cvsBlock = document.getElementById("cvsBlock");
@@ -43,47 +99,11 @@ function setup() {
             ctx.backingStorePixelRatio || 1;
         return dpr / bsr;
     })();
-
     canvas.addEventListener('click', handleMouseClick, false); //點擊地圖上的tag，跳出tag的訊息框
     canvas.addEventListener("mousemove", handleMouseMove, false); //滑鼠在畫布中移動的座標
     canvas.addEventListener("mousewheel", handleMouseWheel, false); //畫布縮放
     cvsBlock.addEventListener("mousewheel", handleMouseWheel, false); // 畫面縮放
     cvsBlock.addEventListener("DOMMouseScroll", handleMouseWheel, false); // 畫面縮放(for Firefox)
-
-    $(function () {
-        $("#canvas").mousedown(function (e) {
-            //獲取div的初始位置，要注意的是需要轉整型，因為獲取到值帶px 
-            var canvas_left = parseInt($("#canvas").css("margin-left"));
-            var canvas_top = parseInt($("#canvas").css("margin-top"));
-            //獲取滑鼠按下時的坐標，區別於下面的es.pageX,es.pageY 
-            var downx = e.pageX;
-            var downy = e.pageY;
-            //pageY的y要大寫，必須大寫！！
-            // 滑鼠按下時給div掛事件 
-            $("#canvas").bind("mousemove", function (es) {
-                //es.pageX,es.pageY:獲取滑鼠移動後的坐標 
-                var end_x = es.pageX - downx + canvas_left;
-                //計算div的最終位置 
-                var end_y = es.pageY - downy + canvas_top;
-                //帶上單位 
-                $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
-            });
-
-            $("#canvas").mouseup(function () {
-                //滑鼠彈起時給div取消事件 
-                $("#canvas").unbind("mousemove");
-            });
-
-            $("#canvas").mouseleave(function () {
-                //滑鼠離開canvas時給div取消事件 
-                $("#canvas").unbind("mousemove");
-            });
-        });
-
-        $("#timeline_dialog").dialog({
-            autoOpen: false
-        });
-    });
 
     //接收並載入Server的地圖資訊
     var requestArray = {

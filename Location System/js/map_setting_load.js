@@ -1,6 +1,28 @@
 var mapArray = [];
 
-window.addEventListener("load", loadMap, false);
+$(function () {
+    /**
+     * Check this page's permission and load navbar
+     */
+    var permission = getPermissionOfPage("Map_Setting");
+    switch (permission) {
+        case "":
+            alert("No permission");
+            history.back();
+            break;
+        case "R":
+            break;
+        case "RW":
+            break;
+        default:
+            alert("網頁錯誤，將跳回上一頁");
+            history.back();
+            break;
+    }
+    setNavBar("Map_Setting", "");
+
+    loadMap();
+});
 
 function setMapArray(new_mapInfos) {
     mapArray = new_mapInfos.slice(0);

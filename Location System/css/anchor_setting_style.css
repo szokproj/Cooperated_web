@@ -33,8 +33,8 @@ table.sticky-table {
     width: 100%;
 }
 
-.sticky-table th{
-    width:150px;
+.sticky-table th {
+    width: 150px;
 }
 
 .sticky-table th,
@@ -113,23 +113,16 @@ table.sticky-table {
 
 .top {
     text-align: center;
-    padding: 20px 10px 10px 10px;
+    padding: 0px 10px 10px 10px;
 }
 
 .middle {
     background-color: #eee;
     border: 1px #363636 solid;
     width: 100%;
-    height: 300px;
+    height: 400px;
     margin: 5px;
     overflow: auto;
-}
-
-.bottom {
-    height: auto;
-    max-height: 20%;
-    max-width: 100%;
-    text-align: center;
 }
 
 .mode_comport {
@@ -145,6 +138,21 @@ table.sticky-table {
     width: 400px;
     text-align: left;
     padding: 30px 0px 20px 0px;
+}
+
+.noborder-block {
+    margin: auto;
+    width: 400px;
+}
+
+.noborder-block table {
+    border: 0px;
+    padding: 0px;
+}
+
+.noborder-block td {
+    border: 0px !important;
+    float: left;
 }
 
 .line_block {

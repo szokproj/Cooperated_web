@@ -22,41 +22,18 @@
     <!--Edit css-->
     <link rel="stylesheet" type="text/css" href="../css/timeline.css" />
     <!--Edit js-->
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
+    <script type="text/javascript" src="../js/check_permission.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/draw_timeline.js"></script>
 </head>
 
 <body>
     <div class="container">
-        <aside class="menu">
-            <div class="menu-left">
-                <nav class="sidebar">
-                    <ul class="nav">
-                        <li><a href="../index.html">
-                                <i class="fas fa-satellite-dish"></i><span class="i18n" name="homePage"></span></a></li>
-                        <li><a href="../Member_Setting.html">
-                                <i class="fas fa-user-cog"></i><span class="i18n" name="member_settingPage"></span></a>
-                        </li>
-                        <li class="active"><a href="#">
-                                <i class="fas fa-route"></i><span class="i18n" name="timelinePage"></span></a></li>
-                        <li><a href="../Map_Setting.html">
-                                <i class="fas fa-map"></i><span class="i18n" name="map_settingPage"></span></a></li>
-                        <li><a href="../Anchor_Setting.html">
-                                <i class="fas fa-anchor"></i><span class="i18n" name="anchor_settingPage"></span></a>
-                        </li>
-                        <li><a href="../Alarm_Setting.html">
-                                <i class="fas fa-bell" style="padding-left:2px;"></i><span class="i18n"
-                                    name="alarm_settingPage"></span></a></li>
-                        <li><a href="../Reference.html">
-                                <i class="fas fa-cogs"></i><span class="i18n" name="advance_settingPage"></span></a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </aside>
+        <!--icon navbar-->
+        <div id="NavbarHtml"></div>
 
+        <!-- Web content -->
         <div class="row">
             <div class="col-lg-12">
                 <div style="float:right;">
@@ -70,7 +47,6 @@
             </div>
         </div>
 
-        <!-- Web content -->
         <div class="row">
             <div class="col-lg-12">
                 <div id="cvsBlock">

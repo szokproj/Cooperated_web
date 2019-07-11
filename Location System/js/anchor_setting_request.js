@@ -1,47 +1,39 @@
-var rf_Channel_arr = ["CH1(3.5GHz)", "CH2(4.0GHz)", "CH3(4.5GHz)", "CH4(4.5GHz WBW)", "CH5(6.5GHz)", "CH7(6.5GHz WBW)"];
-var rf_Datarate_arr = ["110Kbps", "850Kbps", "6.8Mbps"];
-var rf_PRF_arr = ["16M", "64M"];
-var rf_PreambleCode_arr = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "17", "18", "19", "20"];
-var rf_PreambleLength_arr = ["64", "128", "256", "512", "1024", "1536", "2048", "4096"];
-var rf_PAC_arr = ["8", "16", "32", "64"];
-var rf_TX_PGdelay_arr = ["CH1", "CH2", "CH3", "CH4", "CH5", "CH6", "CH7"];
-var rf_TX_Power_arr = [
+const ip_mode_arr = ["DHCP", "Static"]
+const rf_Channel_arr = ["CH1(3.5GHz)", "CH2(4.0GHz)", "CH3(4.5GHz)", "CH4(4.5GHz WBW)", "CH5(6.5GHz)", "CH7(6.5GHz WBW)"];
+const rf_Datarate_arr = ["110Kbps", "850Kbps", "6.8Mbps"];
+const rf_PRF_arr = ["16M", "64M"];
+const rf_PreambleCode_arr = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "17", "18", "19", "20"];
+const rf_PreambleLength_arr = ["64", "128", "256", "512", "1024", "1536", "2048", "4096"];
+const rf_PAC_arr = ["8", "16", "32", "64"];
+const rf_TX_PGdelay_arr = ["CH1", "CH2", "CH3", "CH4", "CH5", "CH6", "CH7"];
+const rf_TX_Power_arr = [
     "CH1_NOSMART_16M", "CH2_NOSMART_16M", "CH3_NOSMART_16M", "CH4_NOSMART_16M", "CH5_NOSMART_16M", "CH7_NOSMART_16M",
     "CH1_NOSMART_64M", "CH2_NOSMART_64M", "CH3_NOSMART_64M", "CH4_NOSMART_64M", "CH5_NOSMART_64M", "CH7_NOSMART_64M",
     "CH1_SMART_16M", "CH2_SMART_16M", "CH3_SMART_16M", "CH4_SMART_16M", "CH5_SMART_16M", "CH7_SMART_16M",
     "CH1_SMART_64M", "CH2_SMART_64M", "CH3_SMART_64M", "CH4_SMART_64M", "CH5_SMART_64M", "CH7_SMART_64M"
 ];
-var rf_NSD_arr = ["0", "1"];
-var rf_SDF_timeoutr_arr = ["1089"];
-var rf_SMARTPOWER_arr = ["0", "1"];
-var rf_NTM_arr = [
+const rf_NSD_arr = ["0", "1"];
+const rf_SDF_timeoutr_arr = ["1089"];
+const rf_SMARTPOWER_arr = ["0", "1"];
+const rf_NTM_arr = [
     "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "17", "18", "19", "20", "21", "22", "23", "24",
     "25", "26", "27", "28", "29", "30", "31"
 ];
-var rf_MULT_arr = ["0", "1", "2", "3", "4", "5", "6", "7"];
+const rf_MULT_arr = ["0", "1", "2", "3", "4", "5", "6", "7"];
 
-var RED_LIGHT = "<img src=\"../image/redLight.png\"/>";
-var GREEN_LIGHT = "<img src=\"../image/greenLight.png\"/>";
+const RED_LIGHT = "<img src=\"../image/redLight.png\"/>";
+const GREEN_LIGHT = "<img src=\"../image/greenLight.png\"/>";
+var isAllSelected = false;
 var DeviceCheckbox = document.getElementsByName("checkbox_ipAddr");
 var deviceArray = [];
 var connect_ip_array = [];
+var count_connected = -1;
 
-window.addEventListener("load", Load, false);
+var timeDelay = {
+    connect: [],
+    send_network: []
+}; //restore timeout's id
 
-$(function () {
-    $("#select_connect_mode").change(function () {
-        var opt = $(this).children('option:selected').val();
-        if (opt == "ethernet") {
-            $(".mode_ethernet").show();
-            $(".mode_comport").hide();
-            $("#btn_search").show();
-        } else {
-            $(".mode_ethernet").hide();
-            $(".mode_comport").show();
-            $("#btn_search").hide();
-        }
-    });
-});
 
 function Load() {
     var requestArray = {
@@ -89,8 +81,9 @@ function Search() {
                 list += "<tr><td><input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" +
                     udpInfo[i].IP_address + "\" />" +
                     "</td><td>" + RED_LIGHT +
-                    "</td><td> " +
+                    "</td><td> " + //Anchor ID
                     "</td><td>" + udpInfo[i].MAC_address +
+                    "</td><td>" + "DHCP" +
                     "</td><td>" + udpInfo[i].IP_address +
                     "</td><td>" + udpInfo[i].Gateway_address +
                     "</td><td>" + udpInfo[i].Mask_address +
@@ -123,53 +116,42 @@ function Search() {
                 $("#table_ip_address_info tbody").html(list);
                 //LightTableFilter.init();
                 $("input[name=checkbox_ipAddr]").change(checked_trans);
-                if ($("#is_multiple_settings").is(":checked")) //多選
-                    $("input[name=checkbox_ipAddr]").unbind('click', singleCheck);
-                else //單選
-                    $("input[name=checkbox_ipAddr]").click(singleCheck);
+
             });
         }
     }
     xmlHttp.send(JSON.stringify(requestArray));
 }
 
-
-function singleCheck() {
-    $("input[name=checkbox_ipAddr]").not(this).prop("checked", false);
-}
-
 function checked_trans() {
     for (k in $("input[name=checkbox_ipAddr]")) {
-        if ($("input[name=checkbox_ipAddr]").eq(k).is(":checked"))
-            $("tbody tr").eq(k).css("background-color", "lightblue");
-        else
-            $("tbody tr").eq(k).css("background-color", "transparent");
+        if ($("input[name=checkbox_ipAddr]").eq(k).is(":checked")) {
+            $(".sticky-table tbody tr:eq(" + k + ") td").css("background-color", "#c7d8e2");
+        } else {
+            $(".sticky-table tbody tr:eq(" + k + ") td:lt(4)").css("background-color", "#e6f5ff");
+            $(".sticky-table tbody tr:eq(" + k + ") td:gt(3)").css("background-color", "white");
+        }
     }
 }
 
 function SelectAll() {
+    isAllSelected = !isAllSelected;
+    if (isAllSelected)
+        $("#btn_selectAll").text("Select");
+    else
+        $("#btn_selectAll").text("Select All");
     DeviceCheckbox.forEach(function (v) {
-        v.checked = true;
+        v.checked = isAllSelected;
     });
-    $(checked_trans);
-}
-
-function DeselectAll() {
-    DeviceCheckbox.forEach(function (v) {
-        v.checked = false;
-    });
-    $(checked_trans);
+    checked_trans();
 }
 
 function Connect() {
-    var check_val = [],
-        checkedCount = 0;
+    var check_val = [];
     connect_ip_array = [];
     DeviceCheckbox.forEach(function (v) {
-        if (v.checked) {
+        if (v.checked)
             check_val.push(v.value);
-            checkedCount++;
-        }
     });
     var Connect_Request = {
         "Command_Type": ["Read"],
@@ -179,7 +161,7 @@ function Connect() {
         }
     };
 
-    if (checkedCount > 0) { //至少有一個IP Address被勾選
+    if (check_val.length > 0) { //至少有一個IP Address被勾選
         var xmlHttp = createJsonXmlHttp("Command");
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
@@ -201,15 +183,23 @@ function Connect() {
                     }
                 }
 
+                //Reset
+                resetListenersOfSelects();
                 $("#table_ip_address_info tbody").empty();
+                timeDelay["connect"].forEach(delay => {
+                    clearTimeout(delay);
+                });
+                timeDelay["connect"] = []; //reset delay timeout array
+
                 var count_connected_device = 0;
                 deviceArray.forEach(function (element) {
                     if (element.Status == 1) {
                         $("#table_ip_address_info tbody").prepend("<tr><td>" +
-                            "<input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" + element.IP_address + "\" /></td>" +
+                            "<input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" + element.IP_address + "\" checked/></td>" +
                             "<td>" + GREEN_LIGHT + "</td>" +
                             "<td><input type='text' name=\"conn_anchor_id\" value=\"" + element.Anchor_ID + "\" /></td>" +
                             "<td name=\"conn_mac_addr\">" + element.MAC_address + "</td>" +
+                            "<td class=\"row_ip_mode\"><select name=\"conn_ip_mode\">" + makeOptions(ip_mode_arr, "DHCP") + "</select></td>" +
                             "<td class=\"row_ip_addr\"><input type='text' name=\"conn_ip_addr\" value=\"" + element.IP_address + "\" /></td>" +
                             "<td class=\"row_gateway_addr\"><input type='text' name=\"conn_gateway_addr\" value=\"" + element.Gateway_address + "\" /></td>" +
                             "<td class=\"row_mask_addr\"><input type='text' name=\"conn_mask_addr\" value=\"" + element.Mask_address + "\" /></td>" +
@@ -221,11 +211,13 @@ function Connect() {
                             "<td class=\"row_machine_number\"><input type='text' name=\"conn_machine_number\" value=\"" + element.Machine_Number + "\" /></td>" +
                             "<td class=\"row_model\"><input type='text' name=\"conn_model\" value=\"" + element.Model + "\" /></td>" +
                             "<td></td></tr>");
-                        count_connected_device++
+                        $("#table_ip_address_info tbody tr:eq(0) td:lt(16)").css("background-color", "#c7d8e2");
+                        count_connected_device++;
                         var num = connect_ip_array.length - count_connected_device;
-                        setTimeout(function () {
-                            inputTable_RF_info(num, element.IP_address);
-                        }, 100);
+
+                        timeDelay["connect"].push(setTimeout(function () {
+                            RF_setting_read(num, element.IP_address);
+                        }, 70 * count_connected_device));
                     } else {
                         $("#table_ip_address_info tbody").append("<tr><td>" +
                             "<input type=\"checkbox\" name=\"checkbox_ipAddr\"" +
@@ -233,6 +225,7 @@ function Connect() {
                             "</td><td>" + RED_LIGHT +
                             "</td><td>" + element.Anchor_ID +
                             "</td><td>" + element.MAC_address +
+                            "</td><td class=\"row_ip_mode\">" + "DHCP" +
                             "</td><td class=\"row_ip_addr\">" + element.IP_address +
                             "</td><td class=\"row_gateway_addr\">" + element.Gateway_address +
                             "</td><td class=\"row_mask_addr\">" + element.Mask_address +
@@ -246,13 +239,8 @@ function Connect() {
                             "</td><td></td></tr>");
                     }
                 });
-
                 //LightTableFilter.init();
                 $("input[name=checkbox_ipAddr]").change(checked_trans);
-                if ($("#is_multiple_settings").is(":checked")) //多選
-                    $("input[name=checkbox_ipAddr]").unbind('click', singleCheck);
-                else //單選
-                    $("input[name=checkbox_ipAddr]").click(singleCheck);
             }
         }
         xmlHttp.send(JSON.stringify(Connect_Request));
@@ -261,9 +249,7 @@ function Connect() {
     }
 }
 
-var count_connected = -1;
-
-function inputTable_RF_info(num, ip_address) {
+function RF_setting_read(num, ip_address) {
     var rf_Request = {
         "Command_Type": ["Read"],
         "Command_Name": ["RF"],
@@ -274,7 +260,7 @@ function inputTable_RF_info(num, ip_address) {
                 "rf_channel", "rf_datarate", "rf_preambleCode", "rf_preambleLength", "rf_prf"
             ]
         }
-    }
+    };
     var RF_XmlHttp = createJsonXmlHttp("test2");
     RF_XmlHttp.onreadystatechange = function () {
         if (RF_XmlHttp.readyState == 4 || RF_XmlHttp.readyState == "complete") {
@@ -301,125 +287,166 @@ function inputTable_RF_info(num, ip_address) {
                     "<td class=\"row_rf_smartpower\"><select id=\"conn_rf_smartpower_" + count_connected + "\">" + makeOptions(rf_SMARTPOWER_arr, response[0].rf_SMARTPOWER) + "</select></td>" +
                     "<td class=\"row_rf_ntm\"><select id=\"conn_rf_ntm_" + count_connected + "\">" + makeOptions(rf_NTM_arr, response[0].rf_NTM_value) + "</select></td>" +
                     "<td class=\"row_rf_mult\"><select id=\"conn_rf_mult_" + count_connected + "\">" + makeOptions(rf_MULT_arr, response[0].rf_PMULT_value) + "</select></td>");
+                $("#table_ip_address_info tbody tr:eq(" + num + ") td:gt(15)").css("background-color", "#c7d8e2");
+                setListenerOfSelect(count_connected);
             }
-            $("#conn_rf_channel_" + count_connected).change(function () {
-                var option_index = $(this).get(0).selectedIndex;
-                $("#conn_rf_pg_delay_" + count_connected).val(rf_TX_PGdelay_arr[option_index]);
-            });
-            $("#conn_rf_datarate_" + count_connected).change(function () {
-                if ($(this).val() == "6.8Mbps") {
-                    $("#conn_rf_preamble_len_" + count_connected).val("128");
-                    $("#conn_rf_pac_" + count_connected).val("8");
-                } else if ($(this).val() == "850Kbps") {
-                    $("#conn_rf_preamble_len_" + count_connected).val("512");
-                    $("#conn_rf_pac_" + count_connected).val("32");
-                } else if ($(this).val() == "110Kbps") {
-                    $("#conn_rf_preamble_len_" + count_connected).val("1024");
-                    $("#conn_rf_pac_" + count_connected).val("32");
-                }
-            });
-            $("#conn_rf_preamble_code_" + count_connected).change(function () {
-                var preamble_len = parseInt($("#conn_rf_preamble_len_" + count_connected).val(), 10);
-                $("#conn_rf_sdf_timeoutr_" + count_connected).val(parseInt($(this).val(), 10) + preamble_len + 1);
-            });
-            $("#conn_rf_preamble_len_" + count_connected).change(function () {
-                var preamble_code = parseInt($("#conn_rf_preamble_code_" + count_connected).val(), 10);
-                $("#conn_rf_sdf_timeoutr_" + count_connected).val(parseInt($(this).val(), 10) + preamble_code + 1);
-                switch ($(this).val()) {
-                    case "64":
-                    case "128":
-                        $("#conn_rf_pac_" + count_connected).val("8");
-                        break;
-                    case "256":
-                        $("#conn_rf_pac_" + count_connected).val("16");
-                        break;
-                    case "512":
-                    case "1024":
-                    case "1536":
-                        $("#conn_rf_pac_" + count_connected).val("32");
-                        break;
-                    case "2048":
-                    case "4096":
-                        $("#conn_rf_pac_" + count_connected).val("64");
-                        break;
-                    default:
-                        break;
-                }
-            });
         }
     };
     RF_XmlHttp.send(JSON.stringify(rf_Request));
 }
 
-function Device_setting_write() {
-    var ip_arr_len = connect_ip_array.length;
-    if (ip_arr_len > 0) {
-        //Network Setting:
-        var ip_address = [],
-            mask_address = [],
-            gateway_address = [],
-            client_ip = [];
-        for (i = 1; i < 5; i++) {
-            ip_address.push(document.getElementById("ip_address_" + i).value);
-            mask_address.push(document.getElementById("mask_address_" + i).value);
-            gateway_address.push(document.getElementById("gateway_address_" + i).value);
-            client_ip.push(document.getElementById("client_ip_" + i).value);
+function setListenerOfSelect(num) {
+    $("#conn_rf_channel_" + num).change(function () {
+        var option_index = $(this).get(0).selectedIndex;
+        $("#conn_rf_pg_delay_" + num).val(rf_TX_PGdelay_arr[option_index]);
+    });
+    $("#conn_rf_datarate_" + num).change(function () {
+        if ($(this).val() == "6.8Mbps") {
+            $("#conn_rf_preamble_len_" + num).val("128");
+            $("#conn_rf_pac_" + num).val("8");
+        } else if ($(this).val() == "850Kbps") {
+            $("#conn_rf_preamble_len_" + num).val("512");
+            $("#conn_rf_pac_" + num).val("32");
+        } else if ($(this).val() == "110Kbps") {
+            $("#conn_rf_preamble_len_" + num).val("1024");
+            $("#conn_rf_pac_" + num).val("32");
         }
-        var deviceArray = {
-            "Command_Type": ["Write"],
-            "Command_Name": ["Network"],
-            "Value": {
-                "IP_address": connect_ip_array
-            }
-        };
-        if (document.getElementsByName("network_setting_mode")[0].checked) { //DHCP
-            set_mode = "DHCP";
-            deviceArray.Value.function = ["dev_Client_IP"];
-            //test
-            deviceArray.Value.dev_IP = ["0", "0", "0", "0"];
-            deviceArray.Value.dev_Mask = ["0", "0", "0", "0"];
-            deviceArray.Value.dev_GW = ["0", "0", "0", "0"];
-            //end test
-            deviceArray.Value.dev_Client_IP = client_ip;
-        } else { //Static IP
-            set_mode = "Static IP";
-            if ($("#is_multiple_settings").is(":checked")) { //多選
-                deviceArray.Value.function = ["dev_Mask", "dev_GW", "dev_Client_IP"];
-                //test
-                deviceArray.Value.dev_IP = ["0", "0", "0", "0"];
-                //end test
-                deviceArray.Value.dev_Mask = mask_address;
-                deviceArray.Value.dev_GW = gateway_address;
-                deviceArray.Value.dev_Client_IP = client_ip;
-            } else { //單選
-                deviceArray.Value.function = ["dev_IP", "dev_Mask", "dev_GW", "dev_Client_IP"];
-                deviceArray.Value.dev_IP = ip_address;
-                deviceArray.Value.dev_Mask = mask_address;
-                deviceArray.Value.dev_GW = gateway_address;
-                deviceArray.Value.dev_Client_IP = client_ip;
-            }
+    });
+    $("#conn_rf_preamble_code_" + num).change(function () {
+        var preamble_len = parseInt($("#conn_rf_preamble_len_" + num).val(), 10);
+        $("#conn_rf_sdf_timeoutr_" + num).val(parseInt($(this).val(), 10) + preamble_len + 1);
+    });
+    $("#conn_rf_preamble_len_" + num).change(function () {
+        var preamble_code = parseInt($("#conn_rf_preamble_code_" + num).val(), 10);
+        $("#conn_rf_sdf_timeoutr_" + num).val(parseInt($(this).val(), 10) + preamble_code + 1);
+        switch ($(this).val()) {
+            case "64":
+            case "128":
+                $("#conn_rf_pac_" + num).val("8");
+                break;
+            case "256":
+                $("#conn_rf_pac_" + num).val("16");
+                break;
+            case "512":
+            case "1024":
+            case "1536":
+                $("#conn_rf_pac_" + num).val("32");
+                break;
+            case "2048":
+            case "4096":
+                $("#conn_rf_pac_" + num).val("64");
+                break;
+            default:
+                break;
         }
-        Request_write(deviceArray);
+    });
+}
 
-        //Basic Setting:
-        var basicArray = {
-            "Command_Type": ["Write"],
-            "Command_Name": ["Basic"],
-            "Interface": $("#select_connect_mode").children('option:selected').val(),
-            "Value": {
-                "IP_address": connect_ip_array,
-                "function": ["dev_transmission_cycle_time", "dev_active_ID"],
-                "dev_transmission_cycle_time": document.getElementById("sent_cycle").value,
-                "dev_active_ID": document.getElementById("device_id").value
-            }
-        };
-        setTimeout(function () {
-            Request_write(basicArray);
-        }, 100);
-
-    } else {
-        alert("請先連線裝置");
+function resetListenersOfSelects() {
+    if (count_connected > -1) {
+        for (i = 0; i < count_connected; i++) {
+            $("#conn_rf_channel_" + i).unbind();
+            $("#conn_rf_datarate_" + i).unbind();
+            $("#conn_rf_preamble_code_" + i).unbind();
+            $("#conn_rf_preamble_len_" + i).unbind();
+        }
     }
+}
+
+function Device_setting_write() {
+    var check_val = [];
+    //connect_ip_array = [];
+    var array = deviceArray;
+    var count_write_devices = 0;
+    DeviceCheckbox.forEach(function (v, i) {
+        var index = deviceArray.findIndex(function (info) {
+            return info.IP_address == v.value;
+        });
+        var status = deviceArray[index].Status;
+        if (v.checked && status == 1) {
+            /*check_val.push({
+                ip_mode: document.getElementsByName("conn_ip_mode")[i].value,
+                ip_address: v.value,
+                dev_ip: document.getElementsByName("row_ip_addr")[i].value,
+                dev_mask: document.getElementsByName("conn_gateway_addr")[i].value,
+                dev_gateway: document.getElementsByName("conn_mask_addr")[i].value,
+                dev_client_ip: document.getElementsByName("conn_client_ip_addr")[i].value,
+            });*/
+
+            //Network Setting:
+            /*var ip_address = [],
+                mask_address = [],
+                gateway_address = [],
+                client_ip = [];
+            for (i = 1; i < 5; i++) {
+                ip_address.push(document.getElementById("ip_address_" + i).value);
+                mask_address.push(document.getElementById("mask_address_" + i).value);
+                gateway_address.push(document.getElementById("gateway_address_" + i).value);
+                client_ip.push(document.getElementById("client_ip_" + i).value);
+            }*/
+            timeDelay["send_network"].forEach(delay => {
+                clearTimeout(delay);
+            });
+            timeDelay["send_network"] = []; //reset delay timeout array
+
+            var connected_ip_addr = v.value,
+                ip_mode = document.getElementsByName("conn_ip_mode")[i].value,
+                ip_address = document.getElementsByName("conn_ip_addr")[i].value.split("."),
+                mask_address = document.getElementsByName("conn_mask_addr")[i].value.split("."),
+                gateway_address = document.getElementsByName("conn_gateway_addr")[i].value.split("."),
+                client_ip_address = document.getElementsByName("conn_client_ip_addr")[i].value.split(".");
+
+            var writeRequest = {
+                "Command_Type": ["Write"],
+                "Command_Name": ["Network"],
+                "Value": {
+                    "IP_address": [connected_ip_addr]
+                }
+            };
+            if (ip_mode == "DHCP") { //DHCP
+                set_mode = "DHCP";
+                writeRequest.Value.function = ["dev_Client_IP"];
+                writeRequest.Value.dev_IP = ["0", "0", "0", "0"];
+                writeRequest.Value.dev_Mask = ["0", "0", "0", "0"];
+                writeRequest.Value.dev_GW = ["0", "0", "0", "0"];
+                writeRequest.Value.dev_Client_IP = client_ip_address;
+            } else { //Static IP
+                set_mode = "Static IP";
+                writeRequest.Value.function = ["dev_IP", "dev_Mask", "dev_GW", "dev_Client_IP"];
+                writeRequest.Value.dev_IP = ip_address;
+                writeRequest.Value.dev_Mask = mask_address;
+                writeRequest.Value.dev_GW = gateway_address;
+                writeRequest.Value.dev_Client_IP = client_ip_address;
+            }
+
+            count_write_devices++;
+
+            timeDelay["send_network"].push(setTimeout(function () {
+                var d = new Date();
+                console.log("Now Time:" + d.getTime());
+                Request_write(writeRequest);
+            }, 100 * count_write_devices));
+
+
+
+            //Basic Setting:
+            /*var basicArray = {
+                "Command_Type": ["Write"],
+                "Command_Name": ["Basic"],
+                "Interface": $("#select_connect_mode").children('option:selected').val(),
+                "Value": {
+                    "IP_address": connect_ip_array,
+                    "function": ["dev_transmission_cycle_time", "dev_active_ID"],
+                    "dev_transmission_cycle_time": "1000",
+                    "dev_active_ID": document.getElementsByName("conn_anchor_id")[i].value
+                }
+            };
+            setTimeout(function () {
+                Request_write(basicArray);
+            }, 100);*/
+
+        }
+    });
 }
 
 function RF_setting_write() {
@@ -538,7 +565,7 @@ function read_basic(requestArray) {
     xmlHttp.send(JSON.stringify(requestArray));
 }
 
-function RF_setting_read() {
+/*function RF_setting_read() {
     var ip_arr_len = connect_ip_array.length;
     if (ip_arr_len > 0) {
         var requestArray = {
@@ -606,4 +633,4 @@ function selectOption(id, resVal) {
         }
 
     }
-}
+}*/
