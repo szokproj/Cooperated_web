@@ -69,16 +69,39 @@ $(function () { //Load==>
         }
     });
 
-    Load();
-
     $("#btn_submit").click(function () {
         var r = confirm('Are you sure to submit the settings of devices?');
-        if (r == true)
-            Device_setting_write();
-        else
+        if (r == true) {
+            //Device_setting_write();
+            RF_setting_write();
+        } else {
             return;
+        }
     });
+
+    $("#check_all_net_basic").change(function () {
+        displayAllSelect(0, 6, this.checked);
+    });
+
+    $("#check_all_net_advance").change(function () {
+        displayAllSelect(6, 10, this.checked);
+    });
+
+    $("#check_all_rf_basic").change(function () {
+        displayAllSelect(10, 18, this.checked);
+    });
+
+    $("#check_all_rf_advance").change(function () {
+        displayAllSelect(18, 25, this.checked);
+    });
+
+    Load();
 });
+
+function displayAllSelect(start, end, check) {
+    for (i = start; i < end; i++)
+        document.getElementsByName("display_rows")[i].checked = check;
+}
 
 function displaySelectedRows() {
     var rows = document.getElementsByName("display_rows");
