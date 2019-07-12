@@ -21,22 +21,17 @@ $(function () { //Load==>
 
 
     var dialog, form;
-    var SendResult = function () {
-        var valid = true;
-        if (valid) {
-            displaySelectedRows();
-            dialog.dialog("close");
-        }
-        return valid;
-    };
 
     dialog = $("#dialog_set_table_display").dialog({
         autoOpen: false,
-        height: 580,
+        height: 600,
         width: 400,
         modal: true,
         buttons: {
-            "Confirm": SendResult,
+            Confirm: function () {
+                displaySelectedRows();
+                dialog.dialog("close");
+            },
             Cancel: function () {
                 form[0].reset();
                 dialog.dialog("close");
@@ -61,18 +56,16 @@ $(function () { //Load==>
         if (opt == "ethernet") {
             $(".mode_ethernet").show();
             $(".mode_comport").hide();
-            $("#btn_search").show();
         } else {
             $(".mode_ethernet").hide();
             $(".mode_comport").show();
-            $("#btn_search").hide();
         }
     });
 
     $("#btn_submit").click(function () {
         var r = confirm('Are you sure to submit the settings of devices?');
         if (r == true) {
-            //Device_setting_write();
+            Device_setting_write();
             RF_setting_write();
         } else {
             return;
@@ -95,8 +88,30 @@ $(function () { //Load==>
         displayAllSelect(18, 25, this.checked);
     });
 
+    for (i = 1; i < 5; i++) {
+        $("#static_ip_" + i).keydown(function (e) {
+            Limit_input_number(e);
+        });
+    }
+
     Load();
 });
+
+function Limit_input_number(e) {
+    // Allow: backspace, delete, tab, escape, enter, - and .
+    if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 189, 190]) !== -1 ||
+        // Allow: Ctrl+A, Command+A
+        (e.keyCode == 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+        // Allow: home, end, left, right, down, up
+        (e.keyCode >= 35 && e.keyCode <= 40)) {
+        // let it happen, don't do anything
+        return;
+    }
+    // Ensure that it is a number and stop the keypress
+    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+        e.preventDefault();
+    }
+}
 
 function displayAllSelect(start, end, check) {
     for (i = start; i < end; i++)
@@ -112,7 +127,6 @@ function displaySelectedRows() {
             $("." + rows[i].value).hide();
     }
 }
-
 
 function disable_DHCP() {
     if (document.getElementsByName("network_setting_mode")[0].checked) { //DHCP

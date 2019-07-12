@@ -5,13 +5,13 @@ const RF_PRF = ["16M", "64M"];
 const RF_PREAMBLE_CODE = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "17", "18", "19", "20"];
 const RF_PREAMBLE_LEN = ["64", "128", "256", "512", "1024", "1536", "2048", "4096"];
 const RF_PAC = ["8", "16", "32", "64"];
-const RF_TX_PG_DELAY = ["CH1", "CH2", "CH3", "CH4", "CH5", "CH6", "CH7"];
-const RF_TX_POWER = [
+const RF_TX_PG_DELAY = ["CH1", "CH2", "CH3", "CH4", "CH5", "CH7"];
+/*const RF_TX_POWER = [
     "CH1_NOSMART_16M", "CH2_NOSMART_16M", "CH3_NOSMART_16M", "CH4_NOSMART_16M", "CH5_NOSMART_16M", "CH7_NOSMART_16M",
     "CH1_NOSMART_64M", "CH2_NOSMART_64M", "CH3_NOSMART_64M", "CH4_NOSMART_64M", "CH5_NOSMART_64M", "CH7_NOSMART_64M",
     "CH1_SMART_16M", "CH2_SMART_16M", "CH3_SMART_16M", "CH4_SMART_16M", "CH5_SMART_16M", "CH7_SMART_16M",
     "CH1_SMART_64M", "CH2_SMART_64M", "CH3_SMART_64M", "CH4_SMART_64M", "CH5_SMART_64M", "CH7_SMART_64M"
-];
+];*/
 const RF_NSD = ["0", "1"];
 const RF_SDF_TIMEOUTR = ["1089"];
 const RF_SMARTPOWER = ["0", "1"];
@@ -77,29 +77,29 @@ function Search() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var udpInfo = JSON.parse(this.responseText);
-            var list = "";
             networkArray = [];
             if (!udpInfo)
                 return;
+            $("#table_ip_address_info tbody").empty();
             for (var i = 0; i < udpInfo.length; i++) {
-                list += "<tr><td><input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" +
-                    udpInfo[i].IP_address + "\" />" +
+                $("#table_ip_address_info tbody").append("<tr><td><input type=\"checkbox\"" +
+                    " name=\"checkbox_ipAddr\" value=\"" + udpInfo[i].IP_address + "\" />" +
                     "</td><td>" + RED_LIGHT +
                     "</td><td> " + //Anchor ID
                     "</td><td>" + udpInfo[i].MAC_address +
-                    "</td><td>" + "DHCP" +
-                    "</td><td>" + udpInfo[i].IP_address +
-                    "</td><td>" + udpInfo[i].Gateway_address +
-                    "</td><td>" + udpInfo[i].Mask_address +
-                    "</td><td>" + udpInfo[i].Client_ip_addr +
-                    "</td><td>" + udpInfo[i].TCP_Serve_Port +
-                    "</td><td>" + udpInfo[i].UDP_Serve_Port +
-                    "</td><td>" + udpInfo[i].TCP_Client_Src_Port +
-                    "</td><td>" + udpInfo[i].TCP_Client_Des_Port +
-                    "</td><td>" + udpInfo[i].Machine_Number +
-                    "</td><td>" + udpInfo[i].Model +
-                    "</td><td> " +
-                    "</td></tr>";
+                    "</td><td class=\"row_ip_mode\">" + "DHCP" +
+                    "</td><td class=\"row_ip_addr\">" + udpInfo[i].IP_address +
+                    "</td><td class=\"row_gateway_addr\">" + udpInfo[i].Gateway_address +
+                    "</td><td class=\"row_mask_addr\">" + udpInfo[i].Mask_address +
+                    "</td><td class=\"row_client_ip_addr\">" + udpInfo[i].Client_ip_addr +
+                    "</td><td class=\"row_tcp_server_port\">" + udpInfo[i].TCP_Serve_Port +
+                    "</td><td class=\"row_udp_server_port\">" + udpInfo[i].UDP_Serve_Port +
+                    "</td><td class=\"row_tcp_client_src_port\">" + udpInfo[i].TCP_Client_Src_Port +
+                    "</td><td class=\"row_tcp_client_des_port\">" + udpInfo[i].TCP_Client_Des_Port +
+                    "</td><td class=\"row_machine_number\">" + udpInfo[i].Machine_Number +
+                    "</td><td class=\"row_model\">" + udpInfo[i].Model +
+                    "</td><td></td></tr>");
+
                 deviceArray.push({
                     Status: 0,
                     Machine_Number: udpInfo[i].Machine_Number,
@@ -117,7 +117,6 @@ function Search() {
                 });
             }
             $(function () {
-                $("#table_ip_address_info tbody").html(list);
                 //LightTableFilter.init();
                 $("input[name=checkbox_ipAddr]").change(checked_trans);
 
@@ -289,7 +288,7 @@ function RF_setting_read(ip_address_array) {
                             "<td class=\"row_rf_preamble_len\"><select id=\"conn_rf_preamble_len_" + num + "\">" + makeOptions(RF_PREAMBLE_LEN, info.rf_preambleLength) + "</select></td>" +
                             "<td class=\"row_rf_pac\"><select id=\"conn_rf_pac_" + num + "\">" + makeOptions(RF_PAC, info.rf_PAC) + "</select></td>" +
                             "<td class=\"row_rf_pg_delay\"><select id=\"conn_rf_pg_delay_" + num + "\">" + makeOptions(RF_TX_PG_DELAY, info.rf_PGdelay) + "</select></td>" +
-                            "<td class=\"row_rf_power\"><select id=\"conn_rf_power_" + num + "\">" + makeOptions(RF_TX_POWER, info.rf_Power) + "</select></td>" +
+                            "<td class=\"row_rf_power\"><input type=\"text\" id=\"conn_rf_power_" + num + "\" value=\"" + info.rf_Power + "\" maxlength=\"10\" /></td>" +
                             "<td class=\"row_rf_nsd\"><select id=\"conn_rf_nsd_" + num + "\">" + makeOptions(RF_NSD, info.rf_NSD) + "</select></td>" +
                             "<td class=\"row_rf_sdf_timeoutr\"><input type='text' id=\"conn_rf_sdf_timeoutr_" + num + "\" value=\"" + info.rf_SFD_timeout + "\" /></td>" +
                             "<td class=\"row_rf_smartpower\"><select id=\"conn_rf_smartpower_" + num + "\">" + makeOptions(RF_SMARTPOWER, info.rf_SMARTPOWER) + "</select></td>" +
@@ -352,6 +351,9 @@ function setListenerOfSelect(num) {
                 break;
         }
     });
+    $("#conn_rf_power_" + num).keydown(function (e) {
+        Limit_input_number(e);
+    });
 }
 
 function resetListenersOfSelects() {
@@ -361,6 +363,7 @@ function resetListenersOfSelects() {
             $("#conn_rf_datarate_" + i).off("change");
             $("#conn_rf_preamble_code_" + i).off("change");
             $("#conn_rf_preamble_len_" + i).off("change");
+            $("#conn_rf_power_" + i).unbind();
         }
         count_connected = -1;
     }
@@ -462,13 +465,13 @@ function Device_setting_write() {
             count_write_devices++;
         }
     });
-    if (count_write_devices > 0) {
+    /*if (count_write_devices > 0) {
         timeDelay["send_network"].push(setTimeout(function () {
             var d = new Date();
             console.log("Re Search:" + d.getTime());
             Search();
         }, 200 * (count_write_devices)));
-    }
+    }*/
 }
 
 function RF_setting_write() {
@@ -494,38 +497,53 @@ function RF_setting_write() {
                         "rf_PAC", "rf_PGdelay", "rf_PMULT_value", "rf_Power", "rf_SFD_timeout", "rf_SMARTPOWER",
                         "rf_channel", "rf_datarate", "rf_preambleCode", "rf_preambleLength", "rf_prf"
                     ],
-                    "rf_channel": [$('#conn_rf_channel_' + i).val()],
-                    "rf_datarate": [$('#conn_rf_datarate_' + i).val()],
-                    "rf_prf": [$('#conn_rf_prf_' + i).val()],
-                    "rf_preambleCode": [$('#conn_rf_preamble_code_' + i).val()],
-                    "rf_preambleLength": [$('#conn_rf_preamble_len_' + i).val()],
-                    "rf_PAC": [$('#conn_rf_pac_' + i).val()],
-                    "rf_PGdelay": [$('#conn_rf_pg_delay_' + i).val()],
-                    "rf_Power": [$('#conn_rf_power_' + i).val()],
-                    "rf_NSD": [$('#conn_rf_nsd_' + i).val()],
-                    "rf_SFD_timeout": [$('#conn_rf_sdf_timeoutr_' + i).val()],
-                    "rf_SMARTPOWER": [$('#conn_rf_smartpower_' + i).val()],
-                    "rf_NTM_value": [$('#conn_rf_ntm_' + i).val()],
-                    "rf_PMULT_value": [$('#conn_rf_mult_' + i).val()]
+                    "rf_channel": $('#conn_rf_channel_' + i).val(),
+                    "rf_datarate": $('#conn_rf_datarate_' + i).val(),
+                    "rf_prf": $('#conn_rf_prf_' + i).val(),
+                    "rf_preambleCode": $('#conn_rf_preamble_code_' + i).val(),
+                    "rf_preambleLength": $('#conn_rf_preamble_len_' + i).val(),
+                    "rf_PAC": $('#conn_rf_pac_' + i).val(),
+                    "rf_PGdelay": $('#conn_rf_pg_delay_' + i).val(),
+                    "rf_Power": $('#conn_rf_power_' + i).val(),
+                    "rf_NSD": $('#conn_rf_nsd_' + i).val(),
+                    "rf_SFD_timeout": $('#conn_rf_sdf_timeoutr_' + i).val(),
+                    "rf_SMARTPOWER": $('#conn_rf_smartpower_' + i).val(),
+                    "rf_NTM_value": $('#conn_rf_ntm_' + i).val(),
+                    "rf_PMULT_value": $('#conn_rf_mult_' + i).val()
                 }
             };
 
             timeDelay["send_rf"].push(setTimeout(function () {
                 var d = new Date();
                 console.log("Write RF:" + d.getTime());
-                Request_write(rfRequest);
-            }, 1000 * count_write_devices));
+
+                var xmlHttp = createJsonXmlHttp("test2");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        var response = JSON.parse(this.responseText);
+                        if (!response)
+                            return;
+                        if (response[0].Command_status == 1) {
+                            alert("Modify the RF setting of IP address: " + response[0].TARGET_IP + " is successful!");
+                        } else {
+                            alert("Modify the RF setting of IP address: " + response[0].TARGET_IP + " is failed.");
+                        }
+                    }
+                };
+                xmlHttp.send(JSON.stringify(rfRequest));
+
+            }, 100 + 200 * count_write_devices));
 
             count_write_devices++;
         }
     });
-    /*if (count_write_devices > 0) {
+    if (count_write_devices > 0) {
         timeDelay["send_rf"].push(setTimeout(function () {
             var d = new Date();
             console.log("Re Search:" + d.getTime());
             Search();
         }, 100 + 200 * (count_write_devices)));
-    }*/
+    }
 }
 
 
@@ -534,186 +552,15 @@ function Request_write(settingArray) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var response = JSON.parse(this.responseText);
+            if (!response)
+                return;
             if (response[0].Command_status == 1) {
-                //alert("Writing parameters has been completed.");
+                //alert("Modify the setting of IP address: " + response[0].TARGET_IP + " is successful!");
                 return;
             } else {
-                alert("Writing parameters is failed.");
+                alert("Modify the network setting of IP address: " + response[0].TARGET_IP + " is failed.");
             }
         }
     };
     xmlHttp.send(JSON.stringify(settingArray));
 }
-
-
-
-/*
-function RF_setting_write() {
-    var ip_arr_len = connect_ip_array.length;
-    if (ip_arr_len > 0) {
-        var RF_Array = {
-            "Command_Type": ["Write"],
-            "Command_Name": ["RF"],
-            "Value": {
-                "IP_address": connect_ip_array,
-                "function": ["Model_Name", "Version_Name", "rf_MODE", "rf_NSD", "rf_NTM_value",
-                    "rf_PAC", "rf_PGdelay", "rf_PMULT_value", "rf_Power", "rf_SFD_timeout", "rf_SMARTPOWER",
-                    "rf_channel", "rf_datarate", "rf_preambleCode", "rf_preambleLength", "rf_prf"
-                ],
-                "rf_channel": [$('#rf_Channel').val()],
-                "rf_datarate": [$('#rf_Datarate').val()],
-                "rf_prf": [$('#rf_PRF').val()],
-                "rf_preambleCode": [$('#rf_PreamblCode').val()],
-                "rf_preambleLength": [$('#rf_PreambleLength').val()],
-                "rf_PAC": [$('#rf_PAC').val()],
-                "rf_PGdelay": [$('#rf_TX_PGdelay').val()],
-                "rf_Power": [$('#rf_TX_Power').val()],
-                "rf_NSD": [$('#rf_NSD').val()],
-                "rf_SFD_timeout": [$('#rf_SDF_timeoutr').val()],
-                "rf_SMARTPOWER": [$('#rf_SMARTPOWER').val()],
-                "rf_NTM_value": [$('#rf_NTM').val()],
-                "rf_PMULT_value": [$('#rf_MULT').val()]
-            }
-        };
-        Request_write(RF_Array);
-    } else {
-        alert("請先連線裝置");
-    }
-}
-
-
-
-function Device_setting_read() {
-    var ip_arr_len = connect_ip_array.length;
-    if (ip_arr_len > 0) {
-        var requestArray = {
-            "Command_Type": ["Read"],
-            "Command_Name": [""],
-            "Value": {
-                "IP_address": [connect_ip_array[ip_arr_len - 1]]
-            }
-        };
-        //Network Setting:
-        requestArray.Command_Name[0] = "Network";
-        requestArray.Value.function = ["dev_IP", "dev_GW", "dev_Mask", "dev_Client_IP"];
-        read_network(requestArray);
-
-        //Basic Setting:
-        requestArray.Command_Name[0] = "Basic";
-        requestArray.Interface = $("#select_connect_mode").children('option:selected').val();
-        requestArray.Value.function = ["dev_transmission_cycle_time", "dev_active_ID"];
-        setTimeout(function () {
-            read_basic(requestArray);
-        }, 100);
-    } else {
-        alert("請先連線至少一台裝置");
-    }
-}
-
-function read_network(requestArray) {
-    var xmlHttp = createJsonXmlHttp("test2");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var response = JSON.parse(this.responseText);
-            if (response[0].Command_status == 1) {
-                alert("Read the parameters has been completed.");
-                for (i = 0; i < 4; i++) {
-                    document.getElementById("ip_address_" + (i + 1)).value = response[0].dev_IP[i];
-                    document.getElementById("mask_address_" + (i + 1)).value = response[0].dev_Mask[i];
-                    document.getElementById("gateway_address_" + (i + 1)).value = response[0].dev_GW[i];
-                    document.getElementById("client_ip_" + (i + 1)).value = response[0].dev_Client_IP[i];
-                }
-            } else {
-                alert("Read the parameters is failed.");
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(requestArray));
-}
-
-function read_basic(requestArray) {
-    var xmlHttp = createJsonXmlHttp("test2");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var response = JSON.parse(this.responseText);
-            if (response[0].Command_status == 1) {
-                alert("Read the parameters has been completed.");
-                document.getElementById("sent_cycle").value = response[0].dev_transmission_cycle_time;
-                document.getElementById("device_id").value = response[0].dev_active_ID;
-            } else {
-                alert("Read the parameters is failed.");
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(requestArray));
-}
-
-function RF_setting_read() {
-    var ip_arr_len = connect_ip_array.length;
-    if (ip_arr_len > 0) {
-        var requestArray = {
-            "Command_Type": ["Read"],
-            "Command_Name": ["RF"],
-            "Value": {
-                "IP_address": [connect_ip_array[ip_arr_len - 1]],
-                "function": ["Model_Name", "Version_Name", "rf_MODE", "rf_NSD", "rf_NTM_value",
-                    "rf_PAC", "rf_PGdelay", "rf_PMULT_value", "rf_Power", "rf_SFD_timeout", "rf_SMARTPOWER",
-                    "rf_channel", "rf_datarate", "rf_preambleCode", "rf_preambleLength", "rf_prf"
-                ]
-            }
-        };
-        var xmlHttp = createJsonXmlHttp("test2");
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                var response = JSON.parse(this.responseText);
-                if (response[0].Command_status == 1) {
-                    alert("Writing parameters has been completed.");
-                    //Label
-                    document.getElementById("rf_Model").innerText = response[0].Model_Name;
-                    document.getElementById("rf_Version").innerText = response[0].Version_Name;
-                    document.getElementById("rf_MODE").innerText = response[0].rf_MODE;
-                    document.getElementById("rf_Device_ID").innerText = response[0].rf_active_ID;
-                    //DropdownList
-                    selectOption("rf_Channel", response[0].rf_channel);
-                    selectOption("rf_Datarate", response[0].rf_datarate);
-                    selectOption("rf_PRF", response[0].rf_prf);
-                    selectOption("rf_PreambleCode", response[0].rf_preambleCode);
-                    selectOption("rf_PreambleLength", response[0].rf_preambleLength);
-                    selectOption("rf_PAC", response[0].rf_PAC);
-                    selectOption("rf_TX_PGdelay", response[0].rf_PGdelay);
-                    selectOption("rf_TX_Power", response[0].rf_Power);
-                    selectOption("rf_NSD", response[0].rf_NSD);
-                    selectOption("rf_SDF_timeoutr", response[0].rf_SFD_timeout);
-                    selectOption("rf_SMARTPOWER", response[0].rf_SMARTPOWER);
-                    selectOption("rf_NTM", response[0].rf_NTM_value);
-                    selectOption("rf_MULT", response[0].rf_PMULT_value);
-                } else {
-                    alert("Writing parameters is failed.");
-                }
-            }
-        };
-        xmlHttp.send(JSON.stringify(requestArray));
-    } else {
-        alert("請先連線裝置");
-    }
-}
-
-function selectOption(id, resVal) {
-    var dropdown = document.getElementById(id);
-    var isNoException = false;
-    for (var i = 0; i < dropdown.options.length; i++) {
-        if (dropdown.options[i].value == resVal) {
-            dropdown.options[i].selected = true;
-            isNoException = true;
-            break;
-        }
-    }
-    if (!isNoException) {
-        try {
-            dropdown.add(new Option(resVal, resVal, false, true), null) //add new option to end of "dropdown"
-        } catch (e) { //in IE, try the below version instead of add()
-            dropdown.add(new Option(resVal, resVal, false, true)) //add new option to end of "dropdown"
-        }
-
-    }
-}*/
