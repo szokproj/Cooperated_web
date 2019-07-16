@@ -211,6 +211,10 @@ input[type="file"] {
     cursor: pointer;
 }
 
+.btn {
+    border-radius: 0px;
+}
+
 .btn-hidden {
     position: absolute;
     width: 1px;
@@ -225,8 +229,8 @@ input[type="file"] {
 .btn-icon {
     cursor: pointer;
     color: rgb(0, 119, 255);
-    font-size: 20px;
-    margin: 0px 5px 0px 5px;
+    font-size: 18px;
+    margin-left: 5px;
 }
 
 .btn-icon:hover {

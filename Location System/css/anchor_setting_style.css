@@ -85,7 +85,7 @@ table.sticky-table {
     background: #e6f5ff;
 }
 
-.sticky-table thead tr th {
+.sticky-table thead tr:nth-child(1) th {
     top: 0px;
     position: sticky;
     position: -webkit-sticky;
@@ -94,15 +94,25 @@ table.sticky-table {
     outline-offset: -1px;
 }
 
+.sticky-table thead tr:nth-child(2) th{
+    top: 30px;
+    position: sticky;
+    position: -webkit-sticky;
+    background: #cecece;
+    outline: 2px solid #777777;
+    outline-offset: -1px;
+    padding: 3px;
+}
+
 .sticky-table th:nth-child(1),
 .sticky-table th:nth-child(2),
 .sticky-table th:nth-child(3),
 .sticky-table th:nth-child(4) {
     z-index: 2;
-    background: #97b8ce;
+    background: #97b8ce !important;
 }
 
-.sticky-table tbody input[type=text] {
+.sticky-table input[type=text] {
     width: 90%;
 }
 

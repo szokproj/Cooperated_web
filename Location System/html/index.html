@@ -25,6 +25,7 @@
     <link rel="stylesheet" type="text/css" href="../css/index_alarm_sidebar.css" />
     <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.6/css/bootstrap-material-design.css" />-->
     <!-- Edit js -->
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
     <script type="text/javascript" src="../js/sideBar.js"></script>
@@ -69,6 +70,9 @@
                             <ul class="dropdown-menu" role="menu" id="loadMapButtonGroup"></ul>
                         </div>
                     </div>
+                    <label for="btn_restore" id="label_restore" class="btn-icon i18n-input" selectattr="title"
+                        selectname="i_restore_scale"><i class="fas fa-compress"></i></label>
+                    <input id="btn_restore" type="button" class="btn-hidden" onclick="restoreCanvas();" />
 
                     <div class="cvsBlock" id="cvsBlock">
                         <canvas id="canvas" style="height:1px; width:1px;">
@@ -77,10 +81,6 @@
                     </div>
 
                     <div style="text-align:right;">
-                        <label for="btn_restore" id="label_restore" class="btn-icon i18n-input" selectattr="title"
-                            selectname="i_restore_scale" style="margin-right:30px;"><i class="fas fa-compress"
-                                style='font-size:18px;'></i></label>
-                        <input id="btn_restore" type="button" class="btn-hidden" onclick="restoreCanvas();" />
                         <span class="i18n" name="i_mapScale"></span> : <span id="scale_visible"
                             style="margin-right:50px;"></span>
                         X: <input type="text" id="x" class="coordinate" disabled />

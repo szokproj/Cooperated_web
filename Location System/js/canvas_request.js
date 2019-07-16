@@ -36,15 +36,6 @@ var memberArray = [],
     alarmFilterArr = [];
 
 $(function () {
-    //https://www.minwt.com/webdesign-dev/js/16298.html
-    var h = screen.availHeight;
-    var w = screen.availWidth;
-    console.log("Height: " + h + "\nWidth: " + w);
-    $(".cvsBlock").css("height", h * 0.8 + "px");
-    $(".member-table").css("max-height", h * 0.71 + "px");
-    $(".alarm-table").css("max-height", h * 0.75 + "px");
-    $(".search-table").css("max-height", h * 0.7 + "px");
-
     /**
      * Check this page's permission and load navbar
      */
@@ -64,6 +55,15 @@ $(function () {
             break;
     }
     setNavBar("index", "");
+
+    //https://www.minwt.com/webdesign-dev/js/16298.html
+    var h = screen.availHeight;
+    var w = screen.availWidth;
+    console.log("Height: " + h + "\nWidth: " + w);
+    $(".cvsBlock").css("height", h * 0.8 + "px");
+    $(".member-table").css("max-height", h * 0.71 + "px");
+    $(".alarm-table").css("max-height", h * 0.75 + "px");
+    $(".search-table").css("max-height", h * 0.7 + "px");
 
     //預設彈跳視窗載入後隱藏
     $("#member_dialog").dialog({
@@ -137,6 +137,7 @@ function setup() {
                         "\')\"></li>";
                 }
                 document.getElementById("loadMapButtonGroup").innerHTML = html;
+                selectMapFromCookie();
             } else {
                 alert($.i18n.prop('i_failed_loadMap'));
             }
@@ -160,6 +161,7 @@ function addMapTab(map_id, map_name) {
 function closeMapTag() {
     $("#map_tab_" + Map_id).remove();
     $("#map_btn_" + Map_id).prop('disabled', false).css('color', 'black');
+    deleteMapToCookie(Map_id);
     if (Map_id == "")
         return;
     if ($("button[name=map_tab]").length > 0) {
@@ -182,6 +184,8 @@ function setMap(map_id) {
 
     $("button[name=map_tab]").removeClass("selected");
     $("#map_tab_" + map_id).addClass("selected");
+
+    addMapToCookie(map_id);
 
     serverImg.src = map_url; //"data:image/" + revInfo.file_ext + ";base64," + revInfo.map_file;
     serverImg.onload = function () {
@@ -218,6 +222,60 @@ function setMap(map_id) {
     };
 }
 
+function addMapToCookie(map_id) {
+    var cookie = Cookies.get("recent_map");
+    var currentMaps = typeof (cookie) === 'undefined' ? [] : JSON.parse(cookie);
+    //从cookie中还原数组
+    if (typeof (currentMaps) !== 'object') {
+        Cookies.set("recent_map", JSON.stringify([]));
+        Cookies.set("select_map", "");
+        currentMaps = [];
+    }
+    var repeat = currentMaps.indexOf(map_id);
+    if (repeat == -1)
+        currentMaps.push(map_id); //新增地圖id
+    Cookies.set("recent_map", JSON.stringify(currentMaps));
+    Cookies.set("select_map", map_id);
+    //将数组转换为Json字符串保存在cookie中
+}
+
+function deleteMapToCookie(map_id) {
+    var cookie = Cookies.get("recent_map");
+    var currentMaps = typeof (cookie) === 'undefined' ? [] : JSON.parse(cookie);
+    //从cookie中还原数组
+    if (typeof (currentMaps) !== 'object') {
+        Cookies.set("recent_map", JSON.stringify([]));
+        Cookies.set("select_map", "");
+        return;
+    }
+    var repeat = currentMaps.indexOf(map_id);
+    if (repeat > -1)
+        currentMaps.splice(repeat, 1); //刪除地圖id
+    Cookies.set("recent_map", JSON.stringify(currentMaps));
+    Cookies.set("select_map", "");
+    //将数组转换为Json字符串保存在cookie中
+}
+
+function selectMapFromCookie() {
+    var selectedMap = Cookies.get("select_map");
+    var cookie = Cookies.get("recent_map");
+    var recentMaps = typeof (cookie) === 'undefined' ? [] : JSON.parse(cookie);
+    if (typeof (recentMaps) !== 'object') {
+        Cookies.set("recent_map", JSON.stringify([]));
+        Cookies.set("select_map", "");
+        return;
+    }
+    for (i in recentMaps) {
+        var index = mapArray.findIndex(function (info) {
+            return info.map_id == recentMaps[i];
+        });
+        if (index > -1) {
+            addMapTab(mapArray[index].map_id, mapArray[index].map_name);
+        }
+    }
+    setMap(selectedMap);
+}
+
 function resetCanvas_Anchor() {
     cvsBlock.style.background = '#ccc';
     canvasImg.isPutImg = false;
@@ -233,7 +291,7 @@ function resetCanvas_Anchor() {
     document.getElementById('scale_visible').innerText = "";
     document.getElementById('x').value = "";
     document.getElementById('y').value = "";
-    Start();
+    Stop();
 }
 
 function getAnchors(map_id) {
@@ -269,6 +327,7 @@ function getAnchors(map_id) {
         }
     };
     ancXmlHttp.send(JSON.stringify(request_anc));
+
     var request_main = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetMainAnchorsInMap"],
@@ -797,6 +856,13 @@ function changeAlarmLight() {
 }
 
 function updateTagList() {
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetTagList"],
+        "Value": {
+            "Map_id": Map_id
+        }
+    };
     var xmlHttp = createJsonXmlHttp("requestTagList_json");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
@@ -825,8 +891,6 @@ function updateTagList() {
                         number: number,
                         name: name
                     });
-                    /*if (revObj[i].tag_id == "0000000000000012")
-                        console.log("tag_x : " + revObj[i].tag_x + ", tag_y : " + revObj[i].tag_y);*/
 
                     //update member list
                     tbody.append("<tr><td>" + (i + 1) +
@@ -859,7 +923,7 @@ function updateTagList() {
             }
         }
     };
-    xmlHttp.send();
+    xmlHttp.send(request);
 }
 
 function focusAlarmTag(x, y) {
@@ -935,13 +999,16 @@ function autoSendRequest() {
 }
 
 function Start() {
-    var delaytime = 100;
     if (canvasImg.isPutImg) {
         //設定計時器
+        var delaytime = 100;
+        clearInterval(pageTimer["timer1"]);
         pageTimer["timer1"] = setInterval("autoSendRequest()", delaytime);
-    } else {
-        for (var each in pageTimer) {
-            clearInterval(pageTimer[each]);
-        }
+    }
+}
+
+function Stop() {
+    for (var each in pageTimer) {
+        clearInterval(pageTimer[each]);
     }
 }
