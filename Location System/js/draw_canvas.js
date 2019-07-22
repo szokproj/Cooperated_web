@@ -1,15 +1,26 @@
-function drawAnchor(dctx, id, type, x, y) {
+function drawAnchor(dctx, id, type, x, y, adjust) {
+    var size = 10 * adjust; // / Zoom / fitZoom
     if (type == "main")
         dctx.fillStyle = "red";
     else
         dctx.fillStyle = "blue";
-    dctx.font = 13 * 3 / canvasImg.scale + 'px serif';
+    dctx.font = 13 * adjust + 'px serif';
     dctx.fillText(id, x - 15, y - 6); //anchorID
-    dctx.fillRect(x - 5, y - 5, 10 * 3 / canvasImg.scale, 10 * 3 / canvasImg.scale);
+    dctx.fillRect(x - 5, y - 5, size, size);
 }
 
-function drawTags(dctx, id, x, y, color) {
-    var radius = 5; //半徑
+function drawInvisiblePoints(dctx, id, x, y, adjust) {
+    var radius = 10 * adjust; //半徑
+    dctx.beginPath();
+    dctx.fillStyle = '#ffffff00';
+    dctx.arc(x, y - radius * 2, radius, 0, Math.PI * 2, true);
+    // circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
+    dctx.fill(); //填滿圓形
+    dctx.closePath();
+}
+
+function drawTags(dctx, id, x, y, color, adjust) {
+    var radius = 10 * adjust; //半徑
     dctx.beginPath();
     //circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
     dctx.arc(x, y - radius * 2, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);
@@ -26,8 +37,8 @@ function drawTags(dctx, id, x, y, color) {
     dctx.fill();
 }
 
-function drawAlarmTags(dctx, id, x, y, status) {
-    var radius = 7; //半徑
+function drawAlarmTags(dctx, id, x, y, status, adjust) {
+    var radius = 14 * adjust; //半徑
     var fillColor = '';
     var markColor = ''
     switch (status) {
@@ -129,14 +140,5 @@ function drawAlarmTags(dctx, id, x, y, status) {
     dctx.beginPath();
     dctx.arc(x, y + radius * (-1.6), radius * 0.1, 0, Math.PI * 2, true);
     dctx.fill();
-    dctx.closePath();
-}
-
-function drawInvisiblePoints(dctx, id, x, y, radius) {
-    dctx.beginPath();
-    dctx.fillStyle = '#ffffff00';
-    dctx.arc(x, y - radius * 2, radius, 0, Math.PI * 2, true);
-    // circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
-    dctx.fill(); //填滿圓形
     dctx.closePath();
 }

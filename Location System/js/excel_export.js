@@ -11,14 +11,14 @@
 
 (function ($) {
     var $defaults = {
-        containerid: null
-        , datatype: 'table'
-        , dataset: null
-        , columns: null
-        , returnUri: false
-	, locale: 'en-US'   
-        , worksheetName: "My Worksheet"
-        , encoding: "utf-8"
+        containerid: null,
+        datatype: 'table',
+        dataset: null,
+        columns: null,
+        returnUri: false,
+        locale: 'en-US',
+        worksheetName: "My Worksheet",
+        encoding: "utf-8"
     };
 
     var $settings = $defaults;
@@ -31,8 +31,8 @@
         var excelData;
 
         return Initialize();
-		
-		function Initialize() {
+
+        function Initialize() {
             var type = $settings.datatype.toLowerCase();
 
             BuildDataStructure(type);
@@ -53,18 +53,16 @@
                     break;
             }
 
-       
+
             if ($settings.returnUri) {
                 return excelData;
-            }
-            else {
+            } else {
 
-                if (!isBrowserIE())
-                {
+                if (!isBrowserIE()) {
                     window.open(excelData);
                 }
 
-               
+
             }
         }
 
@@ -105,7 +103,7 @@
         }
 
         function ConvertFromTable() {
-            var result = $('<div>').append($('#' + $settings.containerid).clone()).html();            
+            var result = $('<div>').append($('#' + $settings.containerid).clone()).html();
             return result;
         }
 
@@ -154,10 +152,9 @@
         function Export(htmltable) {
 
             if (isBrowserIE()) {
-        
+
                 exportToExcelIE(htmltable);
-            }
-            else {
+            } else {
                 var excelFile = "<html xml:lang=" + $defaults.locale + " xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel' xmlns='http://www.w3.org/TR/REC-html40'>";
                 excelFile += "<head>";
                 excelFile += '<meta http-equiv="Content-type" content="text/html;charset=' + $defaults.encoding + '" />';
@@ -184,8 +181,15 @@
                 excelFile += "</html>";
 
                 var uri = "data:application/vnd.ms-excel;base64,";
-                var ctx = { worksheet: $settings.worksheetName, table: htmltable };
+                var ctx = {
+                    worksheet: $settings.worksheetName,
+                    table: htmltable
+                };
 
+                /*var link = document.createElement("a");
+                link.download = "export.xls";
+                link.href = uri + base64(format(excelFile, ctx));
+                link.click();*/
                 return (uri + base64(format(excelFile, ctx)));
             }
         }
@@ -195,15 +199,16 @@
         }
 
         function format(s, c) {
-            return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; });
+            return s.replace(/{(\w+)}/g, function (m, p) {
+                return c[p];
+            });
         }
 
         function isBrowserIE() {
             var msie = !!navigator.userAgent.match(/Trident/g) || !!navigator.userAgent.match(/MSIE/g);
-            if (msie > 0) {  // If Internet Explorer, return true
+            if (msie > 0) { // If Internet Explorer, return true
                 return true;
-            }
-            else {  // If another browser, return false
+            } else { // If another browser, return false
                 return false;
             }
         }
@@ -215,64 +220,63 @@
             el.innerHTML = table;
 
             var tab_text = "<table border='2px'><tr bgcolor='#87AFC6'>";
-            var textRange; var j = 0;
+            var textRange;
+            var j = 0;
             var tab;
-                  
 
-            if ($settings.datatype.toLowerCase() == 'table') {            
-                tab = document.getElementById($settings.containerid);  // get table              
-            }
-            else{
+
+            if ($settings.datatype.toLowerCase() == 'table') {
+                tab = document.getElementById($settings.containerid); // get table              
+            } else {
                 tab = el.children[0]; // get table
             }
 
-          
-        
-            for (j = 0 ; j < tab.rows.length ; j++) {
+
+
+            for (j = 0; j < tab.rows.length; j++) {
                 tab_text = tab_text + tab.rows[j].innerHTML + "</tr>";
                 //tab_text=tab_text+"</tr>";
             }
 
             tab_text = tab_text + "</table>";
-            tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, "");//remove if u want links in your table
+            tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, ""); //remove if u want links in your table
             tab_text = tab_text.replace(/<img[^>]*>/gi, ""); // remove if u want images in your table
             tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, ""); // reomves input params
 
             var ua = window.navigator.userAgent;
             var msie = ua.indexOf("MSIE ");
 
-            if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer
+            if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) // If Internet Explorer
             {
                 txtArea1.document.open("txt/html", "replace");
                 txtArea1.document.write(tab_text);
                 txtArea1.document.close();
                 txtArea1.focus();
-                sa = txtArea1.document.execCommand("SaveAs", true, "download");
-            }
-            else                
+                sa = txtArea1.document.execCommand("SaveAs", true, "download.xls");
+            } else
                 sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));
 
             return (sa);
 
 
         }
-        
+
     };
 })(jQuery);
 
 
 //get columns
-function getColumns(paramData){
+function getColumns(paramData) {
 
-	var header = [];
-	$.each(paramData[0], function (key, value) {
-		//console.log(key + '==' + value);
-		var obj = {}
-		obj["headertext"] = key;
-		obj["datatype"] = "string";
-		obj["datafield"] = key;
-		header.push(obj);
-	}); 
-	return header;
+    var header = [];
+    $.each(paramData[0], function (key, value) {
+        //console.log(key + '==' + value);
+        var obj = {}
+        obj["headertext"] = key;
+        obj["datatype"] = "string";
+        obj["datafield"] = key;
+        header.push(obj);
+    });
+    return header;
 
 }

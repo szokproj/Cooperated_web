@@ -254,8 +254,7 @@ function getPointOnCanvas(x, y) {
 }
 
 
-function
-getAnchors(map_anchors) {
+function getAnchors(map_anchors) {
     var map_id = $("#map_info_id").val();
     var requestArray = {
         "Command_Type": ["Read"],
@@ -350,11 +349,12 @@ function drawAnchor(dctx, id, type, x, y) {
 }
 
 function drawAnchorPosition(dctx, x, y) {
+    var size = 4 * 3 / canvasImg.scale;
     x = x / canvasImg.scale;
     y = canvasImg.height - y / canvasImg.scale;
     dctx.fillStyle = '#99cc00';
     dctx.beginPath();
-    dctx.arc(x, y, 4, 0, Math.PI * 2, true);
+    dctx.arc(x, y, size, 0, Math.PI * 2, true);
     dctx.fill();
 }
 

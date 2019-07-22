@@ -60,6 +60,7 @@ $(function () {
             $("#add_col").attr("disabled", true);
             $("#delete_col").attr("disabled", true);
             $("#multi_edit").attr("disabled", true);
+
             //$("#excel_import").attr("disabled", true);
             break;
         case "RW":
@@ -70,6 +71,10 @@ $(function () {
             break;
     }
     setNavBar("Member_Setting", "Member_Setting");
+    
+    setTimeout(function () {
+        $("#loading").hide();
+    }, 500);
 
     /**
      * this page's js start
@@ -364,8 +369,7 @@ function editMemberData(number) {
 }*/
 
 function transBase64(file) {
-    //file transform base64
-    if (file) {
+    if (file) { //file transform base64
         var FR = new FileReader();
         FR.readAsDataURL(file);
         FR.onloadend = function (e) {

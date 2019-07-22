@@ -16,6 +16,37 @@ const RF_NTM = [
 const RF_MULT = ["0", "1", "2", "3", "4", "5", "6", "7"];
 const RED_LIGHT = "<img src=\"../image/redLight.png\"/>";
 const GREEN_LIGHT = "<img src=\"../image/greenLight.png\"/>";
+var displayRowArray = {
+    "check_all_net_basic": true,
+    "check_all_net_advance": true,
+    "check_all_rf_basic": true,
+    "check_all_rf_advance": true,
+    "row_ip_addr": true,
+    "row_gateway_addr": true,
+    "row_mask_addr": true,
+    "row_client_ip_addr": true,
+    "row_machine_number": true,
+    "row_model": true,
+    "row_tcp_server_port": true,
+    "row_udp_server_port": true,
+    "row_tcp_client_src_port": true,
+    "row_tcp_client_des_port": true,
+    "row_rf_mode": true,
+    "row_rf_version": true,
+    "row_rf_channel": true,
+    "row_rf_datarate": true,
+    "row_rf_preamble_code": true,
+    "row_rf_preamble_len": true,
+    "row_rf_pac": true,
+    "row_rf_sdf_timeoutr": true,
+    "row_rf_prf": true,
+    "row_rf_pg_delay": true,
+    "row_rf_power": true,
+    "row_rf_nsd": true,
+    "row_rf_smartpower": true,
+    "row_rf_ntm": true,
+    "row_rf_mult": true
+};
 
 $(function () { //Load==>
     /**
@@ -50,7 +81,20 @@ $(function () { //Load==>
         modal: true,
         buttons: {
             Confirm: function () {
-                displaySelectedRows();
+                var rows = document.getElementsByName("display_rows");
+                for (i = 0; i < rows.length; i++) {
+                    if (rows[i].checked) {
+                        displayRowArray[rows[i].value] = true;
+                        $("." + rows[i].value).show();
+                    } else {
+                        displayRowArray[rows[i].value] = false;
+                        $("." + rows[i].value).hide();
+                    }
+                }
+                displayRowArray["check_all_net_basic"] = $("#check_all_net_basic").prop("checked");
+                displayRowArray["check_all_net_advance"] = $("#check_all_net_advance").prop("checked");
+                displayRowArray["check_all_rf_basic"] = $("#check_all_rf_basic").prop("checked");
+                displayRowArray["check_all_rf_advance"] = $("#check_all_rf_advance").prop("checked");
                 dialog.dialog("close");
             },
             Cancel: function () {
@@ -69,6 +113,18 @@ $(function () { //Load==>
     });
 
     $("#open_dialog_set").click(function () {
+        var rows = document.getElementsByName("display_rows");
+        for (i = 0; i < rows.length; i++) {
+            if (displayRowArray[rows[i].value]) {
+                rows[i].checked = true;
+            } else {
+                rows[i].checked = false;
+            }
+        }
+        $("#check_all_net_basic").prop("checked", displayRowArray["check_all_net_basic"]);
+        $("#check_all_net_advance").prop("checked", displayRowArray["check_all_net_advance"]);
+        $("#check_all_rf_basic").prop("checked", displayRowArray["check_all_rf_basic"]);
+        $("#check_all_rf_advance").prop("checked", displayRowArray["check_all_rf_advance"]);
         dialog.dialog("open");
     });
 
@@ -133,7 +189,7 @@ function displayAllSelect(start, end, check) {
 function displaySelectedRows() {
     var rows = document.getElementsByName("display_rows");
     for (i = 0; i < rows.length; i++) {
-        if (rows[i].checked)
+        if (displayRowArray[rows[i].value] == true)
             $("." + rows[i].value).show();
         else
             $("." + rows[i].value).hide();
@@ -207,28 +263,33 @@ function inputSetAllRow() {
 }
 
 function setListenerOfSetAllRow() {
+    var check = document.getElementsByName("checkbox_ipAddr");
+    var status = document.getElementsByName("conn_status");
     $("#all_gateway_addr").prop("disabled", true);
     $("#all_mask_addr").prop("disabled", true);
     $("#all_ip_mode").on("change", function () {
-        $("select[name='conn_ip_mode']").val($(this).val());
-        if ($(this).val() == "DHCP") {
-            $("#all_gateway_addr").prop("disabled", true);
-            $("#all_mask_addr").prop("disabled", true);
-            $("input[name='conn_ip_addr']").prop("disabled", true);
-            $("input[name='conn_gateway_addr']").prop("disabled", true);
-            $("input[name='conn_mask_addr']").prop("disabled", true);
-        } else {
-            $("#all_gateway_addr").prop("disabled", false);
-            $("#all_mask_addr").prop("disabled", false);
-            $("input[name='conn_ip_addr']").prop("disabled", false);
-            $("input[name='conn_gateway_addr']").prop("disabled", false);
-            $("input[name='conn_mask_addr']").prop("disabled", false);
-        }
+        var bool = false;
+        if ($(this).val() == "DHCP")
+            bool = true;
+        $("#all_gateway_addr").prop("disabled", bool);
+        $("#all_mask_addr").prop("disabled", bool);
+        check.forEach(function (element, i) {
+            if (element.checked && status[i].value == "1") {
+                $("select[name='conn_ip_mode']").eq(i).val($("#all_ip_mode").val());
+                $("input[name='conn_ip_addr']").eq(i).prop("disabled", bool);
+                $("input[name='conn_gateway_addr']").eq(i).prop("disabled", bool);
+                $("input[name='conn_mask_addr']").eq(i).prop("disabled", bool);
+            }
+        });
     });
     $("#all_rf_channel").on("change", function () {
         var option_index = $(this).get(0).selectedIndex;
         $("#all_rf_pg_delay").val(RF_TX_PG_DELAY[option_index]);
-        $("[name='conn_rf_pg_delay']").val(RF_TX_PG_DELAY[option_index]);
+        check.forEach(function (element, i) {
+            if (element.checked && status[i].value == "1") {
+                $("select[name='conn_rf_pg_delay']").eq(i).val(RF_TX_PG_DELAY[option_index]);
+            }
+        });
     });
     $("#all_rf_datarate").on("change", function () {
         if ($(this).val() == "6.8Mbps") {
@@ -241,42 +302,51 @@ function setListenerOfSetAllRow() {
             $("#all_rf_preamble_len").val("1024");
             $("#all_rf_pac").val("32");
         }
-        $("[name='conn_rf_preamble_len']").val($("#all_rf_preamble_len").val());
-        $("[name='conn_rf_pac']").val($("#all_rf_pac").val());
+        check.forEach(function (element, i) {
+            if (element.checked && status[i].value == "1") {
+                $("select[name='conn_rf_preamble_len']").eq(i).val($("#all_rf_preamble_len").val());
+                $("select[name='conn_rf_pac']").eq(i).val($("#all_rf_pac").val());
+            }
+        });
     });
     $("#all_rf_preamble_code").on("change", function () {
         var preamble_len = parseInt($("#all_rf_preamble_len").val(), 10);
         $("#all_rf_sdf_timeoutr").val(parseInt($(this).val(), 10) + preamble_len + 1);
-        $("[name='conn_rf_sdf_timeoutr']").val(parseInt($(this).val(), 10) + preamble_len + 1);
+        check.forEach(function (element, i) {
+            if (element.checked && status[i].value == "1") {
+                $("input[name='conn_rf_sdf_timeoutr']").eq(i).val($("#all_rf_sdf_timeoutr").val());
+            }
+        });
     });
     $("#all_rf_preamble_len").on("change", function () {
-        var preamble_code = parseInt($("#conn_rf_preamble_code").val(), 10);
+        var preamble_code = parseInt($("#all_rf_preamble_code").val(), 10);
         $("#all_rf_sdf_timeoutr").val(parseInt($(this).val(), 10) + preamble_code + 1);
-        $("[name='conn_rf_sdf_timeoutr']").val(parseInt($(this).val(), 10) + preamble_code + 1);
         switch ($(this).val()) {
             case "64":
             case "128":
                 $("#all_rf_pac").val("8");
-                $("[name='conn_rf_pac']").val("8");
                 break;
             case "256":
                 $("#all_rf_pac").val("16");
-                $("[name='conn_rf_pac']").val("16");
                 break;
             case "512":
             case "1024":
             case "1536":
                 $("#all_rf_pac").val("32");
-                $("[name='conn_rf_pac']").val("32");
                 break;
             case "2048":
             case "4096":
                 $("#all_rf_pac").val("64");
-                $("[name='conn_rf_pac']").val("64");
                 break;
             default:
                 break;
         }
+        check.forEach(function (element, i) {
+            if (element.checked && status[i].value == "1") {
+                $("input[name='conn_rf_sdf_timeoutr']").eq(i).val($("#all_rf_sdf_timeoutr").val());
+                $("select[name='conn_rf_pac']").val($("#all_rf_pac").val());
+            }
+        });
     });
     $("#all_rf_power").keydown(function (e) {
         Limit_input_number(e);
@@ -284,15 +354,28 @@ function setListenerOfSetAllRow() {
     /**
      * Synchronize all rows of this column
      */
-    var column_name_array = [
+    var network_name_array = [
         "gateway_addr", "mask_addr", "client_ip_addr", "tcp_server_port", "udp_server_port",
-        "tcp_client_src_port", "tcp_client_des_port", "machine_number", "model", "rf_channel",
-        "rf_datarate", "rf_prf", "rf_preamble_code", "rf_preamble_len", "rf_pac", "rf_pg_delay",
-        "rf_power", "rf_nsd", "rf_sdf_timeoutr", "rf_smartpower", "rf_ntm", "rf_mult"
+        "tcp_client_src_port", "tcp_client_des_port", "machine_number", "model"
     ];
-    column_name_array.forEach(element => {
-        $("#all_" + element).on("change", function () {
-            $("[name='conn_" + element + "']").val($(this).val());
+    var rf_name_array = [
+        "rf_channel", "rf_datarate", "rf_prf", "rf_preamble_code", "rf_preamble_len", "rf_pac",
+        "rf_pg_delay", "rf_power", "rf_nsd", "rf_sdf_timeoutr", "rf_smartpower", "rf_ntm", "rf_mult"
+    ];
+    network_name_array.forEach(column => {
+        $("#all_" + column).on("change", function () {
+            check.forEach(function (element, i) {
+                if (element.checked && status[i].value == "1")
+                    $("[name='conn_" + column + "']").eq(i).val($("#all_" + column).val());
+            });
+        });
+    });
+    rf_name_array.forEach(column => {
+        $("#all_" + column).on("change", function () {
+            check.forEach(function (element, i) {
+                if (element.checked && status[i].value == "1")
+                    $("#conn_" + column + "_" + i).val($("#all_" + column).val());
+            });
         });
     });
 }
@@ -301,7 +384,7 @@ function inputDataToColumns(element) {
     if (element.Status == 1) {
         $("#table_ip_address_info tbody").prepend("<tr><td>" +
             "<input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" + element.IP_address + "\" checked/></td>" +
-            "<td>" + GREEN_LIGHT + "</td>" +
+            "<td><input type='hidden' name=\"conn_status\" value=\"1\" />" + GREEN_LIGHT + "</td>" +
             "<td><input type='text' name=\"conn_anchor_id\" value=\"" + element.Anchor_ID + "\" /></td>" +
             "<td name=\"conn_mac_addr\">" + element.MAC_address + "</td>" +
             "<td class=\"row_ip_mode\"><select name=\"conn_ip_mode\">" + makeOptions(IP_MODE, "DHCP") + "</select></td>" +
@@ -321,7 +404,7 @@ function inputDataToColumns(element) {
         $("#table_ip_address_info tbody").append("<tr><td>" +
             "<input type=\"checkbox\" name=\"checkbox_ipAddr\"" +
             " value=\"" + element.IP_address + "\" />" +
-            "</td><td>" + RED_LIGHT +
+            "</td><td><input type='hidden' name=\"conn_status\" value=\"0\" />" + RED_LIGHT +
             "</td><td>" + element.Anchor_ID +
             "</td><td>" + element.MAC_address +
             "</td><td class=\"row_ip_mode\">" + "DHCP" +

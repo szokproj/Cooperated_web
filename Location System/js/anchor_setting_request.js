@@ -7,7 +7,7 @@ var timeDelay = {
     connect: null,
     send_network: [],
     send_rf: []
-}; //restore timeout's id
+}; //restore timeout
 
 
 function Load() {
@@ -18,17 +18,26 @@ function Load() {
     var xmlHttp = createJsonXmlHttp("Command")
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var cookie = typeof (Cookies.get("local_ip")) == 'undefined' ? "" : Cookies.get("local_ip");
             var response = JSON.parse(this.responseText);
+            document.getElementById("local_ip").value = response[0].ip;
             var html = "<select id=\"interface_card\">";
             for (i = 0; i < response.length; i++) {
-                html += "<option value=\"" + response[i].ip + "\">" + response[i].net_interface_id + "</option>";
+                if (response[i].ip == cookie) {
+                    html += "<option value=\"" + response[i].ip + "\" selected>" + response[i].net_interface_id +
+                        "</option>";
+                    document.getElementById("local_ip").value = response[i].ip;
+                } else {
+                    html += "<option value=\"" + response[i].ip + "\">" + response[i].net_interface_id + "</option>";
+                }
             }
             html += "</select>";
             document.getElementById("select_interface_card").innerHTML = html;
-            document.getElementById("local_ip").value = response[0].ip;
+
             $(function () {
                 $("#interface_card").change(function () {
                     $("#local_ip").val($(this).children('option:selected').val());
+                    Cookies.set("local_ip", $("#local_ip").val());
                 });
             });
         }
@@ -73,7 +82,7 @@ function Search() {
                 });
                 $("#table_ip_address_info tbody").append("<tr><td><input type=\"checkbox\"" +
                     " name=\"checkbox_ipAddr\" value=\"" + udpInfo[i].IP_address + "\" />" +
-                    "</td><td>" + RED_LIGHT +
+                    "</td><td><input type='hidden' name=\"conn_status\" value=\"0\" />" + RED_LIGHT +
                     "</td><td> " + //Anchor ID
                     "</td><td>" + udpInfo[i].MAC_address +
                     "</td><td class=\"row_ip_mode\">" + "DHCP" +
@@ -90,6 +99,7 @@ function Search() {
                     "</td><td></td></tr>");
             }
             $("input[name=checkbox_ipAddr]").change(checked_trans);
+            displaySelectedRows();
         }
     }
     xmlHttp.send(JSON.stringify(requestArray));
@@ -143,6 +153,7 @@ function Connect() {
                     clearTimeout(timeDelay["connect"]);
                 }, 70);
                 $("input[name=checkbox_ipAddr]").change(checked_trans);
+                displaySelectedRows();
             }
         };
         xmlHttp.send(JSON.stringify(Connect_Request));
@@ -226,7 +237,7 @@ function RF_setting_read(ip_address_array) {
                     }
                 }
             });
-
+            displaySelectedRows();
         }
     };
     RF_XmlHttp.send(JSON.stringify(rf_Request));

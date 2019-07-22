@@ -22,6 +22,10 @@ $(function () {
     }
     setNavBar("Member_Setting", "Display_Setting");
 
+    setTimeout(function () {
+        $("#loading").hide();
+    }, 500);
+
     $("#display_type_select").change(function () {
         var index = $("#display_type_select").children('option:selected').index();
         updateTypeColorList(index);

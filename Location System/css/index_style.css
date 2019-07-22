@@ -94,6 +94,12 @@ canvas:active {
     cursor: move;
 }
 
+.transition {
+    height: 680px;
+    width: 100%;
+    background: white;
+}
+
 .mouse_cursor_move {
     cursor: move;
 }

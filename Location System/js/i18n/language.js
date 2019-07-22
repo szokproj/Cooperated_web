@@ -116,14 +116,14 @@ var execI18n = function () {
         language: i18nLanguage,
         callback: function () { //加载成功后设置显示内容
             var insertEle = $(".i18n");
-            console.log(".i18n 寫入中...");
+            //console.log(".i18n 寫入中...");
             insertEle.each(function () {
                 // 根据i18n元素的 name 获取内容写入
                 $(this).html($.i18n.prop($(this).attr('name')));
             });
-            console.log("寫入完畢");
+            //console.log("寫入完畢");
 
-            console.log(".i18n-input 寫入中...");
+            //console.log(".i18n-input 寫入中...");
             var insertInputEle = $(".i18n-input");
             insertInputEle.each(function () {
                 var selectAttr = $(this).attr('selectattr');
@@ -132,7 +132,7 @@ var execI18n = function () {
                 };
                 $(this).attr(selectAttr, $.i18n.prop($(this).attr('selectname')));
             });
-            console.log("寫入完畢");
+            //console.log("寫入完畢");
         }
     });
 }

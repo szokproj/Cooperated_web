@@ -75,6 +75,10 @@
                     <input id="btn_restore" type="button" class="btn-hidden" onclick="restoreCanvas();" />
 
                     <div class="cvsBlock" id="cvsBlock">
+                        <div class="transition" id="transition"></div>
+                        <!--<div id="loading">
+                            <span class="fa-li"><i class="fas fa-spinner fa-pulse"></i> Loading...</span>
+                        </div>-->
                         <canvas id="canvas" style="height:1px; width:1px;">
                             <span class="i18n" name="i_no_canvas"></span>
                         </canvas>
@@ -82,7 +86,7 @@
 
                     <div style="text-align:right;">
                         <span class="i18n" name="i_mapScale"></span> : <span id="scale_visible"
-                            style="margin-right:50px;"></span>
+                            style="margin-right:20px;"></span>
                         X: <input type="text" id="x" class="coordinate" disabled />
                         Y: <input type="text" id="y" class="coordinate" disabled />
                     </div>

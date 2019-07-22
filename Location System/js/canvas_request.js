@@ -35,6 +35,8 @@ var isFocus = true,
 var memberArray = [],
     alarmFilterArr = [];
 
+var event_state = {};
+
 $(function () {
     /**
      * Check this page's permission and load navbar
@@ -59,7 +61,7 @@ $(function () {
     //https://www.minwt.com/webdesign-dev/js/16298.html
     var h = screen.availHeight;
     var w = screen.availWidth;
-    console.log("Height: " + h + "\nWidth: " + w);
+    //console.log("Height: " + h + "\nWidth: " + w);
     $(".cvsBlock").css("height", h * 0.8 + "px");
     $(".member-table").css("max-height", h * 0.71 + "px");
     $(".alarm-table").css("max-height", h * 0.75 + "px");
@@ -73,15 +75,16 @@ $(function () {
         autoOpen: false
     });
     //設置移動後的默認位置 
-    $("#canvas").mousedown(function (e) {
+    $("#canvas").on("mousedown", function (e) {
         //獲取div的初始位置，要注意的是需要轉整型，因為獲取到值帶px 
+        e.preventDefault();
         var canvas_left = parseInt($("#canvas").css("margin-left"));
         var canvas_top = parseInt($("#canvas").css("margin-top"));
         //獲取滑鼠按下時的坐標，區別於下面的es.pageX,es.pageY 
         var downx = e.pageX;
         var downy = e.pageY;
         //pageY的y要大寫，一定要大寫！
-        $("#canvas").bind("mousemove", function (es) {
+        $("#canvas").on("mousemove", function (es) {
             //滑鼠按下時=>div綁定事件 
             var end_x = es.pageX - downx + canvas_left;
             var end_y = es.pageY - downy + canvas_top;
@@ -90,17 +93,42 @@ $(function () {
             $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
             //加上單位 
         });
-        $("#canvas").mouseup(function () {
+        $("#canvas").on("mouseup", function () {
             //滑鼠彈起時=>div取消事件 
-            $("#canvas").unbind("mousemove");
+            $("#canvas").off("mousemove");
         });
-        $("#canvas").mouseleave(function () {
-            //滑鼠離開canvas時=>div取消事件 
-            $("#canvas").unbind("mousemove");
+    });
+
+    $("#canvas").on("touchstart", function (e) {
+        e.preventDefault();
+        var canvas_left = parseInt($("#canvas").css("margin-left"));
+        var canvas_top = parseInt($("#canvas").css("margin-top"));
+        //獲取手指觸摸時的坐標 ex: event.targetTouches[0].pageX;
+        var downx = e.targetTouches[0].pageX;
+        var downy = e.targetTouches[0].pageY;
+        $("#canvas").on("touchmove", function (es) {
+            //手指觸摸時=>div綁定事件 
+            var end_x = es.targetTouches[0].pageX - downx + canvas_left;
+            var end_y = es.targetTouches[0].pageY - downy + canvas_top;
+            $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
+        });
+        $("#canvas").on("touchend", function () {
+            //手指離開時=>div取消事件 
+            $("#canvas").off("touchmove");
         });
     });
     setup();
 });
+
+function loading() {
+    $('#canvas').hide();
+    $('#transition').show();
+    pageTimer["loading"] = setTimeout(function () {
+        $('#transition').hide();
+        $('#canvas').show();
+        clearTimeout(pageTimer["transition"]);
+    }, 200);
+}
 
 function setup() {
     cvsBlock = document.getElementById("cvsBlock");
@@ -116,11 +144,11 @@ function setup() {
         return dpr / bsr;
     })();
     canvas.addEventListener("mousemove", handleMouseMove, false); //滑鼠在畫布中移動的座標
+    canvas.addEventListener("touchstart", handleMobileTouch, false); //手指點擊畫布中座標，跳出tag的訊息框
     canvas.addEventListener("mousewheel", handleMouseWheel, false); //畫布縮放
-    //canvas.addEventListener("dblclick", handleDblClick, false); // 快速放大點擊位置
+    canvas.addEventListener("DOMMouseScroll", handleMouseWheel, false); // 畫面縮放(for Firefox)
     canvas.addEventListener('click', handleMouseClick, false); //點擊地圖上的tag，跳出tag的訊息框
-    cvsBlock.addEventListener("mousewheel", handleMouseWheel, false); // 畫面縮放
-    cvsBlock.addEventListener("DOMMouseScroll", handleMouseWheel, false); // 畫面縮放(for Firefox)
+    //canvas.addEventListener("dblclick", handleDblClick, false); // 快速放大點擊位置
 
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -174,6 +202,8 @@ function closeMapTag() {
 }
 
 function setMap(map_id) {
+    loading();
+
     var index = mapArray.findIndex(function (info) {
         return info.map_id == map_id;
     });
@@ -202,6 +232,7 @@ function setMap(map_id) {
         ytopView = 0;
         Zoom = zoomOriginal;
         ctx.save(); //紀錄原比例
+        $("#canvas").css("margin-left", "0px").css("margin-top", "0px");
 
         var serImgSize = serverImg.width / serverImg.height;
         var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
@@ -215,7 +246,9 @@ function setMap(map_id) {
             setCanvas(this.src, serverImg.width * fitZoom, cvsBlock_height);
         }
 
-        //在設定好地圖後，導入Anchors & Groups & Tags' setting
+        /**
+         * 在設定好地圖後，導入Anchors & Groups & Tags' setting
+         */
         getAnchors(map_id);
         getMemberDate();
         Start();
@@ -321,7 +354,7 @@ function getAnchors(map_id) {
                         x: x,
                         y: y
                     });
-                    drawAnchor(ctx, anchorList[i].anchor_id, "", x, y); //畫出點的設定
+                    drawAnchor(ctx, anchorList[i].anchor_id, "", x, y, 10 * 3 / canvasImg.scale); //畫出點的設定
                 }
             }
         }
@@ -351,7 +384,7 @@ function getAnchors(map_id) {
                         x: x,
                         y: y
                     });
-                    drawAnchor(ctx, anchorList[i].main_anchor_id, "main", x, y);
+                    drawAnchor(ctx, anchorList[i].main_anchor_id, "main", x, y, 10 * 3 / canvasImg.scale);
                 }
             }
         }
@@ -430,7 +463,9 @@ function getMemberDate() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
-                //member_data => tag_id number Name department jobTitle type color
+                /**
+                 * member_data => tag_id number Name department jobTitle type color
+                 */
                 memberArray = 'Values' in revObj == true ? revObj.Values.slice(0) : [];
             }
         }
@@ -438,7 +473,7 @@ function getMemberDate() {
     xmlHttp.send(JSON.stringify(request));
 }
 
-function getMemberPhone(img_id, number) {
+function getMemberPhoto(img_id, number) {
     var pictureBox = $("#" + img_id);
     pictureBox.attr('src', ""); //reset
     if (number == "")
@@ -565,6 +600,51 @@ function handleDblClick(event) {
     });
 }
 
+function touchEvent(p) { //滑鼠點擊事件
+    var range = 10 / Zoom / fitZoom;
+    tagArray.forEach(function (v) {
+        var distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y + 20 / Zoom / fitZoom), 2));
+        if (distance <= range) {
+            //如果傳入了事件坐標，就用isPointInPath判斷一下
+            $("#member_dialog_tag_id").text(parseInt(v.id.substring(8), 16));
+            $("#member_dialog_number").text(v.number);
+            $("#member_dialog_name").text(v.name);
+            getMemberPhoto("member_dialog_image", v.number);
+            $("#member_dialog").dialog("open");
+        }
+    });
+    alarmArray.forEach(function (v) {
+        var distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y + 28 / Zoom / fitZoom), 2));
+        if (distance <= range) {
+            //如果傳入了事件坐標，就用isPointInPath判斷一下
+            setAlarmDialog(v);
+        }
+    });
+}
+
+function clickEvent(p) { //滑鼠點擊事件
+    tagArray.forEach(function (v) {
+        drawInvisiblePoints(ctx, v.id, v.x, v.y, 1 / (Zoom * fitZoom));
+        if (p && ctx.isPointInPath(p.x, p.y)) {
+            //如果傳入了事件坐標，就用isPointInPath判斷一下
+            $(function () {
+                $("#member_dialog_tag_id").text(parseInt(v.id.substring(8), 16));
+                $("#member_dialog_number").text(v.number);
+                $("#member_dialog_name").text(v.name);
+                getMemberPhoto("member_dialog_image", v.number);
+                $("#member_dialog").dialog("open");
+            });
+        }
+    });
+    alarmArray.forEach(function (v) {
+        drawInvisiblePoints(ctx, v.id, v.x, v.y, 1 / (Zoom * fitZoom));
+        if (p && ctx.isPointInPath(p.x, p.y)) {
+            //如果傳入了事件坐標，就用isPointInPath判斷一下
+            setAlarmDialog(v);
+        }
+    });
+}
+
 function getEventPosition(ev) { //獲取滑鼠點擊位置
     var x, y;
     if (ev.layerX || ev.layerX == 0) {
@@ -580,105 +660,42 @@ function getEventPosition(ev) { //獲取滑鼠點擊位置
     }; //注：如果使用此方法無效的話，需要給Canvas元素的position設為absolute。
 }
 
-function clickEvent(p) { //滑鼠點擊事件
-    tagArray.forEach(function (v, i) {
-        drawInvisiblePoints(ctx, v.id, v.x, v.y, 5);
-        if (p && ctx.isPointInPath(p.x, p.y)) {
-            //如果傳入了事件坐標，就用isPointInPath判斷一下
-            $(function () {
-                $("#member_dialog_tag_id").text(parseInt(v.id.substring(8), 16));
-                $("#member_dialog_number").text(v.number);
-                $("#member_dialog_name").text(v.name);
-                getMemberPhone("member_dialog_image", v.number);
-                $("#member_dialog").dialog("open");
-            });
-        }
-    });
-    alarmArray.forEach(function (v) {
-        drawInvisiblePoints(ctx, v.id, v.x, v.y, 7);
-        if (p && ctx.isPointInPath(p.x, p.y)) {
-            //如果傳入了事件坐標，就用isPointInPath判斷一下
-            $(function () {
-                var color = "",
-                    status = "";
-                switch (v.status) {
-                    case "low_power":
-                        color = "#72ac1b";
-                        status = $.i18n.prop('i_lowPowerAlarm');
-                        break;
-                    case "help":
-                        color = "#ff8484";
-                        status = $.i18n.prop('i_helpAlarm');
-                        break;
-                    case "still":
-                        color = "#FF6600";
-                        status = $.i18n.prop('i_stillAlarm');
-                        break;
-                    case "active":
-                        color = "#FF6600";
-                        status = $.i18n.prop('i_activeAlarm');
-                        break;
-                    default:
-                        color = "#FFFFFF"; //unknown
-                        status = "";
-                }
-                var member_index = memberArray.findIndex(function (info) {
-                    return info.tag_id == v.id;
-                });
-                var number = member_index > -1 ? memberArray[member_index].number : "";
-                var name = member_index > -1 ? memberArray[member_index].Name : "";
-                var time_arr = TimeToArray(v.time);
-                $("#alarm_dialog").css('background-color', color);
-                getMemberPhone("alarm_dialog_image", number);
-                $("#alarm_dialog_number").text(number);
-                $("#alarm_dialog_name").text(name);
-                $("#alarm_dialog_id").text(parseInt(v.id.substring(8), 16));
-                $("#alarm_dialog_date").text(time_arr.date);
-                $("#alarm_dialog_time").text(time_arr.time);
-                $("#alarm_dialog_status").text(status);
-                $("#alarm_dialog_btn_unlock").unbind();
-                $("#alarm_dialog_btn_unlock").click(function () {
-                    releaseFocusAlarm(v.order);
-                    $("#alarm_dialog").dialog("close");
-                });
-                $("#alarm_dialog_btn_focus").unbind();
-                $("#alarm_dialog_btn_focus").click(function () {
-                    changeFocusAlarm(v.order);
-                });
-                $("#alarm_dialog").dialog("open");
-            });
-        }
-    });
-}
-
 function handleMouseClick(event) {
     var p = getEventPosition(event);
     clickEvent(p);
 }
 
-function handleMouseMove(event) {
-    //滑鼠移動事件
-    var x = event.pageX;
-    var y = event.pageY;
-    var loc = getPointOnCanvas(x, y);
+function handleMobileTouch(event) { //手指觸碰事件
     if (canvasImg.isPutImg) {
-        lastX = loc.x;
-        lastY = loc.y;
-        document.getElementById('x').value = (lastX / Zoom / fitZoom * canvasImg.scale).toFixed(2);
-        document.getElementById('y').value = (lastY / Zoom / fitZoom * canvasImg.scale).toFixed(2);
-        //console.log("x : " + (lastX).toFixed(2) + ", y : " + (lastY).toFixed(2));
+        var x = event.changedTouches[0].pageX;
+        var y = event.changedTouches[0].pageY;
+        var touch_pos = getPointOnCanvas(x, y);
+        //console.log("p_x : " + touch_pos.x + ", p_y : " + touch_pos.y);
+        touchEvent(touch_pos);
+    }
+}
+
+function handleMouseMove(event) { //滑鼠移動事件
+    if (canvasImg.isPutImg) {
+        var x = event.pageX;
+        var y = event.pageY;
+        getPointOnCanvas(x, y);
     }
 }
 
 function getPointOnCanvas(x, y) {
     //獲取滑鼠在Canvas物件上座標(座標起始點從左上換到左下)
     var BCR = canvas.getBoundingClientRect();
-    var width = canvas.width;
-    var height = canvas.height;
+    var pos_x = (x - BCR.left) * (canvasImg.width / BCR.width);
+    var pos_y = (y - BCR.top) * (canvasImg.height / BCR.height);
+    lastX = pos_x;
+    lastY = canvasImg.height - pos_y;
+    document.getElementById('x').value = (lastX).toFixed(2);
+    document.getElementById('y').value = (lastY).toFixed(2);
     return {
-        x: x - BCR.left * (width / BCR.width),
-        y: height - (y - BCR.top * (height / BCR.height))
-    };
+        x: pos_x,
+        y: pos_y
+    }
 }
 
 /******************傳送要求到Server端************************/
@@ -688,7 +705,55 @@ function getPointOnCanvas(x, y) {
 /*            接收並處理Alarm           */
 /*------------------------------------*/
 
-
+function setAlarmDialog(Obj) {
+    var color = "",
+        status = "";
+    switch (Obj.status) {
+        case "low_power":
+            color = "#72ac1b";
+            status = $.i18n.prop('i_lowPowerAlarm');
+            break;
+        case "help":
+            color = "#ff8484";
+            status = $.i18n.prop('i_helpAlarm');
+            break;
+        case "still":
+            color = "#FF6600";
+            status = $.i18n.prop('i_stillAlarm');
+            break;
+        case "active":
+            color = "#FF6600";
+            status = $.i18n.prop('i_activeAlarm');
+            break;
+        default:
+            color = "#FFFFFF"; //unknown
+            status = "";
+    }
+    var member_index = memberArray.findIndex(function (info) {
+        return info.tag_id == Obj.id;
+    });
+    var number = member_index > -1 ? memberArray[member_index].number : "";
+    var name = member_index > -1 ? memberArray[member_index].Name : "";
+    var time_arr = TimeToArray(Obj.time);
+    $("#alarm_dialog").css('background-color', color);
+    getMemberPhoto("alarm_dialog_image", number);
+    $("#alarm_dialog_number").text(number);
+    $("#alarm_dialog_name").text(name);
+    $("#alarm_dialog_id").text(parseInt(Obj.id.substring(8), 16));
+    $("#alarm_dialog_date").text(time_arr.date);
+    $("#alarm_dialog_time").text(time_arr.time);
+    $("#alarm_dialog_status").text(status);
+    $("#alarm_dialog_btn_unlock").unbind();
+    $("#alarm_dialog_btn_unlock").click(function () {
+        releaseFocusAlarm(Obj.order);
+        $("#alarm_dialog").dialog("close");
+    });
+    $("#alarm_dialog_btn_focus").unbind();
+    $("#alarm_dialog_btn_focus").click(function () {
+        changeFocusAlarm(Obj.order);
+    });
+    $("#alarm_dialog").dialog("open");
+}
 
 function updateAlarmList() {
     var request = {
@@ -794,7 +859,7 @@ function updateAlarmList() {
                         " id=\"" + thumb_focus_btn_id + "\">" + $.i18n.prop('i_position') +
                         " <i class=\"fas fa-map-marker-alt\"></i></button>" +
                         "</div></div>");
-                    getMemberPhone(thumb_img, number);
+                    getMemberPhoto(thumb_img, number);
                     $("#" + thumb_unlock_btn_id).click(function () {
                         releaseFocusAlarm(element.order);
                         $("#" + thumb_id).hide(); //警告卡片會消失
@@ -810,7 +875,7 @@ function updateAlarmList() {
                      *  Alarm Dialog
                      */
                     $("#alarm_dialog").css('background-color', color);
-                    getMemberPhone("alarm_dialog_image", number);
+                    getMemberPhoto("alarm_dialog_image", number);
                     $("#alarm_dialog_number").text(number);
                     $("#alarm_dialog_name").text(name);
                     $("#alarm_dialog_id").text(parseInt(element.id.substring(8), 16));
@@ -866,6 +931,8 @@ function updateTagList() {
     var xmlHttp = createJsonXmlHttp("requestTagList_json");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            if (!this.responseText)
+                return;
             var revObj = JSON.parse(this.responseText);
             if (!revObj)
                 return false;
@@ -923,7 +990,7 @@ function updateTagList() {
             }
         }
     };
-    xmlHttp.send(request);
+    xmlHttp.send(JSON.stringify(request));
 }
 
 function focusAlarmTag(x, y) {
@@ -975,13 +1042,13 @@ function unlockFocusAlarm() { //解除定位
 function draw() {
     setSize();
     anchorArray.forEach(function (v) {
-        drawAnchor(ctx, v.id, v.type, v.x, v.y);
+        drawAnchor(ctx, v.id, v.type, v.x, v.y, 1 / (Zoom * fitZoom)); //canvasImg.scale
     });
     tagArray.forEach(function (v) {
-        drawTags(ctx, v.id, v.x, v.y, v.color);
+        drawTags(ctx, v.id, v.x, v.y, v.color, 1 / (Zoom * fitZoom));
     });
     alarmArray.forEach(function (v) {
-        drawAlarmTags(ctx, v.id, v.x, v.y, v.status);
+        drawAlarmTags(ctx, v.id, v.x, v.y, v.status, 1 / (Zoom * fitZoom));
     });
     if (alarmArray.length > 0) {
         var last = alarmArray.length - 1;
@@ -990,7 +1057,6 @@ function draw() {
         isFocus = false;
     }
 }
-
 
 function autoSendRequest() {
     updateAlarmList();
