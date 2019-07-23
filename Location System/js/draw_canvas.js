@@ -1,16 +1,16 @@
-function drawAnchor(dctx, id, type, x, y, adjust) {
-    var size = 10 * adjust; // / Zoom / fitZoom
+function drawAnchor(dctx, id, type, x, y, zoom) {
+    var size = 10 * zoom; // zoom = 1 / Zoom
     if (type == "main")
         dctx.fillStyle = "red";
     else
         dctx.fillStyle = "blue";
-    dctx.font = 13 * adjust + 'px serif';
-    dctx.fillText(id, x - 15, y - 6); //anchorID
-    dctx.fillRect(x - 5, y - 5, size, size);
+    dctx.font = 13 * zoom + 'px serif';
+    dctx.fillText(id, x - 5 * zoom, y - 7 * zoom); //anchorID
+    dctx.fillRect(x - 5 * zoom, y - 5 * zoom, size, size);
 }
 
-function drawInvisiblePoints(dctx, id, x, y, adjust) {
-    var radius = 10 * adjust; //半徑
+function drawInvisiblePoints(dctx, id, x, y, zoom) {
+    var radius = 10 * zoom; //半徑
     dctx.beginPath();
     dctx.fillStyle = '#ffffff00';
     dctx.arc(x, y - radius * 2, radius, 0, Math.PI * 2, true);
@@ -19,11 +19,11 @@ function drawInvisiblePoints(dctx, id, x, y, adjust) {
     dctx.closePath();
 }
 
-function drawTags(dctx, id, x, y, color, adjust) {
-    var radius = 10 * adjust; //半徑
+function drawTags(dctx, id, x, y, color, zoom) {
+    var radius = 10 * zoom; //半徑
     dctx.beginPath();
-    //circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
     dctx.arc(x, y - radius * 2, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);
+    //circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
     dctx.lineTo(x, y);
     dctx.closePath();
     dctx.strokeStyle = '#000000';
@@ -37,8 +37,8 @@ function drawTags(dctx, id, x, y, color, adjust) {
     dctx.fill();
 }
 
-function drawAlarmTags(dctx, id, x, y, status, adjust) {
-    var radius = 14 * adjust; //半徑
+function drawAlarmTags(dctx, id, x, y, status, zoom) {
+    var radius = 14 * zoom; //半徑
     var fillColor = '';
     var markColor = ''
     switch (status) {
@@ -62,7 +62,6 @@ function drawAlarmTags(dctx, id, x, y, status, adjust) {
             fillColor = '#72ac1b'; //unknown
             markColor = '#72ac1b';
     }
-
     //畫倒水滴形
     dctx.beginPath();
     dctx.arc(x, y - radius * 2, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);

@@ -98,6 +98,7 @@ canvas:active {
     height: 680px;
     width: 100%;
     background: white;
+    display: none;
 }
 
 .mouse_cursor_move {

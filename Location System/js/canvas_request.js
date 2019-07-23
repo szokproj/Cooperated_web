@@ -19,9 +19,7 @@ var lastX = 0, //滑鼠最後位置的X座標
     lastY = 0, //滑鼠最後位置的Y座標
     xleftView = 0, //canvas的X軸位移(負值向左，正值向右)
     ytopView = 0, //canvas的Y軸位移(負值向上，正值向下)
-    zoomOriginal = 1.0,
-    Zoom = zoomOriginal, //縮放比例
-    fitZoom = 1,
+    Zoom = 1.0, //縮放比例
     isFitWindow = true;
 
 var AnchorPosition = false,
@@ -86,11 +84,11 @@ $(function () {
         //pageY的y要大寫，一定要大寫！
         $("#canvas").on("mousemove", function (es) {
             //滑鼠按下時=>div綁定事件 
-            var end_x = es.pageX - downx + canvas_left;
-            var end_y = es.pageY - downy + canvas_top;
+            xleftView = es.pageX - downx + canvas_left;
+            ytopView = es.pageY - downy + canvas_top;
             //es.pageX,es.pageY:獲取滑鼠移動後的坐標 
             //計算div的最終位置
-            $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
+            $("#canvas").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");
             //加上單位 
         });
         $("#canvas").on("mouseup", function () {
@@ -108,9 +106,9 @@ $(function () {
         var downy = e.targetTouches[0].pageY;
         $("#canvas").on("touchmove", function (es) {
             //手指觸摸時=>div綁定事件 
-            var end_x = es.targetTouches[0].pageX - downx + canvas_left;
-            var end_y = es.targetTouches[0].pageY - downy + canvas_top;
-            $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
+            xleftView = es.targetTouches[0].pageX - downx + canvas_left;
+            ytopView = es.targetTouches[0].pageY - downy + canvas_top;
+            $("#canvas").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");
         });
         $("#canvas").on("touchend", function () {
             //手指離開時=>div取消事件 
@@ -202,7 +200,7 @@ function closeMapTag() {
 }
 
 function setMap(map_id) {
-    loading();
+    //loading();
 
     var index = mapArray.findIndex(function (info) {
         return info.map_id == map_id;
@@ -211,12 +209,9 @@ function setMap(map_id) {
         return;
     var map_url = "data:image/" + mapArray[index].map_file_ext + ";base64," + mapArray[index].map_file;
     var map_scale = typeof (mapArray[index].map_scale) != 'undefined' && mapArray[index].map_scale != "" ? mapArray[index].map_scale : 1;
-
     $("button[name=map_tab]").removeClass("selected");
     $("#map_tab_" + map_id).addClass("selected");
-
     addMapToCookie(map_id);
-
     serverImg.src = map_url; //"data:image/" + revInfo.file_ext + ";base64," + revInfo.map_file;
     serverImg.onload = function () {
         cvsBlock.style.background = "none";
@@ -230,22 +225,20 @@ function setMap(map_id) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         xleftView = 0;
         ytopView = 0;
-        Zoom = zoomOriginal;
+        Zoom = 1.0;
         ctx.save(); //紀錄原比例
         $("#canvas").css("margin-left", "0px").css("margin-top", "0px");
-
         var serImgSize = serverImg.width / serverImg.height;
         var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
         var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
         var cvsSize = cvsBlock_width / cvsBlock_height;
         if (serImgSize > cvsSize) { //原圖比例寬邊較長
-            fitZoom = cvsBlock_width / serverImg.width;
-            setCanvas(this.src, cvsBlock_width, serverImg.height * fitZoom);
+            Zoom = cvsBlock_width / serverImg.width;
+            setCanvas(this.src, cvsBlock_width, serverImg.height * Zoom);
         } else {
-            fitZoom = cvsBlock_height / serverImg.height;
-            setCanvas(this.src, serverImg.width * fitZoom, cvsBlock_height);
+            Zoom = cvsBlock_height / serverImg.height;
+            setCanvas(this.src, serverImg.width * Zoom, cvsBlock_height);
         }
-
         /**
          * 在設定好地圖後，導入Anchors & Groups & Tags' setting
          */
@@ -302,9 +295,8 @@ function selectMapFromCookie() {
         var index = mapArray.findIndex(function (info) {
             return info.map_id == recentMaps[i];
         });
-        if (index > -1) {
+        if (index > -1) 
             addMapTab(mapArray[index].map_id, mapArray[index].map_name);
-        }
     }
     setMap(selectedMap);
 }
@@ -319,7 +311,7 @@ function resetCanvas_Anchor() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     xleftView = 0;
     ytopView = 0;
-    Zoom = zoomOriginal;
+    Zoom = 1.0;
     anchorArray = [];
     document.getElementById('scale_visible').innerText = "";
     document.getElementById('x').value = "";
@@ -354,7 +346,7 @@ function getAnchors(map_id) {
                         x: x,
                         y: y
                     });
-                    drawAnchor(ctx, anchorList[i].anchor_id, "", x, y, 10 * 3 / canvasImg.scale); //畫出點的設定
+                    drawAnchor(ctx, anchorList[i].anchor_id, "", x, y, 1 / Zoom); //畫出點的設定
                 }
             }
         }
@@ -384,7 +376,7 @@ function getAnchors(map_id) {
                         x: x,
                         y: y
                     });
-                    drawAnchor(ctx, anchorList[i].main_anchor_id, "main", x, y, 10 * 3 / canvasImg.scale);
+                    drawAnchor(ctx, anchorList[i].main_anchor_id, "main", x, y, 1 / Zoom);
                 }
             }
         }
@@ -513,13 +505,13 @@ function setCanvas(img_src, width, height) {
 function setSize() {
     //縮放canvas與背景圖大小
     if (canvasImg.isPutImg) {
-        canvas.style.backgroundSize = (canvasImg.width * fitZoom * Zoom) + "px " + (canvasImg.height * fitZoom * Zoom) + "px";
-        canvas.width = canvasImg.width * fitZoom * PIXEL_RATIO * Zoom;
-        canvas.height = canvasImg.height * fitZoom * PIXEL_RATIO * Zoom;
-        canvas.style.width = canvasImg.width * fitZoom * Zoom + 'px';
-        canvas.style.height = canvasImg.height * fitZoom * Zoom + 'px';
+        canvas.style.backgroundSize = (canvasImg.width * Zoom) + "px " + (canvasImg.height * Zoom) + "px";
+        canvas.width = canvasImg.width * PIXEL_RATIO * Zoom;
+        canvas.height = canvasImg.height * PIXEL_RATIO * Zoom;
+        canvas.style.width = canvasImg.width * Zoom + 'px';
+        canvas.style.height = canvasImg.height * Zoom + 'px';
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.setTransform(PIXEL_RATIO * fitZoom, 0, 0, PIXEL_RATIO * fitZoom, 0, 0);
+        ctx.setTransform(PIXEL_RATIO, 0, 0, PIXEL_RATIO, 0, 0);
         ctx.scale(Zoom, Zoom);
         ctx.translate(0, 0);
     }
@@ -532,58 +524,50 @@ function restoreCanvas() {
     var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
     xleftView = 0;
     ytopView = 0;
-    Zoom = zoomOriginal;
-    if (isFitWindow) { //恢復原比例
-        fitZoom = 1;
+    Zoom = 1.0;
+    if (isFitWindow) {
+        isFitWindow = false; //目前狀態:原比例
         ctx.restore();
         ctx.save();
-        isFitWindow = false; //目前狀態:原比例
         document.getElementById("label_restore").innerHTML = "<i class=\"fas fa-expand\" style='font-size:20px;'" +
             " title=\"" + $.i18n.prop('i_fit_window') + "\"></i>";
-    } else { //依比例拉伸(Fit in Window)
+    } else {
+        isFitWindow = true; //目前狀態:依比例拉伸(Fit in Window)
         if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
-            fitZoom = cvsBlock_width / serverImg.width;
+            Zoom = cvsBlock_width / serverImg.width;
         else
-            fitZoom = cvsBlock_height / serverImg.height;
-        isFitWindow = true; //目前狀態:依比例拉伸
+            Zoom = cvsBlock_height / serverImg.height;
         document.getElementById("label_restore").innerHTML = "<i class=\"fas fa-compress\" style='font-size:20px;'" +
             " title=\"" + $.i18n.prop('i_restore_scale') + "\"></i>";
     }
-    $(function () {
-        $("#canvas").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
-        draw();
-    });
+    $("#canvas").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
+    draw();
 }
 
 function handleMouseWheel(event) {
-    var targetX = lastX; //滑鼠目前在canvas中的位置(x坐標)
-    var targetY = lastY; //滑鼠目前在canvas中的位置(y坐標)
-    var scale = (event.wheelDelta < 0 || event.detail > 0) ? 0.9 : 1.1;
+    var BCR = canvas.getBoundingClientRect();
+    var pos_x = event.pageX - BCR.left;
+    var pos_y = event.pageY - BCR.top;
+    var scale = 1.0;
+    if (event.wheelDelta < 0 || event.detail > 0) {
+        if (Zoom > 0.1)
+            scale = 0.9;
+    } else {
+        scale = 1.1;
+    }
     Zoom *= scale; //縮放比例
-    //xleftView: X軸位移(負值向左，正值向右);
-    //ytopView: Y軸位移(負值向上，正值向下)
-    //var x = targetX + xleftView;  // View coordinates
-    //var y = targetY + ytopView;
-    var loc = getPointOnCanvas(event.pageX, event.pageY);
-    $(function () {
-        var canvas_left = parseFloat($("#canvas").css("margin-left")); //canvas目前相對於div的位置(x坐標)
-        var canvas_top = parseFloat($("#canvas").css("margin-top")); //canvas目前相對於div的位置(y坐標)
-        xleftView = targetX / scale - targetX; //得出最終偏移量X
-        ytopView = targetY / scale - targetY; //得出最終偏移量Y
-        // scale about center of view, rather than mouse position. This is different than dblclick behavior.
-        //xleftView = x - targetX;
-        //ytopView = y - targetY;
-        var end_x = canvas_left + xleftView; //* scale;
-        var end_y = canvas_top + ytopView; //* scale;
-        //end_x -= center.x * Zoom;//xleftView;
-        //end_y -= center.y * Zoom;//ytopView;
-        $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
-        draw();
-    });
+    draw();
+    var Next_x = lastX * Zoom; //縮放後滑鼠位移後的位置(x坐標)
+    var Next_y = (canvasImg.height - lastY) * Zoom; //縮放後滑鼠位移後的位置(y坐標)
+    //var canvas_left = parseFloat($("#canvas").css("margin-left")); //canvas目前相對於div的位置(x坐標)
+    //var canvas_top = parseFloat($("#canvas").css("margin-top")); //canvas目前相對於div的位置(y坐標)
+    xleftView += pos_x - Next_x;
+    ytopView += pos_y - Next_y;
+    $("#canvas").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");
 }
 
 
-function handleDblClick(event) {
+/*function handleDblClick(event) {
     var targetX = lastX; //滑鼠目前在canvas中的位置(x坐標)
     var targetY = lastY; //滑鼠目前在canvas中的位置(y坐標)
     var scale = event.shiftKey == 1 ? 0.5 : 1.5; // shrink (1.5) if shift key pressed
@@ -598,12 +582,12 @@ function handleDblClick(event) {
         $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
         draw();
     });
-}
+}*/
 
 function touchEvent(p) { //滑鼠點擊事件
-    var range = 10 / Zoom / fitZoom;
+    var range = 10 / Zoom;
     tagArray.forEach(function (v) {
-        var distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y + 20 / Zoom / fitZoom), 2));
+        var distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y + 20 / Zoom), 2));
         if (distance <= range) {
             //如果傳入了事件坐標，就用isPointInPath判斷一下
             $("#member_dialog_tag_id").text(parseInt(v.id.substring(8), 16));
@@ -614,7 +598,7 @@ function touchEvent(p) { //滑鼠點擊事件
         }
     });
     alarmArray.forEach(function (v) {
-        var distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y + 28 / Zoom / fitZoom), 2));
+        var distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y + 28 / Zoom), 2));
         if (distance <= range) {
             //如果傳入了事件坐標，就用isPointInPath判斷一下
             setAlarmDialog(v);
@@ -624,7 +608,7 @@ function touchEvent(p) { //滑鼠點擊事件
 
 function clickEvent(p) { //滑鼠點擊事件
     tagArray.forEach(function (v) {
-        drawInvisiblePoints(ctx, v.id, v.x, v.y, 1 / (Zoom * fitZoom));
+        drawInvisiblePoints(ctx, v.id, v.x, v.y, 1 / Zoom);
         if (p && ctx.isPointInPath(p.x, p.y)) {
             //如果傳入了事件坐標，就用isPointInPath判斷一下
             $(function () {
@@ -637,7 +621,7 @@ function clickEvent(p) { //滑鼠點擊事件
         }
     });
     alarmArray.forEach(function (v) {
-        drawInvisiblePoints(ctx, v.id, v.x, v.y, 1 / (Zoom * fitZoom));
+        drawInvisiblePoints(ctx, v.id, v.x, v.y, 1 / Zoom);
         if (p && ctx.isPointInPath(p.x, p.y)) {
             //如果傳入了事件坐標，就用isPointInPath判斷一下
             setAlarmDialog(v);
@@ -1000,9 +984,9 @@ function focusAlarmTag(x, y) {
         var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
         var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
         Zoom = 2.0;
-        var end_x = cvsBlock_width / 2 - parseFloat(x) * Zoom;
-        var end_y = cvsBlock_height / 2 - parseFloat(y) * Zoom;
-        $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
+        var focus_x = cvsBlock_width / 2 - parseFloat(x) * Zoom;
+        var focus_y = cvsBlock_height / 2 - parseFloat(y) * Zoom;
+        $("#canvas").css("margin-left", focus_x + "px").css("margin-top", focus_y + "px");
     }
 }
 
@@ -1028,8 +1012,7 @@ function unlockFocusAlarm() { //解除定位
     //恢復原比例
     xleftView = 0;
     ytopView = 0;
-    Zoom = zoomOriginal;
-    fitZoom = 1;
+    Zoom = 1.0;
     ctx.restore();
     ctx.save();
     isFitWindow = false;
@@ -1042,13 +1025,13 @@ function unlockFocusAlarm() { //解除定位
 function draw() {
     setSize();
     anchorArray.forEach(function (v) {
-        drawAnchor(ctx, v.id, v.type, v.x, v.y, 1 / (Zoom * fitZoom)); //canvasImg.scale
+        drawAnchor(ctx, v.id, v.type, v.x, v.y, 1 / Zoom); //canvasImg.scale
     });
     tagArray.forEach(function (v) {
-        drawTags(ctx, v.id, v.x, v.y, v.color, 1 / (Zoom * fitZoom));
+        drawTags(ctx, v.id, v.x, v.y, v.color, 1 / Zoom);
     });
     alarmArray.forEach(function (v) {
-        drawAlarmTags(ctx, v.id, v.x, v.y, v.status, 1 / (Zoom * fitZoom));
+        drawAlarmTags(ctx, v.id, v.x, v.y, v.status, 1 / Zoom);
     });
     if (alarmArray.length > 0) {
         var last = alarmArray.length - 1;
