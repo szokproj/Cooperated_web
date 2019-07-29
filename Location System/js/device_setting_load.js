@@ -161,6 +161,36 @@ $(function () { //Load==>
         });
     }
 
+    sortTable('.row_anchor_id', 'input');
+    sortTable('.row_mac_address', '');
+    sortTable('.row_ip_mode', 'select');
+    sortTable('.row_ip_addr', 'input');
+    sortTable('.row_gateway_addr', 'input');
+    sortTable('.row_mask_addr', 'input');
+    sortTable('.row_client_ip_addr', 'input');
+    sortTable('.row_tcp_server_port', 'input');
+    sortTable('.row_udp_server_port', 'input');
+    sortTable('.row_tcp_client_src_port', 'input');
+    sortTable('.row_tcp_client_des_port', 'input');
+    sortTable('.row_machine_number', 'input');
+    sortTable('.row_model', 'input');
+    sortTable('.row_rf_mode', '');
+    sortTable('.row_rf_version', '');
+    sortTable('.row_rf_channel', 'select');
+    sortTable('.row_rf_datarate', 'select');
+    sortTable('.row_rf_prf', 'select');
+    sortTable('.row_rf_preamble_code', 'select');
+    sortTable('.row_rf_preamble_len', 'select');
+    sortTable('.row_rf_pac', 'select');
+    sortTable('.row_rf_pg_delay', 'select');
+    sortTable('.row_rf_power', 'input');
+    sortTable('.row_rf_nsd', 'select');
+    sortTable('.row_rf_sdf_timeoutr', 'input');
+    sortTable('.row_rf_smartpower', 'select');
+    sortTable('.row_rf_ntm', 'select');
+    sortTable('.row_rf_mult', 'select');
+
+
     Load();
     inputSetAllRow();
 });
@@ -196,6 +226,26 @@ function displaySelectedRows() {
     }
 }
 
+function setCheckboxListeners() {
+    $("#table_ip_address_info tbody tr").each(function (index) {
+        var tr = $(this);
+        tr.find('td:eq(0) label').text(index + 1);
+        tr.find('td:eq(0) input').off('click').on('click', function () {
+            tr.children('td:eq(0)').click();
+        });
+        tr.children('td:eq(0)').off('click').on('click', function () {
+            var state = tr.find('td:eq(0) input').prop('checked');
+            tr.find('td:eq(0) input').prop('checked', !state);
+            if (!state) {
+                tr.children('td').css("background-color", "#c7d8e2");
+            } else {
+                tr.children('td:lt(4)').css("background-color", "#e6f5ff");
+                tr.children('td:gt(3)').css("background-color", "white");
+            }
+        });
+    });
+}
+
 function checked_trans() {
     for (k in $("input[name=checkbox_ipAddr]")) {
         if ($("input[name=checkbox_ipAddr]").eq(k).is(":checked")) {
@@ -218,17 +268,9 @@ function checkAddressFragment(fragment) {
     }
 }
 
-function SelectAll() {
-    isAllSelected = !isAllSelected;
-    DeviceCheckbox.forEach(function (v) {
-        v.checked = isAllSelected;
-    });
-    checked_trans();
-}
-
 function inputSetAllRow() {
     $("#table_ip_address_info thead").append("<tr>" +
-        "<th><input type=\"checkbox\" id=\"all_check\" onchange=\"SelectAll()\" /></th>" +
+        "<th style=\"cursor: pointer;\"><input type=\"checkbox\" id=\"all_check\" /> All</th>" +
         "<th>N/A</th>" +
         "<th>N/A</th>" +
         "<th>N/A</th>" +
@@ -265,6 +307,17 @@ function inputSetAllRow() {
 function setListenerOfSetAllRow() {
     var check = document.getElementsByName("checkbox_ipAddr");
     var status = document.getElementsByName("conn_status");
+    $("#all_check").parent().on('click', function () {
+        var state = $("#all_check").prop("checked");
+        $("#all_check").prop("checked", !state);
+        DeviceCheckbox.forEach(function (v) {
+            v.checked = !state;
+        });
+        checked_trans();
+    });
+    $("#all_check").on('click', function () {
+        $("#all_check").parent().click();
+    });
     $("#all_gateway_addr").prop("disabled", true);
     $("#all_mask_addr").prop("disabled", true);
     $("#all_ip_mode").on("change", function () {
@@ -383,7 +436,8 @@ function setListenerOfSetAllRow() {
 function inputDataToColumns(element) {
     if (element.Status == 1) {
         $("#table_ip_address_info tbody").prepend("<tr><td>" +
-            "<input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" + element.IP_address + "\" checked/></td>" +
+            "<input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" + element.IP_address + "\" checked/>" +
+            " <label>" + (i + 1) + "</label></td>" +
             "<td><input type='hidden' name=\"conn_status\" value=\"1\" />" + GREEN_LIGHT + "</td>" +
             "<td><input type='text' name=\"conn_anchor_id\" value=\"" + element.Anchor_ID + "\" /></td>" +
             "<td name=\"conn_mac_addr\">" + element.MAC_address + "</td>" +
@@ -401,9 +455,12 @@ function inputDataToColumns(element) {
             "<td></td></tr>");
         $("#table_ip_address_info tbody tr:eq(0) td:lt(16)").css("background-color", "#c7d8e2");
     } else {
+        var isChecked = "";
+        if (element.Checked)
+            isChecked = "checked";
         $("#table_ip_address_info tbody").append("<tr><td>" +
-            "<input type=\"checkbox\" name=\"checkbox_ipAddr\"" +
-            " value=\"" + element.IP_address + "\" />" +
+            "<input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" + element.IP_address + "\" " +
+            isChecked + "/> <label>" + (i + 1) + "</label></td>" +
             "</td><td><input type='hidden' name=\"conn_status\" value=\"0\" />" + RED_LIGHT +
             "</td><td>" + element.Anchor_ID +
             "</td><td>" + element.MAC_address +
@@ -486,12 +543,11 @@ function resetListenersOfSelects() {
 }
 
 function setListenerOfInput() {
-    var modes = document.getElementsByName("conn_ip_mode");
-    modes.forEach(function (mode, i) {
-        document.getElementsByName("conn_ip_addr")[i].disabled = true;
-        document.getElementsByName("conn_gateway_addr")[i].disabled = true;
-        document.getElementsByName("conn_mask_addr")[i].disabled = true;
-        $("select[name='conn_ip_mode']:eq(" + i + ")").on("change", function () {
+    $("select[name='conn_ip_mode']").each(function (i) {
+        $("input[name='conn_ip_addr']:eq(" + i + ")").prop("disabled", true);
+        $("input[name='conn_gateway_addr']:eq(" + i + ")").prop("disabled", true);
+        $("input[name='conn_mask_addr']:eq(" + i + ")").prop("disabled", true);
+        $(this).on("change", function () {
             if ($(this).val() == "DHCP") {
                 $("input[name='conn_ip_addr']:eq(" + i + ")").prop("disabled", true);
                 $("input[name='conn_gateway_addr']:eq(" + i + ")").prop("disabled", true);
@@ -506,8 +562,68 @@ function setListenerOfInput() {
 }
 
 function resetListenersOfInputs() {
-    var modes = document.getElementsByName("conn_ip_mode");
-    modes.forEach(function (mode, i) {
-        $("select[name='conn_ip_mode']:eq(" + i + ")").off("change");
+    $("select[name='conn_ip_mode']").each(function (i, mode) {
+        $(this).off("change");
     });
+}
+
+function sortTable(selector, targetType, compFunc) {
+    var table = $('#table_ip_address_info');
+    var mySelector = '.sortable';
+    var myCompFunc = function ($td1, $td2, isAsc) {
+        var v1 = "";
+        var v2 = "";
+        if (targetType == '') {
+            v1 = $.trim($td1.text()).replace(/,|\s+|%/g, '');
+            v2 = $.trim($td2.text()).replace(/,|\s+|%/g, '');
+        } else {
+            v1 = $.trim($td1.children(targetType).val()).replace(/,|\s+|%/g, '');
+            v2 = $.trim($td2.children(targetType).val()).replace(/,|\s+|%/g, '');
+        }
+        var pattern = /^\d+(\.\d*)?$/;
+        if (pattern.test(v1) && pattern.test(v2)) {
+            v1 = parseFloat(v1);
+            v2 = parseFloat(v2);
+        }
+        return isAsc ? v1 > v2 : v1 < v2;
+    };
+    var doSort = function ($tbody, index, compFunc, isAsc) {
+        var $trList = $tbody.find('tr');
+        var len = $trList.length;
+        for (var i = 0; i < len - 1; i++) {
+            for (var j = 0; j < len - i - 1; j++) {
+                var $td1 = $trList.eq(j).find('td').eq(index);
+                var $td2 = $trList.eq(j + 1).find('td').eq(index);
+                if (compFunc($td1, $td2, isAsc)) {
+                    var t = $trList.eq(j + 1);
+                    $trList.eq(j).insertAfter(t);
+                    $trList = $tbody.find('tr');
+                }
+            }
+        }
+    }
+    var init = function () {
+        //var $th = $("th" + selector);
+        //var $table = $th.parents("table");
+        var $th = table.find('thead tr:eq(0) th').filter(selector);
+        $th.on('click', function () {
+            var index = $(this).index();
+            var asc = $(this).attr('data-asc');
+            isAsc = asc === undefined ? true : (asc > 0 ? true : false);
+            doSort(table.children('tbody'), index, compFunc, isAsc);
+            $(this).children('i').prop('class', isAsc ? 'fas fa-caret-down' : 'fas fa-caret-up');
+            $(this).siblings().children('i').prop('class', 'fas fa-sort');
+            $(this).attr('data-asc', 1 - (isAsc ? 1 : 0));
+            setCheckboxListeners();
+        });
+        $th.css({
+                'cursor': 'pointer'
+            })
+            .attr('title', 'Sort')
+            .append('&nbsp;<i class="fas fa-sort" style="color:#2196F3" aria-hidden="true"></i>');
+    };
+    selector = selector || mySelector;
+    compFunc = compFunc || myCompFunc;
+    targetType = targetType || '';
+    init();
 }

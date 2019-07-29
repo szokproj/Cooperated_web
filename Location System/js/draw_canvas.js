@@ -1,5 +1,6 @@
 function drawAnchor(dctx, id, type, x, y, zoom) {
-    var size = 10 * zoom; // zoom = 1 / Zoom
+    // zoom = 1 / Zoom
+    var size = 10 * zoom;
     if (type == "main")
         dctx.fillStyle = "red";
     else
@@ -22,6 +23,7 @@ function drawInvisiblePoints(dctx, id, x, y, zoom) {
 function drawTags(dctx, id, x, y, color, zoom) {
     var radius = 10 * zoom; //半徑
     dctx.beginPath();
+    dctx.lineWidth = 2 * zoom;
     dctx.arc(x, y - radius * 2, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);
     //circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
     dctx.lineTo(x, y);
@@ -64,6 +66,7 @@ function drawAlarmTags(dctx, id, x, y, status, zoom) {
     }
     //畫倒水滴形
     dctx.beginPath();
+    dctx.lineWidth = 2 * zoom;
     dctx.arc(x, y - radius * 2, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);
     dctx.lineTo(x, y);
     dctx.closePath();
@@ -140,4 +143,59 @@ function drawAlarmTags(dctx, id, x, y, status, zoom) {
     dctx.arc(x, y + radius * (-1.6), radius * 0.1, 0, Math.PI * 2, true);
     dctx.fill();
     dctx.closePath();
+}
+
+function drawFocusMark(dctx, x, y, zoom) {
+    var radius = 7 * zoom;
+    var height = 40 * zoom;
+    dctx.beginPath();
+    dctx.arc(x, y - height, radius, 0, Math.PI * 2, true);
+    dctx.closePath();
+    dctx.strokeStyle = 'magenta'; //'#ffdf2b';
+    //dctx.lineWidth = 2 * zoom;
+    dctx.stroke();
+    var R = [{
+        x: 0,
+        y: 2 / 3 * radius
+    }, {
+        x: 2 / 3 * radius,
+        y: 0
+    }, {
+        x: 0,
+        y: -2 / 3 * radius
+    }, {
+        x: -2 / 3 * radius,
+        y: 0
+    }];
+    for (i = 0; i < 4; i++) {
+        dctx.beginPath();
+        dctx.moveTo(x + R[i].x, y + R[i].y - height);
+        dctx.lineTo(x + 2 * R[i].x, y + 2 * R[i].y - height);
+        dctx.closePath();
+        dctx.strokeStyle = 'magenta'; //'#ffae00';
+        //dctx.lineWidth = 2 * zoom;
+        dctx.stroke();
+    }
+}
+
+function drawFocusFrame(dctx, x, y, zoom) {
+    var radius = 10;
+    dctx.strokeStyle = '#006affd5'; //'#446ca3d5';
+    dctx.lineWidth = 2 * zoom;
+    dctx.strokeRect(
+        x - (radius + 5) * zoom,
+        y - (3 * radius + 5) * zoom,
+        (2 * radius + 10) * zoom,
+        (3 * radius + 10) * zoom);
+}
+
+function drawAlarmFocusFrame(dctx, x, y, zoom) {
+    var radius = 14;
+    dctx.strokeStyle = '#006affd5'; //'#446ca3d5';
+    dctx.lineWidth = 2 * zoom;
+    dctx.strokeRect(
+        x - (radius + 5) * zoom,
+        y - (3 * radius + 5) * zoom,
+        (2 * radius + 10) * zoom,
+        (3 * radius + 10) * zoom);
 }

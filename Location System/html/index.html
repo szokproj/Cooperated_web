@@ -92,19 +92,19 @@
                     </div>
                 </div>
 
-                <!-- 左側邊欄(Alarm) -->
+                <!-- Left (Alarm) Sidebar -->
                 <div class="sideBar">
-                    <div class="sideBar-left-button">
+                    <!--<div class="sideBar-left-button">
                         <label class="btn-alarm i18n-input" for="btn_unlock_alarm" selectattr="title"
-                            selectname="i_unlock"><i class="fas fa-unlock-alt drop-shadow"></i></label>
+                            selectname="i_releasePosition"><i class="fas fa-unlock-alt drop-shadow"></i></label>
                         <input type="button" id="btn_unlock_alarm" class="btn-hidden" onclick="unlockFocusAlarm();" />
-                    </div>
+                    </div>-->
                     <div class="sideBar-left">
                         <div class="thumbnail_columns"></div>
                     </div>
                 </div>
 
-                <!-- 右側邊欄 -->
+                <!-- Right (Data) Sidebar -->
                 <div class="page-main" id="page_rightSide">
                     <aside>
                         <div class="main-place">
@@ -121,7 +121,12 @@
                                 <div class="tab-pane fade in active" id="sidebar_right_member">
                                     <span class="i18n" name="i_search"></span>：<input type="search"
                                         id="table_filter_member" class="light-table-filter i18n-input"
-                                        data-table="order-table" selectattr="placeholder" selectname="i_inputKeyword">
+                                        data-table="order-table" selectattr="placeholder" selectname="i_inputKeyword" />
+                                    <button class="btn btn-default i18n-input" selectattr="title"
+                                        selectname="i_releasePosition" id="btn_release_focus_sidebar"
+                                        onclick="unlockFocusAlarm();" style="float:right; padding:5px !important;">
+                                        <img class="icon-image" src="../image/release_position.png">
+                                    </button>
                                     <div class="sidebar-table member-table">
                                         <table id="table_rightbar_member_list" class="order-table"
                                             style="width: 400px;">
@@ -131,6 +136,7 @@
                                                     <th class="i18n" name="i_userID" style="width:100px;"></th>
                                                     <th class="i18n" name="i_number"></th>
                                                     <th class="i18n" name="i_name"></th>
+                                                    <th class="i18n" name="i_position" style="width:30px;"></th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -181,7 +187,7 @@
                                                     <th class="i18n" name="i_jobTitle"></th>
                                                     <th class="i18n" name="i_userType"></th>
                                                     <!--<th class="i18n" name="i_alarmGroup"></th>-->
-                                                    <th class="i18n" name="i_position"></th>
+                                                    <th class="i18n" name="i_position" style="width:30px;"></th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -199,7 +205,7 @@
     <!-- Hidden Dialog -->
     <div class="hidden_dialog">
         <!-- The dialog of tag's infomation -->
-        <div id="member_dialog" title="Tag Infomation">
+        <div id="member_dialog" title="Tag Infomation" style="background:rgb(195, 228, 230);">
             <img id="member_dialog_image" class="member_photo" src="">
             <span style="display: block;">
                 <label class="i18n" name="i_tagID"></label> :
@@ -236,10 +242,12 @@
                 <label id="alarm_dialog_status"></label>
             </h4>
             <div style="text-align: center;">
-                <button type="button" id="alarm_dialog_btn_unlock" name="i_unlock"
-                    class="btn btn-primary i18n"></button>
-                <button type="button" id="alarm_dialog_btn_focus" style="margin-left: 20px;" class="btn btn-primary">
-                    <span class="i18n" name="i_position"></span> <i class="fas fa-map-marker-alt"></i>
+                <button id="alarm_dialog_btn_unlock" class="btn btn-default i18n-input" selectattr="title"
+                    selectname="i_releasePosition"><img class="icon-image" src="../image/release_position.png">
+                </button>
+                <button id="alarm_dialog_btn_focus" style="margin-left: 20px;" class="btn btn-default i18n-input"
+                    selectattr="title" selectname="i_position">
+                    <img class="icon-image" src="../image/target.png">
                 </button>
             </div>
         </div>

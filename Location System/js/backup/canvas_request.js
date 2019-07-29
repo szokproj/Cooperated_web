@@ -1,36 +1,132 @@
-var PIXEL_RATIO; // 獲取瀏覽器像素比
-var cvsBlock, canvas, ctx;
-var canvasImg = {
-    isPutImg: false,
-    width: 0,
-    height: 0
-};
-var anchorMainArray = [];
-var anchorArray = [];
-var tagArray = [];
-var alarmArray = [];
-var lastX = 0; //滑鼠最後位置的X座標
-var lastY = 0; //滑鼠最後位置的Y座標
-var mouseDown = false;
+var PIXEL_RATIO, // 獲取瀏覽器像素比
+    cvsBlock, canvas, ctx,
+    serverImg = new Image(),
+    canvasImg = {
+        isPutImg: false,
+        width: 0,
+        height: 0,
+        scale: 1 //預設比例尺為1:1,
+    },
+    Map_id = "",
+    mapArray = [],
+    anchorArray = [],
+    tagArray = [],
+    alarmID_array = [],
+    alarmArray = [];
 
 // View parameters
-var xleftView = 0;
-var ytopView = 0;
-var zoomOriginal = 1.0;
-var Zoom = zoomOriginal; //actual width and height of zoomed and panned display
-var fitZoom = 1;
+var lastX = 0, //滑鼠最後位置的X座標
+    lastY = 0, //滑鼠最後位置的Y座標
+    xleftView = 0, //canvas的X軸位移(負值向左，正值向右)
+    ytopView = 0, //canvas的Y軸位移(負值向上，正值向下)
+    Zoom = 1.0, //縮放比例
+    isFitWindow = true;
 
 var AnchorPosition = false,
     AnchorDisplay = true,
-    isStart = false; //設定Anchor座標中
+    isStart = false, //設定Anchor座標中
+    pageTimer = {}; //定義計時器全域變數
 
-var tag_image_isOnload = false;
-var tag_image = new Image();
-var tag_img_size = 0;
+var isFocus = true,
+    isLocating = false,
+    locating_id = -1,
+    alarm_count = 0;
 
-var map_id = "";
+var memberArray = [],
+    alarmFilterArr = [];
 
-window.addEventListener("load", setup, false);
+var event_state = {};
+
+$(function () {
+    /**
+     * Check this page's permission and load navbar
+     */
+    var permission = getPermissionOfPage("index");
+    switch (permission) {
+        case "":
+            alert("No permission");
+            history.back();
+            break;
+        case "R":
+            break;
+        case "RW":
+            break;
+        default:
+            alert("網頁錯誤，將跳回上一頁");
+            history.back();
+            break;
+    }
+    setNavBar("index", "");
+
+    //https://www.minwt.com/webdesign-dev/js/16298.html
+    var h = screen.availHeight;
+    var w = screen.availWidth;
+    //console.log("Height: " + h + "\nWidth: " + w);
+    $(".cvsBlock").css("height", h * 0.8 + "px");
+    $(".member-table").css("max-height", h * 0.71 + "px");
+    $(".alarm-table").css("max-height", h * 0.75 + "px");
+    $(".search-table").css("max-height", h * 0.7 + "px");
+
+    //預設彈跳視窗載入後隱藏
+    $("#member_dialog").dialog({
+        autoOpen: false
+    });
+    $("#alarm_dialog").dialog({
+        autoOpen: false
+    });
+    $("#canvas").on("mousedown", function (e) {
+        if (!isFocus) {
+            e.preventDefault();
+            var canvas_left = parseInt($("#canvas").css("margin-left"));
+            var canvas_top = parseInt($("#canvas").css("margin-top"));
+            //e.pageX,e.pageY:獲取滑鼠按下時的坐標
+            var downx = e.pageX;
+            var downy = e.pageY;
+            $("#canvas").on("mousemove", function (es) {
+                //滑鼠按下時=>div綁定事件
+                //es.pageX,es.pageY:獲取滑鼠移動後的坐標 
+                xleftView = es.pageX - downx + canvas_left;
+                ytopView = es.pageY - downy + canvas_top;
+                //計算div的最終位置,加上單位
+                $("#canvas").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");
+            });
+            $("#canvas").on("mouseup", function () {
+                //滑鼠彈起時=>div取消事件 
+                $("#canvas").off("mousemove");
+            });
+        }
+    });
+
+    $("#canvas").on("touchstart", function (e) {
+        e.preventDefault();
+        var canvas_left = parseInt($("#canvas").css("margin-left"));
+        var canvas_top = parseInt($("#canvas").css("margin-top"));
+        //獲取手指觸摸時的坐標 ex: event.targetTouches[0].pageX;
+        var downx = e.targetTouches[0].pageX;
+        var downy = e.targetTouches[0].pageY;
+        $("#canvas").on("touchmove", function (es) {
+            //手指觸摸時=>div綁定事件 
+            xleftView = es.targetTouches[0].pageX - downx + canvas_left;
+            ytopView = es.targetTouches[0].pageY - downy + canvas_top;
+            $("#canvas").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");
+        });
+        $("#canvas").on("touchend", function () {
+            //手指離開時=>div取消事件 
+            $("#canvas").off("touchmove");
+        });
+    });
+    setup();
+});
+
+function loading() {
+    $('#canvas').hide();
+    $('#transition').show();
+    pageTimer["loading"] = setTimeout(function () {
+        $('#transition').hide();
+        $('#canvas').show();
+        clearTimeout(pageTimer["transition"]);
+    }, 200);
+}
 
 function setup() {
     cvsBlock = document.getElementById("cvsBlock");
@@ -45,51 +141,356 @@ function setup() {
             ctx.backingStorePixelRatio || 1;
         return dpr / bsr;
     })();
+    canvas.addEventListener("mousemove", handleMouseMove, false); //滑鼠在畫布中移動的座標
+    canvas.addEventListener("touchstart", handleMobileTouch, {
+        passive: true
+    }); //手指點擊畫布中座標，跳出tag的訊息框
+    canvas.addEventListener("mousewheel", handleMouseWheel, {
+        passive: true
+    }); //畫布縮放
+    canvas.addEventListener("DOMMouseScroll", handleMouseWheel, false); // 畫面縮放(for Firefox)
+    canvas.addEventListener('click', handleMouseClick, false); //點擊地圖上的tag，跳出tag的訊息框
+    //canvas.addEventListener("dblclick", handleDblClick, false); // 快速放大點擊位置
 
-    //canvas.addEventListener("dblclick", handleDblClick, false);  // dblclick to zoom in at point, shift dblclick to zoom out.
-    //因為雙擊滑鼠放大的偏移過大，需花較多時間研究，暫時先擱置
-    canvas.addEventListener("mousedown", handleMouseDown, false); // click and hold to pan
-    canvas.addEventListener("mousemove", handleMouseMove, false);
-    canvas.addEventListener("mouseup", handleMouseUp, false);
-    cvsBlock.addEventListener("mousewheel", handleMouseWheel, false); // mousewheel duplicates dblclick function
-    cvsBlock.addEventListener("DOMMouseScroll", handleMouseWheel, false); // for Firefox
-    canvas.addEventListener('click', handleMouseClick, false);
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                var MapList = revObj.Values;
+                mapArray = MapList.slice(0); //Copy array
+                var html = "";
+                for (i = 0; i < MapList.length; i++) {
+                    html += "<li><input type=\"button\" id=\"map_btn_" + MapList[i].map_id + "\" " +
+                        "value=\"" + MapList[i].map_name + "\"" +
+                        "onclick=\"addMapTab(\'" + MapList[i].map_id + "\',\'" + MapList[i].map_name +
+                        "\')\"></li>";
+                }
+                document.getElementById("loadMapButtonGroup").innerHTML = html;
+                selectMapFromCookie();
+            } else {
+                alert($.i18n.prop('i_failed_loadMap'));
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify({
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetMaps"]
+    })); //接收並載入Server的地圖設定到按鈕
+}
 
-    //設定並載入tag圖案
-    tag_image.src = '../image/location.png';
-    tag_image.onload = function () {
-        tag_image_isOnload = true;
-        tag_img_size = tag_image.height / tag_image.width;
+function addMapTab(map_id, map_name) {
+    var tab_map_id = "map_tab_" + map_id;
+    $("#input_map").before("<button type=\"button\" name=\"map_tab\" class=\"btn btn-primary\" id=\"" +
+        tab_map_id + "\" onclick=\"setMap(\'" + map_id + "\')\">" +
+        map_name + "</button></li>");
+    setMap(map_id);
+    $("#map_btn_" + map_id).prop('disabled', true).css('color', 'lightgray');
+}
+
+function closeMapTag() {
+    $("#map_tab_" + Map_id).remove();
+    $("#map_btn_" + Map_id).prop('disabled', false).css('color', 'black');
+    deleteMapToCookie(Map_id);
+    if (Map_id == "")
+        return;
+    if ($("button[name=map_tab]").length > 0) {
+        var tab_map_id = $("button[name=map_tab]").eq(0).attr("id"); //"map_tab_" + map_id
+        $("#" + tab_map_id).addClass("selected");
+        setMap(tab_map_id.substring(8));
+    } else { //reset
+        resetCanvas_Anchor();
     }
 }
 
-function loadImage(file) {
-    var src = URL.createObjectURL(file);
-    var serverImg = new Image();
-    serverImg.src = src;
+function setMap(map_id) {
+    //loading();
+
+    var index = mapArray.findIndex(function (info) {
+        return info.map_id == map_id;
+    });
+    if (index < 0)
+        return;
+    var map_url = "data:image/" + mapArray[index].map_file_ext + ";base64," + mapArray[index].map_file;
+    var map_scale = typeof (mapArray[index].map_scale) != 'undefined' && mapArray[index].map_scale != "" ? mapArray[index].map_scale : 1;
+    $("button[name=map_tab]").removeClass("selected");
+    $("#map_tab_" + map_id).addClass("selected");
+    addMapToCookie(map_id);
+    serverImg.src = map_url; //"data:image/" + revInfo.file_ext + ";base64," + revInfo.map_file;
     serverImg.onload = function () {
         cvsBlock.style.background = "none";
         canvasImg.isPutImg = true;
         canvasImg.width = serverImg.width;
         canvasImg.height = serverImg.height;
-        setCanvas(src, serverImg.width, serverImg.height);
+        canvasImg.scale = map_scale;
+        document.getElementById("scale_visible").innerText = map_scale;
+        setCanvas(this.src, serverImg.width, serverImg.height);
         //canvas.style.position = "absolute"; //可以不設定
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         xleftView = 0;
         ytopView = 0;
-        Zoom = zoomOriginal;
+        Zoom = 1.0;
         ctx.save(); //紀錄原比例
-
+        $("#canvas").css("margin-left", "0px").css("margin-top", "0px");
         var serImgSize = serverImg.width / serverImg.height;
-        var cvsSize = 1340 / 500;
+        var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
+        var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
+        var cvsSize = cvsBlock_width / cvsBlock_height;
         if (serImgSize > cvsSize) { //原圖比例寬邊較長
-            fitZoom = 1340 / serverImg.width;
-            setCanvas(src, 1350, serverImg.height * fitZoom);
+            Zoom = cvsBlock_width / serverImg.width;
+            setCanvas(this.src, cvsBlock_width, serverImg.height * Zoom);
         } else {
-            fitZoom = 500 / serverImg.height;
-            setCanvas(src, serverImg.width * fitZoom, 500);
+            Zoom = cvsBlock_height / serverImg.height;
+            setCanvas(this.src, serverImg.width * Zoom, cvsBlock_height);
+        }
+        /**
+         * 在設定好地圖後，導入Anchors & Groups & Tags' setting
+         */
+        getAnchors(map_id);
+        getMemberDate();
+        Start();
+    };
+}
+
+function addMapToCookie(map_id) {
+    var cookie = Cookies.get("recent_map");
+    var currentMaps = typeof (cookie) === 'undefined' ? [] : JSON.parse(cookie);
+    //从cookie中还原数组
+    if (typeof (currentMaps) !== 'object') {
+        Cookies.set("recent_map", JSON.stringify([]));
+        Cookies.set("select_map", "");
+        currentMaps = [];
+    }
+    var repeat = currentMaps.indexOf(map_id);
+    if (repeat == -1)
+        currentMaps.push(map_id); //新增地圖id
+    Cookies.set("recent_map", JSON.stringify(currentMaps));
+    Cookies.set("select_map", map_id);
+    //将数组转换为Json字符串保存在cookie中
+}
+
+function deleteMapToCookie(map_id) {
+    var cookie = Cookies.get("recent_map");
+    var currentMaps = typeof (cookie) === 'undefined' ? [] : JSON.parse(cookie);
+    //从cookie中还原数组
+    if (typeof (currentMaps) !== 'object') {
+        Cookies.set("recent_map", JSON.stringify([]));
+        Cookies.set("select_map", "");
+        return;
+    }
+    var repeat = currentMaps.indexOf(map_id);
+    if (repeat > -1)
+        currentMaps.splice(repeat, 1); //刪除地圖id
+    Cookies.set("recent_map", JSON.stringify(currentMaps));
+    Cookies.set("select_map", "");
+    //将数组转换为Json字符串保存在cookie中
+}
+
+function selectMapFromCookie() {
+    var selectedMap = Cookies.get("select_map");
+    var cookie = Cookies.get("recent_map");
+    var recentMaps = typeof (cookie) === 'undefined' ? [] : JSON.parse(cookie);
+    if (typeof (recentMaps) !== 'object') {
+        Cookies.set("recent_map", JSON.stringify([]));
+        Cookies.set("select_map", "");
+        return;
+    }
+    for (i in recentMaps) {
+        var index = mapArray.findIndex(function (info) {
+            return info.map_id == recentMaps[i];
+        });
+        if (index > -1)
+            addMapTab(mapArray[index].map_id, mapArray[index].map_name);
+    }
+    setMap(selectedMap);
+}
+
+function resetCanvas_Anchor() {
+    cvsBlock.style.background = '#ccc';
+    canvasImg.isPutImg = false;
+    canvasImg.width = 0;
+    canvasImg.height = 0;
+    canvasImg.scale = 1;
+    setCanvas("", 1, 1);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    xleftView = 0;
+    ytopView = 0;
+    Zoom = 1.0;
+    anchorArray = [];
+    document.getElementById('scale_visible').innerText = "";
+    document.getElementById('x').value = "";
+    document.getElementById('y').value = "";
+    Stop();
+}
+
+function getAnchors(map_id) {
+    Map_id = map_id;
+    anchorArray = [];
+    setSize();
+    var request_anc = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetAnchorsInMap"],
+        "Value": {
+            "map_id": map_id
         }
     };
+    var ancXmlHttp = createJsonXmlHttp("sql");
+    ancXmlHttp.onreadystatechange = function () {
+        if (ancXmlHttp.readyState == 4 || ancXmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            var anchorList = revObj.Values;
+            if (revObj.success > 0) {
+                var x, y;
+                for (i in anchorList) {
+                    x = anchorList[i].set_x / canvasImg.scale;
+                    y = canvasImg.height - anchorList[i].set_y / canvasImg.scale; //因為Server回傳的座標為左下原點
+                    anchorArray.push({
+                        id: anchorList[i].anchor_id,
+                        type: "",
+                        x: x,
+                        y: y
+                    });
+                    drawAnchor(ctx, anchorList[i].anchor_id, "", x, y, 1 / Zoom); //畫出點的設定
+                }
+            }
+        }
+    };
+    ancXmlHttp.send(JSON.stringify(request_anc));
+
+    var request_main = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetMainAnchorsInMap"],
+        "Value": {
+            "map_id": map_id
+        }
+    };
+    var mainXmlHttp = createJsonXmlHttp("sql");
+    mainXmlHttp.onreadystatechange = function () {
+        if (mainXmlHttp.readyState == 4 || mainXmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            var anchorList = revObj.Values;
+            if (revObj.success > 0) {
+                var x, y;
+                for (i in anchorList) {
+                    x = anchorList[i].set_x / canvasImg.scale;
+                    y = canvasImg.height - anchorList[i].set_y / canvasImg.scale;
+                    anchorArray.push({
+                        id: anchorList[i].main_anchor_id,
+                        type: "main",
+                        x: x,
+                        y: y
+                    });
+                    drawAnchor(ctx, anchorList[i].main_anchor_id, "main", x, y, 1 / Zoom);
+                }
+            }
+        }
+    };
+    mainXmlHttp.send(JSON.stringify(request_main));
+}
+
+function getGroups(anchorList) {
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetGroup_Anchors"]
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            var anchor_groups = revObj.Values;
+            if (revObj.success > 0) {
+                inputGroups(anchor_groups, anchorList); //函式在dialog_anchor_group.js內
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
+}
+
+function getGroupList(anchorList) {
+    var requestArray = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetGroups"]
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            var anchor_group_list = revObj.Values;
+            if (revObj.success > 0) {
+                inputGroupList(anchor_group_list, anchorList); //函式在dialog_anchor_group.js內
+                var GroupArray = [];
+                for (i in anchor_group_list)
+                    GroupArray.push(anchor_group_list[i].group_id);
+                getMapGroup(GroupArray);
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(requestArray));
+}
+
+function getMapGroup(groupArray) {
+    var requestArray = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetMaps_Groups"]
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            var map_group_list = revObj.Values;
+            if (revObj.success > 0) {
+                var map_infos = [];
+                for (i in mapArray)
+                    map_infos.push(mapArray[i].map_id);
+                inputMapGroupList(map_group_list, map_infos, groupArray);
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(requestArray));
+}
+
+function getMemberDate() {
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetStaffs"]
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0)
+                memberArray = 'Values' in revObj == true ? revObj.Values.slice(0) : [];
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
+}
+
+function getMemberPhoto(img_id, number) {
+    var pictureBox = $("#" + img_id);
+    pictureBox.attr('src', ""); //reset
+    if (number == "")
+        return;
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetOneStaff"],
+        "Value": {
+            "number": number
+        }
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0 && "Values" in revObj) {
+                var revInfo = revObj.Values[0];
+                if (revInfo.file_ext != "" && revInfo.photo != "") {
+                    var src = "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
+                    pictureBox.attr('src', src);
+                }
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
 }
 
 function setCanvas(img_src, width, height) {
@@ -101,75 +502,129 @@ function setCanvas(img_src, width, height) {
     canvas.style.height = height + 'px';
 }
 
-function setSize() {
-    //縮放canvas與背景圖大小
+function setSize() { //縮放canvas與背景圖大小
     if (canvasImg.isPutImg) {
-        canvas.style.backgroundSize = (canvasImg.width * fitZoom / Zoom) + "px " + (canvasImg.height * fitZoom / Zoom) + "px";
-        canvas.width = canvasImg.width * fitZoom * PIXEL_RATIO / Zoom;
-        canvas.height = canvasImg.height * fitZoom * PIXEL_RATIO / Zoom;
-        canvas.style.width = canvasImg.width * fitZoom / Zoom + 'px';
-        canvas.style.height = canvasImg.height * fitZoom / Zoom + 'px';
+        canvas.style.backgroundSize = (canvasImg.width * Zoom) + "px " + (canvasImg.height * Zoom) + "px";
+        canvas.width = canvasImg.width * PIXEL_RATIO * Zoom;
+        canvas.height = canvasImg.height * PIXEL_RATIO * Zoom;
+        canvas.style.width = canvasImg.width * Zoom + 'px';
+        canvas.style.height = canvasImg.height * Zoom + 'px';
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.setTransform(PIXEL_RATIO * fitZoom, 0, 0, PIXEL_RATIO * fitZoom, 0, 0);
-        ctx.scale(1 / Zoom, 1 / Zoom);
-        ctx.translate(-xleftView, -ytopView);
+        ctx.setTransform(PIXEL_RATIO, 0, 0, PIXEL_RATIO, 0, 0);
+        ctx.scale(Zoom, Zoom);
+        ctx.translate(0, 0);
     }
 }
 
 function restoreCanvas() {
-    //恢復原比例
+    if (!canvasImg.isPutImg)
+        return;
+    var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
+    var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
     xleftView = 0;
     ytopView = 0;
-    Zoom = zoomOriginal;
-    fitZoom = 1;
-    setSize();
-    ctx.restore();
-    ctx.save();
+    Zoom = 1.0;
+    if (isFitWindow) {
+        isFitWindow = false; //目前狀態:原比例
+        ctx.restore();
+        ctx.save();
+        document.getElementById("label_restore").innerHTML = "<i class=\"fas fa-expand\"" +
+            " style='font-size:20px;' title=\"" + $.i18n.prop('i_fit_window') + "\"></i>";
+    } else {
+        isFitWindow = true; //目前狀態:依比例拉伸(Fit in Window)
+        if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
+            Zoom = cvsBlock_width / serverImg.width;
+        else
+            Zoom = cvsBlock_height / serverImg.height;
+        document.getElementById("label_restore").innerHTML = "<i class=\"fas fa-compress\"" +
+            " style='font-size:20px;' title=\"" + $.i18n.prop('i_restore_scale') + "\"></i>";
+    }
+    $("#canvas").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
+    draw();
 }
 
 function handleMouseWheel(event) {
-    var targetX = lastX;
-    var targetY = lastY;
-    var x = targetX + xleftView; // View coordinates
-    var y = targetY + ytopView;
-
-    var scale = (event.wheelDelta < 0 || event.detail > 0) ? 1.1 : 0.9;
-
-    Zoom *= scale; //縮放比例
-
-    // scale about center of view, rather than mouse position. This is different than dblclick behavior.
-    xleftView = x - targetX;
-    ytopView = y - targetY;
-    draw();
-}
-
-
-function handleDblClick(event) {
-    //var X = lastX;
-    //var Y = lastY;
-
-    var X = event.clientX - this.offsetLeft - this.clientLeft + this.scrollLeft; //Canvas coordinates
-    var Y = event.clientY - this.offsetTop - this.clientTop + this.scrollTop;
-    var scale = event.shiftKey == 1 ? 1.5 : 0.5; // shrink (1.5) if shift key pressed
-    Zoom *= scale;
-
-    if (Zoom > zoomOriginal) {
-        Zoom = zoomOriginal;
-        xleftView = 0;
-        ytopView = 0;
+    var BCR = canvas.getBoundingClientRect();
+    var pos_x = event.pageX - BCR.left;
+    var pos_y = event.pageY - BCR.top;
+    var scale = 1.0;
+    if (event.wheelDelta < 0 || event.detail > 0) {
+        if (Zoom > 0.1)
+            scale = 0.9;
     } else {
-        xleftView = X * Zoom + xleftView; // widthView;
-        ytopView = Y * Zoom + ytopView; // heightView;
+        scale = 1.1;
     }
-    draw();
+    Zoom *= scale; //縮放比例
+    if (!isFocus) {
+        draw();
+        var Next_x = lastX * Zoom; //縮放後滑鼠位移後的位置(x坐標)
+        var Next_y = (canvasImg.height - lastY) * Zoom; //縮放後滑鼠位移後的位置(y坐標)
+        //var canvas_left = parseFloat($("#canvas").css("margin-left")); //canvas目前相對於div的位置(x坐標)
+        //var canvas_top = parseFloat($("#canvas").css("margin-top")); //canvas目前相對於div的位置(y坐標)
+        xleftView += pos_x - Next_x;
+        ytopView += pos_y - Next_y;
+        $("#canvas").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");
+    }
 }
 
-function handleMouseDown(event) {
-    mouseDown = true;
+/*function handleDblClick(event) {
+    var targetX = lastX; //滑鼠目前在canvas中的位置(x坐標)
+    var targetY = lastY; //滑鼠目前在canvas中的位置(y坐標)
+    var scale = event.shiftKey == 1 ? 0.5 : 1.5; // shrink (1.5) if shift key pressed
+    Zoom *= scale; //縮放比例
+    $(function () {
+        var canvas_left = parseFloat($("#canvas").css("margin-left")); //canvas目前相對於div的位置(x坐標)
+        var canvas_top = parseFloat($("#canvas").css("margin-top")); //canvas目前相對於div的位置(y坐標)
+        xleftView = (targetX / scale - targetX); //得出最終偏移量X
+        ytopView = (targetY / scale - targetY); //得出最終偏移量Y
+        var end_x = canvas_left + xleftView;
+        var end_y = canvas_top + ytopView;
+        $("#canvas").css("margin-left", end_x + "px").css("margin-top", end_y + "px");
+        draw();
+    });
+}*/
+
+function touchEvent(p) { //滑鼠點擊事件
+    var range = 10 / Zoom;
+    tagArray.forEach(function (v) {
+        if (v.type == "alarm")
+            return;
+        var distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y + 20 / Zoom), 2));
+        if (distance <= range) {
+            $("#member_dialog_tag_id").text(parseInt(v.id.substring(8), 16));
+            $("#member_dialog_number").text(v.number);
+            $("#member_dialog_name").text(v.name);
+            getMemberPhoto("member_dialog_image", v.number);
+            $("#member_dialog").dialog("open");
+        }
+    });
+    alarmArray.forEach(function (v) {
+        var distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y + 28 / Zoom), 2));
+        if (distance <= range)
+            setAlarmDialog(v);
+    });
 }
 
-function handleMouseUp(event) {
-    mouseDown = false;
+function clickEvent(p) { //滑鼠點擊事件
+    tagArray.forEach(function (v) {
+        if (v.type == "alarm")
+            return;
+        drawInvisiblePoints(ctx, v.id, v.x, v.y, 1 / Zoom);
+        //如果傳入了事件坐標，就用isPointInPath判斷一下
+        if (p && ctx.isPointInPath(p.x, p.y)) {
+            $("#member_dialog_tag_id").text(parseInt(v.id.substring(8), 16));
+            $("#member_dialog_number").text(v.number);
+            $("#member_dialog_name").text(v.name);
+            getMemberPhoto("member_dialog_image", v.number);
+            $("#member_dialog").dialog("open");
+        }
+    });
+    alarmArray.forEach(function (v) {
+        drawInvisiblePoints(ctx, v.id, v.x, v.y, 1 / Zoom);
+        //如果傳入了事件坐標，就用isPointInPath判斷一下
+        if (p && ctx.isPointInPath(p.x, p.y))
+            setAlarmDialog(v);
+    });
 }
 
 function getEventPosition(ev) { //獲取滑鼠點擊位置
@@ -184,24 +639,7 @@ function getEventPosition(ev) { //獲取滑鼠點擊位置
     return {
         x: x,
         y: y
-    };
-    //注：如果使用此方法無效的話，需要給Canvas元素的position設為absolute。
-}
-
-function clickEvent(p) { //滑鼠點擊事件
-    var url; //開啟新視窗並傳送值進去
-    tagArray.forEach(function (v, i) {
-        drawTags(ctx, v.id, v.x, v.y);
-        if (p && ctx.isPointInPath(p.x, p.y)) {
-            //如果傳入了事件坐標，就用isPointInPath判斷一下
-            $(function () {
-                $("#member_dialog_tag_id").text(v.id);
-                $("#member_dialog_name").text(v.name);
-                $("#member_dialog_image").text(v.image);
-                $("#member_dialog").dialog("open");
-            });
-        }
-    });
+    }; //注：如果使用此方法無效的話，需要給Canvas元素的position設為absolute。
 }
 
 function handleMouseClick(event) {
@@ -209,147 +647,244 @@ function handleMouseClick(event) {
     clickEvent(p);
 }
 
-function handleMouseMove(event) {
-    //滑鼠移動事件
-    var x = event.pageX;
-    var y = event.pageY;
-    var loc = getPointOnCanvas(x, y);
+function handleMobileTouch(event) { //手指觸碰事件
     if (canvasImg.isPutImg) {
-        if (mouseDown) {
-            var dx = (loc.x - lastX) / canvasImg.width * Zoom;
-            var dy = (loc.y - lastY) / canvasImg.height * Zoom;
-            xleftView -= dx;
-            ytopView -= dy;
-        }
-        document.getElementById('x').value = loc.x * Zoom;
-        document.getElementById('y').value = loc.y * Zoom;
-        lastX = loc.x;
-        lastY = loc.y;
+        var x = event.changedTouches[0].pageX;
+        var y = event.changedTouches[0].pageY;
+        var touch_pos = getPointOnCanvas(x, y);
+        touchEvent(touch_pos);
+    }
+}
+
+function handleMouseMove(event) { //滑鼠移動事件
+    if (canvasImg.isPutImg) {
+        var x = event.pageX;
+        var y = event.pageY;
+        getPointOnCanvas(x, y);
     }
 }
 
 function getPointOnCanvas(x, y) {
     //獲取滑鼠在Canvas物件上座標(座標起始點從左上換到左下)
     var BCR = canvas.getBoundingClientRect();
-    var width = canvas.width;
-    var height = canvas.height;
+    var pos_x = (x - BCR.left) * (canvasImg.width / BCR.width);
+    var pos_y = (y - BCR.top) * (canvasImg.height / BCR.height);
+    lastX = pos_x;
+    lastY = canvasImg.height - pos_y;
+    document.getElementById('x').value = (lastX).toFixed(2);
+    document.getElementById('y').value = (lastY).toFixed(2);
     return {
-        x: x - BCR.left * (width / BCR.width),
-        y: height - (y - BCR.top * (height / BCR.height))
-    };
-}
-
-/******************傳送要求到Server端************************/
-
-function GetXmlHttpObject() {
-    var xmlHttp = null;
-    try { // Firefox, Opera 8.0+, Safari
-        xmlHttp = new XMLHttpRequest();
-    } catch (e) { //Internet Explorer
-        try {
-            xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
-            xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-        }
+        x: pos_x,
+        y: pos_y
     }
-    return xmlHttp;
 }
 
 /*------------------------------------*/
-/*            接收並處理Alarm          */
+/*            接收並處理Alarm           */
 /*------------------------------------*/
 
-var alarm_dialog_count = 0;
+function setAlarmDialog(Obj) {
+    var color = "",
+        status = "";
+    switch (Obj.status) {
+        case "low_power":
+            color = "#72ac1b";
+            status = $.i18n.prop('i_lowPowerAlarm');
+            break;
+        case "help":
+            color = "#ff8484";
+            status = $.i18n.prop('i_helpAlarm');
+            break;
+        case "still":
+            color = "#FF6600";
+            status = $.i18n.prop('i_stillAlarm');
+            break;
+        case "active":
+            color = "#FF6600";
+            status = $.i18n.prop('i_activeAlarm');
+            break;
+        default:
+            color = "#FFFFFF"; //unknown
+            status = "";
+    }
+    var member_index = memberArray.findIndex(function (info) {
+        return info.tag_id == Obj.id;
+    });
+    var number = member_index > -1 ? memberArray[member_index].number : "";
+    var name = member_index > -1 ? memberArray[member_index].Name : "";
+    var time_arr = TimeToArray(Obj.time);
+    $("#alarm_dialog").css('background-color', color);
+    getMemberPhoto("alarm_dialog_image", number);
+    $("#alarm_dialog_number").text(number);
+    $("#alarm_dialog_name").text(name);
+    $("#alarm_dialog_id").text(parseInt(Obj.id.substring(8), 16));
+    $("#alarm_dialog_date").text(time_arr.date);
+    $("#alarm_dialog_time").text(time_arr.time);
+    $("#alarm_dialog_status").text(status);
+    $("#alarm_dialog_btn_unlock").unbind();
+    $("#alarm_dialog_btn_unlock").click(function () {
+        unlockFocusAlarm();
+        $("#alarm_dialog").dialog("close");
+    });
+    $("#alarm_dialog_btn_focus").unbind();
+    $("#alarm_dialog_btn_focus").click(function () {
+        changeFocusAlarm(Obj.order);
+    });
+    $("#alarm_dialog").dialog("open");
+}
 
 function updateAlarmList() {
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetAlarmTop50List"]
+    };
+    var xmlHttp = createJsonXmlHttp("request");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            var list = "",
-                items;
-            var alarmIndex = -1;
-            var tbody = document.getElementsByTagName("tbody");
-            for (var i = 0; i < revObj.id.length; i++) {
-                items = i + 1;
-                list += "<tr><td>" + items +
-                    "</td><td>" + revObj.id[i] +
-                    "</td><td>" + revObj.alarm_status[i] +
-                    "</td><td>" + revObj.time[i] +
-                    "</td><td>" + revObj.name[i] +
-                    "</td><td>" + revObj.image[i] +
-                    "</td></tr>";
-            }
-            tbody[3].innerHTML = list; //此tbody在html文件中所有tbody標籤的排序(0開頭)-->3
+            if (!revObj)
+                return false;
 
-            if (items > alarm_dialog_count) {
-                var time_arr = TimeToArray(revObj.time[items - 1]);
-                var thumb_id = "alarmCard_" + items;
-                var color = "";
-                switch (revObj.alarm_status[items - 1]) {
-                    case "Low Power Alarm":
-                        color = "#33cc00";
-                        break;
-                    case "Help Alarm":
-                        color = "#ff3333";
-                        break;
-                    case "Still Alarm":
-                        color = "#FF6600";
-                        break;
-                    case "Active Alarm":
-                        color = "#FF6600";
-                        break;
-                    default:
-                        color = "#FFFFFF"; //unknown
-                }
-                $(".thumbnail_columns").append("<div class=\"thumbnail\" id=\"" + thumb_id + "\"" +
-                    "style=\"background:" + color + "\">" +
-                    "<table>" +
-                    "<tr>" +
-                    "<td>" +
-                    "<img src=\"../image/user2.png\">" +
-                    "</td>" +
-                    "<td>" +
-                    "<p>Number:" + items + "</p>" +
-                    "<p>Name:" + revObj.name[items - 1] + "</p>" +
-                    "<p>ID:" + revObj.id[items - 1] + "</p>" +
-                    "<p>Date:" + time_arr.date + "</p>" +
-                    "<p>Time:" + time_arr.time + "</p>" +
-                    "<p>Status:" + revObj.alarm_status[items - 1] + "</p>" +
-                    "<p><a href=\"#\" class=\"btn btn-success\" role=\"button\">進行處理</a>" +
-                    "<a href=\"#\" class=\"btn btn-info\" role=\"button\" style=\"margin-left: 10px;\">定位</a></p>" +
-                    "</td>" +
-                    "</tr>" +
-                    "</table>" +
-                    "</div>");
-                document.getElementById(thumb_id).addEventListener("click", function () {
-                    $("#" + thumb_id).hide(); //點下警告卡片會消失
-                });
-                alarmIndex = tagArray.findIndex(function (tags) {
-                    return tags.id == revObj.id[items - 1]; // 比對Alarm與Tag的ID
-                });
-                if (alarmIndex > -1) {
-                    alarmArray.push(tagArray[alarmIndex]); //將Tag資料放入AlarmArray中
-                }
+            if (revObj.length > alarm_count) {
+                alarm_count = revObj.length;
+                isFocus = true; //happen new alarm
                 changeAlarmLight();
+                alarmFilterArr = [];
+                var list = "";
+                var items = 0;
+                for (var i = 0; i < revObj.length; i++) {
+                    var member_index = memberArray.findIndex(function (info) {
+                        return info.tag_id == revObj[i].tag_id;
+                    });
+                    var number = member_index > -1 ? memberArray[member_index].number : "";
+                    var name = member_index > -1 ? memberArray[member_index].Name : "";
+                    list += "<tr><td>" + (i + 1) +
+                        "</td><td>" + number +
+                        "</td><td>" + name +
+                        "</td><td>" + parseInt(revObj[i].tag_id.substring(8), 16) +
+                        "</td><td>" + revObj[i].tag_alarm_type +
+                        "</td><td>" + revObj[i].tag_time +
+                        "</td></tr>";
+                    var repeat = alarmFilterArr.findIndex(function (info) {
+                        return info.id == revObj[i].tag_id;
+                    });
+                    if (repeat > -1 && alarmFilterArr[repeat].alarm_type == revObj[i].tag_alarm_type)
+                        alarmFilterArr.splice(repeat, 1);
+                    items++;
+                    alarmFilterArr.push({
+                        order: items,
+                        id: revObj[i].tag_id,
+                        alarm_type: revObj[i].tag_alarm_type,
+                        time: revObj[i].tag_time
+                    });
+                }
+                $("#table_rightbar_alarm_list tbody").html(list);
+
+                /*
+                 * Alarm Card
+                 */
+                $(".thumbnail_columns").empty();
+                alarmFilterArr.forEach(function (element, i) {
+                    var time_arr = TimeToArray(element.time);
+                    var thumb_id = "alarmCard_" + i;
+                    var thumb_img = "alarmCard_img_" + i;
+                    var thumb_unlock_btn_id = "alarmCard_unlock_btn_" + i;
+                    var thumb_focus_btn_id = "alarmCard_focus_btn_" + i;
+                    var color = "",
+                        status = "";
+                    switch (element.alarm_type) {
+                        case "low_power":
+                            color = "#72ac1b";
+                            status = $.i18n.prop('i_lowPowerAlarm');
+                            break;
+                        case "help":
+                            color = "#ff8484";
+                            status = $.i18n.prop('i_helpAlarm');
+                            break;
+                        case "still":
+                            color = "#FF6600";
+                            status = $.i18n.prop('i_stillAlarm');
+                            break;
+                        case "active":
+                            color = "#FF6600";
+                            status = $.i18n.prop('i_activeAlarm');
+                            break;
+                        default:
+                            color = "#FFFFFF"; //unknown
+                            status = "";
+                    }
+                    var member_index = memberArray.findIndex(function (info) {
+                        return info.tag_id == element.id;
+                    });
+                    var number = member_index > -1 ? memberArray[member_index].number : "";
+                    var name = member_index > -1 ? memberArray[member_index].Name : "";
+                    $(".thumbnail_columns").append("<div class=\"thumbnail\" id=\"" + thumb_id + "\"" +
+                        "style=\"background:" + color + "\">" +
+                        "<table><tr><td>" +
+                        "<img id=\"" + thumb_img + "\" class=\"member_photo\" src=\"\">" +
+                        "</td><td>" +
+                        "<label>" + $.i18n.prop('i_number') + " : " + number + "</label><br>" +
+                        "<label>" + $.i18n.prop('i_name') + " : " + name + "</label><br>" +
+                        "<label>" + $.i18n.prop('i_userID') + " : " + parseInt(element.id.substring(8), 16) + "</label><br>" +
+                        "<label>" + $.i18n.prop('i_date') + " : " + time_arr.date + "</label><br>" +
+                        "<label>" + $.i18n.prop('i_time') + " : " + time_arr.time + "</label>" +
+                        "</td></tr></table>" +
+                        "<label style=\"margin-left:10px; color:white;\">" + $.i18n.prop('i_status') + " : " + status + "</label>" +
+                        "<br><div style=\"text-align:center; margin:5px;\">" +
+                        "<button type=\"button\" id=\"" + thumb_unlock_btn_id + "\"" +
+                        " class=\"btn btn-default\" title=\"" + $.i18n.prop('i_completed') + "\">" +
+                        "<img class=\"icon-image\" src=\"../image/complete.png\"></button>" +
+                        "<button type=\"button\" id=\"\" style=\"margin-left: 10px;\"" +
+                        " class=\"btn btn-default\" title=\"" + $.i18n.prop('i_releasePosition') + "\"" +
+                        " onclick=\"unlockFocusAlarm()\"><img class=\"icon-image\"" +
+                        " src=\"../image/release_position.png\"></button>" +
+                        "<button type=\"button\" id=\"" + thumb_focus_btn_id + "\" style=\"margin-left: 10px;\"" +
+                        " class=\"btn btn-default\" title=\"" + $.i18n.prop('i_position') + "\">" +
+                        "<img class=\"icon-image\" src=\"../image/target.png\"></button>" +
+                        "</div></div>");
+                    getMemberPhoto(thumb_img, number);
+                    $("#" + thumb_unlock_btn_id).click(function () {
+                        releaseFocusAlarm(element.order);
+                        $("#" + thumb_id).hide(); //警告卡片會消失
+                        changeAlarmLight();
+                    });
+                    $("#" + thumb_focus_btn_id).click(function () {
+                        changeFocusAlarm(element.order);
+                        changeAlarmLight();
+                    });
+
+
+                    /*
+                     *  Alarm Dialog
+                     */
+                    $("#alarm_dialog").css('background-color', color);
+                    getMemberPhoto("alarm_dialog_image", number);
+                    $("#alarm_dialog_number").text(number);
+                    $("#alarm_dialog_name").text(name);
+                    $("#alarm_dialog_id").text(parseInt(element.id.substring(8), 16));
+                    $("#alarm_dialog_date").text(time_arr.date);
+                    $("#alarm_dialog_time").text(time_arr.time);
+                    $("#alarm_dialog_status").text(status);
+                    $("#alarm_dialog_btn_unlock").unbind();
+                    $("#alarm_dialog_btn_unlock").click(function () {
+                        unlockFocusAlarm();
+                        $("#alarm_dialog").dialog("close");
+                    });
+                    $("#alarm_dialog_btn_focus").unbind();
+                    $("#alarm_dialog_btn_focus").click(function () {
+                        changeFocusAlarm(element.order);
+                    });
+                    $("#alarm_dialog").dialog("open");
+                });
             }
-            alarm_dialog_count = items;
         }
     };
-    xmlHttp.open("POST", "requestAlarmList", true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
-    xmlHttp.send();
+    xmlHttp.send(JSON.stringify(request));
 }
 
 function TimeToArray(time_str) {
     if (time_str.length > 0) {
-        var break_index = time_str.lastIndexOf("/");
-        /*var date = time_str.substring(0, break_index);
-        var time = time_str.substring(break_index, time_str.length);*/
+        var break_index = time_str.lastIndexOf(" ");
         return {
             date: time_str.substring(0, break_index),
             time: time_str.substring(break_index + 1, time_str.length)
@@ -358,283 +893,200 @@ function TimeToArray(time_str) {
 }
 
 function changeAlarmLight() {
-    if (alarmArray.length > 0) {
-        document.getElementById("sideBarLeft_light").src = "../image/alarm1.png";
+    if (alarmID_array.length > 0) {
+        $("#alarmSideBar_icon").css("color", "red");
     } else {
-        document.getElementById("sideBarLeft_light").src = "../image/alarm3.png";
+        $("#alarmSideBar_icon").css("color", "white");
     }
-}
-
-/*------------------------------------*/
-
-function updateMemberList() {
-
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            var list = "",
-                items;
-            var tbody = document.getElementsByTagName("tbody");
-            for (var i = 0; i < revObj.tag_list.length; i++) {
-                items = i + 1;
-                list += "<tr><td>" + items +
-                    "</td><td>" + " " +
-                    "</td><td>" + revObj.name[i] +
-                    "</td><td>" + revObj.tag_list[i].substring(14) +
-                    "</td></tr>";
-            }
-            tbody[2].innerHTML = list; //此tbody在html文件中所有tbody標籤的排序(0開頭)-->2
-        }
-    };
-    xmlHttp.open("POST", "requestMemberList", true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
-    xmlHttp.send();
 }
 
 function updateTagList() {
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetTagList"],
+        "Value": {
+            "Map_id": Map_id
+        }
+    };
+    var xmlHttp = createJsonXmlHttp("requestTagList_json");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            if (!this.responseText)
+                return;
             var revObj = JSON.parse(this.responseText);
+            if (!revObj)
+                return false;
             if (canvasImg.isPutImg) {
-                //setSize();
-                var id, x, y;
+                var temp_arr = tagArray;
+                var update = 0;
                 tagArray = [];
-                for (i in revObj.x) {
-                    id = revObj.tag_list[i];
-                    x = revObj.x[i];
-                    y = canvasImg.height - revObj.y[i]; //因為Server回傳的座標為左下原點 
-                    //drawTags(dctx, id, x, y); //畫出點的設定
+                for (var i = 0; i < revObj.length; i++) {
+                    var member_index = memberArray.findIndex(function (info) {
+                        return info.tag_id == revObj[i].tag_id;
+                    });
+                    var number = member_index > -1 ? memberArray[member_index].number : "";
+                    var name = member_index > -1 ? memberArray[member_index].Name : "";
+                    var color = member_index > -1 ? memberArray[member_index].color : "";
+
+                    //update tag array
                     tagArray.push({
-                        x: x,
-                        y: y,
-                        id: id,
-                        name: "",
-                        image: ""
+                        id: revObj[i].tag_id,
+                        x: revObj[i].tag_x / canvasImg.scale, // * Zoom,
+                        y: canvasImg.height - revObj[i].tag_y / canvasImg.scale, // * Zoom,
+                        system_time: revObj[i].tag_time,
+                        color: color,
+                        number: number,
+                        name: name,
+                        type: "normal"
+                    });
+
+                    update += temp_arr.findIndex(function (info) {
+                        return info.id == revObj[i].tag_id;
+                    }) > -1 ? 0 : 1;
+                }
+
+                if (update > 0) {
+                    //update member list
+                    $("#table_rightbar_member_list tbody").empty();
+                    tagArray.forEach(function (v, i) {
+                        $("#table_rightbar_member_list tbody").append("<tr><td>" + (i + 1) +
+                            "</td><td>" + parseInt(v.id.substring(8), 16) +
+                            "</td><td>" + v.number +
+                            "</td><td>" + v.name +
+                            "</td><td><button class=\"btn btn-default\"" +
+                            " onclick=\"locateTag(\'" + v.id + "\')\">" +
+                            "<img class=\"icon-image\" src=\"../image/target.png\"></button>" +
+                            "</td></tr>");
                     });
                 }
-                //tagArray.sort(); //陣列排序
-            }
-        }
-    };
-    xmlHttp.open("POST", "requestTagList", true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
-    xmlHttp.send("map_id=" + map_id);
-}
+                tableFilter("table_filter_member", "table_rightbar_member_list");
 
-function readMainAnchorSet() {
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            if (canvasImg.isPutImg) {
-                setSize();
-                var id, x, y;
-                anchorMainArray = [];
-                for (i in revObj.main_id) {
-                    id = revObj.main_id[i];
-                    x = revObj.main_x[i] / 3;
-                    y = canvasImg.height - revObj.main_y[i] / 3; //因為Server回傳的座標為左下原點
-                    drawMainAnchor(ctx, id, x, y); //畫出點的設定
-                    anchorMainArray.push({
-                        id: id,
-                        x: x,
-                        y: y
-                    });
-                }
-            }
-        }
-    };
-    xmlHttp.open("POST", "requestMainAnchorPosition", true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
-    xmlHttp.send();
-}
-
-function readAnchorSet() {
-    var xmlHttp = GetXmlHttpObject();
-    if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
-    }
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            if (canvasImg.isPutImg) {
-                setSize();
-                var id, x, y;
-                anchorArray = [];
-                for (i in revObj.id) {
-                    id = revObj.id[i];
-                    x = revObj.x[i] / 3;
-                    y = canvasImg.height - revObj.y[i] / 3; //因為Server回傳的座標為左下原點
-                    drawAnchor(ctx, id, x, y); //畫出點的設定
-                    anchorArray.push({
-                        id: id,
-                        x: x,
-                        y: y
-                    });
+                //定時比對tagArray更新alarmArray
+                alarmArray = []; //每次更新都必須重置alarmArray
+                if (alarmFilterArr.length > 0) {
+                    for (var j = 0; j < alarmFilterArr.length; j++) {
+                        var alarmIndex = tagArray.findIndex(function (tags) {
+                            return tags.id == alarmFilterArr[j].id; // 比對Alarm與Tag的ID
+                        });
+                        if (alarmIndex > -1) {
+                            alarmArray.push({ //依序將Tag資料放入AlarmArray中
+                                order: alarmFilterArr[j].order,
+                                id: tagArray[alarmIndex].id,
+                                x: tagArray[alarmIndex].x,
+                                y: tagArray[alarmIndex].y,
+                                status: alarmFilterArr[j].alarm_type,
+                                time: alarmFilterArr[j].time
+                            });
+                            tagArray[alarmIndex].type = "alarm";
+                        }
+                    }
                 }
             }
         }
     };
-    xmlHttp.open("POST", "requestAnchorPosition", true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
-    xmlHttp.send();
+    xmlHttp.send(JSON.stringify(request));
 }
 
-function getServerImage(map) {
-    var oReq = new XMLHttpRequest();
-    if (oReq == null) {
-        alert("Browser does not support HTTP Request");
-        return;
+function locateTag(tag_id) {
+    locating_id = tagArray.findIndex(function (info) { //抓取指定AlarmTag的位置
+        return info.id == tag_id;
+    });
+    if (locating_id > -1) {
+        isFocus = true;
+        isLocating = true;
+    } else {
+        alert($.i18n.prop('i_alarmLocate_1'));
     }
-    oReq.open("POST", "requestImage", true);
-    oReq.responseType = "blob";
-    oReq.onreadystatechange = function () {
-        if (oReq.readyState == oReq.DONE) {
-            var blob = oReq.response;
-            loadImage(blob);
-        }
+}
+
+function focusAlarmTag(x, y) {
+    if (isFocus) {
+        var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
+        var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
+        //Zoom = 2.0;
+        var focus_x = cvsBlock_width / 2 - parseFloat(x) * Zoom;
+        var focus_y = cvsBlock_height / 2 - parseFloat(y) * Zoom;
+        $("#canvas").css("margin-left", focus_x + "px").css("margin-top", focus_y + "px");
     }
-    oReq.send("map_id=" + map);
-    map_id = map;
 }
 
-function drawMainAnchor(dctx, id, x, y) {
-    dctx.fillStyle = "red";
-    dctx.font = '13px serif';
-    dctx.fillText(id, x, y); //MainAnchorID
-    dctx.fillRect(x, y, 10, 10);
+function changeFocusAlarm(alarm_order) { //改變鎖定定位的Alarm目標
+    isLocating = false;
+    isFocus = true;
+    var index = alarmFilterArr.findIndex(function (info) { //抓取指定AlarmTag的位置
+        return info.order == alarm_order;
+    });
+    var temp = alarmFilterArr[index];
+    alarmFilterArr.splice(index, 1);
+    alarmFilterArr.push(temp);
 }
 
-function drawAnchor(dctx, id, x, y) {
-    dctx.fillStyle = "blue";
-    dctx.font = '13px serif';
-    dctx.fillText(id, x, y); //anchorID
-    dctx.fillRect(x, y, 10, 10);
+function releaseFocusAlarm(alarm_order) { //解除指定的alarm
+    var index = alarmFilterArr.findIndex(function (info) {
+        return info.order == alarm_order;
+    });
+    alarmFilterArr.splice(index, 1);
 }
 
-function drawTags(dctx, id, x, y) {
-    //var tagID = id.substring(13);
-    if (tag_image_isOnload) {
-        dctx.beginPath();
-        dctx.drawImage(tag_image, x - 10, y - 20, 20, 20 * tag_img_size);
-        //dctx.fillStyle = '#000000';
-        //dctx.font = '15px serif';
-        //dctx.fillText(tagID, x - 10, y - 20); //tagID
-        dctx.fillStyle = '#ffffff00';
-        dctx.arc(x, y - 10, 10, 0, Math.PI * 2, true); // circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
-        dctx.fill(); //填滿圓形
-        dctx.closePath();
-    }
-    //dctx.beginPath();
-    //dctx.fillStyle = '#ffffff00';
-    //dctx.arc(x, y, 10, 0, Math.PI * 2, true); // circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
-    //dctx.fill(); //填滿圓形
-    //dctx.stroke(); //畫圓形的線
-    //dctx.closePath();
-    //dctx.font = '10px serif';
-    //dctx.strokeText(id, x, y); //tagID
-}
-
-function drawAlarmTags(dctx, id, x, y) {
-    var alarm_image = new Image();
-    alarm_image.src = '../image/alarm_dot.png';
-    alarm_image.onload = function () {
-        dctx.drawImage(this, x, y, 20, 20);
-        //dctx.fillStyle = '#ff8c1a';
-        //dctx.font = '10px serif';
-        //dctx.strokeText(id, x, y); //tagID
-    };
-}
-
-function drawAnchorPosition(dctx, x, y) {
-    dctx.fillStyle = '#99cc00';
-    dctx.beginPath();
-    dctx.arc(x, y, 4, 0, Math.PI * 2, true);
-    dctx.fill();
+function unlockFocusAlarm() { //解除定位
+    isLocating = false;
+    isFocus = false;
+    xleftView = 0; //恢復原比例
+    ytopView = 0;
+    Zoom = 1.0;
+    ctx.restore();
+    ctx.save();
+    isFitWindow = false;
+    $("#canvas").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
+    setSize();
 }
 
 function draw() {
     setSize();
-    anchorMainArray.forEach(function (v) {
-        drawMainAnchor(ctx, v.id, v.x, v.y);
-    });
     anchorArray.forEach(function (v) {
-        drawAnchor(ctx, v.id, v.x, v.y);
+        drawAnchor(ctx, v.id, v.type, v.x, v.y, 1 / Zoom); //canvasImg.scale
     });
     tagArray.forEach(function (v) {
-        drawTags(ctx, v.id, v.x, v.y);
+        drawTags(ctx, v.id, v.x, v.y, v.color, 1 / Zoom);
     });
     alarmArray.forEach(function (v) {
-        drawAlarmTags(ctx, v.id, v.x, v.y);
+        drawAlarmTags(ctx, v.id, v.x, v.y, v.status, 1 / Zoom);
     });
-}
-
-function clickAnchorPosition() {
-    AnchorPosition = !AnchorPosition;
-}
-
-function handleAnchorPosition() {
-    setAddAnchorDialog(); //函式內容在dialog_anchor_setting.js中
-    document.getElementById("anchor_x").value = lastX;
-    document.getElementById("anchor_y").value = lastY;
+    //Focus the position of this locating tag.
+    if (isLocating) {
+        focusAlarmTag(tagArray[locating_id].x, tagArray[locating_id].y);
+        if (tagArray[locating_id].type == "alarm")
+            drawAlarmFocusFrame(ctx, tagArray[locating_id].x, tagArray[locating_id].y, 1 / Zoom);
+        else
+            drawFocusFrame(ctx, tagArray[locating_id].x, tagArray[locating_id].y, 1 / Zoom);
+        //drawFocusMark(ctx, tagArray[locating_id].x, tagArray[locating_id].y, 1 / Zoom);
+        return;
+    }
+    if (alarmArray.length > 0 && isFocus) {
+        var last = alarmArray.length - 1;
+        focusAlarmTag(alarmArray[last].x, alarmArray[last].y);
+        drawAlarmFocusFrame(ctx, alarmArray[last].x, alarmArray[last].y, 1 / Zoom);
+    } else {
+        isFocus = false;
+    }
 }
 
 function autoSendRequest() {
-    if (isStart) {
-        if (!AnchorPosition) {
-            updateAlarmList()
-            updateMemberList();
-            updateTagList();
-            draw();
-            canvas.removeEventListener("click", handleAnchorPosition);
-        } else {
-            draw();
-            var posX = lastX * Zoom;
-            var posY = (canvas.height - lastY) * Zoom;
-            drawAnchorPosition(ctx, posX, posY);
-            canvas.addEventListener('click', handleAnchorPosition);
-        }
-    } else {
-        draw();
-    }
+    updateAlarmList();
+    updateTagList();
+    draw();
 }
 
-function StartClick() {
+function Start() {
     if (canvasImg.isPutImg) {
-        readMainAnchorSet();
-        readAnchorSet();
-        isStart = !isStart;
-        if (isStart) {
-            document.getElementById("btn_start").innerHTML = "Close <i class=\"fas fa-pause\" ></i >";
-        } else {
-            document.getElementById("btn_start").innerHTML = "Start <i class=\"fas fa-play\" ></i >";
-        }
+        var delaytime = 100; //設定計時器
+        clearInterval(pageTimer["timer1"]);
+        pageTimer["timer1"] = setInterval("autoSendRequest()", delaytime);
     }
 }
 
-//setInterval('autoSendRequest()', 100);
-
-let delay = 100;
-let timerOut = setTimeout(function request() {
-    autoSendRequest();
-    //if (request failed due to server overload) {
-    //   //increase the interval to the next run
-    //   delay *= 2;
-    //}
-    timerOut = setTimeout(request, delay);
-}, delay);
+function Stop() {
+    for (var each in pageTimer) {
+        clearInterval(pageTimer[each]);
+    }
+}

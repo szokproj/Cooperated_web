@@ -24,6 +24,10 @@ $(function () {
     }
     setNavBar("Member_Setting", "User_Type_Setting");
 
+    setTimeout(function () {
+        $("#loading").hide();
+    }, 500);
+
     var dialog, form,
         sel_name = $("#set_type_name"),
         sel_color = $("#set_dot_color"),

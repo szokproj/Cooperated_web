@@ -34,8 +34,9 @@ $(function () {
                             "<td>" + memberArray[i].jobTitle + "</td>" +
                             "<td>" + memberArray[i].type + "</td>" +
                             //"<td>" + memberArray[i].alarm_group_id + "</td>" +
-                            "<td><button class=\"btn btn-primary\">" +
-                            //" onclick=\"editMemberData(\'" + number + "\')\">查看" +
+                            "<td><button class=\"btn btn-default\"" +
+                            " onclick=\"locateTag(\'" + memberArray[i].tag_id + "\')\">" +
+                            "<img class=\"icon-image\" src=\"../image/target.png\">" +
                             "</button></td>" +
                             "</tr>");
                     }

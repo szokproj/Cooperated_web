@@ -186,11 +186,11 @@
                     table: htmltable
                 };
 
-                /*var link = document.createElement("a");
+                var link = document.createElement("a");
                 link.download = "export.xls";
                 link.href = uri + base64(format(excelFile, ctx));
-                link.click();*/
-                return (uri + base64(format(excelFile, ctx)));
+                link.click();
+                return false; //(uri + base64(format(excelFile, ctx)));
             }
         }
 
@@ -257,8 +257,6 @@
                 sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));
 
             return (sa);
-
-
         }
 
     };

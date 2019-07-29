@@ -63,9 +63,11 @@ function Search() {
             networkArray = [];
             if (!udpInfo)
                 return;
+            document.getElementById("all_check").checked = false;
             $("#table_ip_address_info tbody").empty();
             for (var i = 0; i < udpInfo.length; i++) {
                 deviceArray.push({
+                    Checked: false,
                     Status: 0,
                     Machine_Number: udpInfo[i].Machine_Number,
                     Model: udpInfo[i].Model,
@@ -82,6 +84,7 @@ function Search() {
                 });
                 $("#table_ip_address_info tbody").append("<tr><td><input type=\"checkbox\"" +
                     " name=\"checkbox_ipAddr\" value=\"" + udpInfo[i].IP_address + "\" />" +
+                    " <label>" + (i + 1) + "</label>" +
                     "</td><td><input type='hidden' name=\"conn_status\" value=\"0\" />" + RED_LIGHT +
                     "</td><td> " + //Anchor ID
                     "</td><td>" + udpInfo[i].MAC_address +
@@ -98,8 +101,9 @@ function Search() {
                     "</td><td class=\"row_model\">" + udpInfo[i].Model +
                     "</td><td></td></tr>");
             }
-            $("input[name=checkbox_ipAddr]").change(checked_trans);
+            //$("input[name=checkbox_ipAddr]").change(checked_trans);
             displaySelectedRows();
+            setCheckboxListeners();
         }
     }
     xmlHttp.send(JSON.stringify(requestArray));
@@ -127,32 +131,49 @@ function Connect() {
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 var connectedInfo = JSON.parse(this.responseText);
+                if (!connectedInfo) {
+                    alert("Connection failed!");
+                    return;
+                }
                 deviceArray.forEach(function (v) {
+                    v.Checked = false;
                     v.Status = 0;
                     v.Anchor_ID = "";
                 });
+
                 connect_ip_array = [];
-                for (var j in connectedInfo) {
-                    var index = deviceArray.findIndex(function (array) {
-                        return array.IP_address == connectedInfo[j].dev_ip;
+                check_val.forEach(checkedIP => {
+                    var connectedData = connectedInfo.find(function (info) {
+                        return info.dev_ip == checkedIP; //確定此IP是否有連接成功
                     });
-                    if (index > -1) {
+                    var index = deviceArray.findIndex(function (deviceData, i, arr) {
+                        return deviceData.IP_address == checkedIP; //此勾選IP在deviceArray中的位置
+                    });
+                    deviceArray[index].Checked = true;
+                    if (connectedData && connectedData.dev_active_ID) {
                         deviceArray[index].Status = 1;
-                        deviceArray[index].Anchor_ID = connectedInfo[j].dev_active_ID;
-                        connect_ip_array.push(connectedInfo[j].dev_ip);
+                        deviceArray[index].Anchor_ID = connectedData.dev_active_ID;
+                        connect_ip_array.push(connectedData.dev_ip);
                     }
-                }
+                });
+
                 resetListenersOfSelects(); //Reset listeners
                 $("#table_ip_address_info tbody").empty();
                 deviceArray.forEach(function (element) {
                     inputDataToColumns(element);
                 });
+
+                setCheckboxListeners();
+
+                checked_trans();
+
                 setListenerOfInput();
                 timeDelay["connect"] = setTimeout(function () {
                     RF_setting_read(connect_ip_array);
                     clearTimeout(timeDelay["connect"]);
                 }, 70);
-                $("input[name=checkbox_ipAddr]").change(checked_trans);
+                //$("input[name=checkbox_ipAddr]").change(checked_trans);
+
                 displaySelectedRows();
             }
         };

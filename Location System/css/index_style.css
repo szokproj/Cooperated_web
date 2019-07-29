@@ -14,7 +14,7 @@ table {
 
 th,
 td {
-    padding: 8px;
+    padding: 4px;
     text-align: left;
     border: 1px solid #808080;
 }
@@ -218,7 +218,7 @@ input[type="file"] {
     cursor: pointer;
 }
 
-.btn {
+.btn-group .btn {
     border-radius: 0px;
 }
 
