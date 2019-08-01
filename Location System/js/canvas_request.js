@@ -216,7 +216,6 @@ function setMap(map_id) {
         canvasImg.scale = map_scale;
         document.getElementById("scale_visible").innerText = map_scale;
         setCanvas(this.src, serverImg.width, serverImg.height);
-        //canvas.style.position = "absolute"; //可以不設定
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         xleftView = 0;
         ytopView = 0;
@@ -827,7 +826,7 @@ function locateTag(tag_id) {
         locating_id = index;
         isFocus = true;
     } else {
-        alert($.i18n.prop('i_alarmLocate_1'));
+        showMyModel();
     }
 }
 

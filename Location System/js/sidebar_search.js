@@ -45,4 +45,20 @@ $(function () {
         };
         xmlHttp.send(JSON.stringify(request));
     });
+
+
+    $('#myModal').modal({
+        backdrop: false,
+        show: false
+    });
 });
+
+var pageTimer = {}; //定義計時器全域變數 
+
+function showMyModel() {
+    $('#myModal').modal('show');
+    pageTimer["model"] = setTimeout(function () {
+        $('#myModal').modal('hide');
+        clearTimeout(pageTimer["model"]);
+    }, 2000);
+}

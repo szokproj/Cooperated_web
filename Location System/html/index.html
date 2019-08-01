@@ -23,7 +23,9 @@
     <link rel="stylesheet" type="text/css" href="../css/index_style.css" />
     <link rel="stylesheet" type="text/css" href="../css/index_data_sidebar.css" />
     <link rel="stylesheet" type="text/css" href="../css/index_alarm_sidebar.css" />
-    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.6/css/bootstrap-material-design.css" />-->
+    <!-- Data Table -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css" />
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
     <!-- Edit js -->
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
@@ -204,6 +206,19 @@
 
     <!-- Hidden Dialog -->
     <div class="hidden_dialog">
+        <!-- 模态框（Modal） -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!--<div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                        </button>
+                    </div>-->
+                    <div class="modal-body i18n" name="i_alarmLocate_1"></div>
+                </div>
+            </div>
+        </div>
         <!-- The dialog of tag's infomation -->
         <div id="member_dialog" title="Tag Infomation" style="background:rgb(195, 228, 230);">
             <img id="member_dialog_image" class="member_photo" src="">

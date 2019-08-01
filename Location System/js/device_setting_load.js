@@ -115,11 +115,10 @@ $(function () { //Load==>
     $("#open_dialog_set").click(function () {
         var rows = document.getElementsByName("display_rows");
         for (i = 0; i < rows.length; i++) {
-            if (displayRowArray[rows[i].value]) {
+            if (displayRowArray[rows[i].value])
                 rows[i].checked = true;
-            } else {
+            else
                 rows[i].checked = false;
-            }
         }
         $("#check_all_net_basic").prop("checked", displayRowArray["check_all_net_basic"]);
         $("#check_all_net_advance").prop("checked", displayRowArray["check_all_net_advance"]);
@@ -189,7 +188,6 @@ $(function () { //Load==>
     sortTable('.row_rf_smartpower', 'select');
     sortTable('.row_rf_ntm', 'select');
     sortTable('.row_rf_mult', 'select');
-
 
     Load();
     inputSetAllRow();
@@ -577,8 +575,13 @@ function sortTable(selector, targetType, compFunc) {
             v1 = $.trim($td1.text()).replace(/,|\s+|%/g, '');
             v2 = $.trim($td2.text()).replace(/,|\s+|%/g, '');
         } else {
-            v1 = $.trim($td1.children(targetType).val()).replace(/,|\s+|%/g, '');
-            v2 = $.trim($td2.children(targetType).val()).replace(/,|\s+|%/g, '');
+            if ($td1.children().is(targetType)) {
+                v1 = $.trim($td1.children(targetType).val()).replace(/,|\s+|%/g, '');
+                v2 = $.trim($td2.children(targetType).val()).replace(/,|\s+|%/g, '');
+            } else {
+                v1 = $.trim($td1.text()).replace(/,|\s+|%/g, '');
+                v2 = $.trim($td2.text()).replace(/,|\s+|%/g, '');
+            }
         }
         var pattern = /^\d+(\.\d*)?$/;
         if (pattern.test(v1) && pattern.test(v2)) {

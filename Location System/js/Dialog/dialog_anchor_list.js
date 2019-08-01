@@ -437,6 +437,7 @@ $(function () {
         buttons: {
             "Confirm": editAnchor,
             Cancel: function () {
+                draw();
                 dialog.dialog("close");
             }
         },

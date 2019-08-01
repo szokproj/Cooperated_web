@@ -12,9 +12,7 @@ var mouseDown = false;
 // View parameters
 var xleftView = 0;
 var ytopView = 0;
-var zoomOriginal = 1.0;
-var Zoom = zoomOriginal; //actual width and height of zoomed and panned display
-var fitZoom = 1;
+var Zoom = 1.0; //actual width and height of zoomed and panned display
 var isFitWindow = true;
 
 var isPosition = false;
@@ -41,8 +39,11 @@ function setupCanvas() {
     })();
     canvas.addEventListener("mousemove", handleMouseMove, false);
     canvas.addEventListener("mousewheel", handleMouseWheel, false);
+    canvas.addEventListener("dblclick", handleMouseDBClick, false);
+    canvas.addEventListener("mousedown", handleMouseDown, false);
     cvsBlock.addEventListener("mousewheel", handleMouseWheel, false); // mousewheel duplicates dblclick function
     cvsBlock.addEventListener("DOMMouseScroll", handleMouseWheel, false); // for Firefox
+
 
     $(function () {
         $("#map_info_scale").on("change", function () {
@@ -66,7 +67,7 @@ function setMap(map_url, map_scale) { //接收Server發送的地圖資料並導�
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         xleftView = 0;
         ytopView = 0;
-        Zoom = zoomOriginal;
+        Zoom = 1.0;
         ctx.save(); //紀錄原比例
 
         var serImgSize = serverImg.width / serverImg.height;
@@ -74,12 +75,15 @@ function setMap(map_url, map_scale) { //接收Server發送的地圖資料並導�
         var cvs_height = parseFloat($("#mapBlock").css("height")) - 2;
         var cvsSize = cvs_width / cvs_height;
         if (serImgSize > cvsSize) { //原圖比例寬邊較長
-            fitZoom = cvs_width / serverImg.width;
-            setCanvas(this.src, cvs_width, serverImg.height * fitZoom);
+            Zoom = cvs_width / serverImg.width;
+            setCanvas(this.src, cvs_width, serverImg.height * Zoom);
         } else {
-            fitZoom = cvs_height / serverImg.height;
-            setCanvas(this.src, serverImg.width * fitZoom, cvs_height);
+            Zoom = cvs_height / serverImg.height;
+            setCanvas(this.src, serverImg.width * Zoom, cvs_height);
         }
+        getMapGroups(); //在設定好地圖後，導入Groups & Anchors
+        catchAnchors();
+        draw();
     };
 }
 
@@ -93,37 +97,37 @@ function resetCanvas_Anchor() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     xleftView = 0;
     ytopView = 0;
-    Zoom = zoomOriginal;
+    Zoom = 1.0;
     anchorArray = [];
 }
 
 function loadImage(dataUrl) { //新增或更換地圖
-    var src = dataUrl;
-    serverImg.src = src;
+    serverImg.src = dataUrl;
     serverImg.onload = function () {
         cvsBlock.style.background = "none";
         canvasImg.isPutImg = true;
         canvasImg.width = serverImg.width;
         canvasImg.height = serverImg.height;
         canvasImg.scale = 1;
-        setCanvas(src, serverImg.width, serverImg.height);
+        setCanvas(this.src, serverImg.width, serverImg.height);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         xleftView = 0;
         ytopView = 0;
-        Zoom = zoomOriginal;
+        Zoom = 1.0;
         ctx.save(); //紀錄原比例
-
+        //$("#canvas_map").css("margin-left", "0px").css("margin-top", "0px");
         var serImgSize = serverImg.width / serverImg.height;
         var cvs_width = parseFloat($("#mapBlock").css("width")) - 2;
         var cvs_height = parseFloat($("#mapBlock").css("height")) - 2;
         var cvsSize = cvs_width / cvs_height;
         if (serImgSize > cvsSize) { //原圖比例寬邊較長
-            fitZoom = cvs_width / serverImg.width;
-            setCanvas(src, cvs_width, serverImg.height * fitZoom);
+            Zoom = cvs_width / serverImg.width;
+            setCanvas(this.src, cvs_width, serverImg.height * Zoom);
         } else {
-            fitZoom = cvs_height / serverImg.height;
-            setCanvas(src, serverImg.width * fitZoom, cvs_height);
+            Zoom = cvs_height / serverImg.height;
+            setCanvas(this.src, serverImg.width * Zoom, cvs_height);
         }
+        getMapGroups();
         draw();
     };
 }
@@ -137,59 +141,67 @@ function setCanvas(img_src, width, height) {
     canvas.style.height = height + 'px';
 }
 
-function setSize() {
-    //縮放canvas與背景圖大小
+function setSize() { //縮放canvas與背景圖大小
     if (canvasImg.isPutImg) {
-        canvas.style.backgroundSize = (canvasImg.width * fitZoom / Zoom) + "px " + (canvasImg.height * fitZoom / Zoom) + "px";
-        canvas.width = canvasImg.width * fitZoom * PIXEL_RATIO / Zoom;
-        canvas.height = canvasImg.height * fitZoom * PIXEL_RATIO / Zoom;
-        canvas.style.width = canvasImg.width * fitZoom / Zoom + 'px';
-        canvas.style.height = canvasImg.height * fitZoom / Zoom + 'px';
+        canvas.style.backgroundSize = (canvasImg.width * Zoom) + "px " + (canvasImg.height * Zoom) + "px";
+        canvas.width = canvasImg.width * PIXEL_RATIO * Zoom;
+        canvas.height = canvasImg.height * PIXEL_RATIO * Zoom;
+        canvas.style.width = canvasImg.width * Zoom + 'px';
+        canvas.style.height = canvasImg.height * Zoom + 'px';
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.setTransform(PIXEL_RATIO * fitZoom, 0, 0, PIXEL_RATIO * fitZoom, 0, 0);
-        ctx.scale(1 / Zoom, 1 / Zoom);
-        ctx.translate(-xleftView, -ytopView);
+        ctx.setTransform(PIXEL_RATIO, 0, 0, PIXEL_RATIO, 0, 0);
+        ctx.scale(Zoom, Zoom);
+        ctx.translate(0, 0);
     }
 }
 
 function resizeCanvas() {
+    if (!canvasImg.isPutImg)
+        return;
+    var cvsBlock_width = parseFloat($("#mapBlock").css("width")) - 2;
+    var cvsBlock_height = parseFloat($("#mapBlock").css("height")) - 2;
     xleftView = 0;
     ytopView = 0;
-    Zoom = zoomOriginal;
+    Zoom = 1.0;
     if (isFitWindow) { //恢復原比例
-        fitZoom = 1;
+        isFitWindow = false; //目前狀態:原比例
         ctx.restore();
         ctx.save();
-        isFitWindow = false; //目前狀態:原比例 
         document.getElementById("label_resize").innerHTML = "<i class=\"fas fa-compress\" style='font-size:20px;'></i>";
         document.getElementById("label_resize").title = $.i18n.prop('i_fit_window');
     } else { //依比例拉伸(Fit in Window)
-        var cvs_width = parseFloat($("#mapBlock").css("width")) - 2;
-        var cvs_height = parseFloat($("#mapBlock").css("height")) - 2;
-        if ((serverImg.width / serverImg.height) > (cvs_width / cvs_height)) //原圖比例寬邊較長
-            fitZoom = cvs_width / serverImg.width;
+        isFitWindow = true; //目前狀態:依比例拉伸(Fit in Window)
+        if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
+            Zoom = cvsBlock_width / serverImg.width;
         else
-            fitZoom = cvs_height / serverImg.height;
-        isFitWindow = true; //目前狀態:依比例拉伸
+            Zoom = cvsBlock_height / serverImg.height;
         document.getElementById("label_resize").innerHTML = "<i class=\"fas fa-expand\" style='font-size:20px;'></i>";
         document.getElementById("label_resize").title = $.i18n.prop('i_restore_scale');
     }
+    //$("#canvas_map").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
     draw();
 }
 
-function handleMouseWheel(event) {
-    window.event ? window.event.cancelBubble = true : event.stopPropagation();
-    if (event.preventDefault)
-        event.preventDefault();
-    var targetX = lastX;
-    var targetY = lastY;
-    var x = targetX + xleftView; // View coordinates
-    var y = targetY + ytopView;
-    var scale = (event.wheelDelta < 0 || event.detail > 0) ? 1.1 : 0.9;
+function handleMouseWheel(event) { //滑鼠滾輪事件
+    event.preventDefault();
+    var BCR = canvas.getBoundingClientRect();
+    var pos_x = event.pageX - BCR.left;
+    var pos_y = event.pageY - BCR.top;
+    var scale = 1.0;
+    if (event.wheelDelta < 0 || event.detail > 0) {
+        if (Zoom > 0.1)
+            scale = 0.9;
+    } else {
+        scale = 1.1;
+    }
     Zoom *= scale; //縮放比例
-    xleftView = x - targetX;
-    ytopView = y - targetY;
     draw();
+    /*
+    var Next_x = lastX * Zoom; //縮放後滑鼠位移後的位置(x坐標)
+    var Next_y = (canvasImg.height - lastY) * Zoom; //縮放後滑鼠位移後的位置(y坐標)
+    xleftView += pos_x - Next_x;
+    ytopView += pos_y - Next_y;
+    $("#canvas_map").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");*/
 }
 
 function getEventPosition(ev) { //獲取滑鼠點擊位置
@@ -204,53 +216,118 @@ function getEventPosition(ev) { //獲取滑鼠點擊位置
     return {
         x: x,
         y: y
-    };
-    //注：如果使用此方法無效的話，需要給Canvas元素的position設為absolute。
+    }; //注：如果使用此方法無效的話，需要給Canvas元素的position設為absolute。
 }
 
-function clickEvent(p) { //滑鼠點擊事件
-    var url; //開啟新視窗並傳送值進去
-    tagArray.forEach(function (v, i) {
-        drawTags(ctx, v.id, v.x, v.y);
-        if (p && ctx.isPointInPath(p.x, p.y)) {
+function handleMouseDBClick(event) { //滑鼠雙擊事件
+    event.preventDefault();
+    var zoom = 1 / Zoom;
+    var BCR = canvas.getBoundingClientRect();
+    var pos = {
+        x: event.pageX - BCR.left,
+        y: event.pageY - BCR.top
+    }
+    anchorArray.forEach(function (v) {
+        ctx.beginPath();
+        ctx.rect(v.x - 5 * zoom, v.y - 5 * zoom, 10 * zoom, 10 * zoom);
+        if (pos && ctx.isPointInPath(pos.x, pos.y)) {
             //如果傳入了事件坐標，就用isPointInPath判斷一下
+            ctx.fillStyle = "#2bff00";
+            ctx.fill();
             $(function () {
-                $("#member_dialog_tag_id").text(v.id);
-                $("#member_dialog_name").text(v.name);
-                $("#member_dialog_image").text(v.image);
-                $("#member_dialog").dialog("open");
+                $("#edit_anchor_type").text(v.type == "main" ? "Main" : "Secondary");
+                $("#edit_anchor_id").text(v.id);
+                $("#edit_anchor_x").val(v.x);
+                $("#edit_anchor_y").val(v.y);
+                $("#dialog_edit_anchor").dialog("open");
             });
         }
+        ctx.closePath();
     });
 }
 
-function handleMouseClick(event) {
-    var p = getEventPosition(event);
-    clickEvent(p);
+function handleMouseDown(event) { //滑鼠按下綁定事件
+    if (!isPosition) {
+        event.preventDefault();
+        var downx = event.pageX;
+        var downy = event.pageY;
+        var BCR = canvas.getBoundingClientRect();
+        var pos = {
+            x: downx - BCR.left,
+            y: downy - BCR.top
+        }
+        if (!pos)
+            return;
+        var index = anchorArray.findIndex(function (v) {
+            var zoom = 1 / Zoom;
+            ctx.beginPath();
+            ctx.rect(v.x - 5 * zoom, v.y - 5 * zoom, 10 * zoom, 10 * zoom);
+            ctx.closePath();
+            return ctx.isPointInPath(pos.x, pos.y) == true;
+        });
+        if (index > -1) {
+            $("#canvas_map").on("mousemove", function (e) {
+                ctx.fillStyle = "#2bff00";
+                ctx.fill();
+                $(function () {
+                    var zoom = 1 / Zoom;
+                    anchorArray[index].x += (e.pageX - downx) * zoom;
+                    anchorArray[index].y += (e.pageY - downy) * zoom;
+                    downx = e.pageX;
+                    downy = e.pageY;
+                });
+                draw();
+            });
+            $("#canvas_map").on("mouseup", function () {
+                $("#canvas_map").off("mousemove");
+            });
+        }
+        /*anchorArray.forEach(function (v) {
+            var zoom = 1 / Zoom;
+            ctx.beginPath();
+            ctx.rect(v.x - 5 * zoom, v.y - 5 * zoom, 10 * zoom, 10 * zoom);
+            ctx.closePath();
+            if (ctx.isPointInPath(pos.x, pos.y)) {
+                //如果傳入了事件坐標，就用isPointInPath判斷一下
+                $("#canvas_map").on("mousemove", function (e) {
+                    ctx.fillStyle = "#2bff00";
+                    ctx.fill();
+                    $(function () {
+                        v.x += e.pageX - downx;
+                        v.y += e.pageY - downy;
+                    });
+                    draw();
+                });
+                $("#canvas_map").on("mouseup", function () {
+                    //滑鼠彈起時=>div取消事件 
+                    $("#canvas_map").off("mousemove");
+                });
+            }
+        });*/
+    }
 }
 
-function handleMouseMove(event) {
-    //滑鼠移動事件
-    var loc = getPointOnCanvas(event.pageX, event.pageY);
+function handleMouseMove(event) { //滑鼠移動事件
     if (canvasImg.isPutImg) {
-        lastX = loc.x;
-        lastY = loc.y;
-        var x = (lastX * Zoom / fitZoom * canvasImg.scale).toFixed(2);
-        var y = (lastY * Zoom / fitZoom * canvasImg.scale).toFixed(2);
-        document.getElementById('x').innerText = x > 0 ? x : 0; //parseInt(lastX * Zoom / fitZoom);
-        document.getElementById('y').innerText = y > 0 ? y : 0; //parseInt(lastY * Zoom / fitZoom);
+        var x = event.pageX;
+        var y = event.pageY;
+        getPointOnCanvas(x, y);
     }
 }
 
 function getPointOnCanvas(x, y) {
     //獲取滑鼠在Canvas物件上座標(座標起始點從左上換到左下)
     var BCR = canvas.getBoundingClientRect();
-    var width = canvas.width;
-    var height = canvas.height;
+    var pos_x = (x - BCR.left) * (canvasImg.width / BCR.width);
+    var pos_y = (y - BCR.top) * (canvasImg.height / BCR.height);
+    lastX = pos_x;
+    lastY = canvasImg.height - pos_y;
+    document.getElementById('x').innerText = lastX > 0 ? (lastX).toFixed(2) : 0;
+    document.getElementById('y').innerText = lastY > 0 ? (lastY).toFixed(2) : 0;
     return {
-        x: x - BCR.left * (width / BCR.width),
-        y: height - (y - BCR.top * (height / BCR.height))
-    };
+        x: pos_x,
+        y: pos_y
+    }
 }
 
 
@@ -294,7 +371,7 @@ function getAnchors(map_anchors) {
                         x: x,
                         y: y
                     });
-                    drawAnchor(ctx, id, type, x, y);
+                    drawAnchor(ctx, id, type, x, y, 1 / Zoom);
                     anchorID.push(id);
                 });
                 //Main Anchor
@@ -315,7 +392,7 @@ function getAnchors(map_anchors) {
                         x: x,
                         y: y
                     });
-                    drawAnchor(ctx, id, type, x, y);
+                    drawAnchor(ctx, id, type, x, y, 1 / Zoom);
                     mainAnchorID.push(id);
                 });
                 draw();
@@ -334,18 +411,25 @@ function draw() {
     setSize();
     drawGroups(anchorArray);
     anchorArray.forEach(function (v) {
-        drawAnchor(ctx, v.id, v.type, v.x, v.y);
+        drawAnchor(ctx, v.id, v.type, v.x, v.y, 1 / Zoom);
     });
 }
 
-function drawAnchor(dctx, id, type, x, y) {
+function drawAnchor(dctx, id, type, x, y, zoom) {
+    var size = 10 * zoom; // zoom = 1 / Zoom
     if (type == "main")
         dctx.fillStyle = "red";
     else
         dctx.fillStyle = "blue";
-    dctx.font = 13 * 3 / canvasImg.scale + 'px serif';
-    dctx.fillText(id, x - 15, y - 6); //anchorID
-    dctx.fillRect(x - 5, y - 5, 10 * 3 / canvasImg.scale, 10 * 3 / canvasImg.scale);
+    dctx.font = 13 * zoom + 'px serif';
+    dctx.fillText(id, x - 5 * zoom, y - 7 * zoom); //anchorID
+    dctx.fillRect(x - 5 * zoom, y - 5 * zoom, size, size);
+}
+
+function drawP(dctx, x, y, zoom) {
+    var size = 10 * zoom;
+    dctx.fillStyle = "green";
+    dctx.fillRect(x, y, 2, 2);
 }
 
 function drawAnchorPosition(dctx, x, y) {
@@ -359,13 +443,13 @@ function drawAnchorPosition(dctx, x, y) {
 }
 
 function catchAnchors() {
+    anchorArray = [];
     var main_id = document.getElementsByName("list_main_anchor_id"),
         main_x = document.getElementsByName("list_main_anchor_x"),
         main_y = document.getElementsByName("list_main_anchor_y"),
         a_id = document.getElementsByName("list_anchor_id"),
         a_x = document.getElementsByName("list_anchor_x"),
         a_y = document.getElementsByName("list_anchor_y");
-    anchorArray = [];
     for (i = 0; i < main_id.length; i++) {
         anchorArray.push({
             id: main_id[i].value,
@@ -431,8 +515,6 @@ function startAnchorPosition() {
         canvas.removeEventListener("click", handleAnchorPosition);
     }
 }
-
-
 
 function Group() {
     var anchor_array = [];

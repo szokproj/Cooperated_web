@@ -14,7 +14,7 @@ function Load() {
     var requestArray = {
         "Command_Type": ["Read"],
         "Command_Name": ["Search_net"]
-    }
+    };
     var xmlHttp = createJsonXmlHttp("Command")
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
@@ -55,7 +55,7 @@ function Search() {
             "net_interface_id": [$("#interface_card").children('option:selected').text()],
             "ip": [$("#local_ip").val()]
         }
-    }
+    };
     var xmlHttp = createJsonXmlHttp("test2")
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
@@ -171,13 +171,15 @@ function Connect() {
                 timeDelay["connect"] = setTimeout(function () {
                     RF_setting_read(connect_ip_array);
                     clearTimeout(timeDelay["connect"]);
-                }, 70);
+                }, 100);
                 //$("input[name=checkbox_ipAddr]").change(checked_trans);
 
                 displaySelectedRows();
             }
         };
         xmlHttp.send(JSON.stringify(Connect_Request));
+        reading_network();
+
     } else { //TCP Connect
         var static_ip_1 = document.getElementById("static_ip_1").value,
             static_ip_2 = document.getElementById("static_ip_2").value,
@@ -205,6 +207,19 @@ function Connect() {
             alert("IP Address格式不正確!");
         }
     }
+}
+
+
+function reading_network() {
+    $("#btn_search").prop('disabled', true);
+    $("#btn_connect").prop('disabled', true);
+    $("#btn_submit").prop('disabled', true);
+    timeDelay["reading_net"] = setTimeout(function () {
+        $("#btn_search").prop('disabled', false);
+        $("#btn_connect").prop('disabled', false);
+        $("#btn_submit").prop('disabled', false);
+        clearTimeout(timeDelay["reading_net"]);
+    }, 2000);
 }
 
 function RF_setting_read(ip_address_array) {
@@ -255,6 +270,11 @@ function RF_setting_read(ip_address_array) {
                         $("#table_ip_address_info tbody tr:eq(" + num + ") td:gt(15)").css("background-color", "#c7d8e2");
 
                         setListenerOfSelect(num);
+
+                        $("#btn_search").prop('disabled', false);
+                        $("#btn_connect").prop('disabled', false);
+                        $("#btn_submit").prop('disabled', false);
+                        clearTimeout(timeDelay["reading_net"]);
                     }
                 }
             });
@@ -349,7 +369,7 @@ function Basic_setting_write(i, connected_ip_addr) {
             //"dev_transmission_cycle_time": "1000",
             "dev_active_ID": document.getElementsByName("conn_anchor_id")[i].value
         }
-    }
+    };
 
     var xmlHttp = createJsonXmlHttp("test2");
     xmlHttp.onreadystatechange = function () {

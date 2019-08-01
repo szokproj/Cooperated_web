@@ -86,6 +86,10 @@ h1 {
     font-size: 14px;
 }
 
+.table-line th {
+    background: lightgray;
+}
+
 .table-line input[type="text"] {
     border: none;
 }
@@ -94,6 +98,7 @@ h1 {
     background-color: lightgray;
     border: 1px solid gray;
     border-radius: 3px;
+    min-width: 500px;
     width: 500px;
     height: 250px;
     color: rgb(63, 62, 62);

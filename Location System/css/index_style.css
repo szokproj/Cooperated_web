@@ -290,3 +290,9 @@ thead th {
 .menu-left ul .taglist:hover a {
     background: rgb(219, 157, 43)
 }
+
+/* Model */
+
+.modal-body {
+    background: #36a4ff63;
+}
