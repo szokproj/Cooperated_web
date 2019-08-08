@@ -44,7 +44,7 @@ function updateGroupArray() {
 function catchGroupList() {
     var groupListArray = [];
     var g_id = document.getElementsByName("grouplist_id");
-    var m_id = document.getElementsByName("grouplist_main_anchor");
+    var m_id = document.getElementsByName("grouplist_main_anchor_id");
     g_id.forEach(function (element, index) {
         if (element.innerText != "" && typeof (element.innerText) != 'undefined') {
             groupListArray.push({
@@ -56,21 +56,94 @@ function catchGroupList() {
     return groupListArray;
 }
 
+function getMainAnchorDropdown(select) {
+    var mainAnchorList = document.getElementsByName("list_main_anchor_id");
+    var options = "";
+    select = select.length == 0 ? mainAnchorList[0].value : select;
+    mainAnchorList.forEach(element => {
+        if (element.value == select) {
+            options += "<option value=\"" + element.value + "\" selected=\"selected\">" +
+                element.value + "</option>";
+        } else {
+            options += "<option value=\"" + element.value + "\">" + element.value +
+                "</option>";
+        }
+    });
+    return options;
+}
+
+function getAnchorDropdown(select) {
+    var anchorList = document.getElementsByName("list_anchor_id");
+    var options = "";
+    select = select.length == 0 ? anchorList[0].value : select;
+    anchorList.forEach(element => {
+        if (element.value == select) {
+            options += "<option value=\"" + element.value + "\" selected=\"selected\">" +
+                element.value + "</option>";
+        } else {
+            options += "<option value=\"" + element.value + "\">" + element.value +
+                "</option>";
+        }
+    });
+    return options;
+}
+
+function getRowData_Group_Anchor() {
+    var ids = document.getElementsByName("anchorgroup_id");
+    var group_ids = document.getElementsByName("anchorgroup_group_id");
+    var group_names = document.getElementsByName("anchorgroup_group_name");
+    var main_anc_ids = document.getElementsByName("anchorgroup_main_anchor_id");
+    var anchor_ids = document.getElementsByName("anchorgroup_anchor_id");
+    var list = [];
+    ids.forEach(function (id, i) {
+        list.push({
+            id: id.value,
+            group_id: group_ids[i].value,
+            group_name: group_names[i].value,
+            main_anchor_id: main_anc_ids[i].value,
+            anchor_id: anchor_ids[i].value
+        });
+    });
+    return list;
+}
+
+function getRowData_Group() {
+    var group_ids = document.getElementsByName("chkbox_group_list");
+    var group_names = document.getElementsByName("grouplist_name");
+    var main_anc_ids = document.getElementsByName("grouplist_main_anchor_id");
+    var list = [];
+    group_ids.forEach(function (group_id, i) {
+        list.push({
+            group_id: group_id.value,
+            group_name: group_names[i].value,
+            main_anchor_id: main_anc_ids[i].value
+        });
+    });
+    return list;
+}
+
+function setGroupConnectChange(Element_id, Element_name) { //連動Group的id與name
+    var groupList = getRowData_Group();
+    $(Element_id).off('change');
+    $(Element_name).off('change');
+    $(Element_id).each(function (i) {
+        $(this).on("change", function () {
+            var index = groupList.findIndex(function (info) {
+                return info.group_id == $(Element_id).eq(i).val();
+            });
+            if (index > -1)
+                $(Element_name).eq(i).val(groupList[index].group_name);
+        });
+        $(Element_name).eq(i).on("change", function () {
+            var index = groupList.findIndex(function (info) {
+                return info.group_name == $(Element_name).eq(i).val();
+            });
+            if (index > -1)
+                $(Element_id).eq(i).val(groupList[index].group_id);
+        });
+    });
+}
 
 
 //取出不重複的參考網址
 //https://guahsu.io/2017/06/JavaScript-Duplicates-Array/
-/*function updateMapGroupList() {
-    var allGroups = [];
-    var anc_group = document.getElementsByName("anchorgroup_group_id");
-    var main_anc_group = document.getElementsByName("grouplist_id");
-    for (i = 0; i < anc_group.length; i++)
-        allGroups.push(anc_group[i].value); //取出所有綁定到anchor的group_id放進陣列
-    for (j = 0; j < main_anc_group.length; j++)
-        allGroups.push(main_anc_group[j].innerText); //取出所有綁定到main_anchor的group_id放進陣列
-    var update = {};
-    allGroups.forEach(function (item) {
-        update[item] = update[item] ? update[item] + 1 : 1; //過濾掉重複的group_id放進Object(key)
-    });
-    const result = Object.keys(update);
-}*/

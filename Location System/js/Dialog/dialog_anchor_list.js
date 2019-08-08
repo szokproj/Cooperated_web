@@ -1,74 +1,87 @@
-var count_main_anchor_list = 0;
-var count_anchor_list = 0;
-var allAnchorArray = [];
-var allGroupsArray = [];
+var maps_groupsArray = [];
 var anchorsInfoArray = [];
 
-function clearAnchorList() {
-    $("#table_main_anchor_list tbody").empty(); //重置表格
-    $("#table_anchor_list tbody").empty();
-    count_main_anchor_list = 0;
-    count_anchor_list = 0;
-}
-
-function inputAnchorList(anchorList) {
-    clearAnchorList();
-    allAnchorArray = [];
-    anchorsInfoArray = anchorList.slice(0); //利用抽離全部陣列完成陣列拷貝
-    for (var i = 0; i < anchorList.length; i++) {
-        if (anchorList[i].anchor_type == "main") {
-            count_main_anchor_list++;
-            var tr_id = "tr_main_anchor_list_" + count_main_anchor_list;
-            $("#table_main_anchor_list tbody").append("<tr id=\"" + tr_id + "\"><td>" +
-                "<input type=\"text\" name=\"list_main_anchor_id\" value=\"" + anchorList[i].anchor_id + "\" style=\"max-width:60px;\" readonly/>" +
-                "</td><td>" +
-                "<input type=\"text\" name=\"list_main_anchor_x\" value=\"" + anchorList[i].set_x + "\" style=\"max-width:60px;\" readonly/>" +
-                "</td><td>" +
-                "<input type=\"text\" name=\"list_main_anchor_y\" value=\"" + anchorList[i].set_y + "\" style=\"max-width:60px;\" readonly/>" +
-                "</td><td>" +
-                "<label for=\"btn_edit_anchor_" + i + "\" class='btn-edit' title='" + $.i18n.prop('i_editAnchor') + "'>" +
-                "<i class='fas fa-edit' style='font-size:18px;'></i></label><input id=\"btn_edit_anchor_" + i + "\" type='button'" +
-                " class='btn-hidden' onclick=\"editAnchorInfo(\'" + anchorList[i].anchor_id + "\')\" />" +
-                "<label for=\"btn_delete_main_anchor_" + i + "\"  class='btn-remove' style='margin-left:10px;' title='" + $.i18n.prop('i_deleteAnchor') + "'>" +
-                "<i class='fas fa-trash-alt' style='font-size:18px;'></i></label><input id=\"btn_delete_main_anchor_" + i + "\" type='button'" +
-                " class='btn-hidden' onclick=\"deleteMainAnchor(\'" + anchorList[i].anchor_id + "\')\" />" +
-                "</td></tr>");
-        } else {
-            count_anchor_list++;
-            var tr_id = "tr_anchor_list_" + count_anchor_list;
-            $("#table_anchor_list tbody").append("<tr id=\"" + tr_id + "\"><td>" +
-                "<input type=\"text\" name=\"list_anchor_id\" value=\"" + anchorList[i].anchor_id + "\" style=\"max-width:60px;\" readonly/>" +
-                "</td><td>" +
-                "<input type=\"text\" name=\"list_anchor_x\" value=\"" + anchorList[i].set_x + "\" style=\"max-width:60px;\" readonly/>" +
-                "</td><td>" +
-                "<input type=\"text\" name=\"list_anchor_y\" value=\"" + anchorList[i].set_y + "\" style=\"max-width:60px;\" readonly/>" +
-                "</td><td>" +
-                "<label for=\"btn_edit_anchor_" + i + "\" class='btn-edit' title='" + $.i18n.prop('i_editAnchor') + "'>" +
-                "<i class='fas fa-edit' style='font-size:18px;'></i></label><input id=\"btn_edit_anchor_" + i + "\" type='button'" +
-                " class='btn-hidden' onclick=\"editAnchorInfo(\'" + anchorList[i].anchor_id + "\')\" />" +
-                "<label for=\"btn_delete_anchor_" + i + "\" class='btn-remove' style='margin-left:10px;' title='" + $.i18n.prop('i_deleteAnchor') + "'>" +
-                "<i class='fas fa-trash-alt' style='font-size:18px;'></i></label><input id=\"btn_delete_anchor_" + i + "\" type='button'" +
-                " class='btn-hidden' onclick=\"deleteAnchor(\'" + anchorList[i].anchor_id + "\')\" />" +
-                "</td></tr>");
+function getMaps_Groups() {
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetMaps_Groups"]
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                maps_groupsArray = 'Values' in revObj ? revObj.Values.slice(0) : [];
+                /*$("#anchor_select_group_id").html(
+                    makeGroupOptions(maps_groupsArray, maps_groupsArray[0].group_id)
+                );*/
+            } else {
+                alert($.i18n.prop('i_mapAlert_12'));
+            }
         }
-        allAnchorArray.push(anchorList[i].anchor_id);
-    }
+    };
+    xmlHttp.send(JSON.stringify(request));
 }
 
-function editAnchorInfo(id) {
+function getAnchorList() {
+    var requestArray = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetAnchors"]
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            getAnchor_Group();
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                anchorsInfoArray = revObj.Values.slice(0); //利用抽離全部陣列完成陣列拷貝
+                $("#table_main_anchor_list tbody").empty();
+                $("#table_anchor_list tbody").empty();
+                var count_main_anchor_list = 0;
+                var count_anchor_list = 0;
+                for (var i = 0; i < anchorsInfoArray.length; i++) {
+                    if (anchorsInfoArray[i].anchor_type == "main") {
+                        count_main_anchor_list++;
+                        var tr_id = "tr_main_anchor_list_" + count_main_anchor_list;
+                        $("#table_main_anchor_list tbody").append("<tr id=\"" + tr_id + "\">" +
+                            "<td><input type=\"checkbox\" name=\"chkbox_anchor_list\" value=\"" +
+                            anchorsInfoArray[i].anchor_id + "\" onchange=\"selectColumn(\'" + tr_id + "\')\" /> " +
+                            count_main_anchor_list + "</td>" +
+                            "<td><input type=\"text\" name=\"list_main_anchor_id\" value=\"" +
+                            anchorsInfoArray[i].anchor_id + "\" style=\"max-width:60px;\" readonly/></td></tr>");
+                    } else {
+                        count_anchor_list++;
+                        var tr_id = "tr_anchor_list_" + count_anchor_list;
+                        $("#table_anchor_list tbody").append("<tr id=\"" + tr_id + "\">" +
+                            "<td><input type=\"checkbox\" name=\"chkbox_anchor_list\" value=\"" +
+                            anchorsInfoArray[i].anchor_id + "\" onchange=\"selectColumn(\'" + tr_id + "\')\" /> " +
+                            count_anchor_list + "</td>" +
+                            "<td><input type=\"text\" name=\"list_anchor_id\" value=\"" +
+                            anchorsInfoArray[i].anchor_id + "\" style=\"max-width:60px;\" readonly/></td></tr>");
+                    }
+                }
+            } else {
+                alert("獲取AnchorList失敗，請再試一次!");
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(requestArray));
+}
+
+/*function editAnchorInfo(id) {
     var index = anchorsInfoArray.findIndex(function (info) {
         return info.anchor_id == id;
     });
     if (index > -1) {
         $("#edit_anchor_type").text(anchorsInfoArray[index].anchor_type);
         $("#edit_anchor_id").text(anchorsInfoArray[index].anchor_id);
-        $("#edit_anchor_x").val(anchorsInfoArray[index].set_x);
-        $("#edit_anchor_y").val(anchorsInfoArray[index].set_y);
+        //$("#edit_anchor_x").val(anchorsInfoArray[index].set_x);
+        //$("#edit_anchor_y").val(anchorsInfoArray[index].set_y);
         $("#dialog_edit_anchor").dialog("open");
     } else {
         alert($.i18n.prop('i_mapAlert_1'));
     }
-}
+}*/
 
 function deleteMainAnchor(id) {
     var request = {
@@ -106,7 +119,7 @@ function deleteMainAnchor(id) {
                                     EditGroupInfo(resetGroupInfo);
                                 }
                             });
-                            getMapGroups();
+                            getAllDataOfMap();
                             draw();
                         }
                     }
@@ -149,7 +162,7 @@ function deleteAnchor(id) {
                                     })
                             });
                             DeleteGroup_Anchor(deleteArr);
-                            getMapGroups();
+                            getAllDataOfMap();
                         }
                     }
                 };
@@ -158,33 +171,6 @@ function deleteAnchor(id) {
         }
     };
     xmlHttp.send(JSON.stringify(request));
-}
-
-function setDropdown_Group() { //set dropdownlist of the map's groups
-    var requestArray = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["GetMaps_Groups"]
-    };
-    var xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            var groups_arr = [];
-            allGroupsArray = [];
-            if (revObj.success > 0) {
-                var map_id = $("#map_info_id").val();
-                revObj.Values.forEach(element => {
-                    if (element.map_id == map_id) {
-                        groups_arr.push(element.group_id);
-                    }
-                    allGroupsArray.push(element.group_id);
-                });
-                $("#anchor_select_group_id").empty();
-                $("#anchor_select_group_id").append(makeOptions(groups_arr, groups_arr[0]));
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(requestArray));
 }
 
 function AddMapGroup(map_groupArray) {
@@ -220,8 +206,10 @@ $(function () {
     });
     $("#anchor_id").on('change', function () {
         if ($(this).val().length > 0) {
-            var repeat = allAnchorArray.indexOf($(this).val());
-            if (repeat > -1)
+            var isExist = anchorsInfoArray.every(function (info) {
+                return $(this).val() != info.anchor_id;
+            })
+            if (isExist)
                 $("#anchor_id_alert").text($.i18n.prop('i_existed')).css('color', 'red');
             else
                 $("#anchor_id_alert").text($.i18n.prop('i_canAdd')).css('color', 'green');
@@ -231,8 +219,10 @@ $(function () {
     });
     $("#anchor_input_group_id").on('change', function () {
         if ($(this).val().length > 0) {
-            var repeat = allGroupsArray.indexOf($(this).val());
-            if (repeat > -1)
+            var isBoundByMap = maps_groupsArray.every(function (map_group) {
+                return $(this).val() != map_group.group_id;
+            });
+            if (isBoundByMap)
                 $("#group_id_alert").text($.i18n.prop('i_existed')).css('color', 'red');
             else
                 $("#group_id_alert").text($.i18n.prop('i_canAdd')).css('color', 'green');
@@ -257,24 +247,26 @@ $(function () {
         var valid = true;
         allFields.removeClass("ui-state-error");
         valid = valid && checkLength(anchor_id, $.i18n.prop('i_mapAlert_14'), 1, 5);
-        allAnchorArray.forEach(element => { //驗證Anchor ID是否重複
-            if (element == anchor_id.val()) {
-                valid = false;
-                anchor_id.addClass("ui-state-error");
-                alert($.i18n.prop('i_mapAlert_16'));
-            }
-        });
+        var isExist = anchorsInfoArray.every(function (info) {
+            return anchor_id.val() != info.anchor_id;
+        })
+        if (isExist) {
+            valid = false;
+            anchor_id.addClass("ui-state-error");
+            alert($.i18n.prop('i_mapAlert_16'));
+        }
         valid = valid && checkLength(anchor_x, $.i18n.prop('i_mapAlert_13'), 1, 10);
         valid = valid && checkLength(anchor_y, $.i18n.prop('i_mapAlert_13'), 1, 10);
         if (anchor_type.val() == "main") {
             valid = valid && checkLength(input_group_id, $.i18n.prop('i_mapAlert_13'), 1, 5);
-            allGroupsArray.forEach(element => { //驗證Group ID是否重複
-                if (element == input_group_id.val()) {
-                    valid = false;
-                    input_group_id.addClass("ui-state-error");
-                    alert($.i18n.prop('i_mapAlert_11'));
-                }
+            var isBoundByMap = maps_groupsArray.every(function (map_group) {
+                return input_group_id.val() != map_group.group_id;
             });
+            if (isBoundByMap) {
+                valid = false;
+                input_group_id.addClass("ui-state-error");
+                alert($.i18n.prop('i_mapAlert_11'));
+            }
             valid = valid && checkLength(input_group_name, $.i18n.prop('i_mapAlert_13'), 1, 50);
         } else {
             if (!select_group.children().is("option"))
@@ -322,7 +314,7 @@ $(function () {
                                             "group_id": input_group_id.val()
                                         }];
                                         AddMapGroup(map_groupArray);
-                                        getMapGroups();
+                                        getAllDataOfMap();
                                         dialog.dialog("close");
                                     }
                                 }
@@ -342,7 +334,7 @@ $(function () {
                                 if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                                     var revObj = JSON.parse(this.responseText);
                                     if (revObj.success > 0) {
-                                        getMapGroups();
+                                        getAllDataOfMap();
                                         dialog.dialog("close");
                                     }
                                 }
@@ -384,7 +376,9 @@ $(function () {
         anchor_id.val("");
         anchor_x.val("");
         anchor_y.val("");
-        setDropdown_Group();
+        $("#anchor_input_group").hide();
+        $("#anchor_select_group").show();
+        getMaps_Groups(); //set dropdownlist of the map's groups
         dialog.dialog("open");
     });
 });
@@ -419,7 +413,7 @@ $(function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
                     if (revObj.success > 0) {
-                        getMapGroups();
+                        getAllDataOfMap();
                         dialog.dialog("close");
                     }
                 }
@@ -437,11 +431,12 @@ $(function () {
         buttons: {
             "Confirm": editAnchor,
             Cancel: function () {
-                draw();
+                catchMap_Anchors();
                 dialog.dialog("close");
             }
         },
         close: function () {
+            catchMap_Anchors();
             form[0].reset();
             allFields.removeClass("ui-state-error");
         }

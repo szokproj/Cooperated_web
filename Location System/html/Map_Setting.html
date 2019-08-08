@@ -21,7 +21,9 @@
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
     <!-- Edit css -->
     <link rel=stylesheet type="text/css" href="../css/map_setting_style.css">
+    <link rel=stylesheet type="text/css" href="../css/tree_table/tree.css">
     <!-- Edit js -->
+    <script type="text/javascript" src="../js/tree_table/tree.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
     <script type="text/javascript" src="../js/map_setting_load.js"></script>
@@ -97,7 +99,7 @@
                 <fieldset>
                     <div style="height:490px; float:left;">
                         <div class="cvsBlock" id="mapBlock">
-                            <canvas id="canvas_map" style="height:1px; width:1px;">
+                            <canvas id="canvas_map" height="1" width="1">
                                 <span class="i18n" name="i_no_canvas"></span>
                             </canvas>
                         </div>
@@ -158,24 +160,31 @@
                         <div id="block_anchor_list">
                             <span style="margin: 0px 0px 0px 10px">
                                 <!--Add Pos-->
-                                <label for="btn_anchor_position" id="label_anchor_position"
+                                <!--<label for="btn_anchor_position" id="label_anchor_position"
                                     class="btn-add-pos i18n-input" selectattr="title" selectname="i_anchorPosition">
                                     <i class="fas fa-map-marked-alt" style='font-size:20px;'></i></label>
-                                <input id="btn_anchor_position" type="button" class="btn-hidden" />
+                                <input id="btn_anchor_position" type="button" class="btn-hidden" />-->
                                 <!--Add-->
-                                <label for="btn_add_anchor" id="label_add_anchor" class="btn-add i18n-input"
+                                <!--<label for="btn_add_anchor" id="label_add_anchor" class="btn-add i18n-input"
                                     selectattr="title" selectname="i_addAnchor">
                                     <i class="fas fa-map-marker-alt" style='font-size:20px;'></i></label>
-                                <input id="btn_add_anchor" type="button" class="btn-hidden" />
+                                <input id="btn_add_anchor" type="button" class="btn-hidden" />-->
+
+                                <label for="btn_add_anchor_list" id="label_add_anchor_list" class="btn-add i18n-input"
+                                    selectattr="title" selectname="i_addAnchorGroup">
+                                    <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                                <input id="btn_add_anchor_list" type="button" class="btn-hidden" />
+                                <label for="btn_delete_anchor_list" id="label_delete_anchor_list"
+                                    class="btn-delete i18n-input" selectattr="title" selectname="i_deleteAnchorGroup"><i
+                                        class="fas fa-minus-square" style='font-size:20px;'></i></label>
+                                <input id="btn_delete_anchor_list" type="button" class="btn-hidden" />
                             </span>
                             <div class="block-list">
                                 <table id="table_main_anchor_list" class="table-line">
                                     <thead>
                                         <tr>
+                                            <th style="min-width:60px;" class="i18n" name="i_item"></th>
                                             <th style="min-width:90px;" class="i18n" name="i_mainAnchorID"></th>
-                                            <th class="i18n" name="i_posX"></th>
-                                            <th class="i18n" name="i_posY"></th>
-                                            <th style="min-width:80px;" class="i18n" name="i_operate"></th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -184,10 +193,8 @@
                                 <table id="table_anchor_list" class="table-line">
                                     <thead>
                                         <tr>
+                                            <th style="min-width:60px;" class="i18n" name="i_item"></th>
                                             <th style="min-width:90px;" class="i18n" name="i_anchorID"></th>
-                                            <th class="i18n" name="i_posX"></th>
-                                            <th class="i18n" name="i_posY"></th>
-                                            <th style="min-width:80px;" class="i18n" name="i_operate"></th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -204,14 +211,22 @@
                                     selectattr="title" selectname="i_deleteGroup"><i class="fas fa-minus-square"
                                         style='font-size:20px;'></i></label>
                                 <input id="btn_delete_group" type="button" class="btn-hidden" />
+
+                                <!--Add Pos-->
+                                <label for="btn_pos_group" id="label_pos_group" class="btn-add-pos i18n-input"
+                                    selectattr="title" selectname="i_anchorPosition">
+                                    <i class="fas fa-map-marked-alt" style='font-size:20px;'></i></label>
+                                <input id="btn_pos_group" type="button" class="btn-hidden" />
                             </span>
                             <div class="block-list">
                                 <table id="table_group_list" class="table-line">
                                     <thead>
                                         <tr>
-                                            <th class="i18n" name="i_item"></th>
+                                            <th class="i18n" name="i_item" style="min-width: 60px;"></th>
                                             <th class="i18n" name="i_groupName"></th>
                                             <th class="i18n" name="i_mainAnchorID"></th>
+                                            <th class="i18n" name="i_posX"></th>
+                                            <th class="i18n" name="i_posY"></th>
                                             <th class="i18n" name="i_edit"></th>
                                         </tr>
                                     </thead>
@@ -229,19 +244,41 @@
                                     class="btn-delete i18n-input" selectattr="title" selectname="i_deleteAnchorGroup"><i
                                         class="fas fa-minus-square" style='font-size:20px;'></i></label>
                                 <input id="btn_delete_anchor_group" type="button" class="btn-hidden" />
+
+                                <!--Add Pos-->
+                                <label for="btn_pos_anchor_group" id="label_pos_anchor_group"
+                                    class="btn-add-pos i18n-input" selectattr="title" selectname="i_anchorPosition">
+                                    <i class="fas fa-map-marked-alt" style='font-size:20px;'></i></label>
+                                <input id="btn_pos_anchor_group" type="button" class="btn-hidden" />
                             </span>
-                            <div class="block-list">
-                                <table id="table_anchor_group" class="table-line">
-                                    <thead>
-                                        <tr>
-                                            <th class="i18n" name="i_item" style="min-width: 60px;"></th>
-                                            <th class="i18n" name="i_group"></th>
-                                            <th class="i18n" name="i_mainAnchor"></th>
-                                            <th class="i18n" name="i_anchor"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
+                            <div style="margin: 0px 0px 0px 10px;">
+                                <ul id="myTab" class="nav nav-tabs">
+                                    <li class="active">
+                                        <a href="#anchor_group_list" data-toggle="tab">List</a>
+                                    </li>
+                                    <li><a href="#anchor_group_chart" data-toggle="tab">Chart</a></li>
+                                </ul>
+                                <div id="myTabContent" class="tab-content">
+                                    <div class="tab-pane fade in active" id="anchor_group_list">
+                                        <table id="table_anchor_group" class="table-line">
+                                            <thead>
+                                                <tr>
+                                                    <th class="i18n" name="i_item" style="min-width: 60px;"></th>
+                                                    <th class="i18n" name="i_group"></th>
+                                                    <th class="i18n" name="i_mainAnchor"></th>
+                                                    <th class="i18n" name="i_anchor"></th>
+                                                    <th class="i18n" name="i_posX"></th>
+                                                    <th class="i18n" name="i_posY"></th>
+                                                    <th class="i18n" name="i_edit"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                    <div class="tab-pane fade" id="anchor_group_chart">
+                                        <div class="tree"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -262,6 +299,7 @@
                     <input type="text" id="anchor_id" value="" style="max-width:100px;">
                     <label id="anchor_id_alert"></label>
                     <br>(0 ~ 65535)<br><br>
+                    <!--
                     <label class="i18n" name="i_posX"> : </label>
                     <input type="text" id="anchor_x" value="" style="max-width:100px;">
                     <br><br>
@@ -280,6 +318,7 @@
                         <label class="i18n" name="i_groupID"></label> :
                         <select id="anchor_select_group_id"></select>
                     </div>
+                -->
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                 </fieldset>
@@ -320,6 +359,12 @@
                     <label for="add_grouplist_main_anchor" class="i18n" name="i_mainAnchorID"></label> :
                     <select id="add_grouplist_main_anchor"></select>
                     <br><br>
+                    <label class="i18n" name="i_posX"></label> :
+                    <input type="text" id="add_grouplist_main_anchor_x" value="" style="max-width:100px;">
+                    <br><br>
+                    <label class="i18n" name="i_posY"></label> :
+                    <input type="text" id="add_grouplist_main_anchor_y" value="" style="max-width:100px;">
+                    <br><br>
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                 </fieldset>
@@ -329,14 +374,34 @@
         <div id="dialog_edit_group_list" title="Edit Group">
             <form>
                 <fieldset style="text-align: left;">
-                    <label class="i18n" name="i_groupID"></label> :
-                    <label id="edit_grouplist_id"></label>
-                    <br><br>
-                    <label class="i18n" name="i_groupName"></label> :
-                    <input type="text" id="edit_grouplist_name" value="" style="max-width:100px;">
-                    <br><br>
+                    <label class="i18n" name="i_group"></label> :
+                    <label for="btn_edit_grouplist_add" id="label_edit_grouplist_add" class="btn-add i18n-input"
+                        selectattr="title" selectname="i_addAnchorGroup">
+                        <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                    <input id="btn_edit_grouplist_add" type="button" class="btn-hidden" />
+                    <label for="btn_edit_grouplist_delete" id="label_edit_grouplist_delete"
+                        class="btn-delete i18n-input" selectattr="title" selectname="i_deleteAnchorGroup"><i
+                            class="fas fa-minus-square" style='font-size:20px;'></i></label>
+                    <input id="btn_edit_grouplist_delete" type="button" class="btn-hidden" />
+                    <table id="table_edit_grouplist" class="table-line">
+                        <thead>
+                            <tr>
+                                <th class="i18n" name="i_item" style="min-width: 60px;"></th>
+                                <th class="i18n" name="i_groupID"></th>
+                                <th class="i18n" name="i_groupName"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <br>
                     <label class="i18n" name="i_mainAnchorID"></label> :
                     <select id="edit_grouplist_main_anchor"></select>
+                    <br><br>
+                    <label class="i18n" name="i_posX"></label> :
+                    <input type="text" id="edit_grouplist_main_anchor_x" value="" style="max-width:100px;">
+                    <br><br>
+                    <label class="i18n" name="i_posY"></label> :
+                    <input type="text" id="edit_grouplist_main_anchor_y" value="" style="max-width:100px;">
                     <br><br>
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
@@ -347,14 +412,67 @@
         <div id="dialog_add_anchor_group" title="Connect Anchor and Group">
             <form>
                 <fieldset style="text-align: left;">
-                    <label class="i18n" name="i_group"></label> :
+                    <label class="i18n" name="i_groupID"></label> :
                     <select id="add_group_id"></select>
                     <br><br>
-                    <label class="i18n" name="i_mainAnchorID"></label> :
-                    <span id="add_group_main_anchor"></span>
+                    <label class="i18n" name="i_groupName"></label> :
+                    <select id="add_group_name"></select>
                     <br><br>
+                    <label class="i18n" name="i_anchor"></label> :
+                    <label for="btn_add_anc" id="label_add_anc" class="btn-add i18n-input" selectattr="title"
+                        selectname="i_addAnchor"><i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                    <input id="btn_add_anc" type="button" class="btn-hidden" />
+                    <label for="btn_delete_anc" id="label_delete_anc" class="btn-delete i18n-input" selectattr="title"
+                        selectname="i_deleteAnchor"><i class="fas fa-minus-square" style='font-size:20px;'></i></label>
+                    <input id="btn_delete_anc" type="button" class="btn-hidden" />
+                    <table id="table_add_anc" class="table-line">
+                        <thead>
+                            <tr>
+                                <th class="i18n" name="i_item" style="min-width: 60px;"></th>
+                                <th class="i18n" name="i_anchorID"></th>
+                                <th class="i18n" name="i_posX"></th>
+                                <th class="i18n" name="i_posY"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <br><br>
+                </fieldset>
+            </form>
+        </div>
+        <!-- Following is a dialog to edit the connection between anchor and group -->
+        <div id="dialog_edit_anchor_group" title="Connect Anchor and Group">
+            <form>
+                <fieldset style="text-align: left;">
+                    <label class="i18n" name="i_group"></label> :
+                    <!--<label for="btn_edit_group_add" id="label_edit_group_add" class="btn-add i18n-input"
+                        selectattr="title" selectname="i_addAnchorGroup">
+                        <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                    <input id="btn_edit_group_add" type="button" class="btn-hidden" />
+                    <label for="btn_edit_group_delete" id="label_edit_group_delete" class="btn-delete i18n-input"
+                        selectattr="title" selectname="i_deleteAnchorGroup"><i class="fas fa-minus-square"
+                            style='font-size:20px;'></i></label>
+                    <input id="btn_edit_group_delete" type="button" class="btn-hidden" />-->
+                    <table id="table_edit_group_ids" class="table-line">
+                        <thead>
+                            <tr>
+                                <th class="i18n" name="i_item" style="min-width: 60px;"></th>
+                                <th class="i18n" name="i_groupID"></th>
+                                <th class="i18n" name="i_groupName"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <br>
                     <label class="i18n" name="i_anchorID"></label> :
-                    <select id="add_group_anchor"></select>
+                    <select id="edit_group_anchor"></select>
+                    <br><br>
+                    <label class="i18n" name="i_posX"></label> :
+                    <input type="text" id="edit_group_anchor_x" value="" style="max-width:100px;">
+                    <br><br>
+                    <label class="i18n" name="i_posY"></label> :
+                    <input type="text" id="edit_group_anchor_y" value="" style="max-width:100px;">
+                    <br><br>
                 </fieldset>
             </form>
         </div>

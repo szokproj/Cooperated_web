@@ -37,23 +37,10 @@ $(function () {
         $("#label_group_list").css('background-color', 'rgb(40, 108, 197)');
     });
     $("#menu_anchor_group").on("click", function () {
-        var row_group = $("[name=anchorgroup_group_id]");
-        var row_main_anchor = $("[name=anchorgroup_main_anchor_id]");
-        var array = catchGroupList();
-        for (j = 0; j < row_group.length; j++) {
-            var i = array.findIndex(function (anchor) {
-                return anchor.group_id == row_group.eq(j).val();
-            });
-            if (i > -1)
-                row_main_anchor.eq(j).text(array[i].main_anchor_id);
-            else
-                row_main_anchor.eq(j).text("");
-        }
         hiddenBlock();
         $("#block_anchor_group").show();
         $("#label_anchor_group").css('background-color', 'rgb(40, 108, 197)');
     });
-    $("#btn_anchor_position").on("click", startAnchorPosition);
 
 
     /**
@@ -119,8 +106,8 @@ $(function () {
         hiddenBlock();
         $("#block_info").show();
         $("#label_map_info").css('background-color', 'rgb(40, 108, 197)');
-        isPosition = true;
-        startAnchorPosition();
+        //isPosition = true;
+        //startAnchorPosition();
         allFields.removeClass("ui-state-error");
     }
 

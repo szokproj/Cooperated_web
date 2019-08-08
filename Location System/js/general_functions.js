@@ -68,6 +68,19 @@ function makeOptions(array, select) {
     return options;
 }
 
+function makeNameOptions(name, array, select_id) {
+    var options = "";
+    for (i = 0; i < array.length; i++) {
+        if (array[i].group_id == select_id) {
+            options += "<option value=\"" + array[i][name] + "\" selected=\"selected\">" +
+                array[i][name] + "</option>";
+        } else {
+            options += "<option value=\"" + array[i][name] + "\">" + array[i][name] + "</option>";
+        }
+    }
+    return options;
+}
+
 function updateTips(t) {
     tips.text(t)
         .addClass("ui-state-highlight");

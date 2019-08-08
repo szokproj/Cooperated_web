@@ -378,47 +378,7 @@ function getAnchors(map_id) {
     mainXmlHttp.send(JSON.stringify(request_main));
 }
 
-function getGroups(anchorList) {
-    var request = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["GetGroup_Anchors"]
-    };
-    var xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            var anchor_groups = revObj.Values;
-            if (revObj.success > 0) {
-                inputGroups(anchor_groups, anchorList); //函式在dialog_anchor_group.js內
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(request));
-}
-
-function getGroupList(anchorList) {
-    var requestArray = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["GetGroups"]
-    };
-    var xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            var anchor_group_list = revObj.Values;
-            if (revObj.success > 0) {
-                inputGroupList(anchor_group_list, anchorList); //函式在dialog_anchor_group.js內
-                var GroupArray = [];
-                for (i in anchor_group_list)
-                    GroupArray.push(anchor_group_list[i].group_id);
-                getMapGroup(GroupArray);
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(requestArray));
-}
-
-function getMapGroup(groupArray) {
+function getMapGroup() {
     var requestArray = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetMaps_Groups"]
@@ -432,7 +392,6 @@ function getMapGroup(groupArray) {
                 var map_infos = [];
                 for (i in mapArray)
                     map_infos.push(mapArray[i].map_id);
-                inputMapGroupList(map_group_list, map_infos, groupArray);
             }
         }
     };

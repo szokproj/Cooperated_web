@@ -1,13 +1,4 @@
-var count_group = 0;
-var allAnchorsArray = [];
-var groupList = [];
-
-function clearAnchorGroup() {
-    $("#table_anchor_group tbody").empty(); //重置表格
-    count_group = 0;
-}
-
-function inputAnchorGroup() {
+function getAnchor_Group() {
     var map_id = $("#map_info_id").val();
     var requestArray = {
         "Command_Type": ["Read"],
@@ -21,33 +12,45 @@ function inputAnchorGroup() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
-                var group_anchors = ('Values' in revObj) ? revObj.Values : [];
-                var map_anchors = [];
-                clearAnchorGroup();
-                group_anchors.forEach(info => {
-                    count_group++;
-                    var tr_id = "tr_anchor_group_" + count_group;
+                var group_anchors = 'Values' in revObj == true ? revObj.Values : [];
+                setTreeArray(group_anchors);
+                $("#table_anchor_group tbody").empty();
+                group_anchors.forEach(function (info, i) {
+                    var tr_id = "tr_anchor_group_" + (i + 1);
                     $("#table_anchor_group tbody").append("<tr id=\"" + tr_id + "\"><td>" +
+                        "<input type=\"hidden\" name=\"anchorgroup_id\" value=\"" + info.id + "\" />" +
                         "<input type=\"checkbox\" name=\"anchorgroup_group_id\" value=\"" + info.group_id + "\"" +
-                        " onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_group +
+                        " onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (i + 1) +
                         "</td><td>" +
                         "<input type=\"text\" name=\"anchorgroup_group_name\" value=\"" + info.group_name +
-                        "\" style=\"max-width:70px;\" readonly/>" +
+                        "\" style=\"max-width:60px;\" readonly/>" +
                         "</td><td>" +
                         "<input type=\"text\" name=\"anchorgroup_main_anchor_id\" value=\"" + info.main_anchor_id +
                         "\" style=\"max-width:60px;\" readonly/>" +
                         "</td><td>" +
                         "<input type=\"text\" name=\"anchorgroup_anchor_id\" value=\"" + info.anchor_id +
                         "\" style=\"max-width:60px;\" readonly/>" +
+                        "</td><td>" +
+                        "<input type=\"text\" name=\"anchorgroup_anchor_x\" value=\"" + info.set_x +
+                        "\" style=\"max-width:60px;\" readonly/>" +
+                        "</td><td>" +
+                        "<input type=\"text\" name=\"anchorgroup_anchor_y\" value=\"" + info.set_y +
+                        "\" style=\"max-width:60px;\" readonly/>" +
+                        "</td><td>" +
+                        "<label for=\"btn_edit_anchorgroup_" + (i + 1) + "\" class='btn-edit' title='" +
+                        $.i18n.prop('i_editAnchorGroup') + "'><i class='fas fa-edit' style='font-size:18px;'></i></label>" +
+                        "<input id=\"btn_edit_anchorgroup_" + (i + 1) + "\" type='button' class='btn-hidden'" +
+                        " onclick=\"editGroup_Anchor(\'" + info.anchor_id + "\',\'" + info.set_x + "\',\'" +
+                        info.set_y + "\')\" />" +
                         "</td></tr>");
-                    map_anchors.push({
-                        anchor_id: info.anchor_id,
-                        anchor_type: "",
-                        set_x: info.set_x,
-                        set_y: info.set_y
+                    inputAnchorArray({
+                        id: info.anchor_id,
+                        type: "",
+                        x: info.set_x,
+                        y: info.set_y,
+                        group_id: info.group_id
                     });
                 });
-                getAnchors(map_anchors);
             } else {
                 alert($.i18n.prop('i_mapAlert_12'));
                 return;
@@ -55,10 +58,6 @@ function inputAnchorGroup() {
         }
     };
     xmlHttp.send(JSON.stringify(requestArray));
-}
-
-function setAnchorgroup_anchor(anchors) {
-    allAnchorsArray = anchors.slice(0); //Copy array
 }
 
 function DeleteGroup_Anchor(deleteArr) {
@@ -79,65 +78,49 @@ function DeleteGroup_Anchor(deleteArr) {
     xmlHttp.send(JSON.stringify(request));
 }
 
-function catchAnchorList() {
-    var anc_ids = document.getElementsByName("list_anchor_id");
-    anchorIDArr = [];
-    anc_ids.forEach(element => {
-        anchorIDArr.push(element.value);
-    });
-}
-
-function makeGroupOptions(array, select_id) {
-    var options = "";
-    for (i = 0; i < array.length; i++) {
-        if (array[i].group_id == select_id) {
-            options += "<option value=\"" + array[i].group_id + "\" selected=\"selected\">" +
-                array[i].group_name + "</option>";
-        } else {
-            options += "<option value=\"" + array[i].group_id + "\">" + array[i].group_name + "</option>";
-        }
+function editGroup_Anchor(anchor_id, set_x, set_y) {
+    var groupList = getRowData_Group();
+    if (anchor_id != "") {
+        var anchor_groupList = getRowData_Group_Anchor();
+        var count = 0;
+        $("#table_edit_group_ids tbody").empty();
+        anchor_groupList.forEach(element => {
+            if (element.anchor_id == anchor_id) {
+                count++;
+                $("#table_edit_group_ids tbody").append("<tr>" +
+                    "<td><input type=\"checkbox\" name=\"edit_checkbox_groups\" /> " + count + "</td>" +
+                    "<td><select name=\"edit_group_id\">" +
+                    makeNameOptions("group_id", groupList, element.group_id) + "</select></td>" +
+                    "<td><select name=\"edit_group_name\">" +
+                    makeNameOptions("group_name", groupList, element.group_name) + "</select></td>" +
+                    "</tr>");
+            }
+        });
+        $("#edit_group_anchor").html(getAnchorDropdown(anchor_id));
     }
-    return options;
+    setGroupConnectChange("select[name='edit_group_id']", "select[name='edit_group_name']");
+    $("#edit_group_anchor_x").val(set_x);
+    $("#edit_group_anchor_y").val(set_y);
+    $("#dialog_edit_anchor_group").dialog("open");
 }
 
 $(function () {
     var dialog, form,
-        add_group = $("#add_group_id"),
-        add_main_anchor = $("#add_group_main_anchor"),
-        add_anchor = $("#add_group_anchor"),
-        allFields = $([]).add(add_group);
-
-    add_group.on("change", function () {
-        var index = groupList.findIndex(function (info) {
-            return info.group_id == add_group.val();
-        });
-        if (index > -1)
-            add_main_anchor.text(groupList[index].main_anchor_id);
-    });
+        add_group_id = $("#add_group_id"),
+        add_group_name = $("#add_group_name"),
+        allFields = $([]).add(add_group_id).add(add_group_name);
 
     $("#btn_add_anchor_group").on("click", function () {
-        var request = {
-            "Command_Type": ["Read"],
-            "Command_Name": ["GetGroups"]
-        };
-        var xmlHttp = createJsonXmlHttp("sql");
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
-                    groupList = [];
-                    groupList = revObj.Values.slice(0); //利用抽離全部陣列完成陣列拷貝
-                    add_group.html(makeGroupOptions(groupList, groupList[0].group_id));
-                    add_main_anchor.text(groupList[0].main_anchor_id);
-                    add_anchor.html(makeOptions(allAnchorsArray, allAnchorsArray[0]));
-                    dialog.dialog("open");
-                } else {
-                    alert($.i18n.prop('i_mapAlert_12'));
-                    return;
-                }
-            }
-        };
-        xmlHttp.send(JSON.stringify(request));
+        var groupList = getRowData_Group();
+        add_group_id.html(makeNameOptions("group_id", groupList, groupList[0].group_id));
+        add_group_name.html(makeNameOptions("group_name", groupList, groupList[0].group_name));
+        $("#dialog_add_anchor_group tbody").empty();
+        setGroupConnectChange("#add_group_id", "#add_group_name");
+        dialog.dialog("open");
+    });
+
+    $("#btn_pos_anchor_group").on("click", function () {
+        startAnchorPosition();
     });
 
     $("#btn_delete_anchor_group").on("click", function () {
@@ -154,33 +137,105 @@ $(function () {
         }
         if (deleteArr.length > 0) {
             DeleteGroup_Anchor(deleteArr);
-            getMapGroups();
+            getAllDataOfMap();
         } else {
             alert($.i18n.prop('i_mapAlert_9'));
         }
     });
 
+    $("#btn_add_anc").on("click", function () {
+        var count = document.getElementsByName("checkbox_add_group_anchor").length + 1,
+            anchors = [];
+        document.getElementsByName("list_anchor_id").forEach(element => {
+            anchors.push(element.value);
+        });
+        $("#dialog_add_anchor_group tbody").append("<tr>" +
+            "<td><input type=\"checkbox\" name=\"checkbox_add_group_anchor\" /> " + count + "</td>" +
+            "<td><select name=\"add_group_anchor\">" + makeOptions(anchors, anchors[0]) + "</select></td>" +
+            "<td><input type=\"text\" name=\"add_group_anchor_x\" value=\"\" style=\"max-width:100px;\"></td>" +
+            "<td><input type=\"text\" name=\"add_group_anchor_y\" value=\"\" style=\"max-width:100px;\"></td></tr>");
+    });
 
-    function addAnchorGroup() {
-        allFields.removeClass("ui-state-error");
+    $("#btn_delete_anc").on("click", function () {
+        var anchor_id = document.getElementsByName("add_group_anchor"),
+            anchor_x = document.getElementsByName("add_group_anchor_x"),
+            anchor_y = document.getElementsByName("add_group_anchor_y"),
+            trs = "",
+            count = 0,
+            anchors = [];
+        document.getElementsByName("list_anchor_id").forEach(element => {
+            anchors.push(element.value);
+        });
+        document.getElementsByName("checkbox_add_group_anchor").forEach(function (element, i) {
+            if (!element.checked) {
+                count++;
+                trs += "<tr><td><input type=\"checkbox\" name=\"checkbox_add_group_anchor\" /> " + count + "</td>" +
+                    "<td><select name=\"add_group_anchor\">" + makeOptions(anchors, anchor_id[i].value) + "</select></td>" +
+                    "<td><input type=\"text\" name=\"add_group_anchor_x\" value=\"" + anchor_x[i].value +
+                    "\" style=\"max-width:100px;\"></td>" +
+                    "<td><input type=\"text\" name=\"add_group_anchor_y\" value=\"" + anchor_y[i].value +
+                    "\" style=\"max-width:100px;\"></td></tr>";
+            }
+        });
+        $("#dialog_add_anchor_group tbody").html(trs);
+    });
+
+    function submitAddGroupAnchor() {
         var valid = true;
-        valid = valid && checkLength(add_group, $.i18n.prop('i_mapAlert_14'), 1, 5);
-        valid = valid && checkLength(add_anchor, $.i18n.prop('i_mapAlert_14'), 1, 5);
+        var GroupAnchorList = getRowData_Group_Anchor(); //驗證新增的Group與Anchor關聯是否重複
+        var add_anchor_id = $("select[name='add_group_anchor']");
+        var add_anchor_x = $("input[name='add_group_anchor_x']");
+        var add_anchor_y = $("input[name='add_group_anchor_y']");
+        var anchor_arr = [];
+
+        allFields.removeClass("ui-state-error");
+        add_anchor_id.removeClass("ui-state-error");
+        add_anchor_x.removeClass("ui-state-error");
+        add_anchor_y.removeClass("ui-state-error");
+
+        valid = valid && checkLength(add_group_id, $.i18n.prop('i_mapAlert_14'), 1, 5);
+        $("#table_add_anc tbody tr").each(function (i) {
+            valid = valid && checkLength(add_anchor_id.eq(i), $.i18n.prop('i_mapAlert_14'), 1, 5);
+            valid = valid && checkLength(add_anchor_x.eq(i), $.i18n.prop('i_mapAlert_13'), 1, 10);
+            valid = valid && checkLength(add_anchor_y.eq(i), $.i18n.prop('i_mapAlert_13'), 1, 10);
+            var isRepeat = anchor_arr.findIndex(function (info) {
+                return info.anchor_id == add_anchor_id.eq(i).val();
+            });
+            if (isRepeat > -1) {
+                alert("基站列表中有Anchor_id重複，請刪除或修改重複項")
+                add_anchor_id.eq(i).addClass("ui-state-error");
+                valid = false;
+                return false;
+            } else {
+                anchor_arr.push({
+                    "group_id": add_group_id.val(),
+                    "anchor_id": add_anchor_id.eq(i).val(),
+                    "set_x": add_anchor_x.eq(i).val(),
+                    "set_y": add_anchor_y.eq(i).val()
+                });
+            }
+            GroupAnchorList.forEach(element => {
+                if (element.group_id == add_group_id.val() && element.anchor_id == add_anchor_id.eq(i).val()) {
+                    add_anchor_id.eq(i).addClass("ui-state-error");
+                    alert("Anchor_id : " + element.anchor_id + " 已在此群組中，請刪除後再新增!");
+                    valid = false;
+                    return false;
+                }
+            });
+        });
+
         if (valid) {
             var request = {
                 "Command_Type": ["Write"],
                 "Command_Name": ["AddListGroup_Anchor"],
-                "Value": [{
-                    "group_id": add_group.val(),
-                    "anchor_id": add_anchor.val()
-                }]
+                "Value": anchor_arr
             };
             var xmlHttp = createJsonXmlHttp("sql");
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
                     if (revObj.success > 0) {
-                        getMapGroups()
+                        getAllDataOfMap();
                         dialog.dialog("close");
                     }
                 }
@@ -190,17 +245,16 @@ $(function () {
         return valid;
     }
 
-
     dialog = $("#dialog_add_anchor_group").dialog({
         autoOpen: false,
-        height: 340,
-        width: 340,
+        height: 450,
+        width: 400,
         modal: true,
         buttons: {
             Cancel: function () {
                 dialog.dialog("close");
             },
-            "Confirm": addAnchorGroup
+            "Confirm": submitAddGroupAnchor
         },
         close: function () {
             form[0].reset();
@@ -210,6 +264,121 @@ $(function () {
 
     form = dialog.find("form").on("submit", function (event) {
         event.preventDefault();
-        addAnchorGroup();
+        submitAddGroupAnchor();
+    });
+});
+
+
+$(function () {
+    $("#btn_edit_group_add").on("click", function () {
+        var groupList = getRowData_Group(),
+            count = document.getElementsByName("edit_checkbox_groups").length + 1;
+        $("#table_edit_group_ids tbody").append("<tr>" +
+            "<td><input type=\"checkbox\" name=\"edit_checkbox_groups\" /> " + count + "</td>" +
+            "<td><select name=\"edit_group_id\">" +
+            makeNameOptions("group_id", groupList, groupList[0].group_id) + "</select></td>" +
+            "<td><select name=\"edit_group_name\">" +
+            makeNameOptions("group_name", groupList, groupList[0].group_name) + "</select></td></tr>");
+        setGroupConnectChange("select[name='edit_group_id']", "select[name='edit_group_name']");
+    });
+
+    $("#btn_edit_group_delete").on("click", function () {
+        var groupList = getRowData_Group(),
+            groups = document.getElementsByName("edit_checkbox_groups"),
+            group_ids = document.getElementsByName("edit_group_id"),
+            group_names = document.getElementsByName("edit_group_name"),
+            trs = "",
+            count = 0;
+        groups.forEach(function (element, i) {
+            if (!element.checked) {
+                count++;
+                trs += "<tr><td><input type=\"checkbox\" name=\"edit_checkbox_groups\" /> " + count + "</td>" +
+                    "<td><select name=\"edit_group_id\">" +
+                    makeNameOptions("group_id", groupList, group_ids[i].value) + "</select></td>" +
+                    "<td><select name=\"edit_group_name\">" +
+                    makeNameOptions("group_name", groupList, group_names[i].value) + "</select></td></tr>";
+            }
+        });
+        $("#table_edit_group_ids tbody").html(trs);
+        setGroupConnectChange("select[name='edit_group_id']", "select[name='edit_group_name']");
+    });
+
+    var dialog, form,
+        edit_anchor = $("#edit_group_anchor"),
+        edit_x = $("#edit_group_anchor_x"),
+        edit_y = $("#edit_group_anchor_y"),
+        allFields = $([]).add(edit_anchor).add(edit_x).add(edit_y);
+
+    function submitEditAnchorGroup() {
+        var valid = true,
+            edit_id = $("input[name='edit_checkbox_groups']"),
+            edit_group = $("select[name='edit_group_id']");
+
+        allFields.removeClass("ui-state-error");
+        edit_id.removeClass("ui-state-error");
+        edit_group.removeClass("ui-state-error");
+
+        edit_group.each(function (i) {
+            valid = valid && checkLength(edit_group.eq(i), $.i18n.prop('i_mapAlert_14'), 1, 5);
+        });
+
+        valid = valid && checkLength(edit_anchor, $.i18n.prop('i_mapAlert_14'), 1, 5);
+
+        if (valid) {
+            var anchorGroupList = getRowData_Group_Anchor();
+            edit_group.each(function (i) {
+                anchorGroupList.forEach(function (info) {
+                    if (info.group_id == edit_group.eq(i).val() && info.anchor_id == edit_anchor.val()) {
+                        var request = {
+                            "Command_Type": ["Write"],
+                            "Command_Name": ["EditGroup_Anchor"],
+                            "Value": {
+                                "id": info.id,
+                                "group_id": info.group_id,
+                                "anchor_id": info.anchor_id,
+                                "set_x": edit_x.val(),
+                                "set_y": edit_y.val()
+                            }
+                        };
+                        var xmlHttp = createJsonXmlHttp("sql");
+                        xmlHttp.onreadystatechange = function () {
+                            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                                var revObj = JSON.parse(this.responseText);
+                                if (revObj.success > 0) {
+                                    getAllDataOfMap();
+                                    dialog.dialog("close");
+                                }
+                            }
+                        };
+                        xmlHttp.send(JSON.stringify(request));
+                    }
+                });
+            });
+        }
+        return valid;
+    }
+
+    dialog = $("#dialog_edit_anchor_group").dialog({
+        autoOpen: false,
+        height: 450,
+        width: 300,
+        modal: true,
+        buttons: {
+            Cancel: function () {
+                dialog.dialog("close");
+            },
+            "Confirm": submitEditAnchorGroup
+        },
+        close: function () {
+            form[0].reset();
+            allFields.removeClass("ui-state-error");
+            edit_id.removeClass("ui-state-error");
+            edit_group.removeClass("ui-state-error");
+        }
+    });
+
+    form = dialog.find("form").on("submit", function (event) {
+        event.preventDefault();
+        submitEditAnchorGroup();
     });
 });

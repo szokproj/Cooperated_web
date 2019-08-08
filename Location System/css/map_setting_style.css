@@ -216,7 +216,6 @@ h1 {
     cursor: pointer;
     color: rgb(105, 196, 0);
     font-size: 20px;
-    margin: 0px 5px 0px 5px;
 }
 
 .btn-add-pos:hover {
@@ -278,25 +277,42 @@ h1 {
     border: 0;
 }
 
+canvas {
+    margin: 0px;
+    width: 1px;
+    height: 1px;
+    position: relative;
+    display: inline-block;
+}
+
 .cvsBlock {
     -webkit-flex: 1;
     -ms-flex: 1;
     flex: 1;
     background: #ccc;
-    max-height: 460px;
-    max-width: 602px;
-    display: block;
     height: 460px;
-    width: 602px;
+    width: 600px;
     overflow: auto;
     border: 1px gray solid;
 }
 
 .block-list {
     overflow: auto;
-    height: 414px;
+    max-height: 414px;
     max-width: 340px;
+    width: 340px;
     margin: 0px 0px 0px 10px;
+}
+
+#myTab {
+    margin: 0px 0px 10px 0px;
+}
+
+.tab-pane {
+    overflow: auto;
+    max-height: 340px;
+    max-width: 340px;
+    width: 340px;
 }
 
 .coordinate {

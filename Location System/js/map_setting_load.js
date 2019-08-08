@@ -85,7 +85,6 @@ function setMapById(id) { //點擊設定:開啟設定視窗
         $("#map_info_name").val(mapArray[index].map_name);
         $("#map_info_scale").val(scale);
         setMap(urlData, scale);
-        getMapGroups(); //在設定好地圖後，導入Groups & Anchors
         $("#dialog_map_setting").dialog("open");
     } else {
         return;
@@ -96,9 +95,10 @@ function newMap() {
     $("#map_info_id").val("");
     $("#map_info_name").val("");
     $("#map_info_scale").val("");
-    clearAnchorList();
-    clearGroupList();
-    clearAnchorGroup();
+    $("#table_main_anchor_list tbody").empty();
+    $("#table_anchor_list tbody").empty();
+    $("#table_group_list tbody").empty();
+    $("#table_anchor_group tbody").empty();
     resetCanvas_Anchor();
     $("#dialog_map_setting").dialog("open");
 }

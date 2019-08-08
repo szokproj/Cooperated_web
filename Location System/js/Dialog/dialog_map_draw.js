@@ -39,7 +39,6 @@ function setupCanvas() {
     })();
     canvas.addEventListener("mousemove", handleMouseMove, false);
     canvas.addEventListener("mousewheel", handleMouseWheel, false);
-    canvas.addEventListener("dblclick", handleMouseDBClick, false);
     canvas.addEventListener("mousedown", handleMouseDown, false);
     cvsBlock.addEventListener("mousewheel", handleMouseWheel, false); // mousewheel duplicates dblclick function
     cvsBlock.addEventListener("DOMMouseScroll", handleMouseWheel, false); // for Firefox
@@ -48,7 +47,7 @@ function setupCanvas() {
     $(function () {
         $("#map_info_scale").on("change", function () {
             canvasImg.scale = $(this).val();
-            catchAnchors();
+            catchMap_Anchors();
             draw();
         });
     });
@@ -71,8 +70,8 @@ function setMap(map_url, map_scale) { //接收Server發送的地圖資料並導�
         ctx.save(); //紀錄原比例
 
         var serImgSize = serverImg.width / serverImg.height;
-        var cvs_width = parseFloat($("#mapBlock").css("width")) - 2;
-        var cvs_height = parseFloat($("#mapBlock").css("height")) - 2;
+        var cvs_width = parseFloat($("#mapBlock").css("width"));
+        var cvs_height = parseFloat($("#mapBlock").css("height"));
         var cvsSize = cvs_width / cvs_height;
         if (serImgSize > cvsSize) { //原圖比例寬邊較長
             Zoom = cvs_width / serverImg.width;
@@ -81,8 +80,7 @@ function setMap(map_url, map_scale) { //接收Server發送的地圖資料並導�
             Zoom = cvs_height / serverImg.height;
             setCanvas(this.src, serverImg.width * Zoom, cvs_height);
         }
-        getMapGroups(); //在設定好地圖後，導入Groups & Anchors
-        catchAnchors();
+        getAllDataOfMap(); //在設定好地圖後，導入Groups & Anchors
         draw();
     };
 }
@@ -115,10 +113,9 @@ function loadImage(dataUrl) { //新增或更換地圖
         ytopView = 0;
         Zoom = 1.0;
         ctx.save(); //紀錄原比例
-        //$("#canvas_map").css("margin-left", "0px").css("margin-top", "0px");
         var serImgSize = serverImg.width / serverImg.height;
-        var cvs_width = parseFloat($("#mapBlock").css("width")) - 2;
-        var cvs_height = parseFloat($("#mapBlock").css("height")) - 2;
+        var cvs_width = parseFloat($("#mapBlock").css("width"));
+        var cvs_height = parseFloat($("#mapBlock").css("height"));
         var cvsSize = cvs_width / cvs_height;
         if (serImgSize > cvsSize) { //原圖比例寬邊較長
             Zoom = cvs_width / serverImg.width;
@@ -127,7 +124,6 @@ function loadImage(dataUrl) { //新增或更換地圖
             Zoom = cvs_height / serverImg.height;
             setCanvas(this.src, serverImg.width * Zoom, cvs_height);
         }
-        getMapGroups();
         draw();
     };
 }
@@ -158,8 +154,8 @@ function setSize() { //縮放canvas與背景圖大小
 function resizeCanvas() {
     if (!canvasImg.isPutImg)
         return;
-    var cvsBlock_width = parseFloat($("#mapBlock").css("width")) - 2;
-    var cvsBlock_height = parseFloat($("#mapBlock").css("height")) - 2;
+    var cvsBlock_width = parseFloat($("#mapBlock").css("width"));
+    var cvsBlock_height = parseFloat($("#mapBlock").css("height"));
     xleftView = 0;
     ytopView = 0;
     Zoom = 1.0;
@@ -178,7 +174,6 @@ function resizeCanvas() {
         document.getElementById("label_resize").innerHTML = "<i class=\"fas fa-expand\" style='font-size:20px;'></i>";
         document.getElementById("label_resize").title = $.i18n.prop('i_restore_scale');
     }
-    //$("#canvas_map").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
     draw();
 }
 
@@ -196,12 +191,6 @@ function handleMouseWheel(event) { //滑鼠滾輪事件
     }
     Zoom *= scale; //縮放比例
     draw();
-    /*
-    var Next_x = lastX * Zoom; //縮放後滑鼠位移後的位置(x坐標)
-    var Next_y = (canvasImg.height - lastY) * Zoom; //縮放後滑鼠位移後的位置(y坐標)
-    xleftView += pos_x - Next_x;
-    ytopView += pos_y - Next_y;
-    $("#canvas_map").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");*/
 }
 
 function getEventPosition(ev) { //獲取滑鼠點擊位置
@@ -219,44 +208,15 @@ function getEventPosition(ev) { //獲取滑鼠點擊位置
     }; //注：如果使用此方法無效的話，需要給Canvas元素的position設為absolute。
 }
 
-function handleMouseDBClick(event) { //滑鼠雙擊事件
-    event.preventDefault();
-    var zoom = 1 / Zoom;
-    var BCR = canvas.getBoundingClientRect();
-    var pos = {
-        x: event.pageX - BCR.left,
-        y: event.pageY - BCR.top
-    }
-    anchorArray.forEach(function (v) {
-        ctx.beginPath();
-        ctx.rect(v.x - 5 * zoom, v.y - 5 * zoom, 10 * zoom, 10 * zoom);
-        if (pos && ctx.isPointInPath(pos.x, pos.y)) {
-            //如果傳入了事件坐標，就用isPointInPath判斷一下
-            ctx.fillStyle = "#2bff00";
-            ctx.fill();
-            $(function () {
-                $("#edit_anchor_type").text(v.type == "main" ? "Main" : "Secondary");
-                $("#edit_anchor_id").text(v.id);
-                $("#edit_anchor_x").val(v.x);
-                $("#edit_anchor_y").val(v.y);
-                $("#dialog_edit_anchor").dialog("open");
-            });
-        }
-        ctx.closePath();
-    });
-}
-
-function handleMouseDown(event) { //滑鼠按下綁定事件
+function handleMouseDown(event) { //滑鼠按下綁定事件    
     if (!isPosition) {
-        event.preventDefault();
         var downx = event.pageX;
         var downy = event.pageY;
-        var BCR = canvas.getBoundingClientRect();
         var pos = {
-            x: downx - BCR.left,
-            y: downy - BCR.top
+            x: event.offsetX, //downx - BCR.left,
+            y: event.offsetY //downy - BCR.top
         }
-        if (!pos)
+        if (!pos.x || !pos.y)
             return;
         var index = anchorArray.findIndex(function (v) {
             var zoom = 1 / Zoom;
@@ -266,60 +226,44 @@ function handleMouseDown(event) { //滑鼠按下綁定事件
             return ctx.isPointInPath(pos.x, pos.y) == true;
         });
         if (index > -1) {
-            $("#canvas_map").on("mousemove", function (e) {
-                ctx.fillStyle = "#2bff00";
-                ctx.fill();
-                $(function () {
+            $(function () {
+                $("#canvas_map").on("mousemove", function (e) {
                     var zoom = 1 / Zoom;
                     anchorArray[index].x += (e.pageX - downx) * zoom;
                     anchorArray[index].y += (e.pageY - downy) * zoom;
                     downx = e.pageX;
                     downy = e.pageY;
-                });
-                draw();
-            });
-            $("#canvas_map").on("mouseup", function () {
-                $("#canvas_map").off("mousemove");
-            });
-        }
-        /*anchorArray.forEach(function (v) {
-            var zoom = 1 / Zoom;
-            ctx.beginPath();
-            ctx.rect(v.x - 5 * zoom, v.y - 5 * zoom, 10 * zoom, 10 * zoom);
-            ctx.closePath();
-            if (ctx.isPointInPath(pos.x, pos.y)) {
-                //如果傳入了事件坐標，就用isPointInPath判斷一下
-                $("#canvas_map").on("mousemove", function (e) {
-                    ctx.fillStyle = "#2bff00";
-                    ctx.fill();
-                    $(function () {
-                        v.x += e.pageX - downx;
-                        v.y += e.pageY - downy;
-                    });
                     draw();
+                    ctx.fillStyle = "#7600c5";
+                    ctx.fillRect(anchorArray[index].x - 5 * zoom, anchorArray[index].y - 5 * zoom, 10 * zoom, 10 * zoom);
                 });
                 $("#canvas_map").on("mouseup", function () {
-                    //滑鼠彈起時=>div取消事件 
                     $("#canvas_map").off("mousemove");
+                    $("#canvas_map").off("mouseup");
+                    var set_x = anchorArray[index].x.toFixed(2);
+                    var set_y = (canvasImg.height - anchorArray[index].y).toFixed(2);
+                    if (anchorArray[index].type == "main") {
+                        editGroupList(anchorArray[index].id, set_x, set_y)
+                    } else {
+                        editGroup_Anchor(anchorArray[index].id, set_x, set_y);
+                    }
                 });
-            }
-        });*/
+            });
+        }
     }
 }
 
 function handleMouseMove(event) { //滑鼠移動事件
     if (canvasImg.isPutImg) {
-        var x = event.pageX;
-        var y = event.pageY;
-        getPointOnCanvas(x, y);
+        getPointOnCanvas(event.offsetX, event.offsetY);
     }
 }
 
 function getPointOnCanvas(x, y) {
     //獲取滑鼠在Canvas物件上座標(座標起始點從左上換到左下)
-    var BCR = canvas.getBoundingClientRect();
-    var pos_x = (x - BCR.left) * (canvasImg.width / BCR.width);
-    var pos_y = (y - BCR.top) * (canvasImg.height / BCR.height);
+    //var BCR = canvas.getBoundingClientRect();
+    var pos_x = x * (canvasImg.width / canvas.width);
+    var pos_y = y * (canvasImg.height / canvas.height);
     lastX = pos_x;
     lastY = canvasImg.height - pos_y;
     document.getElementById('x').innerText = lastX > 0 ? (lastX).toFixed(2) : 0;
@@ -330,81 +274,12 @@ function getPointOnCanvas(x, y) {
     }
 }
 
-
-function getAnchors(map_anchors) {
-    var map_id = $("#map_info_id").val();
-    var requestArray = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["GetMainAnchorsInMap"],
-        "Value": {
-            "map_id": map_id
-        }
-    };
-    var xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                var id, type, x, y;
-                var anchorID = [];
-                var mainAnchorID = [];
-                var anchorList = map_anchors.slice(0);
-                var mainAnchorList = [];
-                var revInfo = 'Values' in revObj == true ? revObj.Values : [];
-                revInfo.forEach(element => {
-                    var repect = mainAnchorList.findIndex(function (info) {
-                        return info.main_anchor_id == element.main_anchor_id;
-                    });
-                    if (repect == -1)
-                        mainAnchorList.push(element);
-                });
-                setSize();
-                //Anchor
-                anchorList.forEach(element => {
-                    id = element.anchor_id;
-                    type = "";
-                    x = element.set_x / canvasImg.scale;
-                    y = canvasImg.height - element.set_y / canvasImg.scale;
-                    anchorArray.push({
-                        id: id,
-                        type: type,
-                        x: x,
-                        y: y
-                    });
-                    drawAnchor(ctx, id, type, x, y, 1 / Zoom);
-                    anchorID.push(id);
-                });
-                //Main Anchor
-                mainAnchorList.forEach(element => {
-                    anchorList.push({
-                        anchor_id: element.main_anchor_id,
-                        anchor_type: "main",
-                        set_x: element.set_x,
-                        set_y: element.set_y
-                    });
-                    id = element.main_anchor_id;
-                    type = "main";
-                    x = element.set_x / canvasImg.scale;
-                    y = canvasImg.height - element.set_y / canvasImg.scale;
-                    anchorArray.push({
-                        id: id,
-                        type: type,
-                        x: x,
-                        y: y
-                    });
-                    drawAnchor(ctx, id, type, x, y, 1 / Zoom);
-                    mainAnchorID.push(id);
-                });
-                draw();
-                inputAnchorList(anchorList);
-                setGrouplist_mainAnchor(mainAnchorID);
-                setAnchorgroup_anchor(anchorID);
-            } else {
-                alert($.i18n.prop('i_mapAlert_6'));
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(requestArray));
+function getAllDataOfMap() {
+    anchorArray = [];
+    getMaps_Groups();
+    getAnchorList();
+    getAnchor_Group();
+    getGroupList();
 }
 
 function draw() {
@@ -416,7 +291,7 @@ function draw() {
 }
 
 function drawAnchor(dctx, id, type, x, y, zoom) {
-    var size = 10 * zoom; // zoom = 1 / Zoom
+    var size = 10 * zoom;
     if (type == "main")
         dctx.fillStyle = "red";
     else
@@ -426,93 +301,127 @@ function drawAnchor(dctx, id, type, x, y, zoom) {
     dctx.fillRect(x - 5 * zoom, y - 5 * zoom, size, size);
 }
 
-function drawP(dctx, x, y, zoom) {
-    var size = 10 * zoom;
-    dctx.fillStyle = "green";
-    dctx.fillRect(x, y, 2, 2);
-}
-
-function drawAnchorPosition(dctx, x, y) {
-    var size = 4 * 3 / canvasImg.scale;
-    x = x / canvasImg.scale;
-    y = canvasImg.height - y / canvasImg.scale;
+function drawAnchorPosition(dctx, x, y, zoom) {
+    var size = 4 * zoom;
     dctx.fillStyle = '#99cc00';
     dctx.beginPath();
     dctx.arc(x, y, size, 0, Math.PI * 2, true);
     dctx.fill();
 }
 
-function catchAnchors() {
+function catchMap_Anchors() {
     anchorArray = [];
-    var main_id = document.getElementsByName("list_main_anchor_id"),
-        main_x = document.getElementsByName("list_main_anchor_x"),
-        main_y = document.getElementsByName("list_main_anchor_y"),
-        a_id = document.getElementsByName("list_anchor_id"),
-        a_x = document.getElementsByName("list_anchor_x"),
-        a_y = document.getElementsByName("list_anchor_y");
+    var main_id = document.getElementsByName("grouplist_main_anchor_id"),
+        main_x = document.getElementsByName("grouplist_main_anchor_x"),
+        main_y = document.getElementsByName("grouplist_main_anchor_y"),
+        main_group = document.getElementsByName("chkbox_group_list"),
+        a_id = document.getElementsByName("anchorgroup_anchor_id"),
+        a_x = document.getElementsByName("anchorgroup_anchor_x"),
+        a_y = document.getElementsByName("anchorgroup_anchor_y"),
+        a_group = document.getElementsByName("anchorgroup_group_id");
     for (i = 0; i < main_id.length; i++) {
-        anchorArray.push({
+        inputAnchorArray({
             id: main_id[i].value,
             type: "main",
-            x: main_x[i].value / canvasImg.scale,
-            y: canvasImg.height - main_y[i].value / canvasImg.scale //因為Server回傳的座標為左下原點
+            x: main_x[i].value,
+            y: main_y[i].value,
+            group_id: main_group[i].value
         });
     }
     for (j = 0; j < a_id.length; j++) {
-        anchorArray.push({
+        inputAnchorArray({
             id: a_id[j].value,
             type: "",
-            x: a_x[j].value / canvasImg.scale,
-            y: canvasImg.height - a_y[j].value / canvasImg.scale //因為Server回傳的座標為左下原點
+            x: a_x[j].value,
+            y: a_y[j].value,
+            group_id: a_group[j].value
         });
     }
     draw();
 }
 
-function addAnchorArray(type, id, x, y) {
-    anchorArray.push({
-        id: id,
-        type: type,
-        x: x / canvasImg.scale,
-        y: canvasImg.height - y / canvasImg.scale
+function inputAnchorArray(anchor_info) {
+    var isNotRepeat = anchorArray.every(function (v) {
+        return v.id != anchor_info.id;
     });
-    draw();
+    if (isNotRepeat) {
+        anchorArray.push({
+            id: anchor_info.id,
+            type: anchor_info.type,
+            x: anchor_info.x / canvasImg.scale,
+            y: canvasImg.height - anchor_info.y / canvasImg.scale, //因為Server回傳的座標為左下原點
+            group_id: anchor_info.group_id //只有副基站需要用group_id
+        });
+        draw();
+    }
+}
+
+function handleMainAnchorPosition() {
+    $(function () {
+        $("#table_edit_grouplist tbody").empty();
+        $("#edit_grouplist_main_anchor").html(getMainAnchorDropdown(""));
+        $("#edit_grouplist_main_anchor_x").val($("#x").text());
+        $("#edit_grouplist_main_anchor_y").val($("#y").text());
+        $("#dialog_edit_group_list").dialog("open");
+    });
 }
 
 function handleAnchorPosition() {
     $(function () {
-        $("#anchor_type").val("");
-        $("#anchor_id").val("");
-        $("#anchor_x").val($("#x").text());
-        $("#anchor_y").val($("#y").text());
-        setDropdown_Group();
-        $("#dialog_add_new_anchor").dialog("open");
+        $("#table_edit_group_ids tbody").empty();
+        $("#edit_group_anchor").html(getAnchorDropdown(""));
+        $("#edit_group_anchor_x").val($("#x").text());
+        $("#edit_group_anchor_y").val($("#y").text());
+        $("#dialog_edit_anchor_group").dialog("open");
     });
 }
 
-function startAnchorPosition() {
+function startMainAnchorPosition() {
     if (!isPosition) {
         isPosition = true;
-        document.getElementById("label_anchor_position").innerHTML = "<i class='fas fa-map-marked' style='font-size:20px;'></i>";
-        document.getElementById("label_anchor_position").title = $.i18n.prop('i_mapAlert_7');
+        document.getElementById("label_pos_group").innerHTML = "<i class='fas fa-map-marked' style='font-size:20px;'></i>";
+        document.getElementById("label_pos_group").title = $.i18n.prop('i_mapAlert_7');
+        canvas.addEventListener("click", handleMainAnchorPosition);
         var delaytime = 100; //0.1s
         pageTimer["timer1"] = setTimeout(function request() {
             draw();
-            var posX = lastX * Zoom / fitZoom * canvasImg.scale;
-            var posY = lastY * Zoom / fitZoom * canvasImg.scale;
-            drawAnchorPosition(ctx, posX, posY);
+            drawAnchorPosition(ctx, lastX, canvasImg.height - lastY, 1 / Zoom);
             pageTimer["timer1"] = setTimeout(request, delaytime);
         }, delaytime);
-        canvas.addEventListener("click", handleAnchorPosition);
     } else {
         isPosition = false;
-        document.getElementById("label_anchor_position").innerHTML = "<i class='fas fa-map-marked-alt' style='font-size:20px;'></i>";
-        document.getElementById("label_anchor_position").title = $.i18n.prop('i_mapAlert_8');
+        document.getElementById("label_pos_group").innerHTML = "<i class='fas fa-map-marked-alt' style='font-size:20px;'></i>";
+        document.getElementById("label_pos_group").title = $.i18n.prop('i_mapAlert_8');
+        canvas.removeEventListener("click", handleMainAnchorPosition);
         for (each in pageTimer) {
             clearTimeout(pageTimer[each]);
         }
         draw();
+    }
+}
+
+
+function startAnchorPosition() {
+    if (!isPosition) {
+        isPosition = true;
+        document.getElementById("label_pos_anchor_group").innerHTML = "<i class='fas fa-map-marked' style='font-size:20px;'></i>";
+        document.getElementById("label_pos_anchor_group").title = $.i18n.prop('i_mapAlert_7');
+        canvas.addEventListener("click", handleAnchorPosition);
+        var delaytime = 100; //0.1s
+        pageTimer["timer1"] = setTimeout(function request() {
+            draw();
+            drawAnchorPosition(ctx, lastX, canvasImg.height - lastY, 1 / Zoom);
+            pageTimer["timer1"] = setTimeout(request, delaytime);
+        }, delaytime);
+    } else {
+        isPosition = false;
+        document.getElementById("label_pos_anchor_group").innerHTML = "<i class='fas fa-map-marked-alt' style='font-size:20px;'></i>";
+        document.getElementById("label_pos_anchor_group").title = $.i18n.prop('i_mapAlert_8');
         canvas.removeEventListener("click", handleAnchorPosition);
+        for (each in pageTimer) {
+            clearTimeout(pageTimer[each]);
+        }
+        draw();
     }
 }
 
