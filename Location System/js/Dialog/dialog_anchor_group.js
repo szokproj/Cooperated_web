@@ -79,7 +79,6 @@ function DeleteGroup_Anchor(deleteArr) {
 }
 
 function editGroup_Anchor(anchor_id, set_x, set_y) {
-    var groupList = getRowData_Group();
     if (anchor_id != "") {
         var anchor_groupList = getRowData_Group_Anchor();
         var count = 0;
@@ -88,15 +87,14 @@ function editGroup_Anchor(anchor_id, set_x, set_y) {
             if (element.anchor_id == anchor_id) {
                 count++;
                 $("#table_edit_group_ids tbody").append("<tr>" +
-                    "<td><input type=\"checkbox\" name=\"edit_checkbox_groups\" /> " + count + "</td>" +
-                    "<td><select name=\"edit_group_id\">" +
-                    makeNameOptions("group_id", groupList, element.group_id) + "</select></td>" +
-                    "<td><select name=\"edit_group_name\">" +
-                    makeNameOptions("group_name", groupList, element.group_name) + "</select></td>" +
+                    "<td>" + count + "<input type=\"hidden\" name=\"edit_groups\"" +
+                    " value=\"" + element.id + "\"></td>" +
+                    "<td name=\"edit_group_id\">" + element.group_id + "</td>" +
+                    "<td name=\"edit_group_name\">" + element.group_name + "</td>" +
                     "</tr>");
             }
         });
-        $("#edit_group_anchor").html(getAnchorDropdown(anchor_id));
+        $("#edit_group_anchor").text(anchor_id);
     }
     setGroupConnectChange("select[name='edit_group_id']", "select[name='edit_group_name']");
     $("#edit_group_anchor_x").val(set_x);
@@ -182,12 +180,11 @@ $(function () {
 
     function submitAddGroupAnchor() {
         var valid = true;
-        var GroupAnchorList = getRowData_Group_Anchor(); //驗證新增的Group與Anchor關聯是否重複
+        var anchor_arr = [];
         var add_anchor_id = $("select[name='add_group_anchor']");
         var add_anchor_x = $("input[name='add_group_anchor_x']");
         var add_anchor_y = $("input[name='add_group_anchor_y']");
-        var anchor_arr = [];
-
+        var GroupAnchorList = getRowData_Group_Anchor(); //驗證新增的Group與Anchor關聯是否重複
         allFields.removeClass("ui-state-error");
         add_anchor_id.removeClass("ui-state-error");
         add_anchor_x.removeClass("ui-state-error");
@@ -270,89 +267,42 @@ $(function () {
 
 
 $(function () {
-    $("#btn_edit_group_add").on("click", function () {
-        var groupList = getRowData_Group(),
-            count = document.getElementsByName("edit_checkbox_groups").length + 1;
-        $("#table_edit_group_ids tbody").append("<tr>" +
-            "<td><input type=\"checkbox\" name=\"edit_checkbox_groups\" /> " + count + "</td>" +
-            "<td><select name=\"edit_group_id\">" +
-            makeNameOptions("group_id", groupList, groupList[0].group_id) + "</select></td>" +
-            "<td><select name=\"edit_group_name\">" +
-            makeNameOptions("group_name", groupList, groupList[0].group_name) + "</select></td></tr>");
-        setGroupConnectChange("select[name='edit_group_id']", "select[name='edit_group_name']");
-    });
-
-    $("#btn_edit_group_delete").on("click", function () {
-        var groupList = getRowData_Group(),
-            groups = document.getElementsByName("edit_checkbox_groups"),
-            group_ids = document.getElementsByName("edit_group_id"),
-            group_names = document.getElementsByName("edit_group_name"),
-            trs = "",
-            count = 0;
-        groups.forEach(function (element, i) {
-            if (!element.checked) {
-                count++;
-                trs += "<tr><td><input type=\"checkbox\" name=\"edit_checkbox_groups\" /> " + count + "</td>" +
-                    "<td><select name=\"edit_group_id\">" +
-                    makeNameOptions("group_id", groupList, group_ids[i].value) + "</select></td>" +
-                    "<td><select name=\"edit_group_name\">" +
-                    makeNameOptions("group_name", groupList, group_names[i].value) + "</select></td></tr>";
-            }
-        });
-        $("#table_edit_group_ids tbody").html(trs);
-        setGroupConnectChange("select[name='edit_group_id']", "select[name='edit_group_name']");
-    });
-
     var dialog, form,
         edit_anchor = $("#edit_group_anchor"),
         edit_x = $("#edit_group_anchor_x"),
         edit_y = $("#edit_group_anchor_y"),
-        allFields = $([]).add(edit_anchor).add(edit_x).add(edit_y);
+        allFields = $([]).add(edit_x).add(edit_y);
 
     function submitEditAnchorGroup() {
-        var valid = true,
-            edit_id = $("input[name='edit_checkbox_groups']"),
-            edit_group = $("select[name='edit_group_id']");
-
+        var valid = true;
         allFields.removeClass("ui-state-error");
-        edit_id.removeClass("ui-state-error");
-        edit_group.removeClass("ui-state-error");
-
-        edit_group.each(function (i) {
-            valid = valid && checkLength(edit_group.eq(i), $.i18n.prop('i_mapAlert_14'), 1, 5);
-        });
-
-        valid = valid && checkLength(edit_anchor, $.i18n.prop('i_mapAlert_14'), 1, 5);
+        valid = valid && checkLength(edit_x, $.i18n.prop('i_mapAlert_13'), 1, 50);
+        valid = valid && checkLength(edit_y, $.i18n.prop('i_mapAlert_13'), 1, 50);
 
         if (valid) {
-            var anchorGroupList = getRowData_Group_Anchor();
-            edit_group.each(function (i) {
-                anchorGroupList.forEach(function (info) {
-                    if (info.group_id == edit_group.eq(i).val() && info.anchor_id == edit_anchor.val()) {
-                        var request = {
-                            "Command_Type": ["Write"],
-                            "Command_Name": ["EditGroup_Anchor"],
-                            "Value": {
-                                "id": info.id,
-                                "group_id": info.group_id,
-                                "anchor_id": info.anchor_id,
-                                "set_x": edit_x.val(),
-                                "set_y": edit_y.val()
-                            }
-                        };
-                        var xmlHttp = createJsonXmlHttp("sql");
-                        xmlHttp.onreadystatechange = function () {
-                            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                                var revObj = JSON.parse(this.responseText);
-                                if (revObj.success > 0) {
-                                    getAllDataOfMap();
-                                    dialog.dialog("close");
-                                }
-                            }
-                        };
-                        xmlHttp.send(JSON.stringify(request));
+            $("input[name='edit_groups']").each(function (i) {
+                var request = {
+                    "Command_Type": ["Write"],
+                    "Command_Name": ["EditGroup_Anchor"],
+                    "Value": {
+                        "id": $(this).val(),
+                        "group_id": $("td[name='edit_group_id']").eq(i).text(),
+                        "anchor_id": edit_anchor.text(),
+                        "set_x": edit_x.val(),
+                        "set_y": edit_y.val()
                     }
-                });
+                };
+                var xmlHttp = createJsonXmlHttp("sql");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (revObj.success > 0) {
+                            getAllDataOfMap();
+                            dialog.dialog("close");
+                        }
+                    }
+                };
+                xmlHttp.send(JSON.stringify(request));
             });
         }
         return valid;
@@ -372,8 +322,7 @@ $(function () {
         close: function () {
             form[0].reset();
             allFields.removeClass("ui-state-error");
-            edit_id.removeClass("ui-state-error");
-            edit_group.removeClass("ui-state-error");
+            catchMap_Anchors();
         }
     });
 

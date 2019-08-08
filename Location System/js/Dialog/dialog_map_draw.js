@@ -352,8 +352,8 @@ function inputAnchorArray(anchor_info) {
             y: canvasImg.height - anchor_info.y / canvasImg.scale, //因為Server回傳的座標為左下原點
             group_id: anchor_info.group_id //只有副基站需要用group_id
         });
-        draw();
     }
+    draw();
 }
 
 function handleMainAnchorPosition() {

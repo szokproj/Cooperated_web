@@ -352,6 +352,7 @@ $(function () {
         close: function () {
             form[0].reset();
             allFields.removeClass("ui-state-error");
+            catchMap_Anchors();
         }
     });
 
