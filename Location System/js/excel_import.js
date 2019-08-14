@@ -1,6 +1,5 @@
-//Reference https://blog.csdn.net/weixin_36185028/article/details/78685844
+/*  Reference https://blog.csdn.net/weixin_36185028/article/details/78685844
 
-/*
     FileReader共有4种读取方法：
     1.readAsArrayBuffer(file)：将文件读取为ArrayBuffer。
     2.readAsBinaryString(file)：将文件读取为二进制字符串
@@ -57,7 +56,6 @@ function fixdata(data) { //文件流转BinaryString
  */
 
 /*var tmpDown; //导出的二进制对象
-
 function downloadExl(json, type) {
     var tmpdata = json[0];
     json.unshift({});
@@ -94,6 +92,7 @@ function downloadExl(json, type) {
     }); //创建二进制对象写入转换好的字节流
     var href = URL.createObjectURL(tmpDown); //创建对象超链接
     document.getElementById("excel_export_download").href = href; //绑定a标签
+    document.getElementById("excel_export_download").download = "RTLS.xlsx"; //下載檔的檔名
     document.getElementById("excel_export_download").click(); //模拟点击实现下载
     setTimeout(function () { //延时释放
         URL.revokeObjectURL(tmpDown); //用URL.revokeObjectURL()来释放这个object URL
@@ -117,5 +116,4 @@ function getCharCol(n) {
         n = (n - m) / 26
     }
     return s
-}
-*/
+}*/

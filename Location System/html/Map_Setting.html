@@ -159,17 +159,6 @@
                         </div>
                         <div id="block_anchor_list">
                             <span style="margin: 0px 0px 0px 10px">
-                                <!--Add Pos-->
-                                <!--<label for="btn_anchor_position" id="label_anchor_position"
-                                    class="btn-add-pos i18n-input" selectattr="title" selectname="i_anchorPosition">
-                                    <i class="fas fa-map-marked-alt" style='font-size:20px;'></i></label>
-                                <input id="btn_anchor_position" type="button" class="btn-hidden" />-->
-                                <!--Add-->
-                                <!--<label for="btn_add_anchor" id="label_add_anchor" class="btn-add i18n-input"
-                                    selectattr="title" selectname="i_addAnchor">
-                                    <i class="fas fa-map-marker-alt" style='font-size:20px;'></i></label>
-                                <input id="btn_add_anchor" type="button" class="btn-hidden" />-->
-
                                 <label for="btn_add_anchor_list" id="label_add_anchor_list" class="btn-add i18n-input"
                                     selectattr="title" selectname="i_addAnchorGroup">
                                     <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
@@ -211,7 +200,6 @@
                                     selectattr="title" selectname="i_deleteGroup"><i class="fas fa-minus-square"
                                         style='font-size:20px;'></i></label>
                                 <input id="btn_delete_group" type="button" class="btn-hidden" />
-
                                 <!--Add Pos-->
                                 <label for="btn_pos_group" id="label_pos_group" class="btn-add-pos i18n-input"
                                     selectattr="title" selectname="i_anchorPosition">
@@ -244,7 +232,6 @@
                                     class="btn-delete i18n-input" selectattr="title" selectname="i_deleteAnchorGroup"><i
                                         class="fas fa-minus-square" style='font-size:20px;'></i></label>
                                 <input id="btn_delete_anchor_group" type="button" class="btn-hidden" />
-
                                 <!--Add Pos-->
                                 <label for="btn_pos_anchor_group" id="label_pos_anchor_group"
                                     class="btn-add-pos i18n-input" selectattr="title" selectname="i_anchorPosition">
@@ -299,48 +286,6 @@
                     <input type="text" id="anchor_id" value="" style="max-width:100px;">
                     <label id="anchor_id_alert"></label>
                     <br>(0 ~ 65535)<br><br>
-                    <!--
-                    <label class="i18n" name="i_posX"> : </label>
-                    <input type="text" id="anchor_x" value="" style="max-width:100px;">
-                    <br><br>
-                    <label class="i18n" name="i_posY"> : </label>
-                    <input type="text" id="anchor_y" value="" style="max-width:100px;">
-                    <br><br>
-                    <div id="anchor_input_group">
-                        <label class="i18n" name="i_groupID"></label> :
-                        <input type="text" id="anchor_input_group_id" value="" style="max-width:100px;">
-                        <label id="group_id_alert"></label>
-                        <br>(0 ~ 65535)<br><br>
-                        <label class="i18n" name="i_groupName"></label> :
-                        <input type="text" id="anchor_input_group_name" value="" style="max-width:100px;">
-                    </div>
-                    <div id="anchor_select_group">
-                        <label class="i18n" name="i_groupID"></label> :
-                        <select id="anchor_select_group_id"></select>
-                    </div>
-                -->
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
-        <!-- Following is a dialog to edit the anchor -->
-        <div id="dialog_edit_anchor" title="Edit Anchor">
-            <form>
-                <fieldset style="text-align: left;">
-                    <label class="i18n" name="i_anchorType"></label> :
-                    <label id="edit_anchor_type"></label>
-                    <br><br>
-                    <label class="i18n" name="i_anchorID"></label> :
-                    <label id="edit_anchor_id"></label>
-                    <br><br>
-                    <label class="i18n" name="i_posX"></label> :
-                    <input type="text" id="edit_anchor_x" value="" style="max-width:100px;">
-                    <br><br>
-                    <label class="i18n" name="i_posY"></label> :
-                    <input type="text" id="edit_anchor_y" value="" style="max-width:100px;">
-                    <br><br>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                 </fieldset>
             </form>
@@ -365,7 +310,6 @@
                     <label class="i18n" name="i_posY"></label> :
                     <input type="text" id="add_grouplist_main_anchor_y" value="" style="max-width:100px;">
                     <br><br>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                 </fieldset>
             </form>
@@ -403,7 +347,6 @@
                     <label class="i18n" name="i_posY"></label> :
                     <input type="text" id="edit_grouplist_main_anchor_y" value="" style="max-width:100px;">
                     <br><br>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                 </fieldset>
             </form>
@@ -445,6 +388,14 @@
             <form>
                 <fieldset style="text-align: left;">
                     <label class="i18n" name="i_group"></label> :
+                    <label for="btn_edit_group_add" id="label_edit_group_add" class="btn-add i18n-input"
+                        selectattr="title" selectname="i_addAnchorGroup">
+                        <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                    <input id="btn_edit_group_add" type="button" class="btn-hidden" />
+                    <label for="btn_edit_group_delete" id="label_edit_group_delete" class="btn-delete i18n-input"
+                        selectattr="title" selectname="i_deleteAnchorGroup"><i class="fas fa-minus-square"
+                            style='font-size:20px;'></i></label>
+                    <input id="btn_edit_group_delete" type="button" class="btn-hidden" />
                     <table id="table_edit_group_ids" class="table-line">
                         <thead>
                             <tr>
@@ -457,7 +408,7 @@
                     </table>
                     <br>
                     <label class="i18n" name="i_anchorID"></label> :
-                    <label id="edit_group_anchor"></label>
+                    <select id="edit_group_anchor"></select>
                     <br><br>
                     <label class="i18n" name="i_posX"></label> :
                     <input type="text" id="edit_group_anchor_x" value="" style="max-width:100px;">
@@ -469,7 +420,7 @@
             </form>
         </div>
     </div>
-    <!-- i18n 多語言翻譯 -->
+    <!-- i18n translation -->
     <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
     <script type="text/javascript" src="../js/i18n/language.js"></script>
     <!-- i18n -->

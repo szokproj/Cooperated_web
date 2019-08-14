@@ -341,35 +341,39 @@ function catchMap_Anchors() {
 }
 
 function inputAnchorArray(anchor_info) {
-    var isNotRepeat = anchorArray.every(function (v) {
-        return v.id != anchor_info.id;
+    var repeat = anchorArray.findIndex(function (v) {
+        return v.id == anchor_info.id;
     });
-    if (isNotRepeat) {
-        anchorArray.push({
-            id: anchor_info.id,
-            type: anchor_info.type,
-            x: anchor_info.x / canvasImg.scale,
-            y: canvasImg.height - anchor_info.y / canvasImg.scale, //因為Server回傳的座標為左下原點
-            group_id: anchor_info.group_id //只有副基站需要用group_id
-        });
-    }
+    if (repeat > -1)
+        anchorArray.splice(repeat, 1);
+    anchorArray.push({
+        id: anchor_info.id,
+        type: anchor_info.type,
+        x: anchor_info.x / canvasImg.scale,
+        y: canvasImg.height - anchor_info.y / canvasImg.scale, //因為Server回傳的座標為左下原點
+        group_id: anchor_info.group_id //只有副基站需要用group_id
+    });
     draw();
 }
 
 function handleMainAnchorPosition() {
     $(function () {
-        $("#table_edit_grouplist tbody").empty();
-        $("#edit_grouplist_main_anchor").html(getMainAnchorDropdown(""));
-        $("#edit_grouplist_main_anchor_x").val($("#x").text());
-        $("#edit_grouplist_main_anchor_y").val($("#y").text());
-        $("#dialog_edit_group_list").dialog("open");
+        $("#add_grouplist_id").val("");
+        $("#add_group_id_alert").empty();
+        $("#add_grouplist_name").val("");
+        $("#add_grouplist_main_anchor").html(getMainAnchorDropdown(""));
+        $("#add_grouplist_main_anchor_x").val($("#x").text());
+        $("#add_grouplist_main_anchor_y").val($("#y").text());
+        $("#dialog_add_group_list").dialog("open");
     });
 }
 
 function handleAnchorPosition() {
     $(function () {
+        $("#label_edit_group_add").show();
+        $("#label_edit_group_delete").show();
         $("#table_edit_group_ids tbody").empty();
-        $("#edit_group_anchor").html(getAnchorDropdown(""));
+        $("#edit_group_anchor").html(getAnchorDropdown("")).prop("disabled", false);
         $("#edit_group_anchor_x").val($("#x").text());
         $("#edit_group_anchor_y").val($("#y").text());
         $("#dialog_edit_anchor_group").dialog("open");

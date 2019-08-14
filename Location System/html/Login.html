@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title class="i18n" name='i_pageTitle'>Location System</title>
+    <meta id="i18n_pagename" content="common">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--BootStrap3-->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!--JQuery庫-->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Add icon library -->
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'
+        integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+    <!--Edit css-->
+    <style>
+        .container {
+            height: 600px;
+            width: 100%;
+            /*background: lightblue;*/
+        }
+
+        h4 {
+            font-family: Sans-serif;
+        }
+
+        .block {
+            margin: auto;
+            margin-top: 100px;
+            width: 35%;
+            height: 240px;
+            background: lightgray;
+            border-radius: 2px;
+            /*box-shadow: inset 3px 3px 12px gray;
+            padding: 3px;*/
+            box-shadow: 2px 2px 3px gray;
+            padding: 5px;
+
+        }
+
+        .input-group {
+            margin: 10px;
+        }
+
+        .btn-submit {
+            float: right;
+            margin: 5px 10px;
+        }
+    </style>
+    <!--Edit js-->
+    <script type="text/javascript" src="../js/general_functions.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var h = document.documentElement.clientHeight;
+            $(".container").css("height", h + "px");
+        });
+
+        function verifyLogin() {
+            var account = $("#account");
+            var password = $("#password");
+            var valid = true;
+            account.removeClass("ui-state-error");
+            password.removeClass("ui-state-error");
+            valid = valid && checkLength(account, $.i18n.prop('i_loginError_1'), 1, 50);
+            valid = valid && checkLength(password, $.i18n.prop('i_loginError_2'), 1, 50);
+            if (valid) {
+                window.location.href = '../index.html';
+                
+                /*var requestJSON = JSON.stringify({
+                    "Command_Type": ["Write"],
+                    "Command_Name": [""],
+                    "Value": {
+                        "account": account.val(),
+                        "password": password.val()
+                    }
+                });
+                var xmlHttp = createJsonXmlHttp('sql');
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (revObj.success > 0)
+                            window.location.href = '../index.html'; //Verification success
+                        else
+                            alert($.i18n.prop('i_loginFailed_1'));
+                    }
+                };
+                xmlHttp.send(requestJSON);*/
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Web content -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div style="float:right;">
+                    <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
+                    <select id="language" style="margin-top:5px;">
+                        <option value="en">English</option>
+                        <option value="zh-TW">繁體中文</option>
+                        <option value="zh-CN">简体中文</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="block">
+                    <form>
+                        <span style="text-align:center;">
+                            <h4 class="i18n" name="i_userLogin"></h4>
+                        </span>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                            <input type="text" id="account" class="form-control i18n-input" selectattr="placeholder"
+                                selectname="i_account">
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                            <input type="text" id="password" class="form-control i18n-input" selectattr="placeholder"
+                                selectname="i_password">
+                        </div>
+                        <hr>
+                        <div style="margin-left:10px;">
+                            <input type="checkbox" id="remember"> <span class="i18n" name="i_remember"
+                                style="color:rgb(78, 78, 78);"></span>
+                        </div>
+                    </form>
+                    <input type="button" class="btn btn-primary btn-submit i18n-input" selectattr="value"
+                        selectname="i_login" onclick="verifyLogin()" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- i18n 多語言翻譯 -->
+    <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
+    <script type="text/javascript" src="../js/i18n/language.js"></script>
+    <!-- i18n -->
+</body>
+
+</html>

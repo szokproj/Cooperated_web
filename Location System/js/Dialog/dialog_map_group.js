@@ -8,7 +8,7 @@ function inputMapGroupList(map_group_list, maps, groups) {
     map_array = maps;
     group_array = groups;
     $(function () {
-        $("#dialog_map_group tbody").empty(); //先重置表格
+        $("#dialog_map_group tbody").empty();
         count_map_group = 0;
         for (var i = 0; i < map_group_list.length; i++) {
             count_map_group++;

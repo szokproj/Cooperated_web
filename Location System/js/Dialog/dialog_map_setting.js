@@ -57,8 +57,6 @@ $(function () {
     function SubmitResult() {
         allFields.removeClass("ui-state-error");
         var valid = true;
-        var alert1 = $.i18n.prop('i_mapAlert_1');
-        var alert2 = $.i18n.prop('i_mapAlert_2');
         valid = valid && checkLength(mapinfo_id, $.i18n.prop('i_mapAlert_1'), 1, 50);
         valid = valid && checkLength(mapinfo_name, $.i18n.prop('i_mapAlert_2'), 1, 50);
         valid = valid && checkLength(mapinfo_scale, $.i18n.prop('i_mapAlert_3'), 1, 5);
@@ -106,8 +104,6 @@ $(function () {
         hiddenBlock();
         $("#block_info").show();
         $("#label_map_info").css('background-color', 'rgb(40, 108, 197)');
-        //isPosition = true;
-        //startAnchorPosition();
         allFields.removeClass("ui-state-error");
     }
 

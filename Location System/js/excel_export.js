@@ -53,16 +53,15 @@
                     break;
             }
 
+            if (excelData) {
+                if ($settings.returnUri) {
+                    return excelData;
+                } else {
 
-            if ($settings.returnUri) {
-                return excelData;
-            } else {
-
-                if (!isBrowserIE()) {
-                    window.open(excelData);
+                    if (!isBrowserIE()) {
+                        window.open(excelData);
+                    }
                 }
-
-
             }
         }
 
@@ -186,10 +185,11 @@
                     table: htmltable
                 };
 
-                var link = document.createElement("a");
-                link.download = "export.xls";
+                var link = document.getElementById("excel_export_download"); //綁定a標籤
+                link.download = $settings.fileName; //"RTLS.xls"
                 link.href = uri + base64(format(excelFile, ctx));
-                link.click();
+                link.click(); //模擬點擊實現下載
+
                 return false; //(uri + base64(format(excelFile, ctx)));
             }
         }

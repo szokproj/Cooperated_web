@@ -41,21 +41,6 @@ function updateGroupArray() {
     return groupArray;
 }
 
-function catchGroupList() {
-    var groupListArray = [];
-    var g_id = document.getElementsByName("grouplist_id");
-    var m_id = document.getElementsByName("grouplist_main_anchor_id");
-    g_id.forEach(function (element, index) {
-        if (element.innerText != "" && typeof (element.innerText) != 'undefined') {
-            groupListArray.push({
-                group_id: element.innerText,
-                main_anchor_id: m_id[index].value
-            });
-        }
-    });
-    return groupListArray;
-}
-
 function getMainAnchorDropdown(select) {
     var mainAnchorList = document.getElementsByName("list_main_anchor_id");
     var options = "";
@@ -143,7 +128,5 @@ function setGroupConnectChange(Element_id, Element_name) { //連動Group的id與
         });
     });
 }
-
-
 //取出不重複的參考網址
 //https://guahsu.io/2017/06/JavaScript-Duplicates-Array/

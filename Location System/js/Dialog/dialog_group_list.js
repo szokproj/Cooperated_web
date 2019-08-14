@@ -1,4 +1,56 @@
 var allGroups = [];
+var maps_groupsArray = [];
+
+function getMaps_Groups() {
+    var getGroupsRequest = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetGroups"]
+    };
+    var groupsXmlHttp = createJsonXmlHttp("sql");
+    groupsXmlHttp.onreadystatechange = function () {
+        if (groupsXmlHttp.readyState == 4 || groupsXmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                allGroups = 'Values' in revObj ? revObj.Values.slice(0) : [];
+                var getMapGroupRequest = {
+                    "Command_Type": ["Read"],
+                    "Command_Name": ["GetMaps_Groups"]
+                };
+                var mapGroupXmlHttp = createJsonXmlHttp("sql");
+                mapGroupXmlHttp.onreadystatechange = function () {
+                    if (mapGroupXmlHttp.readyState == 4 || mapGroupXmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (revObj.success > 0) {
+                            maps_groupsArray = 'Values' in revObj ? revObj.Values.slice(0) : [];
+                        } else {
+                            alert($.i18n.prop('i_mapAlert_12'));
+                        }
+                    }
+                };
+                mapGroupXmlHttp.send(JSON.stringify(getMapGroupRequest));
+            }
+        }
+    };
+    groupsXmlHttp.send(JSON.stringify(getGroupsRequest));
+}
+
+function AddMapGroup(map_groupArray) {
+    var addRequest = {
+        "Command_Type": ["Write"],
+        "Command_Name": ["AddListMap_Group"],
+        "Value": map_groupArray
+    };
+    var addXmlHttp = createJsonXmlHttp("sql");
+    addXmlHttp.onreadystatechange = function () {
+        if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                return;
+            }
+        }
+    };
+    addXmlHttp.send(JSON.stringify(addRequest));
+}
 
 function getGroupList() {
     var map_id = $("#map_info_id").val();
@@ -16,10 +68,8 @@ function getGroupList() {
             if (revObj.success > 0) {
                 var mainAnchorArr = [];
                 var revInfo = 'Values' in revObj == true ? revObj.Values : [];
-                allGroups = [];
                 $("#table_group_list tbody").empty();
                 revInfo.forEach(function (element, index) {
-                    allGroups.push(element.group_id);
                     element.group_name = typeof (element.group_name) != 'undefined' ? element.group_name : "";
                     var tr_id = "tr_group_list_" + (index + 1);
                     $("#table_group_list tbody").append("<tr id=\"" + tr_id + "\"><td>" +
@@ -64,50 +114,85 @@ function getGroupList() {
 }
 
 function editGroupList(main_anchor_id, set_x, set_y) {
-    if (main_anchor_id != "") {
-        var groupList = getRowData_Group();
-        var count = 0;
-        $("#table_edit_grouplist tbody").empty();
-        groupList.forEach(element => {
-            if (element.main_anchor_id == main_anchor_id) {
-                count++;
-                $("#table_edit_grouplist tbody").append("<tr>" +
-                    "<td><input type=\"checkbox\" name=\"checkbox_edit_grouplist\" value=\"\" /> " + count + "</td>" +
-                    "<td><select name=\"edit_grouplist_id\">" +
-                    makeNameOptions("group_id", groupList, element.group_id) + "</select></td>" +
-                    "<td><select name=\"edit_grouplist_name\">" +
-                    makeNameOptions("group_name", groupList, element.group_name) + "</select></td></tr>");
-            }
-        });
-        setGroupConnectChange("select[name='edit_grouplist_id']", "select[name='edit_grouplist_name']");
-        $("#edit_grouplist_main_anchor").html(getMainAnchorDropdown(main_anchor_id));
-        $("#edit_grouplist_main_anchor_x").val(set_x);
-        $("#edit_grouplist_main_anchor_y").val(set_y);
-        $("#dialog_edit_group_list").dialog("open");
-    }
+    if (main_anchor_id == "")
+        return;
+    var groupList = getRowData_Group();
+    var count = 0;
+    $("#table_edit_grouplist tbody").empty();
+    groupList.forEach(element => {
+        if (element.main_anchor_id == main_anchor_id) {
+            count++;
+            $("#table_edit_grouplist tbody").append("<tr>" +
+                "<td><input type=\"hidden\" name=\"checkbox_edit_grouplist\" />" + count + "</td>" +
+                "<td><input type=\"text\" name=\"edit_grouplist_id\" value=\"" +
+                element.group_id + "\" style=\"max-width:80px; background:white;\" disabled/></td>" +
+                "<td><input type=\"text\" name=\"edit_grouplist_name\" value=\"" +
+                element.group_name + "\" style=\"max-width:80px; background:white;\" /></td></tr>");
+        }
+    });
+    $("#label_edit_grouplist_add").hide();
+    $("#label_edit_grouplist_delete").hide();
+    $("#edit_grouplist_main_anchor").html(getMainAnchorDropdown(main_anchor_id)).prop("disabled", true);
+    $("#edit_grouplist_main_anchor_x").val(set_x);
+    $("#edit_grouplist_main_anchor_y").val(set_y);
+    $("#dialog_edit_group_list").dialog("open");
 }
 
-function EditGroupInfo(editInfo) {
-    var editRequest = {
-        "Command_Type": ["Write"],
-        "Command_Name": ["EditGroup_Info"],
-        "Value": editInfo
+function EditGroupInfoByMA(main_anchor_id, set_x, set_y) {
+    var getRequest = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetMainAnchorsInMap"],
+        "Value": {
+            "map_id": $("#map_info_id").val()
+        }
     };
-    var editXmlHttp = createJsonXmlHttp("sql");
-    editXmlHttp.onreadystatechange = function () {
-        if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
+    var getXmlHttp = createJsonXmlHttp("sql");
+    getXmlHttp.onreadystatechange = function () {
+        if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
-                return;
+                var mapGroupInfo = 'Values' in revObj == true ? revObj.Values : [];
+                mapGroupInfo.forEach(function (v, i) {
+                    if (v.main_anchor_id == main_anchor_id) {
+                        var editRequest = {
+                            "Command_Type": ["Write"],
+                            "Command_Name": ["EditGroup_Info"],
+                            "Value": {
+                                "group_id": v.group_id,
+                                "group_name": v.group_name,
+                                "main_anchor_id": main_anchor_id,
+                                "set_x": set_x,
+                                "set_y": set_y,
+                                "mode": v.mode,
+                                "mode_value": v.mode_value,
+                                "fence": v.fence
+                            }
+                        };
+                        var editXmlHttp = createJsonXmlHttp("sql");
+                        editXmlHttp.onreadystatechange = function () {
+                            if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
+                                var revObj2 = JSON.parse(this.responseText);
+                                if (revObj2.success > 0) {
+                                    return;
+                                }
+                            }
+                        };
+                        editXmlHttp.send(JSON.stringify(editRequest));
+                    }
+                });
+                getAllDataOfMap();
+            } else {
+                alert($.i18n.prop('i_mapAlert_6'));
             }
         }
     };
-    editXmlHttp.send(JSON.stringify(editRequest));
+    getXmlHttp.send(JSON.stringify(getRequest));
 }
 
 $(function () {
     $("#btn_add_group").on('click', function () {
         $("#add_grouplist_id").val("");
+        $("#add_group_id_alert").empty();
         $("#add_grouplist_name").val("");
         $("#add_grouplist_main_anchor").html(getMainAnchorDropdown(""));
         $("#add_grouplist_main_anchor_x").val("");
@@ -174,8 +259,10 @@ $(function () {
 
     $("#add_grouplist_id").on('change', function () {
         if ($(this).val().length > 0) {
-            var repeat = allGroups.indexOf($(this).val());
-            if (repeat > -1)
+            var isBoundByMap = maps_groupsArray.findIndex(function (map_group) {
+                return map_group.group_id == $("#add_grouplist_id").val();
+            });
+            if (isBoundByMap > -1)
                 $("#add_group_id_alert").text($.i18n.prop('i_existed')).css('color', 'red');
             else
                 $("#add_group_id_alert").text($.i18n.prop('i_canAdd')).css('color', 'green');
@@ -184,26 +271,32 @@ $(function () {
         }
     });
 
-
     var dialog, form,
         add_grouplist_id = $("#add_grouplist_id"),
         add_grouplist_name = $("#add_grouplist_name"),
         add_main_anchor = $("#add_grouplist_main_anchor"),
-        allFields = $([]).add(add_grouplist_id).add(add_grouplist_name).add(add_main_anchor);
+        add_main_anchor_x = $("#add_grouplist_main_anchor_x"),
+        add_main_anchor_y = $("#add_grouplist_main_anchor_y"),
+        allFields = $([]).add(add_grouplist_id).add(add_grouplist_name)
+        .add(add_main_anchor).add(add_main_anchor_x).add(add_main_anchor_y);
 
-    function addGrouplist() {
+    function submitAddGrouplist() {
         allFields.removeClass("ui-state-error");
         var valid = true;
-        valid = valid && checkLength(add_grouplist_id, $.i18n.prop('i_mapAlert_14'), 1, 5);
-        allGroups.forEach(element => { //驗證Group ID是否重複
-            if (element == add_grouplist_id.val()) {
-                valid = false;
-                add_grouplist_id.addClass("ui-state-error");
-                alert($.i18n.prop('i_mapAlert_11'));
-            }
+        var isBoundByMap = maps_groupsArray.findIndex(function (map_group) {
+            return map_group.group_id == add_grouplist_id.val();
         });
+        if (isBoundByMap > -1) {
+            valid = false;
+            add_grouplist_id.addClass("ui-state-error");
+            alert($.i18n.prop('i_mapAlert_11'));
+        }
+        valid = valid && checkLength(add_grouplist_id, $.i18n.prop('i_mapAlert_14'), 1, 5);
         valid = valid && checkLength(add_grouplist_name, $.i18n.prop('i_mapAlert_13'), 1, 50);
         valid = valid && checkLength(add_main_anchor, $.i18n.prop('i_mapAlert_14'), 1, 5);
+        valid = valid && checkLength(add_main_anchor_x, $.i18n.prop('i_mapAlert_13'), 1, 50);
+        valid = valid && checkLength(add_main_anchor_y, $.i18n.prop('i_mapAlert_13'), 1, 50);
+
         if (valid) {
             var request = {
                 "Command_Type": ["Write"],
@@ -212,6 +305,8 @@ $(function () {
                     "group_id": add_grouplist_id.val(),
                     "group_name": add_grouplist_name.val(),
                     "main_anchor_id": add_main_anchor.val(),
+                    "set_x": add_main_anchor_x.val(),
+                    "set_y": add_main_anchor_y.val(),
                     "mode": "normal",
                     "mode_value": "0",
                     "fence": "0"
@@ -222,17 +317,37 @@ $(function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
                     if (revObj.success > 0) {
-                        getAllDataOfMap();
-                        dialog.dialog("close");
+                        var request2 = {
+                            "Command_Type": ["Write"],
+                            "Command_Name": ["AddListMap_Group"],
+                            "Value": [{
+                                "map_id": $("#map_info_id").val(),
+                                "group_id": add_grouplist_id.val()
+                            }]
+                        };
+                        var xmlHttp2 = createJsonXmlHttp("sql");
+                        xmlHttp2.onreadystatechange = function () {
+                            if (xmlHttp2.readyState == 4 || xmlHttp2.readyState == "complete") {
+                                var revObj = JSON.parse(this.responseText);
+                                if (revObj.success > 0) {
+                                    getAllDataOfMap();
+                                    EditGroupInfoByMA(
+                                        add_main_anchor.val(),
+                                        add_main_anchor_x.val(),
+                                        add_main_anchor_y.val()
+                                    );
+                                    dialog.dialog("close");
+                                }
+                            }
+                        };
+                        xmlHttp2.send(JSON.stringify(request2));
                     }
                 }
             };
             xmlHttp.send(JSON.stringify(request));
-            dialog.dialog("close");
         }
         return valid;
     }
-
 
     dialog = $("#dialog_add_group_list").dialog({
         autoOpen: false,
@@ -243,7 +358,7 @@ $(function () {
             Cancel: function () {
                 dialog.dialog("close");
             },
-            "Confirm": addGrouplist
+            "Confirm": submitAddGrouplist
         },
         close: function () {
             form[0].reset();
@@ -253,17 +368,11 @@ $(function () {
 
     form = dialog.find("form").on("submit", function (event) {
         event.preventDefault();
-        addGrouplist();
+        submitAddGrouplist();
     });
 });
 
 $(function () {
-    var dialog, form,
-        edit_grouplist_id = $("select[name='edit_grouplist_id']"),
-        edit_grouplist_name = $("select[name='edit_grouplist_name']"),
-        edit_main_anchor = $("#edit_grouplist_main_anchor"),
-        allFields = $([]).add(edit_grouplist_id).add(edit_grouplist_name).add(edit_main_anchor);
-
     $("#btn_edit_grouplist_add").on("click", function () {
         var groupList = getRowData_Group(),
             count = document.getElementsByName("checkbox_edit_grouplist").length + 1;
@@ -281,59 +390,73 @@ $(function () {
             groups = document.getElementsByName("checkbox_edit_grouplist"),
             group_ids = document.getElementsByName("edit_grouplist_id"),
             group_names = document.getElementsByName("edit_grouplist_name"),
-            count = 0;
-        trs = "",
-            groups.forEach(function (element, i) {
-                if (!element.checked) {
-                    count++;
-                    trs += "<tr><td><input type=\"checkbox\" name=\"checkbox_edit_grouplist\" value=\"\" /> " + count + "</td>" +
-                        "<td><select name=\"edit_grouplist_id\">" +
-                        makeNameOptions("group_id", groupList, group_ids[i].value) + "</select></td>" +
-                        "<td><select name=\"edit_grouplist_name\">" +
-                        makeNameOptions("group_name", groupList, group_names[i].value) + "</select></td></tr>";
-                }
-            });
+            count = 0,
+            trs = "";
+        groups.forEach(function (element, i) {
+            if (!element.checked) {
+                count++;
+                trs += "<tr><td><input type=\"checkbox\" name=\"checkbox_edit_grouplist\" value=\"\" /> " + count + "</td>" +
+                    "<td><select name=\"edit_grouplist_id\">" +
+                    makeNameOptions("group_id", groupList, group_ids[i].value) + "</select></td>" +
+                    "<td><select name=\"edit_grouplist_name\">" +
+                    makeNameOptions("group_name", groupList, group_names[i].value) + "</select></td></tr>";
+            }
+        });
         $("#table_edit_grouplist tbody").html(trs);
         setGroupConnectChange("select[name='edit_grouplist_id']", "select[name='edit_grouplist_name']");
     });
 
+    var dialog, form,
+        edit_main_anchor = $("#edit_grouplist_main_anchor"),
+        edit_main_anchor_x = $("#edit_grouplist_main_anchor_x"),
+        edit_main_anchor_y = $("#edit_grouplist_main_anchor_y"),
+        allFields = $([]).add(edit_main_anchor).add(edit_main_anchor_x).add(edit_main_anchor_y);
+
     function submitEditGrouplist() {
-        var valid = true;
+        var valid = true,
+            edit_grouplist_id = $("[name='edit_grouplist_id']"),
+            edit_grouplist_name = $("[name='edit_grouplist_name']");
         allFields.removeClass("ui-state-error");
-        valid = valid && checkLength(edit_grouplist_name, $.i18n.prop('i_mapAlert_13'), 1, 50);
         valid = valid && checkLength(edit_main_anchor, $.i18n.prop('i_mapAlert_14'), 1, 5);
+        valid = valid && checkLength(edit_main_anchor_x, $.i18n.prop('i_mapAlert_13'), 1, 50);
+        valid = valid && checkLength(edit_main_anchor_y, $.i18n.prop('i_mapAlert_13'), 1, 50);
+        edit_grouplist_name.each(function (i) {
+            valid = valid && checkLength(edit_grouplist_name.eq(i), $.i18n.prop('i_mapAlert_13'), 1, 50);
+        });
+
         if (valid) {
-            var requestArray = {
-                "Command_Type": ["Read"],
-                "Command_Name": ["GetGroups"]
-            };
-            var getXmlHttp = createJsonXmlHttp("sql");
-            getXmlHttp.onreadystatechange = function () {
-                if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
-                    var revInfo = revObj.Values;
-                    var id = edit_grouplist_id.text();
-                    if (revObj.success > 0) {
-                        var index = revInfo.findIndex(function (info) {
-                            return info.group_id == id;
-                        })
-                        if (index > -1) {
-                            var editGroupInfo = {
-                                "group_id": revInfo[index].group_id,
-                                "group_name": edit_grouplist_name.val(),
-                                "main_anchor_id": edit_main_anchor.val(),
-                                "mode": revInfo[index].mode,
-                                "mode_value": revInfo[index].mode_value,
-                                "fence": revInfo[index].fence
-                            };
-                            EditGroupInfo(editGroupInfo);
-                            getAllDataOfMap();
-                            dialog.dialog("close");
+            edit_grouplist_id.each(function (i) {
+                var index = allGroups.findIndex(function (info) {
+                    return info.group_id == edit_grouplist_id.eq(i).val();
+                });
+                if (index > -1) {
+                    var request = {
+                        "Command_Type": ["Write"],
+                        "Command_Name": ["EditGroup_Info"],
+                        "Value": {
+                            "group_id": allGroups[index].group_id,
+                            "group_name": edit_grouplist_name.eq(i).val(),
+                            "main_anchor_id": edit_main_anchor.val(),
+                            "set_x": edit_main_anchor_x.val(),
+                            "set_y": edit_main_anchor_y.val(),
+                            "mode": allGroups[index].mode,
+                            "mode_value": allGroups[index].mode_value,
+                            "fence": allGroups[index].fence
                         }
-                    }
+                    };
+                    var xmlHttp = createJsonXmlHttp("sql");
+                    xmlHttp.onreadystatechange = function () {
+                        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                            var revObj = JSON.parse(this.responseText);
+                            if (revObj.success > 0) {
+                                getAllDataOfMap();
+                                dialog.dialog("close");
+                            }
+                        }
+                    };
+                    xmlHttp.send(JSON.stringify(request));
                 }
-            };
-            getXmlHttp.send(JSON.stringify(requestArray));
+            });
         }
         return valid;
     }
@@ -351,6 +474,7 @@ $(function () {
         },
         close: function () {
             form[0].reset();
+            $("#table_edit_grouplist tbody").empty();
             allFields.removeClass("ui-state-error");
             catchMap_Anchors();
         }
