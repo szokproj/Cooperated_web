@@ -1,8 +1,3 @@
-const kEY = ["number", "tag_id", "card_id", "Name", "lastName", "firstName", "EnglishName", "gender", "status",
-    "department", "department_id", "department_color", "jobTitle", "jobTitle_id", "jobTitle_color", "type",
-    "color_type", "color", "alarm_group_id", "phoneJob", "phoneSelf", "mail", "address", "education", "school",
-    "grade", "tech_grade", "birthday", "dateEntry", "dateLeave", "note"
-];
 var default_color = '#2eb82e';
 var memberArray = [];
 var deptColorArray = [];
@@ -14,40 +9,6 @@ var dotTypeArr = ['Dept', 'JobTitle', 'UserType', 'Custom'];
 var statusArr = ['OnJob', 'LeaveJob'];
 var genderArr = ['Male', 'Female'];
 var educationArr = ['PrimarySchool', 'MiddleSchool', 'HighSchool', 'JuniorSchool', 'College', 'GraduateSchool'];
-var exampleArray = [{
-    tag_id: "0000000C0000000C",
-    card_id: "123456",
-    number: "A111",
-    Name: "王小明",
-    firstName: "小明",
-    lastName: "王",
-    EnglishName: "Jack",
-    department: "RD",
-    department_id: "10",
-    department_color: "#23ffed",
-    jobTitle: "Engineer",
-    jobTitle_id: "7",
-    jobTitle_color: "#abff23",
-    type: "General users",
-    color_type: "Dept",
-    color: "#23ffed",
-    alarm_group_id: "1",
-    gender: "male",
-    phoneJob: "02-12345678,123",
-    phoneSelf: "09-87654321",
-    mail: "abc1234@mail.com",
-    address: "OO市XX區YY路J段K號L樓",
-    education: "碩士",
-    school: "OX大學",
-    status: "LeaveJob",
-    grade: "3",
-    tech_grade: "3",
-    birthday: "1991/1/1",
-    dateEntry: "2016/7/1",
-    dateLeave: "2018/10/10",
-    file_ext: "png",
-    note: "leave job",
-}];
 
 
 $(function () {
@@ -200,12 +161,44 @@ $(function () {
         });
     });
     $("#excel_example").click(function () {
-        var array = arrayKeyTranslate(exampleArray);
+        var exampleArray = arrayKeyTranslate([{
+            "tag_id": "0000000C0000000C",
+            "card_id": "123456",
+            "number": "10",
+            "Name": "王小明",
+            "firstName": "小明",
+            "lastName": "王",
+            "EnglishName": "Jack",
+            "department": "RD",
+            "department_id": "10",
+            "department_color": "#23ffed",
+            "jobTitle": "Engineer",
+            "jobTitle_id": "7",
+            "jobTitle_color": "#abff23",
+            "type": "General users",
+            "color_type": "Dept",
+            "color": "#23ffed",
+            "alarm_group_id": "8",
+            "gender": "Male",
+            "phoneJob": "02-12345678,123",
+            "phoneSelf": "09-87654321",
+            "mail": "abc1234@mail.com",
+            "address": "OO市XX區YY路J段K號L樓",
+            "education": "GraduateSchool",
+            "school": "OX大學",
+            "status": "LeaveJob",
+            "grade": "3",
+            "tech_grade": "3",
+            "birthday": "1993/2/10",
+            "dateEntry": "2018/11/21",
+            "dateLeave": "2019/8/1",
+            "note": "已離職",
+        }]);
         $("#dvjson").excelexportjs({
             containerid: "dvjson",
             datatype: 'json',
-            dataset: array,
-            columns: getColumns(array),
+            dataset: exampleArray,
+            columns: getColumns(exampleArray),
             fileName: "RTLS_Example.xls",
             worksheetName: "Member Data"
         });

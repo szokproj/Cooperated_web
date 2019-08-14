@@ -124,6 +124,20 @@
             result += "</tr></thead>";
 
             result += "<tbody>";
+            result += "<tr>";
+            $($settings.columns).each(function (key, value) {
+                if (this.ishidden != true) {
+                    result += "<td";
+                    if (this.width != null) {
+                        result += " style='width: " + this.width + "'";
+                    }
+                    result += ">";
+                    result += this.headertext;
+                    result += "</td>";
+                }
+            });
+            result += "</tr>";
+
             $(gridData).each(function (key, value) {
                 result += "<tr>";
                 $($settings.columns).each(function (k, v) {
@@ -134,7 +148,7 @@
                                 result += " style='width: " + this.width + "'";
                             }
                             result += ">";
-                            result += value[this.datafield];
+                            result += value[this.datafield][1];
                             result += "</td>";
                         }
                     }
@@ -268,8 +282,9 @@ function getColumns(paramData) {
 
     var header = [];
     $.each(paramData[0], function (key, value) {
+        //console.log(key + '==' + value);
         var obj = {}
-        obj["headertext"] = key;
+        obj["headertext"] = value[0] //key;
         obj["datatype"] = "string";
         obj["datafield"] = key;
         header.push(obj);

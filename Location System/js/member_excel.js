@@ -1,5 +1,14 @@
+var datafield = ["number", "tag_id", "card_id", "Name", "lastName", "firstName", "EnglishName", "gender", "status",
+    "department", "department_id", "department_color", "jobTitle", "jobTitle_id", "jobTitle_color", "type",
+    "color_type", "color", "alarm_group_id", "phoneJob", "phoneSelf", "mail", "address", "education", "school",
+    "grade", "tech_grade", "birthday", "dateEntry", "dateLeave", "note"
+];
+
 function arrayKeyTranslate(array) {
-    var translation = {
+    var resultArray = [];
+
+    //input translation title row
+    resultArray.push({
         "number": $.i18n.prop("i_number"),
         "tag_id": $.i18n.prop("i_tagID"),
         "card_id": $.i18n.prop("i_cardID"),
@@ -31,12 +40,13 @@ function arrayKeyTranslate(array) {
         "dateEntry": $.i18n.prop("i_entryDate"),
         "dateLeave": $.i18n.prop("i_leaveDate"),
         "note": $.i18n.prop("i_note")
-    };
-    var resultArray = [];
+    });
+
+    //input data rows
     array.forEach(value => {
         var obj = {};
-        kEY.forEach(key => {
-            obj[translation[key]] = value[key];
+        datafield.forEach(key => {
+            obj[key] = value[key];
         });
         resultArray.push(obj);
     });
@@ -51,6 +61,7 @@ function excelImportTable(jsonData) {
         var allCover = false;
         var allDelete = false;
         var isStop = false;
+        var update_delay = 0;
         var getXmlHttp = createJsonXmlHttp("sql"); //getMemberList
         getXmlHttp.onreadystatechange = function () {
             if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
@@ -58,20 +69,18 @@ function excelImportTable(jsonData) {
                 if (revObj.success > 0) {
                     var memberArray = 'Values' in revObj == true ? revObj.Values : [];
                     var dataArray = JSON.parse(jsonData);
-                    dataArray.forEach(element => {
-                        if (isStop || !element)
+                    dataArray.forEach(function (element, index) {
+                        if (index == 0 || isStop || !element.number)
                             return;
-                        var number = Object.values(element)[0];
-                        //list.map(item => Object.values(item)[0]); 
-                        //0表示第一個屬性值, 用Object中的屬性順序查找，順序與KEY陣列的一致
                         var repeat = memberArray.findIndex(function (info) {
-                            return info.number == number;
+                            return info.number == element.number;
                         });
                         if (repeat > -1) {
-                            if (allCover)
+                            if (allCover) {
                                 coverArr.push(element);
-                            else if (!allDelete) {
-                                if (confirm("導入的工號: " + number + " 已存在，是否覆蓋(相同工號只能有一筆資料)?")) {
+                                update_delay++;
+                            } else if (!allDelete) {
+                                if (confirm("導入的工號: " + element.number + " 已存在，是否覆蓋(相同工號只能有一筆資料)?")) {
                                     if (confirm("其餘重複的工號是否也採取覆蓋?"))
                                         allCover = true;
                                     coverArr.push(element);
@@ -86,29 +95,33 @@ function excelImportTable(jsonData) {
                                     }
                                 }
                             }
-                        } else if (number != "")
+                        } else if (element.number != "") {
                             addArr.push(element);
+                            update_delay++;
+                        }
                     });
 
                     if (!isStop) {
-                        var count = 0;
+                        var delay = 0;
                         if (addArr.length > 0) {
                             addArr.forEach(element => {
-                                count++;
+                                delay++;
                                 setTimeout(function () {
                                     sendMemberData("AddStaff", element);
-                                }, 100 * count);
+                                }, 100 * delay);
                             });
                         }
                         if (coverArr.length > 0) {
                             coverArr.forEach(element => {
-                                count++;
+                                delay++;
                                 setTimeout(function () {
                                     sendMemberData("EditStaff", element);
-                                }, 100 * count);
+                                }, 100 * delay);
                             });
                         }
-                        UpdateMemberList();
+                        setTimeout(function () {
+                            UpdateMemberList();
+                        }, 100 * (update_delay + 1));
                     }
                 } else {
                     alert($.i18n.prop('i_alertError_1'));
@@ -123,8 +136,20 @@ function excelImportTable(jsonData) {
     }
 }
 
-function checkExist(object, num) {
-    return typeof Object.values(object)[num] != 'undefined' ? Object.values(object)[num] : ""
+function checkExist(object, key) {
+    return key in object ? object[key].toString() : "";
+}
+
+function fullOf8Byte(tag_id) {
+    var length = tag_id.length;
+    if (length > 0 && length < 17) {
+        for (i = 0; i < 16 - length; i++) {
+            tag_id = "0" + tag_id;
+        }
+        return tag_id;
+    } else {
+        return "";
+    }
 }
 
 function sendMemberData(operate, element) {
@@ -132,37 +157,33 @@ function sendMemberData(operate, element) {
         "Command_Type": ["Write"],
         "Command_Name": [operate],
         "Value": [{
-            "number": checkExist(element, 0),
-            "tag_id": checkExist(element, 1),
-            "card_id": checkExist(element, 2),
-            "Name": checkExist(element, 3),
-            "lastName": checkExist(element, 4),
-            "firstName": checkExist(element, 5),
-            "EnglishName": checkExist(element, 6),
-            "gender": checkExist(element, 7),
-            "status": checkExist(element, 8),
-            "department": checkExist(element, 9),
-            "department_id": checkExist(element, 10),
-            "department_color": checkExist(element, 11),
-            "jobTitle": checkExist(element, 12),
-            "jobTitle_id": checkExist(element, 13),
-            "jobTitle_color": checkExist(element, 14),
-            "type": checkExist(element, 15),
-            "color_type": checkExist(element, 16),
-            "color": checkExist(element, 17),
-            "alarm_group_id": checkExist(element, 18),
-            "phoneJob": checkExist(element, 19),
-            "phoneSelf": checkExist(element, 20),
-            "mail": checkExist(element, 21),
-            "address": checkExist(element, 22),
-            "education": checkExist(element, 23),
-            "school": checkExist(element, 24),
-            "grade": checkExist(element, 25),
-            "tech_grade": checkExist(element, 26),
-            "birthday": checkExist(element, 27),
-            "dateEntry": checkExist(element, 28),
-            "dateLeave": checkExist(element, 29),
-            "note": checkExist(element, 30),
+            "number": checkExist(element, "number"),
+            "tag_id": fullOf8Byte(checkExist(element, "tag_id")),
+            "card_id": checkExist(element, "card_id"),
+            "Name": checkExist(element, "Name"),
+            "lastName": checkExist(element, "lastName"),
+            "firstName": checkExist(element, "firstName"),
+            "EnglishName": checkExist(element, "EnglishName"),
+            "gender": checkExist(element, "gender"),
+            "status": checkExist(element, "status"),
+            "department_id": checkExist(element, "department_id"),
+            "jobTitle_id": checkExist(element, "jobTitle_id"),
+            "type": checkExist(element, "type"),
+            "color_type": checkExist(element, "color_type"),
+            "color": checkExist(element, "color"),
+            "alarm_group_id": checkExist(element, "alarm_group_id"),
+            "phoneJob": checkExist(element, "phoneJob"),
+            "phoneSelf": checkExist(element, "phoneSelf"),
+            "mail": checkExist(element, "mail"),
+            "address": checkExist(element, "address"),
+            "education": checkExist(element, "education"),
+            "school": checkExist(element, "school"),
+            "grade": checkExist(element, "grade"),
+            "tech_grade": checkExist(element, "tech_grade"),
+            "birthday": checkExist(element, "birthday"),
+            "dateEntry": checkExist(element, "dateEntry"),
+            "dateLeave": checkExist(element, "dateLeave"),
+            "note": checkExist(element, "note"),
             "photo": "",
             "file_ext": "",
             "exist": "1"
@@ -172,8 +193,19 @@ function sendMemberData(operate, element) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success == 0)
-                alert($.i18n.prop('i_alertError_3'));
+            if (revObj && revObj.success > 0) {
+                if (operate == "AddStaff")
+                    alert("新增工號 : " + checkExist(element, "number") + " 的人員資料成功");
+                else
+                    alert("修改工號 : " + checkExist(element, "number") + " 的人員資料成功");
+            } else {
+                if (operate == "AddStaff")
+                    //alert($.i18n.prop('i_alertError_3'));
+                    alert("新增工號 : " + checkExist(element, "number") + " 的人員資料失敗");
+                else
+                    //alert($.i18n.prop('i_alertError_11'));
+                    alert("修改工號 : " + checkExist(element, "number") + " 的人員資料失敗");
+            }
         }
     };
     xmlHttp.send(JSON.stringify(request));
