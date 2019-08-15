@@ -26,7 +26,6 @@
     <!--Edit js-->
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
-    <script type="text/javascript" src="../js/palette.js"></script>
     <script type="text/javascript" src="../js/display_setting.js"></script>
 </head>
 
@@ -72,29 +71,10 @@
                         </thead>
                         <tbody></tbody>
                     </table>
-                    <br>
-                    <label class="i18n" name="i_dotSize"></label> :
-                    <input type="text" id="dot_size_display" value="10"
-                        style="border:0; color:#f6931f; font-weight:bold; width:20px;">
-                    <label style="color:#f6931f;">px</label>
-                    <table style="max-width:100px;">
-                        <tr>
-                            <td>
-                                <div id="dot_size_slider" style="width:150px"></div>
-                            </td>
-                            <td><input type="button" id="btn_size_submit" class="i18n-input" selectAttr="value"
-                                    selectName="i_submit"></td>
-                        </tr>
-                    </table>
                 </div>
             </div>
             <div class="col-lg-6">
                 <canvas id="canvas_preview" class="draw-map"></canvas>
-                <br>
-                <!--<label for="load_image" class="load-file">
-                    載入測試地圖&nbsp;<i class="far fa-images"></i>
-                </label
-                <input type="file" id="load_image" accept="image/*" onchange="loadFile(this)">>-->
             </div>
         </div>
     </div>

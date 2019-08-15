@@ -86,11 +86,11 @@ fieldset {
     /*border: 1px black solid;*/
 }
 
-canvas:hover {
+#canvas:hover {
     cursor: pointer;
 }
 
-canvas:active {
+#canvas:active {
     cursor: move;
 }
 
@@ -140,8 +140,9 @@ canvas:active {
     padding: 5px 0px 5px 30px;
     text-decoration: none;
     text-align: left;
-    font-family: Sans-serif;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
     font-size: 14px;
+    font-weight: normal;
 }
 
 .dropdown input:active,
@@ -164,7 +165,7 @@ canvas:active {
     height: 40px;
     text-decoration: none;
     text-align: left;
-    font-family: Sans-serif;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
     font-weight: normal;
     font-size: 14px;
 }
@@ -212,7 +213,7 @@ input[type="file"] {
     padding: 10px 0px 10px 30px;
     text-decoration: none;
     text-align: left;
-    font-family: Sans-serif;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
     font-weight: normal;
     font-size: 14px;
     cursor: pointer;
@@ -231,6 +232,19 @@ input[type="file"] {
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     border: 0;
+}
+
+.btn-set {
+    cursor: pointer;
+    background: white !important;
+    color: rgb(0, 119, 255) !important;
+    font-size: 18px !important;
+    margin-left: 5px !important;
+    padding: 0px !important;
+}
+
+.btn-set:hover {
+    color: rgb(90, 158, 236) !important;
 }
 
 .btn-icon {
@@ -295,4 +309,12 @@ thead th {
 
 .modal-body {
     background: #36a4ff63;
+}
+
+/* Display size */
+#canvas_display_size {
+    height: 180px;
+    width: 100%;
+    background: lightgray;
+    border: 1px solid lightgray;
 }

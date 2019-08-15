@@ -82,7 +82,5 @@ $(function () {
         sendResult2(status_id);
         dialog2.dialog("close"); //送出後自動關閉視窗
     });
-
-
 });
 

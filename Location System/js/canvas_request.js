@@ -17,6 +17,9 @@ var PIXEL_RATIO, // 獲取瀏覽器像素比
     isStart = false, //設定Anchor座標中
     isFocus = false,
     locating_id = -1,
+    size_anchor = 10,
+    size_tag = 10,
+    size_alarm = 14,
     // Data parameters
     Map_id = "",
     mapArray = [],
@@ -30,9 +33,7 @@ var PIXEL_RATIO, // 獲取瀏覽器像素比
     RedBling = true;
 
 $(function () {
-    /**
-     * Check this page's permission and load navbar
-     */
+    //Check this page's permission and load navbar
     var permission = getPermissionOfPage("index");
     switch (permission) {
         case "":
@@ -51,13 +52,12 @@ $(function () {
     setNavBar("index", "");
 
     //https://www.minwt.com/webdesign-dev/js/16298.html
-    var h = screen.availHeight;
-    var w = screen.availWidth;
-    //console.log("Height: " + h + "\nWidth: " + w);
-    $(".cvsBlock").css("height", h * 0.8 + "px");
-    $(".member-table").css("max-height", h * 0.71 + "px");
-    $(".alarm-table").css("max-height", h * 0.75 + "px");
-    $(".search-table").css("max-height", h * 0.7 + "px");
+    var h = document.documentElement.clientHeight;
+    var w = document.documentElement.clientWidth;
+    $(".cvsBlock").css("height", h * 0.9 + "px");
+    $(".member-table").css("max-height", h * 0.8 + "px");
+    $(".alarm-table").css("max-height", h * 0.8 + "px");
+    $(".search-table").css("max-height", h * 0.8 + "px");
     //預設彈跳視窗載入後隱藏
     $("#member_dialog").dialog({
         autoOpen: false
@@ -119,6 +119,11 @@ function loading() {
 }
 
 function setup() {
+    //從Cookie中取出圖標尺寸
+    var Size = getSizeFromCookie();
+    size_anchor = Size.anchor_size;
+    size_tag = Size.tag_size;
+    size_alarm = Size.alarm_size;
     cvsBlock = document.getElementById("cvsBlock");
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
@@ -132,12 +137,12 @@ function setup() {
         return dpr / bsr;
     })();
     canvas.addEventListener("mousemove", handleMouseMove, false); //滑鼠在畫布中移動的座標
-    canvas.addEventListener("touchstart", handleMobileTouch, {
+    canvas.addEventListener("touchstart", handleMobileTouch, { //手指點擊畫布中座標，跳出tag的訊息框
         passive: true
-    }); //手指點擊畫布中座標，跳出tag的訊息框
-    canvas.addEventListener("mousewheel", handleMouseWheel, {
+    });
+    canvas.addEventListener("mousewheel", handleMouseWheel, { //畫布縮放
         passive: true
-    }); //畫布縮放
+    });
     canvas.addEventListener("DOMMouseScroll", handleMouseWheel, false); // 畫面縮放(for Firefox)
     canvas.addEventListener('click', handleMouseClick, false); //點擊地圖上的tag，跳出tag的訊息框
     //canvas.addEventListener("dblclick", handleDblClick, false); // 快速放大點擊位置
@@ -295,6 +300,23 @@ function selectMapFromCookie() {
     setMap(selectedMap);
 }
 
+function setSizeToCookie(Size) {
+    Cookies.set("anchor_size", Size.anchor_size);
+    Cookies.set("tag_size", Size.tag_size);
+    Cookies.set("alarm_size", Size.alarm_size);
+    size_anchor = Size.anchor_size;
+    size_tag = Size.tag_size;
+    size_alarm = Size.alarm_size;
+}
+
+function getSizeFromCookie() {
+    return {
+        anchor_size: typeof Cookies.get("anchor_size") != 'undefined' ? parseInt(Cookies.get("anchor_size"), 10) : 10,
+        tag_size: typeof Cookies.get("tag_size") != 'undefined' ? parseInt(Cookies.get("tag_size"), 10) : 10,
+        alarm_size: typeof Cookies.get("alarm_size") != 'undefined' ? parseInt(Cookies.get("alarm_size"), 10) : 14
+    };
+}
+
 function resetCanvas_Anchor() {
     cvsBlock.style.background = '#ccc';
     canvasImg.isPutImg = false;
@@ -340,7 +362,7 @@ function getAnchors(map_id) {
                         x: x,
                         y: y
                     });
-                    drawAnchor(ctx, anchorList[i].anchor_id, "", x, y, 1 / Zoom); //畫出點的設定
+                    drawAnchor(ctx, anchorList[i].anchor_id, "", x, y, size_anchor, 1 / Zoom); //畫出點的設定
                 }
             }
         }
@@ -370,7 +392,7 @@ function getAnchors(map_id) {
                         x: x,
                         y: y
                     });
-                    drawAnchor(ctx, anchorList[i].main_anchor_id, "main", x, y, 1 / Zoom);
+                    drawAnchor(ctx, anchorList[i].main_anchor_id, "main", x, y, size_anchor, 1 / Zoom);
                 }
             }
         }
@@ -555,7 +577,7 @@ function handleMouseClick(event) { //滑鼠點擊事件
     tagArray.forEach(function (v) {
         if (v.type == "alarm")
             return;
-        drawInvisiblePoints(ctx, v.id, v.x, v.y, 1 / Zoom);
+        drawInvisiblePoints(ctx, v.id, v.x, v.y, size_tag, 1 / Zoom);
         //如果傳入了事件坐標，就用isPointInPath判斷一下
         if (p && ctx.isPointInPath(p.x, p.y)) {
             $("#member_dialog_tag_id").text(parseInt(v.id.substring(8), 16));
@@ -566,7 +588,7 @@ function handleMouseClick(event) { //滑鼠點擊事件
         }
     });
     alarmArray.forEach(function (v) {
-        drawInvisiblePoints(ctx, v.id, v.x, v.y, 1 / Zoom);
+        drawInvisiblePoints(ctx, v.id, v.x, v.y, size_tag, 1 / Zoom);
         //如果傳入了事件坐標，就用isPointInPath判斷一下
         if (p && ctx.isPointInPath(p.x, p.y))
             setAlarmDialog(v);
@@ -841,21 +863,21 @@ function unlockFocusAlarm() { //解除定位
 function draw() {
     setSize();
     anchorArray.forEach(function (v) {
-        drawAnchor(ctx, v.id, v.type, v.x, v.y, 1 / Zoom);
+        drawAnchor(ctx, v.id, v.type, v.x, v.y, size_anchor, 1 / Zoom);
     });
     tagArray.forEach(function (v) {
-        drawTags(ctx, v.id, v.x, v.y, v.color, 1 / Zoom);
+        drawTags(ctx, v.id, v.x, v.y, v.color, size_tag, 1 / Zoom);
     });
     alarmArray.forEach(function (v) {
-        drawAlarmTags(ctx, v.id, v.x, v.y, v.status, 1 / Zoom);
+        drawAlarmTags(ctx, v.id, v.x, v.y, v.status, size_alarm, 1 / Zoom);
     });
     //Focus the position of this locating tag.
     if (isFocus && locating_id > -1) {
         focusAlarmTag(tagArray[locating_id].x, tagArray[locating_id].y);
         if (tagArray[locating_id].type == "alarm")
-            drawAlarmFocusFrame(ctx, tagArray[locating_id].x, tagArray[locating_id].y, 1 / Zoom);
+            drawAlarmFocusFrame(ctx, tagArray[locating_id].x, tagArray[locating_id].y, size_alarm, 1 / Zoom);
         else
-            drawFocusFrame(ctx, tagArray[locating_id].x, tagArray[locating_id].y, 1 / Zoom);
+            drawFocusFrame(ctx, tagArray[locating_id].x, tagArray[locating_id].y, size_tag, 1 / Zoom);
         //drawFocusMark(ctx, tagArray[locating_id].x, tagArray[locating_id].y, 1 / Zoom);
     }
 }

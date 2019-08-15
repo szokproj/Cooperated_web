@@ -37,6 +37,7 @@ $(function () {
     }
     setNavBar("Member_Setting", "Member_Setting");
 
+    $("#loading").css("height", document.documentElement.clientHeight + "px");
     setTimeout(function () {
         $("#loading").hide();
     }, 500);

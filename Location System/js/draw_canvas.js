@@ -1,17 +1,17 @@
-function drawAnchor(dctx, id, type, x, y, zoom) {
-    // zoom = 1 / Zoom
-    var size = 10 * zoom;
+function drawAnchor(dctx, id, type, x, y, size, zoom) {
+    // zoom = 1 / Zoom //size:10
+    var length = size * zoom;
     if (type == "main")
         dctx.fillStyle = "red";
     else
         dctx.fillStyle = "blue";
     dctx.font = 13 * zoom + 'px serif';
     dctx.fillText(id, x - 5 * zoom, y - 7 * zoom); //anchorID
-    dctx.fillRect(x - 5 * zoom, y - 5 * zoom, size, size);
+    dctx.fillRect(x - 5 * zoom, y - 5 * zoom, length, length);
 }
 
-function drawInvisiblePoints(dctx, id, x, y, zoom) {
-    var radius = 10 * zoom; //半徑
+function drawInvisiblePoints(dctx, id, x, y, size, zoom) {
+    var radius = size * zoom; //半徑 //size:10
     dctx.beginPath();
     dctx.fillStyle = '#ffffff00';
     dctx.arc(x, y - radius * 2, radius, 0, Math.PI * 2, true);
@@ -20,8 +20,8 @@ function drawInvisiblePoints(dctx, id, x, y, zoom) {
     dctx.closePath();
 }
 
-function drawTags(dctx, id, x, y, color, zoom) {
-    var radius = 10 * zoom; //半徑
+function drawTags(dctx, id, x, y, color, size, zoom) {
+    var radius = size * zoom; //半徑 //size:10
     dctx.beginPath();
     dctx.lineWidth = 2 * zoom;
     dctx.arc(x, y - radius * 2, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);
@@ -39,8 +39,8 @@ function drawTags(dctx, id, x, y, color, zoom) {
     dctx.fill();
 }
 
-function drawAlarmTags(dctx, id, x, y, status, zoom) {
-    var radius = 14 * zoom; //半徑
+function drawAlarmTags(dctx, id, x, y, status, size, zoom) {
+    var radius = size * zoom; //半徑 //size:14
     var fillColor = '';
     var markColor = ''
     switch (status) {
@@ -178,8 +178,8 @@ function drawFocusMark(dctx, x, y, zoom) {
     }
 }
 
-function drawFocusFrame(dctx, x, y, zoom) {
-    var radius = 10;
+function drawFocusFrame(dctx, x, y, size, zoom) {
+    var radius = size; //size:10
     dctx.strokeStyle = '#006affd5'; //'#446ca3d5';
     dctx.lineWidth = 2 * zoom;
     dctx.strokeRect(
@@ -189,8 +189,8 @@ function drawFocusFrame(dctx, x, y, zoom) {
         (3 * radius + 10) * zoom);
 }
 
-function drawAlarmFocusFrame(dctx, x, y, zoom) {
-    var radius = 14;
+function drawAlarmFocusFrame(dctx, x, y, size, zoom) {
+    var radius = size; //size:14
     dctx.strokeStyle = '#006affd5'; //'#446ca3d5';
     dctx.lineWidth = 2 * zoom;
     dctx.strokeRect(
