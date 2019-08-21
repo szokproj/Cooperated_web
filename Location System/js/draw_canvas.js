@@ -191,7 +191,7 @@ function drawFocusFrame(dctx, x, y, size, zoom) {
 
 function drawAlarmFocusFrame(dctx, x, y, size, zoom) {
     var radius = size; //size:14
-    dctx.strokeStyle = '#006affd5'; //'#446ca3d5';
+    dctx.strokeStyle = 'red'; //'#446ca3d5';
     dctx.lineWidth = 2 * zoom;
     dctx.strokeRect(
         x - (radius + 5) * zoom,

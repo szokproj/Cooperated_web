@@ -41,7 +41,6 @@ $(function () {
     });
 
     drawPosition(default_color, size); //預設的點顏色
-    $("#edit_dot_color").css('background-color', default_color);
     $("#edit_dot_color").val(default_color);
     $("#edit_dot_color").change(function () { //設定change事件
         drawPosition($(this).val(), size);
@@ -104,7 +103,6 @@ $(function () {
                 }
 
                 $("#edit_dot_color").val(default_color);
-                $("#edit_dot_color").css('background-color', default_color);
                 drawPosition(default_color, '10');
 
                 //設定add node的跳出視窗
@@ -146,7 +144,7 @@ $(function () {
                         alert($.i18n.prop('i_alertChart_2'));
                         return;
                     }
-                    var addColor = colorToHex($("#edit_dot_color").css('background-color'));
+                    var addColor = colorToHex($("#edit_dot_color").val());
                     var addRequest = {
                         "Command_Type": ["Read"],
                         "Command_Name": ["AddJobTitle"]
@@ -264,10 +262,9 @@ $(function () {
                     return;
                 }
                 var nodeTitle = $node.children('.title');
-                var nodeColor = colorToRGBA(nodeTitle.css('background-color'));
+                var nodeColor = colorToHex(nodeTitle.css('background-color'));
                 $("#edit_type_name").val(nodeTitle.text());
                 $("#edit_dot_color").val(nodeColor);
-                $("#edit_dot_color").css('background-color', nodeColor);
                 drawPosition(nodeColor, size);
                 //設定edit node的跳出視窗
                 dialog = $("#dialog_edit_node").dialog({
@@ -304,7 +301,7 @@ $(function () {
                         $("#edit_type_name").addClass("ui-state-error");
                         return;
                     }
-                    var editColor = $("#edit_dot_color").css('background-color');
+                    var editColor = $("#edit_dot_color").val();
 
                     var editRequest = {
                         "Command_Type": ["Read"],

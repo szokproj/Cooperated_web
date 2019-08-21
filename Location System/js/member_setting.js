@@ -161,48 +161,23 @@ $(function () {
             worksheetName: "Member Data"
         });
     });
+    var lang = getCookie("userLanguage");
     $("#excel_example").click(function () {
-        var exampleArray = arrayKeyTranslate([{
-            "tag_id": "0000000C0000000C",
-            "card_id": "123456",
-            "number": "10",
-            "Name": "王小明",
-            "firstName": "小明",
-            "lastName": "王",
-            "EnglishName": "Jack",
-            "department": "RD",
-            "department_id": "10",
-            "department_color": "#23ffed",
-            "jobTitle": "Engineer",
-            "jobTitle_id": "7",
-            "jobTitle_color": "#abff23",
-            "type": "General users",
-            "color_type": "Dept",
-            "color": "#23ffed",
-            "alarm_group_id": "8",
-            "gender": "Male",
-            "phoneJob": "02-12345678,123",
-            "phoneSelf": "09-87654321",
-            "mail": "abc1234@mail.com",
-            "address": "OO市XX區YY路J段K號L樓",
-            "education": "GraduateSchool",
-            "school": "OX大學",
-            "status": "LeaveJob",
-            "grade": "3",
-            "tech_grade": "3",
-            "birthday": "1993/2/10",
-            "dateEntry": "2018/11/21",
-            "dateLeave": "2019/8/1",
-            "note": "已離職",
-        }]);
-        $("#dvjson").excelexportjs({
-            containerid: "dvjson",
-            datatype: 'json',
-            dataset: exampleArray,
-            columns: getColumns(exampleArray),
-            fileName: "RTLS_Example.xls",
-            worksheetName: "Member Data"
-        });
+        link = document.getElementById("excel_export_download");
+        if (lang == "en") {
+            link.download = "RTLS_Example_EN.xls";
+            link.href = "../excel/RTLS_Example_EN.xls";
+        } else if (lang == "zh-TW") {
+            link.download = "RTLS_Example_TW.xls";
+            link.href = "../excel/RTLS_Example_TW.xls";
+        } else if (lang == "zh-CN") {
+            link.download = "RTLS_Example_CN.xls";
+            link.href = "../excel/RTLS_Example_CN.xls";
+        } else {
+            link.download = "RTLS_Example_EN.xls";
+            link.href = "../excel/RTLS_Example_EN.xls";
+        }
+        link.click();
     });
 });
 

@@ -71,9 +71,9 @@
                     <input type="file" id="excel_import" />
                     <label for="excel_export" class="load-file i18n" name="i_excel_export"></label>
                     <input type="button" id="excel_export" class="btn-hidden" />
-                    <a href="" id="excel_export_download"></a>
                     <label for="excel_example" class="load-file i18n" name="i_excel_example"></label>
                     <input type="button" id="excel_example" class="btn-hidden" />
+                    <a href="" id="excel_export_download"></a>
                 </div>
                 <div class="table_member">
                     <table class="table-line" id="table_member_setting">
@@ -148,7 +148,6 @@
                                     <td><input type="text" id="main_card_id" style="width:100%;"></td>
                                 </tr>
                             </table>
-
                             <div style="display:flex">
                                 <table class="noborder-block" style="width:55%;">
                                     <tr>
@@ -178,7 +177,6 @@
                                         <td><select id="main_type"></select></td>
                                     </tr>
                                 </table>
-
                                 <table class="noborder-block" style="width:45%; float: right;">
                                     <tr>
                                         <td>
@@ -207,7 +205,6 @@
                                     </tr>
                                 </table>
                             </div>
-
                             <table class="noborder-block">
                                 <tr>
                                     <td><label for="main_select_tag_color" class="i18n" name="i_drawType"></label></td>
@@ -216,9 +213,7 @@
                                     <td><label for="main_input_tag_color" class="custom-file-download">
                                             <img src="../image/palette.png" style="max-width:20px;">
                                         </label>
-                                        <input type="hidden" class="palette" id="main_input_tag_color"
-                                            style="max-width:30px;">
-                                        <input type="text" id="main_display_color" style="max-width:30px;" readonly>
+                                        <input type="color" id="main_input_tag_color" style="max-width:30px;" disabled>
                                     </td>
                                 </tr>
                                 <tr>

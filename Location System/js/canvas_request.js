@@ -16,13 +16,14 @@ var PIXEL_RATIO, // 獲取瀏覽器像素比
     isFitWindow = true,
     isStart = false, //設定Anchor座標中
     isFocus = false,
-    locating_id = -1,
+    locating_id = "",
     size_anchor = 10,
     size_tag = 10,
     size_alarm = 14,
     // Data parameters
     Map_id = "",
     mapArray = [],
+    groupfindMap = {},
     anchorArray = [],
     tagArray = [],
     alarmArray = [],
@@ -147,6 +148,10 @@ function setup() {
     canvas.addEventListener('click', handleMouseClick, false); //點擊地圖上的tag，跳出tag的訊息框
     //canvas.addEventListener("dblclick", handleDblClick, false); // 快速放大點擊位置
 
+    //getMapGroup(map_id);
+    getMemberData();
+    getMapGroup();
+
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
@@ -179,8 +184,7 @@ function setup() {
 function addMapTab(map_id, map_name) {
     var tab_map_id = "map_tab_" + map_id;
     $("#input_map").before("<button type=\"button\" name=\"map_tab\" class=\"btn btn-primary\" id=\"" +
-        tab_map_id + "\" onclick=\"setMap(\'" + map_id + "\')\">" +
-        map_name + "</button></li>");
+        tab_map_id + "\" onclick=\"setMap(\'" + map_id + "\')\">" + map_name + "</button></li>");
     setMap(map_id);
     $("#map_btn_" + map_id).prop('disabled', true).css('color', 'lightgray');
 }
@@ -202,6 +206,7 @@ function closeMapTag() {
 
 function setMap(map_id) {
     //loading();
+    isFocus = false;
     var index = mapArray.findIndex(function (info) {
         return info.map_id == map_id;
     });
@@ -222,27 +227,28 @@ function setMap(map_id) {
         document.getElementById("scale_visible").innerText = map_scale;
         setCanvas(this.src, serverImg.width, serverImg.height);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        xleftView = 0;
-        ytopView = 0;
-        Zoom = 1.0;
-        ctx.save(); //紀錄原比例
-        $("#canvas").css("margin-left", "0px").css("margin-top", "0px");
-        var serImgSize = serverImg.width / serverImg.height;
-        var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
-        var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
-        var cvsSize = cvsBlock_width / cvsBlock_height;
-        if (serImgSize > cvsSize) { //原圖比例寬邊較長
-            Zoom = cvsBlock_width / serverImg.width;
-            setCanvas(this.src, cvsBlock_width, serverImg.height * Zoom);
-        } else {
-            Zoom = cvsBlock_height / serverImg.height;
-            setCanvas(this.src, serverImg.width * Zoom, cvsBlock_height);
+
+        if (!isFocus) {
+            xleftView = 0;
+            ytopView = 0;
+            Zoom = 1.0;
+            ctx.save(); //紀錄原比例
+            $("#canvas").css("margin-left", "0px").css("margin-top", "0px");
+            var serImgSize = serverImg.width / serverImg.height;
+            var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
+            var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
+            var cvsSize = cvsBlock_width / cvsBlock_height;
+            if (serImgSize > cvsSize) { //原圖比例寬邊較長
+                Zoom = cvsBlock_width / serverImg.width;
+                setCanvas(this.src, cvsBlock_width, serverImg.height * Zoom);
+            } else {
+                Zoom = cvsBlock_height / serverImg.height;
+                setCanvas(this.src, serverImg.width * Zoom, cvsBlock_height);
+            }
         }
-        /**
-         * 在設定好地圖後，導入Anchors & Groups & Tags' setting
-         */
+        //在設定好地圖後，導入Anchors & Tags' setting
+        Map_id = map_id;
         getAnchors(map_id);
-        getMemberData();
         Start();
     };
 }
@@ -409,11 +415,11 @@ function getMapGroup() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            var map_group_list = revObj.Values;
             if (revObj.success > 0) {
-                var map_infos = [];
-                for (i in mapArray)
-                    map_infos.push(mapArray[i].map_id);
+                var revInfo = "Values" in revObj ? revObj.Values.slice(0) : [];
+                revInfo.forEach(element => {
+                    groupfindMap[element.group_id] = element.map_id;
+                });
             }
         }
     };
@@ -709,7 +715,6 @@ function changeAlarmLight() {
             $("#alarmSideBar_icon").css("color", "red");
         else
             $("#alarmSideBar_icon").css("color", "white");
-
     } else {
         $("#alarmSideBar_icon").css("color", "white");
     }
@@ -718,10 +723,7 @@ function changeAlarmLight() {
 function updateTagList() {
     var request = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetTagList"],
-        "Value": {
-            "Map_id": Map_id
-        }
+        "Command_Name": ["GetTagList"]
     };
     var xmlHttp = createJsonXmlHttp("requestTagList_json");
     xmlHttp.onreadystatechange = function () {
@@ -743,6 +745,8 @@ function updateTagList() {
                     var name = member_index > -1 ? memberArray[member_index].Name : "";
                     var color = member_index > -1 ? memberArray[member_index].color : "";
                     //update tag array
+                    if (revObj[i].tag_id == "00000000000000A8")
+                        console.log("group_id: " + revObj[i].group_id);
                     tagArray.push({
                         id: revObj[i].tag_id,
                         x: revObj[i].tag_x / canvasImg.scale, // * Zoom,
@@ -751,7 +755,8 @@ function updateTagList() {
                         color: color,
                         number: number,
                         name: name,
-                        type: "normal"
+                        type: "normal",
+                        group_id: revObj[i].group_id
                     });
                     update += temp_arr.findIndex(function (info) {
                         return info.id == revObj[i].tag_id;
@@ -786,6 +791,7 @@ function updateTagList() {
                                 id: tagArray[alarmIndex].id,
                                 x: tagArray[alarmIndex].x,
                                 y: tagArray[alarmIndex].y,
+                                group_id: tagArray[alarmIndex].group_id,
                                 status: alarmFilterArr[j].alarm_type,
                                 time: alarmFilterArr[j].time
                             });
@@ -804,10 +810,29 @@ function locateTag(tag_id) {
         return info.id == tag_id;
     });
     if (index > -1) {
-        locating_id = index;
+        locating_id = tag_id;
+        changeFocusMap(tagArray[index].group_id);
+    } else {
+        showMyModel();
+    }
+}
+
+function changeFocusMap(group_id) {
+    var map_id = group_id in groupfindMap ? groupfindMap[group_id] : "";
+    if (map_id != "") {
+        if ($("#map_btn_" + map_id).prop("disabled")) {
+            $("#map_tab_" + map_id).click();
+        } else {
+            var i = mapArray.findIndex(function (info) {
+                return info.map_id == map_id;
+            });
+            if (i > -1)
+                addMapTab(mapArray[i].map_id, mapArray[i].map_name);
+        }
         isFocus = true;
     } else {
         showMyModel();
+        isFocus = false;
     }
 }
 
@@ -849,6 +874,8 @@ function releaseFocusAlarm(alarm_order) { //解除指定的alarm
 }
 
 function unlockFocusAlarm() { //解除定位
+    var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
+    var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
     isFocus = false;
     xleftView = 0; //恢復原比例
     ytopView = 0;
@@ -856,7 +883,11 @@ function unlockFocusAlarm() { //解除定位
     ctx.restore();
     ctx.save();
     isFitWindow = false;
-    $("#canvas").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
+    $("#canvas").css("margin-left", "0px").css("margin-top", "0px");
+    if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
+        Zoom = cvsBlock_width / serverImg.width;
+    else
+        Zoom = cvsBlock_height / serverImg.height;
     setSize();
 }
 
@@ -866,19 +897,35 @@ function draw() {
         drawAnchor(ctx, v.id, v.type, v.x, v.y, size_anchor, 1 / Zoom);
     });
     tagArray.forEach(function (v) {
-        drawTags(ctx, v.id, v.x, v.y, v.color, size_tag, 1 / Zoom);
+        //if (v.id == "00000000000000A8")
+        //    console.log("group_id: " + v.group_id);
+        if (groupfindMap[v.group_id] == Map_id)
+            drawTags(ctx, v.id, v.x, v.y, v.color, size_tag, 1 / Zoom);
     });
     alarmArray.forEach(function (v) {
-        drawAlarmTags(ctx, v.id, v.x, v.y, v.status, size_alarm, 1 / Zoom);
+        if (groupfindMap[v.group_id] == Map_id)
+            drawAlarmTags(ctx, v.id, v.x, v.y, v.status, size_alarm, 1 / Zoom);;
     });
     //Focus the position of this locating tag.
-    if (isFocus && locating_id > -1) {
-        focusAlarmTag(tagArray[locating_id].x, tagArray[locating_id].y);
-        if (tagArray[locating_id].type == "alarm")
-            drawAlarmFocusFrame(ctx, tagArray[locating_id].x, tagArray[locating_id].y, size_alarm, 1 / Zoom);
-        else
-            drawFocusFrame(ctx, tagArray[locating_id].x, tagArray[locating_id].y, size_tag, 1 / Zoom);
-        //drawFocusMark(ctx, tagArray[locating_id].x, tagArray[locating_id].y, 1 / Zoom);
+    if (isFocus) {
+        var index = tagArray.findIndex(function (info) {
+            return info.id == locating_id;
+        });
+        if (index > -1) {
+            //console.log("focus_index: " + index);
+            var target = tagArray[index];
+            //console.log("group_id: " + target.group_id);
+            var target_map_id = target.group_id in groupfindMap ? groupfindMap[target.group_id] : "";
+            if (target_map_id != Map_id) {
+                changeFocusMap(target.group_id);
+            }
+            focusAlarmTag(target.x, target.y);
+            if (target.type == "alarm")
+                drawAlarmFocusFrame(ctx, target.x, target.y, size_alarm, 1 / Zoom);
+            else
+                drawFocusFrame(ctx, target.x, target.y, size_tag, 1 / Zoom);
+            //drawFocusMark(ctx, target.x, target.y, 1 / Zoom);
+        }
     }
 }
 

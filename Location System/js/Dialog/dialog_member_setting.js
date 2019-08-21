@@ -14,14 +14,11 @@ function setCommand(name) {
 
 function selectTagColor() {
     $("#main_input_tag_color").val(default_color);
-    $("#main_input_tag_color").css("background-color", default_color);
-    $("#main_display_color").css("background-color", default_color);
     //先還原為預設顏色，再依據選擇代入已設定顏色
     var index = $("#main_select_tag_color").children('option:selected').index();
     switch (index) {
         case 1:
-            $("#main_display_color").attr("type", "text");
-            $("#main_input_tag_color").attr("type", "hidden");
+            $("#main_input_tag_color").prop("disabled", true);
             var requestJSON = JSON.stringify({
                 "Command_Type": ["Read"],
                 "Command_Name": ["GetDepartment_relation_list"]
@@ -39,7 +36,6 @@ function selectTagColor() {
                             nodeArray.forEach(function (v) {
                                 if (v.c_id == $("#hidden_department").val()) {
                                     $("#main_input_tag_color").val(colorToHex(v.color));
-                                    $("#main_display_color").css("background-color", colorToHex(v.color));
                                 }
                             });
                         }
@@ -49,8 +45,7 @@ function selectTagColor() {
             xmlHttp.send(requestJSON);
             break;
         case 2:
-            $("#main_display_color").attr("type", "text");
-            $("#main_input_tag_color").attr("type", "hidden");
+            $("#main_input_tag_color").prop("disabled", true);
             var requestJSON = JSON.stringify({
                 "Command_Type": ["Read"],
                 "Command_Name": ["GetJobTitle_relation_list"]
@@ -68,7 +63,6 @@ function selectTagColor() {
                             nodeArray.forEach(function (v) {
                                 if (v.c_id == $("#hidden_jobTitle").val()) {
                                     $("#main_input_tag_color").val(colorToHex(v.color));
-                                    $("#main_display_color").css("background-color", colorToHex(v.color));
                                 }
                             });
                         }
@@ -78,8 +72,7 @@ function selectTagColor() {
             xmlHttp.send(requestJSON);
             break;
         case 3:
-            $("#main_display_color").attr("type", "text");
-            $("#main_input_tag_color").attr("type", "hidden");
+            $("#main_input_tag_color").prop("disabled", true);
             var requestJSON = JSON.stringify({
                 "Command_Type": ["Read"],
                 "Command_Name": ["GetUserTypes"]
@@ -97,7 +90,6 @@ function selectTagColor() {
                             nodeArray.forEach(function (v) {
                                 if (v.type == $("#main_type").val()) {
                                     $("#main_input_tag_color").val(colorToHex(v.color));
-                                    $("#main_display_color").css("background-color", colorToHex(v.color));
                                 }
                             });
                         }
@@ -107,13 +99,11 @@ function selectTagColor() {
             xmlHttp.send(requestJSON);
             break;
         case 4:
-            $("#main_display_color").attr("type", "hidden");
-            $("#main_input_tag_color").attr("type", "text");
+            $("#main_input_tag_color").prop("disabled", false);
             //假如已使用自訂顏色，則在導入時即顯示，此處做為變更成自訂時顏色保持預設
             break;
         default:
-            $("#main_display_color").attr("type", "text");
-            $("#main_input_tag_color").attr("type", "hidden");
+            $("#main_input_tag_color").prop("disabled", true);
             break;
     }
 }

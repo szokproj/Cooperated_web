@@ -1,0 +1,326 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:x="urn:schemas-microsoft-com:office:excel"
+xmlns="http://www.w3.org/TR/REC-html40" xml:lang="en-US">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=utf-8">
+<meta name=ProgId content=Excel.Sheet>
+<meta name=Generator content="Microsoft Excel 11">
+<link rel=File-List href="RTLS_Example%20(2).files/filelist.xml">
+<link rel=Edit-Time-Data href="RTLS_Example%20(2).files/editdata.mso">
+<link rel=OLE-Object-Data href="RTLS_Example%20(2).files/oledata.mso">
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:LastAuthor>RD18</o:LastAuthor>
+  <o:LastSaved>2019-08-16T06:37:23Z</o:LastSaved>
+  <o:Version>11.5606</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]-->
+<style>
+<!--table
+	{mso-displayed-decimal-separator:"\.";
+	mso-displayed-thousand-separator:"\,";}
+@page
+	{margin:1.0in .75in 1.0in .75in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;}
+tr
+	{mso-height-source:auto;
+	mso-ruby-visibility:none;}
+col
+	{mso-width-source:auto;
+	mso-ruby-visibility:none;}
+br
+	{mso-data-placement:same-cell;}
+.style0
+	{mso-number-format:General;
+	text-align:general;
+	vertical-align:middle;
+	white-space:nowrap;
+	mso-rotate:0;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	color:windowtext;
+	font-size:12.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:新細明體, serif;
+	mso-font-charset:136;
+	border:none;
+	mso-protection:locked visible;
+	mso-style-name:一般;
+	mso-style-id:0;}
+td
+	{mso-style-parent:style0;
+	padding-top:1px;
+	padding-right:1px;
+	padding-left:1px;
+	mso-ignore:padding;
+	color:windowtext;
+	font-size:12.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:新細明體, serif;
+	mso-font-charset:136;
+	mso-number-format:General;
+	text-align:general;
+	vertical-align:middle;
+	border:none;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	mso-protection:locked visible;
+	white-space:nowrap;
+	mso-rotate:0;}
+.xl24
+	{mso-style-parent:style0;
+	font-size:10.0pt;
+	font-weight:700;
+	font-family:"Arial Unicode MS", sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	white-space:normal;}
+.xl25
+	{mso-style-parent:style0;
+	font-size:10.0pt;
+	font-family:"Arial Unicode MS", sans-serif;
+	mso-font-charset:0;
+	white-space:normal;}
+.xl26
+	{mso-style-parent:style0;
+	font-size:10.0pt;
+	font-family:"Arial Unicode MS", sans-serif;
+	mso-font-charset:0;
+	mso-number-format:"Short Date";
+	white-space:normal;}
+ruby
+	{ruby-align:left;}
+rt
+	{color:windowtext;
+	font-size:9.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:新細明體, serif;
+	mso-font-charset:136;
+	mso-char-type:none;
+	display:none;}
+-->
+</style>
+<!--[if gte mso 9]><xml>
+ <x:ExcelWorkbook>
+  <x:ExcelWorksheets>
+   <x:ExcelWorksheet>
+    <x:Name>Member Data</x:Name>
+    <x:WorksheetOptions>
+     <x:DefaultRowHeight>330</x:DefaultRowHeight>
+     <x:Print>
+      <x:ValidPrinterInfo/>
+      <x:PaperSizeIndex>9</x:PaperSizeIndex>
+      <x:HorizontalResolution>600</x:HorizontalResolution>
+      <x:VerticalResolution>600</x:VerticalResolution>
+     </x:Print>
+     <x:Selected/>
+     <x:TopRowVisible>1</x:TopRowVisible>
+     <x:LeftColumnVisible>18</x:LeftColumnVisible>
+     <x:Panes>
+      <x:Pane>
+       <x:Number>3</x:Number>
+       <x:ActiveCol>18</x:ActiveCol>
+       <x:RangeSelection>$1:$1</x:RangeSelection>
+      </x:Pane>
+     </x:Panes>
+     <x:ProtectContents>False</x:ProtectContents>
+     <x:ProtectObjects>False</x:ProtectObjects>
+     <x:ProtectScenarios>False</x:ProtectScenarios>
+     <x:DisplayGridlines/>
+    </x:WorksheetOptions>
+   </x:ExcelWorksheet>
+  </x:ExcelWorksheets>
+  <x:WindowHeight>10005</x:WindowHeight>
+  <x:WindowWidth>10005</x:WindowWidth>
+  <x:WindowTopX>120</x:WindowTopX>
+  <x:WindowTopY>135</x:WindowTopY>
+  <x:ProtectStructure>False</x:ProtectStructure>
+  <x:ProtectWindows>False</x:ProtectWindows>
+ </x:ExcelWorkbook>
+</xml><![endif]-->
+</head>
+
+<body link=blue vlink=purple>
+
+<table x:str border=0 cellpadding=0 cellspacing=0 width=3098 style='border-collapse:
+ collapse;table-layout:fixed;width:2326pt'>
+ <col width=61 style='mso-width-source:userset;mso-width-alt:1952;width:46pt'>
+ <col width=133 style='mso-width-source:userset;mso-width-alt:4256;width:100pt'>
+ <col width=59 style='mso-width-source:userset;mso-width-alt:1888;width:44pt'>
+ <col width=97 style='mso-width-source:userset;mso-width-alt:3104;width:73pt'>
+ <col width=75 style='mso-width-source:userset;mso-width-alt:2400;width:56pt'>
+ <col width=76 style='mso-width-source:userset;mso-width-alt:2432;width:57pt'>
+ <col width=97 style='mso-width-source:userset;mso-width-alt:3104;width:73pt'>
+ <col width=57 style='mso-width-source:userset;mso-width-alt:1824;width:43pt'>
+ <col width=85 span=2 style='mso-width-source:userset;mso-width-alt:2720;
+ width:64pt'>
+ <col width=107 style='mso-width-source:userset;mso-width-alt:3424;width:80pt'>
+ <col width=129 style='mso-width-source:userset;mso-width-alt:4128;width:97pt'>
+ <col width=63 style='mso-width-source:userset;mso-width-alt:2016;width:47pt'>
+ <col width=97 style='mso-width-source:userset;mso-width-alt:3104;width:73pt'>
+ <col width=114 style='mso-width-source:userset;mso-width-alt:3648;width:86pt'>
+ <col width=94 style='mso-width-source:userset;mso-width-alt:3008;width:71pt'>
+ <col width=107 style='mso-width-source:userset;mso-width-alt:3424;width:80pt'>
+ <col width=124 style='mso-width-source:userset;mso-width-alt:3968;width:93pt'>
+ <col width=115 style='mso-width-source:userset;mso-width-alt:3680;width:86pt'>
+ <col width=114 style='mso-width-source:userset;mso-width-alt:3648;width:86pt'>
+ <col width=107 style='mso-width-source:userset;mso-width-alt:3424;width:80pt'>
+ <col width=132 style='mso-width-source:userset;mso-width-alt:4224;width:99pt'>
+ <col width=320 style='mso-width-source:userset;mso-width-alt:10240;width:240pt'>
+ <col width=122 style='mso-width-source:userset;mso-width-alt:3904;width:92pt'>
+ <col width=120 style='mso-width-source:userset;mso-width-alt:3840;width:90pt'>
+ <col width=49 style='mso-width-source:userset;mso-width-alt:1568;width:37pt'>
+ <col width=83 style='mso-width-source:userset;mso-width-alt:2656;width:62pt'>
+ <col width=69 style='mso-width-source:userset;mso-width-alt:2208;width:52pt'>
+ <col width=76 style='mso-width-source:userset;mso-width-alt:2432;width:57pt'>
+ <col width=79 style='mso-width-source:userset;mso-width-alt:2528;width:59pt'>
+ <col width=52 style='mso-width-source:userset;mso-width-alt:1664;width:39pt'>
+ <tr height=0 style='display:none'>
+  <td class=xl24 width=61 style='width:46pt'>number</td>
+  <td class=xl24 width=133 style='width:100pt'>tag_id</td>
+  <td class=xl24 width=59 style='width:44pt'>card_id</td>
+  <td class=xl24 width=97 style='width:73pt'>Name</td>
+  <td class=xl24 width=75 style='width:56pt'>lastName</td>
+  <td class=xl24 width=76 style='width:57pt'>firstName</td>
+  <td class=xl24 width=97 style='width:73pt'>EnglishName</td>
+  <td class=xl24 width=57 style='width:43pt'>gender</td>
+  <td class=xl24 width=85 style='width:64pt'>status</td>
+  <td class=xl24 width=85 style='width:64pt'>department</td>
+  <td class=xl24 width=107 style='width:80pt'>department_id</td>
+  <td class=xl24 width=129 style='width:97pt'>department_color</td>
+  <td class=xl24 width=63 style='width:47pt'>jobTitle</td>
+  <td class=xl24 width=97 style='width:73pt'>jobTitle_id</td>
+  <td class=xl24 width=114 style='width:86pt'>jobTitle_color</td>
+  <td class=xl24 width=94 style='width:71pt'>type</td>
+  <td class=xl24 width=107 style='width:80pt'>color_type</td>
+  <td class=xl24 width=124 style='width:93pt'>color</td>
+  <td class=xl24 width=115 style='width:86pt'>alarm_group_id</td>
+  <td class=xl24 width=114 style='width:86pt'>phoneJob</td>
+  <td class=xl24 width=107 style='width:80pt'>phoneSelf</td>
+  <td class=xl24 width=132 style='width:99pt'>mail</td>
+  <td class=xl24 width=320 style='width:240pt'>address</td>
+  <td class=xl24 width=122 style='width:92pt'>education</td>
+  <td class=xl24 width=120 style='width:90pt'>school</td>
+  <td class=xl24 width=49 style='width:37pt'>grade</td>
+  <td class=xl24 width=83 style='width:62pt'>tech_grade</td>
+  <td class=xl24 width=69 style='width:52pt'>birthday</td>
+  <td class=xl24 width=76 style='width:57pt'>dateEntry</td>
+  <td class=xl24 width=79 style='width:59pt'>dateLeave</td>
+  <td class=xl24 width=52 style='width:39pt'>note</td>
+ </tr>
+ <tr height=22 style='height:16.5pt'>
+  <td height=22 class=xl25 width=61 style='height:16.5pt;width:46pt'>Number</td>
+  <td class=xl25 width=133 style='width:100pt'>Tag ID</td>
+  <td class=xl25 width=59 style='width:44pt'>Card ID</td>
+  <td class=xl25 width=97 style='width:73pt'>Name</td>
+  <td class=xl25 width=75 style='width:56pt'>Last Name</td>
+  <td class=xl25 width=76 style='width:57pt'>First Name</td>
+  <td class=xl25 width=97 style='width:73pt'>English Name</td>
+  <td class=xl25 width=57 style='width:43pt'>Gender</td>
+  <td class=xl25 width=85 style='width:64pt'>Work Status</td>
+  <td class=xl25 width=85 style='width:64pt'>Department</td>
+  <td class=xl25 width=107 style='width:80pt'>Department ID</td>
+  <td class=xl25 width=129 style='width:97pt'>Department color</td>
+  <td class=xl25 width=63 style='width:47pt'>Job Title</td>
+  <td class=xl25 width=97 style='width:73pt'>Department ID</td>
+  <td class=xl25 width=114 style='width:86pt'>Department color</td>
+  <td class=xl25 width=94 style='width:71pt'>User Type</td>
+  <td class=xl25 width=107 style='width:80pt'>Point Based On</td>
+  <td class=xl25 width=124 style='width:93pt'>Color Specification</td>
+  <td class=xl25 width=115 style='width:86pt'>Alarm Group</td>
+  <td class=xl25 width=114 style='width:86pt'>Job Phone</td>
+  <td class=xl25 width=107 style='width:80pt'>Personal Phone</td>
+  <td class=xl25 width=132 style='width:99pt'>E-mail</td>
+  <td class=xl25 width=320 style='width:240pt'>Address</td>
+  <td class=xl25 width=122 style='width:92pt'>Highest Education</td>
+  <td class=xl25 width=120 style='width:90pt'>Graduated School</td>
+  <td class=xl25 width=49 style='width:37pt'>Grade</td>
+  <td class=xl25 width=83 style='width:62pt'>Pro Level</td>
+  <td class=xl25 width=69 style='width:52pt'>Birthday</td>
+  <td class=xl25 width=76 style='width:57pt'>Entry Date</td>
+  <td class=xl25 width=79 style='width:59pt'>Leave Date</td>
+  <td class=xl25 width=52 style='width:39pt'>Note</td>
+ </tr>
+ <tr height=22 style='height:16.5pt'>
+  <td height=22 class=xl25 align=right width=61 style='height:16.5pt;
+  width:46pt' x:num>10</td>
+  <td class=xl25 width=133 style='width:100pt'>0000000C0000000C</td>
+  <td class=xl25 align=right width=59 style='width:44pt' x:num>123456</td>
+  <td class=xl25 width=97 style='width:73pt'>Michael Smith</td>
+  <td class=xl25 width=75 style='width:56pt'>Smith</td>
+  <td class=xl25 width=76 style='width:57pt'>Michael</td>
+  <td class=xl25 width=97 style='width:73pt'>Michael</td>
+  <td class=xl25 width=57 style='width:43pt'>Male</td>
+  <td class=xl25 width=85 style='width:64pt'>LeaveJob</td>
+  <td class=xl25 width=85 style='width:64pt'>RD</td>
+  <td class=xl25 align=right width=107 style='width:80pt' x:num>10</td>
+  <td class=xl25 width=129 style='width:97pt'>#23ffed</td>
+  <td class=xl25 width=63 style='width:47pt'>Engineer</td>
+  <td class=xl25 align=right width=97 style='width:73pt' x:num>7</td>
+  <td class=xl25 width=114 style='width:86pt'>#abff23</td>
+  <td class=xl25 width=94 style='width:71pt'>General users</td>
+  <td class=xl25 width=107 style='width:80pt'>Dept</td>
+  <td class=xl25 width=124 style='width:93pt'>#23ffed</td>
+  <td class=xl25 align=right width=115 style='width:86pt' x:num>8</td>
+  <td class=xl25 width=114 style='width:86pt'>02-12345678,123</td>
+  <td class=xl25 width=107 style='width:80pt'>09-87654321</td>
+  <td class=xl25 width=132 style='width:99pt'>abc1234@mail.com</td>
+  <td class=xl25 width=320 style='width:240pt'>123 Example Road Abc City
+  45678-9012 Country</td>
+  <td class=xl25 width=122 style='width:92pt'>GraduateSchool</td>
+  <td class=xl25 width=120 style='width:90pt'>OX University</td>
+  <td class=xl25 align=right width=49 style='width:37pt' x:num>3</td>
+  <td class=xl25 align=right width=83 style='width:62pt' x:num>3</td>
+  <td class=xl26 align=right width=69 style='width:52pt' x:num="34010">1993/2/10</td>
+  <td class=xl26 align=right width=76 style='width:57pt' x:num="43425">2018/11/21</td>
+  <td class=xl26 align=right width=79 style='width:59pt' x:num="43678">2019/8/1</td>
+  <td class=xl25 width=52 style='width:39pt'>Leaved</td>
+ </tr>
+ <![if supportMisalignedColumns]>
+ <tr height=0 style='display:none'>
+  <td width=61 style='width:46pt'></td>
+  <td width=133 style='width:100pt'></td>
+  <td width=59 style='width:44pt'></td>
+  <td width=97 style='width:73pt'></td>
+  <td width=75 style='width:56pt'></td>
+  <td width=76 style='width:57pt'></td>
+  <td width=97 style='width:73pt'></td>
+  <td width=57 style='width:43pt'></td>
+  <td width=85 style='width:64pt'></td>
+  <td width=85 style='width:64pt'></td>
+  <td width=107 style='width:80pt'></td>
+  <td width=129 style='width:97pt'></td>
+  <td width=63 style='width:47pt'></td>
+  <td width=97 style='width:73pt'></td>
+  <td width=114 style='width:86pt'></td>
+  <td width=94 style='width:71pt'></td>
+  <td width=107 style='width:80pt'></td>
+  <td width=124 style='width:93pt'></td>
+  <td width=115 style='width:86pt'></td>
+  <td width=114 style='width:86pt'></td>
+  <td width=107 style='width:80pt'></td>
+  <td width=132 style='width:99pt'></td>
+  <td width=320 style='width:240pt'></td>
+  <td width=122 style='width:92pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=49 style='width:37pt'></td>
+  <td width=83 style='width:62pt'></td>
+  <td width=69 style='width:52pt'></td>
+  <td width=76 style='width:57pt'></td>
+  <td width=79 style='width:59pt'></td>
+  <td width=52 style='width:39pt'></td>
+ </tr>
+ <![endif]>
+</table>
+
+</body>
+
+</html>

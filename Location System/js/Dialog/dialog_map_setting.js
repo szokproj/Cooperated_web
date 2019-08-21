@@ -68,7 +68,6 @@ $(function () {
             valid = false;
             mapinfo_image.addClass("ui-state-error");
         }
-
         if (valid) {
             var mapInfoReq = JSON.stringify({
                 "Command_Type": ["Read"],
@@ -85,9 +84,8 @@ $(function () {
             mapHttp.onreadystatechange = function () {
                 if (mapHttp.readyState == 4 || mapHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0) {
+                    if (revObj && revObj.success > 0) {
                         //reload
-                        $("#maps_gallery").empty();
                         loadMap();
                         dialog.dialog("close");
                         resetDialog();
@@ -107,7 +105,6 @@ $(function () {
         allFields.removeClass("ui-state-error");
     }
 
-
     dialog = $("#dialog_map_setting").dialog({
         autoOpen: false,
         height: 640,
@@ -123,7 +120,6 @@ $(function () {
             },
             Cancel: function () {
                 dialog.dialog("close");
-                resetDialog();
             }
         },
         close: function () {

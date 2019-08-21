@@ -43,7 +43,6 @@ function setupCanvas() {
     cvsBlock.addEventListener("mousewheel", handleMouseWheel, false); // mousewheel duplicates dblclick function
     cvsBlock.addEventListener("DOMMouseScroll", handleMouseWheel, false); // for Firefox
 
-
     $(function () {
         $("#map_info_scale").on("change", function () {
             canvasImg.scale = $(this).val();

@@ -175,7 +175,6 @@ function addType() {
     $("#set_type_name").attr("disabled", false);
     $("#edit_tip").text("");
     $("#set_dot_color").val(default_color);
-    $("#set_dot_color").css('background-color', default_color);
     drawPosition(default_color, size); //預設的點顏色
     $("#dialog_set_type").dialog("open");
 }
@@ -190,7 +189,6 @@ function editType(name, color) {
     $("#edit_tip").text($.i18n.prop('i_alertError_7'));
     var hex_color = colorToHex(color);
     $("#set_dot_color").val(hex_color);
-    $("#set_dot_color").css('background-color', hex_color);
     drawPosition(hex_color, size); //預設的點顏色
     $("#dialog_set_type").dialog("open");
 }

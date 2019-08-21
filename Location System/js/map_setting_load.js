@@ -29,7 +29,6 @@ function setMapArray(new_mapInfos) {
 }
 
 function loadMap() {
-    $("#maps_gallery").empty();
     var requestArray = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetMaps"]
@@ -39,6 +38,7 @@ function loadMap() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
+                $("#maps_gallery").empty();
                 setMapArray(revObj.Values); //利用抽離全部陣列完成陣列拷貝;
                 if (mapArray) {
                     for (i = 0; i < mapArray.length; i++) {
