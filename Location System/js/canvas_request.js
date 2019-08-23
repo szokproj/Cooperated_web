@@ -17,9 +17,6 @@ var PIXEL_RATIO, // 獲取瀏覽器像素比
     isStart = false, //設定Anchor座標中
     isFocus = false,
     locating_id = "",
-    size_anchor = 10,
-    size_tag = 10,
-    size_alarm = 14,
     // Data parameters
     Map_id = "",
     mapArray = [],
@@ -31,7 +28,16 @@ var PIXEL_RATIO, // 獲取瀏覽器像素比
     alarm_count = 0,
     memberArray = [],
     pageTimer = {}, //定義計時器全域變數 
-    RedBling = true;
+    RedBling = true,
+    display_setting = {
+        lock_window: false,
+        fit_window: true
+    },
+    dot_size = {
+        anchor: 10,
+        tag: 10,
+        alarm: 14
+    };
 
 $(function () {
     //Check this page's permission and load navbar
@@ -67,26 +73,26 @@ $(function () {
         autoOpen: false
     });
     $("#canvas").on("mousedown", function (e) {
-        if (!isFocus) {
-            e.preventDefault();
-            var canvas_left = parseInt($("#canvas").css("margin-left"));
-            var canvas_top = parseInt($("#canvas").css("margin-top"));
-            //e.pageX,e.pageY:獲取滑鼠按下時的坐標
-            var downx = e.pageX;
-            var downy = e.pageY;
-            $("#canvas").on("mousemove", function (es) {
-                //滑鼠按下時=>div綁定事件
-                //es.pageX,es.pageY:獲取滑鼠移動後的坐標 
-                xleftView = es.pageX - downx + canvas_left;
-                ytopView = es.pageY - downy + canvas_top;
-                //計算div的最終位置,加上單位
-                $("#canvas").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");
-            });
-            $("#canvas").on("mouseup", function () {
-                //滑鼠彈起時=>div取消事件 
-                $("#canvas").off("mousemove");
-            });
-        }
+        if (display_setting.lock_window && isFocus)
+            return;
+        e.preventDefault();
+        var canvas_left = parseInt($("#canvas").css("margin-left"));
+        var canvas_top = parseInt($("#canvas").css("margin-top"));
+        //e.pageX,e.pageY:獲取滑鼠按下時的坐標
+        var downx = e.pageX;
+        var downy = e.pageY;
+        $("#canvas").on("mousemove", function (es) {
+            //滑鼠按下時=>div綁定事件
+            //es.pageX,es.pageY:獲取滑鼠移動後的坐標 
+            xleftView = es.pageX - downx + canvas_left;
+            ytopView = es.pageY - downy + canvas_top;
+            //計算div的最終位置,加上單位
+            $("#canvas").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");
+        });
+        $("#canvas").on("mouseup", function () {
+            //滑鼠彈起時=>div取消事件 
+            $("#canvas").off("mousemove");
+        });
     });
     $("#canvas").on("touchstart", function (e) {
         e.preventDefault();
@@ -120,11 +126,9 @@ function loading() {
 }
 
 function setup() {
-    //從Cookie中取出圖標尺寸
-    var Size = getSizeFromCookie();
-    size_anchor = Size.anchor_size;
-    size_tag = Size.tag_size;
-    size_alarm = Size.alarm_size;
+    //從Cookie中取出顯示設定&圖標尺寸
+    dot_size = getSizeFromCookie();
+    display_setting = getFocusSetFromCookie();
     cvsBlock = document.getElementById("cvsBlock");
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
@@ -148,10 +152,8 @@ function setup() {
     canvas.addEventListener('click', handleMouseClick, false); //點擊地圖上的tag，跳出tag的訊息框
     //canvas.addEventListener("dblclick", handleDblClick, false); // 快速放大點擊位置
 
-    //getMapGroup(map_id);
     getMemberData();
     getMapGroup();
-
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
@@ -177,6 +179,8 @@ function setup() {
         "Command_Type": ["Read"],
         "Command_Name": ["GetMaps"]
     })); //接收並載入Server的地圖設定到按鈕
+
+    Start();
 
     pageTimer["timer2"] = setInterval('changeAlarmLight()', 1000);
 }
@@ -228,7 +232,7 @@ function setMap(map_id) {
         setCanvas(this.src, serverImg.width, serverImg.height);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        if (!isFocus) {
+        if (!display_setting.lock_window || !isFocus) {
             xleftView = 0;
             ytopView = 0;
             Zoom = 1.0;
@@ -250,7 +254,7 @@ function setMap(map_id) {
         Map_id = map_id;
         getAnchors(map_id);
         Start();
-    };
+    };   
 }
 
 function addMapToCookie(map_id) {
@@ -307,20 +311,15 @@ function selectMapFromCookie() {
 }
 
 function setSizeToCookie(Size) {
-    Cookies.set("anchor_size", Size.anchor_size);
-    Cookies.set("tag_size", Size.tag_size);
-    Cookies.set("alarm_size", Size.alarm_size);
-    size_anchor = Size.anchor_size;
-    size_tag = Size.tag_size;
-    size_alarm = Size.alarm_size;
+    Cookies.set("anchor_size", Size.anchor);
+    Cookies.set("tag_size", Size.tag);
+    Cookies.set("alarm_size", Size.alarm);
+    dot_size = getSizeFromCookie();
 }
 
-function getSizeFromCookie() {
-    return {
-        anchor_size: typeof Cookies.get("anchor_size") != 'undefined' ? parseInt(Cookies.get("anchor_size"), 10) : 10,
-        tag_size: typeof Cookies.get("tag_size") != 'undefined' ? parseInt(Cookies.get("tag_size"), 10) : 10,
-        alarm_size: typeof Cookies.get("alarm_size") != 'undefined' ? parseInt(Cookies.get("alarm_size"), 10) : 14
-    };
+function setFocusSetToCookie(Setting) {
+    Cookies.set("display_setting", JSON.stringify(Setting));
+    display_setting = getFocusSetFromCookie();
 }
 
 function resetCanvas_Anchor() {
@@ -334,6 +333,7 @@ function resetCanvas_Anchor() {
     xleftView = 0;
     ytopView = 0;
     Zoom = 1.0;
+    Map_id = "";
     anchorArray = [];
     document.getElementById('scale_visible').innerText = "";
     document.getElementById('x').value = "";
@@ -368,7 +368,7 @@ function getAnchors(map_id) {
                         x: x,
                         y: y
                     });
-                    drawAnchor(ctx, anchorList[i].anchor_id, "", x, y, size_anchor, 1 / Zoom); //畫出點的設定
+                    drawAnchor(ctx, anchorList[i].anchor_id, "", x, y, dot_size.anchor, 1 / Zoom); //畫出點的設定
                 }
             }
         }
@@ -398,7 +398,7 @@ function getAnchors(map_id) {
                         x: x,
                         y: y
                     });
-                    drawAnchor(ctx, anchorList[i].main_anchor_id, "main", x, y, size_anchor, 1 / Zoom);
+                    drawAnchor(ctx, anchorList[i].main_anchor_id, "main", x, y, dot_size.anchor, 1 / Zoom);
                 }
             }
         }
@@ -534,16 +534,16 @@ function handleMouseWheel(event) { //滑鼠滾輪事件
         scale = 1.1;
     }
     Zoom *= scale; //縮放比例
-    if (!isFocus) {
-        draw();
-        var Next_x = lastX * Zoom; //縮放後滑鼠位移後的位置(x坐標)
-        var Next_y = (canvasImg.height - lastY) * Zoom; //縮放後滑鼠位移後的位置(y坐標)
-        //var canvas_left = parseFloat($("#canvas").css("margin-left")); //canvas目前相對於div的位置(x坐標)
-        //var canvas_top = parseFloat($("#canvas").css("margin-top")); //canvas目前相對於div的位置(y坐標)
-        xleftView += pos_x - Next_x;
-        ytopView += pos_y - Next_y;
-        $("#canvas").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");
-    }
+    if (display_setting.lock_window && isFocus)
+        return;
+    draw();
+    var Next_x = lastX * Zoom; //縮放後滑鼠位移後的位置(x坐標)
+    var Next_y = (canvasImg.height - lastY) * Zoom; //縮放後滑鼠位移後的位置(y坐標)
+    //var canvas_left = parseFloat($("#canvas").css("margin-left")); //canvas目前相對於div的位置(x坐標)
+    //var canvas_top = parseFloat($("#canvas").css("margin-top")); //canvas目前相對於div的位置(y坐標)
+    xleftView += pos_x - Next_x;
+    ytopView += pos_y - Next_y;
+    $("#canvas").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");
 }
 
 /*function handleDblClick(event) {
@@ -583,7 +583,7 @@ function handleMouseClick(event) { //滑鼠點擊事件
     tagArray.forEach(function (v) {
         if (v.type == "alarm")
             return;
-        drawInvisiblePoints(ctx, v.id, v.x, v.y, size_tag, 1 / Zoom);
+        drawInvisiblePoints(ctx, v.id, v.x, v.y, dot_size.tag, 1 / Zoom);
         //如果傳入了事件坐標，就用isPointInPath判斷一下
         if (p && ctx.isPointInPath(p.x, p.y)) {
             $("#member_dialog_tag_id").text(parseInt(v.id.substring(8), 16));
@@ -594,7 +594,7 @@ function handleMouseClick(event) { //滑鼠點擊事件
         }
     });
     alarmArray.forEach(function (v) {
-        drawInvisiblePoints(ctx, v.id, v.x, v.y, size_tag, 1 / Zoom);
+        drawInvisiblePoints(ctx, v.id, v.x, v.y, dot_size.tag, 1 / Zoom);
         //如果傳入了事件坐標，就用isPointInPath判斷一下
         if (p && ctx.isPointInPath(p.x, p.y))
             setAlarmDialog(v);
@@ -733,21 +733,23 @@ function updateTagList() {
             var revObj = JSON.parse(this.responseText);
             if (!revObj)
                 return false;
-            if (canvasImg.isPutImg) {
-                var temp_arr = tagArray;
-                var update = 0;
-                tagArray = [];
-                for (var i = 0; i < revObj.length; i++) {
-                    var member_index = memberArray.findIndex(function (info) {
-                        return info.tag_id == revObj[i].tag_id;
-                    });
-                    var number = member_index > -1 ? memberArray[member_index].number : "";
-                    var name = member_index > -1 ? memberArray[member_index].Name : "";
-                    var color = member_index > -1 ? memberArray[member_index].color : "";
-                    //update tag array
-                    if (revObj[i].tag_id == "00000000000000A8")
-                        console.log("group_id: " + revObj[i].group_id);
-                    tagArray.push({
+            //if (canvasImg.isPutImg) {
+            var temp_arr = tagArray;
+            var update = 0;
+            var focus_data = null;
+            tagArray = [];
+            for (var i = 0; i < revObj.length; i++) {
+                var member_index = memberArray.findIndex(function (info) {
+                    return info.tag_id == revObj[i].tag_id;
+                });
+                var number = member_index > -1 ? memberArray[member_index].number : "";
+                var name = member_index > -1 ? memberArray[member_index].Name : "";
+                var color = member_index > -1 ? memberArray[member_index].color : "";
+                //update tag array
+                //if (revObj[i].tag_id == "00000000000000A8")
+                //    console.log("group_id: " + revObj[i].group_id);
+                if (revObj[i].tag_id == locating_id) {
+                    focus_data = {
                         id: revObj[i].tag_id,
                         x: revObj[i].tag_x / canvasImg.scale, // * Zoom,
                         y: canvasImg.height - revObj[i].tag_y / canvasImg.scale, // * Zoom,
@@ -757,49 +759,71 @@ function updateTagList() {
                         name: name,
                         type: "normal",
                         group_id: revObj[i].group_id
-                    });
-                    update += temp_arr.findIndex(function (info) {
-                        return info.id == revObj[i].tag_id;
-                    }) > -1 ? 0 : 1;
-                }
-                if (update > 0) {
-                    //update member list
-                    $("#table_rightbar_member_list tbody").empty();
-                    tagArray.forEach(function (v, i) {
-                        $("#table_rightbar_member_list tbody").append("<tr><td>" + (i + 1) +
-                            "</td><td>" + parseInt(v.id.substring(8), 16) +
-                            "</td><td>" + v.number +
-                            "</td><td>" + v.name +
-                            "</td><td><button class=\"btn btn-default\"" +
-                            " onclick=\"locateTag(\'" + v.id + "\')\">" +
-                            "<img class=\"icon-image\" src=\"../image/target.png\"></button>" +
-                            "</td></tr>");
+                    }
+                } else {
+                    tagArray.push({
+                        id: revObj[i].tag_id,
+                        x: revObj[i].tag_x / canvasImg.scale, // * Zoom,
+                        y: canvasImg.height - revObj[i].tag_y / canvasImg.scale, // * Zoom,
+                        group_id: revObj[i].group_id,
+                        system_time: revObj[i].tag_time,
+                        color: color,
+                        number: number,
+                        name: name,
+                        type: "normal"
                     });
                 }
-                tableFilter("table_filter_member", "table_rightbar_member_list");
+                update += temp_arr.findIndex(function (info) {
+                    return info.id == revObj[i].tag_id;
+                }) > -1 ? 0 : 1;
+            }
 
-                //定時比對tagArray更新alarmArray
-                alarmArray = []; //每次更新都必須重置alarmArray
-                if (alarmFilterArr.length > 0) {
-                    for (var j = 0; j < alarmFilterArr.length; j++) {
-                        var alarmIndex = tagArray.findIndex(function (tag) {
-                            return tag.id == alarmFilterArr[j].id; //比對Alarm與Tag的ID
+            if (focus_data != null)
+                tagArray.push(focus_data);
+
+            if (update > 0) {
+                //update member list
+                $("#table_rightbar_member_list tbody").empty();
+                tagArray.sort(function (a, b) {
+                    var A = parseInt(a.id.substring(8), 16);
+                    var B = parseInt(b.id.substring(8), 16);
+                    return A - B;
+                });
+                tagArray.forEach(function (v, i) {
+                    $("#table_rightbar_member_list tbody").append("<tr><td>" + (i + 1) +
+                        "</td><td>" + parseInt(v.id.substring(8), 16) +
+                        "</td><td>" + v.number +
+                        "</td><td>" + v.name +
+                        "</td><td><button class=\"btn btn-default\"" +
+                        " onclick=\"locateTag(\'" + v.id + "\')\">" +
+                        "<img class=\"icon-image\" src=\"../image/target.png\"></button>" +
+                        "</td></tr>");
+                });
+            }
+            tableFilter("table_filter_member", "table_rightbar_member_list");
+
+            //定時比對tagArray更新alarmArray
+            alarmArray = []; //每次更新都必須重置alarmArray
+            if (alarmFilterArr.length > 0) {
+                for (var j = 0; j < alarmFilterArr.length; j++) {
+                    var alarmIndex = tagArray.findIndex(function (tag) {
+                        return tag.id == alarmFilterArr[j].id; //比對Alarm與Tag的ID
+                    });
+                    if (alarmIndex > -1) {
+                        alarmArray.push({ //依序將Tag資料放入AlarmArray中
+                            order: alarmFilterArr[j].order,
+                            id: tagArray[alarmIndex].id,
+                            x: tagArray[alarmIndex].x,
+                            y: tagArray[alarmIndex].y,
+                            group_id: tagArray[alarmIndex].group_id,
+                            status: alarmFilterArr[j].alarm_type,
+                            time: alarmFilterArr[j].time
                         });
-                        if (alarmIndex > -1) {
-                            alarmArray.push({ //依序將Tag資料放入AlarmArray中
-                                order: alarmFilterArr[j].order,
-                                id: tagArray[alarmIndex].id,
-                                x: tagArray[alarmIndex].x,
-                                y: tagArray[alarmIndex].y,
-                                group_id: tagArray[alarmIndex].group_id,
-                                status: alarmFilterArr[j].alarm_type,
-                                time: alarmFilterArr[j].time
-                            });
-                            tagArray[alarmIndex].type = "alarm";
-                        }
+                        tagArray[alarmIndex].type = "alarm";
                     }
                 }
             }
+            //}
         }
     };
     xmlHttp.send(JSON.stringify(request));
@@ -819,7 +843,13 @@ function locateTag(tag_id) {
 
 function changeFocusMap(group_id) {
     var map_id = group_id in groupfindMap ? groupfindMap[group_id] : "";
-    if (map_id != "") {
+    if (map_id == "") {
+        isFocus = false;
+        showMyModel();
+    } else if (map_id == Map_id) {
+        isFocus = true;
+        //在同一張地圖內，所以不用切換地圖
+    } else {
         if ($("#map_btn_" + map_id).prop("disabled")) {
             $("#map_tab_" + map_id).click();
         } else {
@@ -830,14 +860,11 @@ function changeFocusMap(group_id) {
                 addMapTab(mapArray[i].map_id, mapArray[i].map_name);
         }
         isFocus = true;
-    } else {
-        showMyModel();
-        isFocus = false;
     }
 }
 
 function focusAlarmTag(x, y) {
-    if (isFocus) {
+    if (display_setting.lock_window && isFocus) {
         var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
         var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
         //Zoom = 2.0;
@@ -874,37 +901,39 @@ function releaseFocusAlarm(alarm_order) { //解除指定的alarm
 }
 
 function unlockFocusAlarm() { //解除定位
-    var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
-    var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
     isFocus = false;
-    xleftView = 0; //恢復原比例
-    ytopView = 0;
-    Zoom = 1.0;
-    ctx.restore();
-    ctx.save();
-    isFitWindow = false;
-    $("#canvas").css("margin-left", "0px").css("margin-top", "0px");
-    if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
-        Zoom = cvsBlock_width / serverImg.width;
-    else
-        Zoom = cvsBlock_height / serverImg.height;
-    setSize();
+    if (display_setting.lock_window) {
+        var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
+        var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
+        xleftView = 0; //恢復原比例
+        ytopView = 0;
+        Zoom = 1.0;
+        ctx.restore();
+        ctx.save();
+        isFitWindow = false;
+        $("#canvas").css("margin-left", "0px").css("margin-top", "0px");
+        if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
+            Zoom = cvsBlock_width / serverImg.width;
+        else
+            Zoom = cvsBlock_height / serverImg.height;
+        setSize();
+    }
 }
 
 function draw() {
     setSize();
     anchorArray.forEach(function (v) {
-        drawAnchor(ctx, v.id, v.type, v.x, v.y, size_anchor, 1 / Zoom);
+        drawAnchor(ctx, v.id, v.type, v.x, v.y, dot_size.anchor, 1 / Zoom);
     });
     tagArray.forEach(function (v) {
         //if (v.id == "00000000000000A8")
         //    console.log("group_id: " + v.group_id);
         if (groupfindMap[v.group_id] == Map_id)
-            drawTags(ctx, v.id, v.x, v.y, v.color, size_tag, 1 / Zoom);
+            drawTags(ctx, v.id, v.x, v.y, v.color, dot_size.tag, 1 / Zoom);
     });
     alarmArray.forEach(function (v) {
         if (groupfindMap[v.group_id] == Map_id)
-            drawAlarmTags(ctx, v.id, v.x, v.y, v.status, size_alarm, 1 / Zoom);;
+            drawAlarmTags(ctx, v.id, v.x, v.y, v.status, dot_size.alarm, 1 / Zoom);;
     });
     //Focus the position of this locating tag.
     if (isFocus) {
@@ -921,24 +950,24 @@ function draw() {
             }
             focusAlarmTag(target.x, target.y);
             if (target.type == "alarm")
-                drawAlarmFocusFrame(ctx, target.x, target.y, size_alarm, 1 / Zoom);
+                drawAlarmFocusFrame(ctx, target.x, target.y, dot_size.alarm, 1 / Zoom);
             else
-                drawFocusFrame(ctx, target.x, target.y, size_tag, 1 / Zoom);
+                drawFocusFrame(ctx, target.x, target.y, dot_size.tag, 1 / Zoom);
             //drawFocusMark(ctx, target.x, target.y, 1 / Zoom);
         }
     }
 }
 
 function Start() {
-    if (canvasImg.isPutImg) {
-        var delaytime = 100; //設定計時器
-        clearInterval(pageTimer["timer1"]);
-        pageTimer["timer1"] = setInterval(function () {
-            updateAlarmList();
-            updateTagList();
-            draw();
-        }, delaytime);
-    }
+    //if (canvasImg.isPutImg) {
+    var delaytime = 100; //設定計時器
+    clearInterval(pageTimer["timer1"]);
+    pageTimer["timer1"] = setInterval(function () {
+        updateAlarmList();
+        updateTagList();
+        draw();
+    }, delaytime);
+    //}
 }
 
 function Stop() {

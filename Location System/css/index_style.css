@@ -318,3 +318,20 @@ thead th {
     background: lightgray;
     border: 1px solid lightgray;
 }
+
+.noborder-block {
+    color: #363636;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+    font-weight: normal;
+    font-size: 14px;
+}
+
+.noborder-block {
+    border: none;
+    padding: 0px;
+}
+
+.noborder-block th,
+.noborder-block td {
+    border: none;
+}

@@ -189,6 +189,48 @@ function EditGroupInfoByMA(main_anchor_id, set_x, set_y) {
     getXmlHttp.send(JSON.stringify(getRequest));
 }
 
+function DeleteGroupInfo(deleteArray) {
+    var deleteRequest = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["DeleteGroup_Info"],
+        "Value": deleteArray
+    };
+    var deleteXmlHttp = createJsonXmlHttp("sql");
+    deleteXmlHttp.onreadystatechange = function () {
+        if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                var deleteMapGroupArr = [];
+                deleteArray.forEach(info => {
+                    maps_groupsArray.forEach(element => {
+                        if (element.group_id == info.group_id) {
+                            deleteMapGroupArr.push({
+                                "map_id": element.map_id,
+                                "group_id": element.group_id
+                            });
+                        }
+                    });
+                });
+                var deleteConnRequest = {
+                    "Command_Type": ["Write"],
+                    "Command_Name": ["DeleteMap_Group"],
+                    "Value": deleteMapGroupArr
+                };
+                var xmlHttp = createJsonXmlHttp("sql");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (revObj.success > 0)
+                            DeleteGroup_Anchor(deleteArray);
+                    }
+                };
+                xmlHttp.send(JSON.stringify(deleteConnRequest));
+            }
+        }
+    };
+    deleteXmlHttp.send(JSON.stringify(deleteRequest));
+}
+
 $(function () {
     $("#btn_add_group").on('click', function () {
         $("#add_grouplist_id").val("");
@@ -205,56 +247,21 @@ $(function () {
     });
 
     $("#btn_delete_group").on('click', function () {
-        var checkboxs = document.getElementsByName("chkbox_group_list");
-        var deleteArr = [];
-        var deleteMapGroupArr = [];
-        var map_id = $("#map_info_id").val();
-        for (j in checkboxs) {
-            if (checkboxs[j].checked) {
-                deleteArr.push({
-                    "group_id": checkboxs[j].value
-                });
-                deleteMapGroupArr.push({
-                    "map_id": map_id,
-                    "group_id": checkboxs[j].value
-                })
-            }
-        }
-        if (deleteArr.length == 0) {
-            alert($.i18n.prop('i_mapAlert_9'));
-            return;
-        }
-        var deleteRequest = {
-            "Command_Type": ["Read"],
-            "Command_Name": ["DeleteGroup_Info"],
-            "Value": deleteArr
-        };
-        var deleteXmlHttp = createJsonXmlHttp("sql");
-        deleteXmlHttp.onreadystatechange = function () {
-            if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
-                var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
-                    DeleteGroup_Anchor(deleteArr);
-                    var deleteConnRequest = {
-                        "Command_Type": ["Write"],
-                        "Command_Name": ["DeleteMap_Group"],
-                        "Value": deleteMapGroupArr
-                    };
-                    var xmlHttp = createJsonXmlHttp("sql");
-                    xmlHttp.onreadystatechange = function () {
-                        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                            var revObj = JSON.parse(this.responseText);
-                            if (revObj.success > 0) {
-                                DeleteGroup_Anchor(deleteArr);
-                                getAllDataOfMap();
-                            }
-                        }
-                    };
-                    xmlHttp.send(JSON.stringify(deleteConnRequest));
+        if (confirm("確定要刪除已勾選的群組?")) {
+            var checkboxs = document.getElementsByName("chkbox_group_list");
+            var deleteArray = [];
+            for (j in checkboxs) {
+                if (checkboxs[j].checked) {
+                    deleteArray.push({
+                        "group_id": checkboxs[j].value
+                    });
                 }
             }
-        };
-        deleteXmlHttp.send(JSON.stringify(deleteRequest));
+            if (deleteArray.length > 0)
+                DeleteGroupInfo(deleteArray);
+            else
+                alert($.i18n.prop('i_mapAlert_9'));
+        }
     });
 
     $("#add_grouplist_id").on('change', function () {

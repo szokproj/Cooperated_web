@@ -60,25 +60,6 @@ function getAnchor_Group() {
     xmlHttp.send(JSON.stringify(requestArray));
 }
 
-function DeleteGroup_Anchor(deleteArr) {
-    var request = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["DeleteGroup_Anchor"],
-        "Value": deleteArr
-    };
-    var xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                getAllDataOfMap();
-                return;
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(request));
-}
-
 function editGroup_Anchor(anchor_id, set_x, set_y) {
     if (anchor_id == "")
         return;
@@ -153,6 +134,22 @@ function EditGroupAnchorByAnc(anchor_id, set_x, set_y) {
     getXmlHttp.send(JSON.stringify(getRequest));
 }
 
+function DeleteGroup_Anchor(deleteArr) {
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["DeleteGroup_Anchor"],
+        "Value": deleteArr
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0)
+                getAllDataOfMap();
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
+}
 
 $(function () {
     var dialog, form,
@@ -174,22 +171,22 @@ $(function () {
     });
 
     $("#btn_delete_anchor_group").on("click", function () {
-        var group_ids = document.getElementsByName("anchorgroup_group_id");
-        var anchor_ids = document.getElementsByName("anchorgroup_anchor_id");
-        var deleteArr = [];
-        for (j in group_ids) {
-            if (group_ids[j].checked) {
-                deleteArr.push({
-                    "group_id": group_ids[j].value,
-                    "anchor_id": anchor_ids[j].value
-                });
+        if (confirm("確定要刪除已勾選的群組內基站?")) {
+            var group_ids = document.getElementsByName("anchorgroup_group_id");
+            var anchor_ids = document.getElementsByName("anchorgroup_anchor_id");
+            var deleteArr = [];
+            for (j in group_ids) {
+                if (group_ids[j].checked) {
+                    deleteArr.push({
+                        "group_id": group_ids[j].value,
+                        "anchor_id": anchor_ids[j].value
+                    });
+                }
             }
-        }
-        if (deleteArr.length > 0) {
-            DeleteGroup_Anchor(deleteArr);
-            getAllDataOfMap();
-        } else {
-            alert($.i18n.prop('i_mapAlert_9'));
+            if (deleteArr.length > 0)
+                DeleteGroup_Anchor(deleteArr);
+            else
+                alert($.i18n.prop('i_mapAlert_9'));
         }
     });
 

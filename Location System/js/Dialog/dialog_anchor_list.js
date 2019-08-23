@@ -21,7 +21,7 @@ function getAnchorList() {
                         count_main_anchor_list++;
                         var tr_id = "tr_main_anchor_list_" + count_main_anchor_list;
                         $("#table_main_anchor_list tbody").append("<tr id=\"" + tr_id + "\">" +
-                            "<td><input type=\"checkbox\" name=\"chkbox_anchor_list\" value=\"" +
+                            "<td><input type=\"checkbox\" name=\"chkbox_main_anchor_list\" value=\"" +
                             anchorsInfoArray[i].anchor_id + "\" onchange=\"selectColumn(\'" + tr_id + "\')\" /> " +
                             count_main_anchor_list + "</td>" +
                             "<td><input type=\"text\" name=\"list_main_anchor_id\" value=\"" +
@@ -67,22 +67,19 @@ function deleteMainAnchor(id) {
                     if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
                         var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
+                        var deleteArray = [];
                         if (revObj.success > 0) {
                             revInfo.forEach(element => {
                                 if (element.main_anchor_id == id) {
-                                    var resetGroupInfo = {
-                                        "group_id": element.group_id,
-                                        "group_name": element.group_name,
-                                        "main_anchor_id": "-1",
-                                        "mode": element.mode,
-                                        "mode_value": element.mode_value,
-                                        "fence": element.fence
-                                    };
-                                    EditGroupInfo(resetGroupInfo);
+                                    deleteArray.push({
+                                        "group_id": element.group_id
+                                    });
                                 }
                             });
-                            getAllDataOfMap();
-                            draw();
+                            if (deleteArray.length > 0)
+                                DeleteGroupInfo(deleteArray);
+                            else
+                                getAllDataOfMap();
                         }
                     }
                 };
@@ -123,8 +120,10 @@ function deleteAnchor(id) {
                                         "anchor_id": element.anchor_id
                                     })
                             });
-                            DeleteGroup_Anchor(deleteArr);
-                            getAllDataOfMap();
+                            if (deleteArr.length > 0)
+                                DeleteGroup_Anchor(deleteArr);
+                            else
+                                getAllDataOfMap();
                         }
                     }
                 };
@@ -160,6 +159,21 @@ $(function () {
         anchor_type.val("");
         anchor_id.val("");
         dialog.dialog("open");
+    });
+
+    $("#btn_delete_anchor_list").click(function () {
+        if (confirm("確定要刪除已勾選的基站?")) {
+            var chk_main_anc = document.getElementsByName("chkbox_main_anchor_list");
+            var chk_anc = document.getElementsByName("chkbox_anchor_list");
+            chk_main_anc.forEach(element => {
+                if (element.checked)
+                    deleteMainAnchor(element.value);
+            });
+            chk_anc.forEach(element => {
+                if (element.checked)
+                    deleteAnchor(element.value);
+            });
+        }
     });
 
     function submitAddAnchor() {

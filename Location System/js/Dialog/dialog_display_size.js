@@ -9,9 +9,9 @@ $(function () {
 
     function sendResult() {
         setSizeToCookie({
-            anchor_size: slider_anchor.value,
-            tag_size: slider_tag.value,
-            alarm_size: slider_alarm.value
+            anchor: slider_anchor.value,
+            tag: slider_tag.value,
+            alarm: slider_alarm.value
         });
         dialog.dialog("close");
     }
@@ -33,13 +33,13 @@ $(function () {
 
     $("#btn_display_size").on("click", function () {
         var Size = getSizeFromCookie();
-        slider_anchor.value = Size.anchor_size;
-        slider_tag.value = Size.tag_size;
-        slider_alarm.value = Size.alarm_size;
+        slider_anchor.value = Size.anchor;
+        slider_tag.value = Size.tag;
+        slider_alarm.value = Size.alarm;
 
-        size_anchor.innerHTML = Size.anchor_size;
-        size_tag.innerHTML = Size.tag_size;
-        size_alarm.innerHTML = Size.alarm_size;
+        size_anchor.innerHTML = Size.anchor;
+        size_tag.innerHTML = Size.tag;
+        size_alarm.innerHTML = Size.alarm;
         dialog.dialog("open");
     });
 
@@ -79,3 +79,12 @@ $(function () {
         }
     }
 });
+
+
+function getSizeFromCookie() {
+    return {
+        anchor: typeof Cookies.get("anchor_size") != 'undefined' ? parseInt(Cookies.get("anchor_size"), 10) : 10,
+        tag: typeof Cookies.get("tag_size") != 'undefined' ? parseInt(Cookies.get("tag_size"), 10) : 10,
+        alarm: typeof Cookies.get("alarm_size") != 'undefined' ? parseInt(Cookies.get("alarm_size"), 10) : 14
+    };
+}

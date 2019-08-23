@@ -179,7 +179,7 @@ function drawFocusMark(dctx, x, y, zoom) {
 }
 
 function drawFocusFrame(dctx, x, y, size, zoom) {
-    var radius = size; //size:10
+    var radius = parseInt(size, 10); //size:10
     dctx.strokeStyle = '#006affd5'; //'#446ca3d5';
     dctx.lineWidth = 2 * zoom;
     dctx.strokeRect(
@@ -190,7 +190,7 @@ function drawFocusFrame(dctx, x, y, size, zoom) {
 }
 
 function drawAlarmFocusFrame(dctx, x, y, size, zoom) {
-    var radius = size; //size:14
+    var radius = parseInt(size, 10); //size:14
     dctx.strokeStyle = 'red'; //'#446ca3d5';
     dctx.lineWidth = 2 * zoom;
     dctx.strokeRect(

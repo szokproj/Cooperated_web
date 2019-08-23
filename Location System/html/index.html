@@ -24,6 +24,7 @@
     <link rel="stylesheet" type="text/css" href="../css/index_data_sidebar.css" />
     <link rel="stylesheet" type="text/css" href="../css/index_alarm_sidebar.css" />
     <link rel="stylesheet" type="text/css" href="../css/slider.css" />
+    <link rel="stylesheet" type="text/css" href="../css/switch_design.css" />
     <!-- Data Table -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css" />
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
@@ -40,6 +41,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_alarm_set.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_display_size.js"></script>
+    <script type="text/javascript" src="../js/Dialog/dialog_display_setting.js"></script>
 </head>
 
 <body>
@@ -64,8 +66,8 @@
                             <label id="btn_set" class="dropdown-toggle btn-set i18n-input" selectattr="title"
                                 selectname="i_setting" data-toggle="dropdown"><i class="fas fa-cog"></i></label>
                             <ul class="dropdown-menu" style="left:-100px;">
-                                <li><input type="button" value="跟蹤模式調整" onclick=""></li>
-                                <li><input type="button" value="物件尺寸調整" id="btn_display_size"></li>
+                                <li><input type="button" value="鎖定模式調整" id="btn_adjust_focus" /></li>
+                                <li><input type="button" value="物件尺寸調整" id="btn_display_size" /></li>
                             </ul>
                         </div>
 
@@ -278,6 +280,31 @@
                     <img class="icon-image" src="../image/target.png">
                 </button>
             </div>
+        </div>
+
+        <!-- The dialog of adjusting the focus mode -->
+        <div id="adjust_focus_mode" title="Adjust focus mode">
+            <table class="noborder-block">
+                <tr>
+                    <td><label>以目標為中心移動畫面</label></td>
+                    <td>
+                        <div class="wrapper">
+                            <input type="checkbox" id="chk_lock_window">
+                            <label for="chk_lock_window"><span></span></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label>自動調整地圖到符合頁面尺寸</label></td>
+                    <td>
+                        <div class="wrapper">
+                            <input type="checkbox" id="chk_fit_window">
+                            <label for="chk_fit_window"><span></span></label>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <br>
         </div>
 
         <!-- The dialog of controling display dot size -->

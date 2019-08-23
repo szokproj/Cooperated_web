@@ -279,6 +279,7 @@ function getAllDataOfMap() {
     getAnchorList();
     getAnchor_Group();
     getGroupList();
+    draw();
 }
 
 function draw() {
