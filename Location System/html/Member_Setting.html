@@ -32,8 +32,7 @@
     <!-- Edit js -->
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
-    <script type="text/javascript" src="../js/table_Page.js"></script>
-    <script type="text/javascript" src="../js/palette.js"></script>
+    <!--<script type="text/javascript" src="../js/table_Page.js"></script>-->
     <script type="text/javascript" src="../js/member_setting.js"></script>
     <script type="text/javascript" src="../js/member_excel.js"></script>
     <!-- JQuery UI - Dialog -->
@@ -76,26 +75,26 @@
                     <a href="" id="excel_export_download"></a>
                 </div>
                 <div class="table_member">
-                    <table class="table-line" id="table_member_setting">
+                    <table id="table_member_setting" class="sticky-table">
                         <thead>
                             <tr>
-                                <th><input type="checkbox" id="selectAll" onchange="" />
-                                    <span class="i18n" name="i_item"></span></th>
-                                <th class="i18n" name="i_number"></th>
-                                <th class="i18n" name="i_userID"></th>
-                                <th class="i18n" name="i_name"></th>
-                                <th class="i18n" name="i_dept"></th>
-                                <th class="i18n" name="i_jobTitle"></th>
-                                <th class="i18n" name="i_userType"></th>
-                                <th class="i18n" name="i_alarmGroup"></th>
-                                <th class="i18n" name="i_note"></th>
-                                <th class="i18n" name="i_setting"></th>
+                                <th><input type="checkbox" id="selectAll" />
+                                    <label class="i18n" name="i_item"></label></th>
+                                <th class="row_number"><label class="i18n" name="i_number"></label></th>
+                                <th class="row_user_id"><label class="i18n" name="i_userID"></label></th>
+                                <th class="row_name"><label class="i18n" name="i_name"></label></th>
+                                <th class="row_dept"><label class="i18n" name="i_dept"></label></th>
+                                <th class="row_job_title"><label class="i18n" name="i_jobTitle"></label></th>
+                                <th class="row_user_type"><label class="i18n" name="i_userType"></label></th>
+                                <th class="row_alarm_group"><label class="i18n" name="i_alarmGroup"></label></th>
+                                <th class="row_note"><label class="i18n" name="i_note"></label></th>
+                                <th class="i18n" name="i_setting" style="width:60px;"></th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
                 </div>
-                <div style="width:100%; text-align:center;">
+                <!--<div style="width:100%; text-align:center;">
                     <ul class="pagination" style="min-width: 730px;">
                         <li><a id="btn0">
                                 <span class="i18n" name="i_nowPage"></span> 0/0 <span class="i18n" name="i_page"></span>
@@ -114,7 +113,7 @@
                                     maxlength="4"> <span class="i18n" name="i_page"></span></a></li>
                         <li><a href="#" class="page-btn i18n" id="btn5" name="i_changePage"></a></li>
                     </ul>
-                </div>
+                </div>-->
             </div>
         </div>
     </div>

@@ -62,20 +62,7 @@ $(function () {
                         if (revObj.success > 0) {
                             setMapArray(mapArray);
                             for (i = 0; i < lan; i++) {
-                                var map = "map_id_" + mapArray[i].map_id;
-                                var src = "data:image/" + mapArray[i].map_file_ext + ";base64," + mapArray[i].map_file;
-                                var img_size = adjustImageSize(src);
-                                $("#maps_gallery").append("<div class=\"thumbnail\">" +
-                                    "<div class=\"image_block\">" +
-                                    "<img src=\"" + src + "\" width=\"" + img_size.width + "\" height=\"" + img_size.height + "\">" +
-                                    "</div>" +
-                                    "<div class=\"caption\"><table style='width:100%;'><tr>" +
-                                    "<th style=\"width:90px;\"><label>" + $.i18n.prop('i_mapName') + "</label> : </th>" +
-                                    "<th style=\"width:50%;\"><span name=\"" + map + "\">" + mapArray[i].map_name + "</span></th>" +
-                                    "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + mapArray + "\',\'" + mapArray[i].map_id + "\')\">設定</button></th>" +
-                                    "<th><button class='btn btn-primary' onclick=\"deleteMap(\'" + mapArray[i].map_id + "\')\">刪除</button></th>" +
-                                    "</tr></table></div>" +
-                                    "</div>");
+                                setThumbnail(mapArray[i]);
                             }
                             dialog.dialog("close");
                             setMapById(mapArray[lan - 1].map_id); //catch last row

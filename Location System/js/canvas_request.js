@@ -14,7 +14,6 @@ var PIXEL_RATIO, // 獲取瀏覽器像素比
     ytopView = 0, //canvas的Y軸位移(負值向上，正值向下)
     Zoom = 1.0, //縮放比例
     isFitWindow = true,
-    isStart = false, //設定Anchor座標中
     isFocus = false,
     locating_id = "",
     // Data parameters
@@ -254,7 +253,7 @@ function setMap(map_id) {
         Map_id = map_id;
         getAnchors(map_id);
         Start();
-    };   
+    };
 }
 
 function addMapToCookie(map_id) {
@@ -945,9 +944,8 @@ function draw() {
             var target = tagArray[index];
             //console.log("group_id: " + target.group_id);
             var target_map_id = target.group_id in groupfindMap ? groupfindMap[target.group_id] : "";
-            if (target_map_id != Map_id) {
+            if (target_map_id != Map_id)
                 changeFocusMap(target.group_id);
-            }
             focusAlarmTag(target.x, target.y);
             if (target.type == "alarm")
                 drawAlarmFocusFrame(ctx, target.x, target.y, dot_size.alarm, 1 / Zoom);

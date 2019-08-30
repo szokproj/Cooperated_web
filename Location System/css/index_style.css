@@ -86,11 +86,11 @@ fieldset {
     /*border: 1px black solid;*/
 }
 
-#canvas:hover {
+canvas:hover {
     cursor: pointer;
 }
 
-#canvas:active {
+canvas:active {
     cursor: move;
 }
 
@@ -309,6 +309,7 @@ thead th {
 
 .modal-body {
     background: #36a4ff63;
+    border-radius: 5px;
 }
 
 /* Display size */

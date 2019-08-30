@@ -16,9 +16,13 @@ table {
 
 th,
 td {
-    padding: 8px;
+    padding: 2px;
     text-align: left;
     border: 1px solid #808080;
+}
+
+input[type="checkbox"] {
+    margin-left: 5px;
 }
 
 input[type="file"] {
@@ -54,11 +58,28 @@ canvas:active {
     -ms-flex: 1;
     flex: 1;
     background: rgb(207, 207, 207);
-    height: 500px;
-    width: 100%;
+    height: 690px;
+    width: 78%;
     overflow: hidden;
     position: relative;
     border: 1px rgb(207, 207, 207) solid;
+}
+
+hr {
+    border-color: rgb(207, 207, 207);
+}
+
+.sidebar_right {
+    width: 22%;
+    padding: 10px;
+    border: 1px rgb(207, 207, 207) solid;
+}
+
+.sidebar_title {
+    background: #ffa742;
+    padding: 4px 6px;
+    border: 0;
+    border-radius: 5px;
 }
 
 .control_btn {
@@ -66,11 +87,17 @@ canvas:active {
     font-family: Sans-serif;
     font-weight: normal;
     font-size: 12px;
-    background: #fc8e10;
+    background: #949494;
     color: #f5f5f5;
 }
 
+.border-block th {
+    text-align: center;
+}
+
 .noborder-block {
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
     border: none;
     padding: 0px;
 }
@@ -78,13 +105,6 @@ canvas:active {
 .noborder-block th,
 .noborder-block td {
     border: none;
-}
-
-.noborder-block label {
-    background: #fc8e10;
-    padding: 6px;
-    border: 0;
-    border-radius: 5px;
 }
 
 .btn-hidden {
@@ -98,15 +118,67 @@ canvas:active {
     border: 0;
 }
 
-.btn-icon {
+.btn-search {
+    float: right;
     cursor: pointer;
     background: #ffffff !important;
     color: #fc8e10;
-    ;
     font-size: 20px;
-    margin: 0px 5px 0px 5px;
 }
 
-.btn-icon:hover {
+.btn-search:hover {
     color: #ffdaaf;
+}
+
+.btn-delete {
+    cursor: pointer;
+    color: rgb(252, 55, 55);
+    font-size: 18px;
+    margin: 0px 5px 0px 0px;
+}
+
+.btn-delete:hover {
+    color: rgb(255, 152, 152)
+}
+
+.btn-add {
+    cursor: pointer;
+    color: rgb(105, 196, 0);
+    font-size: 18px;
+}
+
+.btn-add:hover {
+    color: rgb(179, 226, 126);
+}
+
+.icon-image {
+    max-height: 18px;
+    max-width: 18px;
+    margin: auto;
+    background: transparent !important;
+}
+
+.btn-focus {
+    height: 26px;
+    width: 40px;
+    padding: 0px;
+}
+
+.colorful_dot {
+    width: 20px;
+    height: 20px;
+    margin: auto;
+    border: 1px solid black;
+    border-radius: 50px;
+}
+
+
+/* Model */
+.modal-content {
+    margin: auto;
+    padding: 10px;
+    text-align: center;
+    background: #ffffff;
+    border-radius: 5px;
+    max-width: 200px;
 }

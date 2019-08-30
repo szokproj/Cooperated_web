@@ -308,8 +308,8 @@ function setListenerOfSetAllRow() {
     $("#all_check").parent().on('click', function () {
         var state = $("#all_check").prop("checked");
         $("#all_check").prop("checked", !state);
-        DeviceCheckbox.forEach(function (v) {
-            v.checked = !state;
+        check.forEach(element => {
+            element.checked = !state;
         });
         checked_trans();
     });

@@ -278,3 +278,89 @@ function combineToTagID(tid_id, user_id) {
         user_zero += "0";
     return tid_zero + tid_hex + user_zero + user_hex;
 }
+
+//Sort Table
+
+function setCheckboxListeners() {
+    $("#table_member_setting tbody tr").each(function (index) {
+        var tr = $(this);
+        tr.find('td:eq(0) label').text(index + 1);
+        tr.find('td:eq(0) input').off('click').on('click', function () {
+            tr.children('td:eq(0)').click();
+        });
+        tr.children('td:eq(0)').off('click').on('click', function () {
+            if (!tr.find('td:eq(0) input').prop('checked')) {
+                tr.find('td:eq(0) input').prop('checked', true);
+                tr.children('td').css("background-color", "#e6f5ff");
+            } else {
+                tr.find('td:eq(0) input').prop('checked', false);
+                tr.children('td').css("background-color", "#ffffff");
+            }
+        });
+    });
+}
+
+function sortTable(selector, targetType, compFunc) {
+    var table = $('#table_member_setting');
+    var mySelector = '.sortable';
+    var myCompFunc = function ($td1, $td2, isAsc) {
+        var v1 = "";
+        var v2 = "";
+        if (targetType == '') {
+            v1 = $.trim($td1.text()).replace(/,|\s+|%/g, '');
+            v2 = $.trim($td2.text()).replace(/,|\s+|%/g, '');
+        } else {
+            if ($td1.children().is(targetType)) {
+                v1 = $.trim($td1.children(targetType).val()).replace(/,|\s+|%/g, '');
+                v2 = $.trim($td2.children(targetType).val()).replace(/,|\s+|%/g, '');
+            } else {
+                v1 = $.trim($td1.text()).replace(/,|\s+|%/g, '');
+                v2 = $.trim($td2.text()).replace(/,|\s+|%/g, '');
+            }
+        }
+        var pattern = /^\d+(\.\d*)?$/;
+        if (pattern.test(v1) && pattern.test(v2)) {
+            v1 = parseFloat(v1);
+            v2 = parseFloat(v2);
+        }
+        return isAsc ? v1 > v2 : v1 < v2;
+    };
+    var doSort = function ($tbody, index, compFunc, isAsc) {
+        var $trList = $tbody.find('tr');
+        var len = $trList.length;
+        for (var i = 0; i < len - 1; i++) {
+            for (var j = 0; j < len - i - 1; j++) {
+                var $td1 = $trList.eq(j).find('td').eq(index);
+                var $td2 = $trList.eq(j + 1).find('td').eq(index);
+                if (compFunc($td1, $td2, isAsc)) {
+                    var t = $trList.eq(j + 1);
+                    $trList.eq(j).insertAfter(t);
+                    $trList = $tbody.find('tr');
+                }
+            }
+        }
+    }
+    var init = function () {
+        var $th = table.find('thead tr:eq(0) th').filter(selector);
+        $th.on('click', function () {
+            var index = $(this).index();
+            var asc = $(this).attr('data-asc');
+            isAsc = asc === undefined ? true : (asc > 0 ? true : false);
+            doSort(table.children('tbody'), index, compFunc, isAsc);
+            $(this).children('i').prop('class', isAsc ? 'fas fa-caret-down' : 'fas fa-caret-up');
+            $(this).siblings().children('i').prop('class', 'fas fa-sort');
+            $(this).attr('data-asc', 1 - (isAsc ? 1 : 0));
+            setCheckboxListeners();
+        });
+        $th.css({
+                'cursor': 'pointer',
+                'padding-top': '5px'
+            })
+            .attr('title', 'Sort')
+            .append('&nbsp;<i class="fas fa-sort" style="color:#005acf;float:right;margin-top:2px;" aria-hidden="true"></i>');
+    };
+    selector = selector || mySelector;
+    compFunc = compFunc || myCompFunc;
+    targetType = targetType || '';
+    init();
+}

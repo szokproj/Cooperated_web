@@ -6,13 +6,13 @@
     <title class="i18n" name='i_pageTitle'>Location System</title>
     <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--BootStrap3-->
-    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!--JQuery庫-->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!--BootStrap3-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <!-- Add icon library -->
     <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'
         integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
@@ -48,58 +48,69 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-12" style="display: inline-flex;">
                 <div id="cvsBlock">
-                    <canvas id="canvas">
+                    <canvas id="canvas" style="height:1px; width:1px;">
                         <span class="i18n" name="i_no_canvas"></span>
                     </canvas>
                 </div>
-                <div style="background:wheat; ">
-                    <span class="i18n" name="i_map"></span> : <label id="position" style="margin-right:20px;"></label>
-                    <span class="i18n" name="i_posX"></span> : <label id="draw_x" style="margin-right:20px;"></label>
-                    <span class="i18n" name="i_posY"></span> : <label id="draw_y" style="margin-right:20px;"></label>
-                    <span class="i18n" name="i_time"></span> : <label id="draw_time" style="margin-right:20px;"></label>
-                </div>
-            </div>
-        </div>
 
-
-        <div class="row">
-            <div class="col-lg-5" style="text-align: left;">
-                <table class="noborder-block">
-                    <tr>
-                        <td><label class="i18n" name="i_search"></label></td>
-                        <td><select id="search_type">
-                                <option value="Tag_ID" selected="selected" class="i18n" name="i_tagID"></option>
-                                <option value="Name" class="i18n" name="i_name"></option>
-                            </select> <input type="text" id="search_target" value="000000000000000C">
-                            <label for="btn_search" class="btn-icon">
-                                <i class="fas fa-search" style='font-size:22px;'></i></label>
-                            <input id="btn_search" type="button" class="btn-hidden" onclick="search()" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label class="i18n" name="i_start"></label></td>
-                        <td><span class="i18n" name="i_date"></span> : <input type="date" id="start_date"
-                                value="2019-03-29"> <span class="i18n" name="i_time"></span> : <input type="time"
-                                id="start_time" step="01" value="00:00:00"></td>
-                    </tr>
-                    <tr>
-                        <td><label class="i18n" name="i_end"></label></td>
-                        <td><span class="i18n" name="i_date"></span> : <input type="date" id="end_date"
-                                value="2019-03-29"> <span class="i18n" name="i_time"></span> : <input type="time"
-                                id="end_time" step="01" value="23:59:59"></td>
-                    </tr>
-                </table>
-            </div>
-            <div class="col-lg-7">
-                <div style="margin:10px 0px 10px 0px;">
-                    <label><span class="i18n" name="i_intervals"></span> : <input type="text" id="interval"
-                            style="border:0; color:#f6931f; font-weight:bold; width:40px;" />
-                        <label style="color:#f6931f;">(<span class="i18n" name="i_ms"></span>)</label>
-                        <div id="interval_slider" style="width:250px"></div>
-                    </label>
-                    <div class="btn-group" style="margin-left:20px;">
+                <div class="sidebar_right">
+                    <label class="sidebar_title">Map</label> :
+                    <label for="btn_search" class="btn-search">
+                        <i class="fas fa-search" style='font-size:22px;'></i></label>
+                    <input id="btn_search" type="button" class="btn-hidden" onclick="search()" />
+                    <select id="target_map">
+                        <option>map_1</option>
+                        <option>map_2</option>
+                        <option>map_3</option>
+                    </select>
+                    <br><br>
+                    <label class="sidebar_title">Time</label> :
+                    <table class="noborder-block">
+                        <tr>
+                            <td><span class="i18n" name="i_start"></span> <span class="i18n" name="i_date"></span> :
+                            </td>
+                            <td><input type="date" id="start_date" value="2019-08-28"></td>
+                        </tr>
+                        <tr>
+                            <td><span class="i18n" name="i_start"></span> <span class="i18n" name="i_time"></span> :
+                            </td>
+                            <td><input type="time" id="start_time" step="01" value="10:00:00"></td>
+                        </tr>
+                        <tr>
+                            <td><span class="i18n" name="i_end"></span> <span class="i18n" name="i_date"></span> : </td>
+                            <td><input type="date" id="end_date" value="2019-08-28"></td>
+                        </tr>
+                        <tr>
+                            <td><span class="i18n" name="i_end"></span> <span class="i18n" name="i_time"></span> : </td>
+                            <td><input type="time" id="end_time" step="01" value="11:59:59"></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <label class="sidebar_title">Target</label> :
+                    <div style="float: right;">
+                        <label for="btn_target_add" id="label_target_add" class="btn-add i18n-input" selectattr="title"
+                            selectname="i_add"><i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                        <input id="btn_target_add" type="button" class="btn-hidden" />
+                        <label for="btn_target_delete" id="label_target_delete" class="btn-delete i18n-input"
+                            selectattr="title" selectname="i_delete"><i class="fas fa-minus-square"
+                                style='font-size:20px;'></i></label>
+                        <input id="btn_target_delete" type="button" class="btn-hidden" />
+                    </div>
+                    <table id="table_target" class="border-block">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th style="width:30px;">Color</th>
+                                <th style="width:30px;">Focus</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <hr>
+                    <label class="sidebar_title">Timeline Player</label> :
+                    <div class="btn-group" style="float: right;">
                         <button class="btn btn-default control_btn" id="btn_stop" onclick="stopTimeline()"
                             disabled="true">
                             <i class="fas fa-stop"></i></button>
@@ -109,25 +120,70 @@
                         <button class="btn btn-default control_btn" id="btn_restore" onclick="restoreCanvas()"
                             disabled="true">
                             <i class="fas fa-compress"></i></button>
-                    </div>
+                    </div><br><br>
+                    <label><span class="i18n" name="i_intervals"></span> : <input type="text" id="interval" value="100"
+                            style="border:0; color:#f6931f; font-weight:bold; width:40px;" />
+                        <label style="color:#f6931f;">(<span class="i18n" name="i_ms"></span>)</label>
+                        <div id="interval_slider" style="width:250px"></div>
+                    </label>
                 </div>
             </div>
+        </div>
 
+        <div class="row">
+            <div class="col-lg-12">
+                <div style="background:wheat; ">
+                    <span class="i18n" name="i_map"></span> : <label id="position" style="margin-right:20px;"></label>
+                    <span class="i18n" name="i_posX"></span> : <label id="draw_x" style="margin-right:20px;"></label>
+                    <span class="i18n" name="i_posY"></span> : <label id="draw_y" style="margin-right:20px;"></label>
+                    <span class="i18n" name="i_time"></span> : <label id="draw_time" style="margin-right:20px;"></label>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Hidden Dialog -->
+
+    <!--  Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!--<div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                    </button>
+                </div>-->
+                <label>搜尋中，請稍候 <i class="fas fa-spinner fa-pulse"></i></label>
+            </div>
+        </div>
+    </div>
+
     <div id="timeline_dialog" title="Timeline">
         <span style="display: block;">
-            <label class="i18n" name="i_time"> : </label>
+            <label class="i18n" name="i_tagID"></label> :
+            <label id="timeline_dialog_tag_id"></label>
+            <br>
+            <label class="i18n" name="i_time"></label> :
             <label id="timeline_dialog_time"></label>
             <br>
-            <label class="i18n" name="i_posX"> : </label>
+            <label class="i18n" name="i_posX"></label> :
             <label id="timeline_dialog_x"></label>
             <br>
-            <label class="i18n" name="i_posY"> : </label>
+            <label class="i18n" name="i_posY"></label> :
             <label id="timeline_dialog_y"></label>
         </span>
+    </div>
+
+    <div id="add_target_dialog" title="Add a target">
+        <table class="noborder-block">
+            <tr>
+                <td><label class="i18n" name="i_tagID"></label></td>
+                <td><input type="text" id="add_target_tag_id" /></td>
+            </tr>
+            <tr>
+                <td><label class="i18n" name="i_color"></label></td>
+                <td><input type="color" id="add_target_color" /></td>
+            </tr>
+        </table>
     </div>
     <!-- i18n 多語言翻譯 -->
     <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>

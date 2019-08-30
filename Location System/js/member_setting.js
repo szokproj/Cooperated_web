@@ -42,6 +42,19 @@ $(function () {
         $("#loading").hide();
     }, 500);
 
+    var h = document.documentElement.clientHeight;
+    var w = document.documentElement.clientWidth;
+    $(".table_member").css("height", h * 0.9 + "px");
+
+    sortTable('.row_number', '');
+    sortTable('.row_user_id', '');
+    sortTable('.row_name', '');
+    sortTable('.row_dept', '');
+    sortTable('.row_job_title', '');
+    sortTable('.row_user_type', '');
+    sortTable('.row_alarm_group', '');
+    sortTable('.row_note', '');
+
     /**
      * this page's js start
      */
@@ -93,26 +106,13 @@ $(function () {
         "Command_Type": ["Read"],
         "Command_Name": ["GetUserTypes"]
     }));
-    $("#selectAll").change(function () {
-        var checks = document.getElementsByName("chkbox_members");
-        if ($(this).prop("checked")) {
-            $("input[name='chkbox_members']").prop("checked", true);
-            for (i in checks)
-                $("#tr_member_" + i).addClass("changeBgColor");
-        } else {
-            $("input[name='chkbox_members']").prop("checked", false);
-            for (i in checks)
-                $("#tr_member_" + i).removeClass("changeBgColor");
-        }
-    });
     $("#main_type").change(function () {
         var type = typeof ($(this).val()) != 'undefined' ? $(this).val() : "";
         var index = $("#main_select_tag_color").children('option:selected').index();
         if (index == 3 && type != "") {
             userTypeColorArray.forEach(v => {
                 if (v.type == type) {
-                    $("#main_input_tag_color").val(colorToHex(v.color));
-                    $("#main_display_color").css("background-color", colorToHex(v.color));
+                    $("#main_input_tag_color").val(colorToHex(v.color)).prop("disabled", true);
                 }
             });
         }
@@ -141,6 +141,20 @@ $(function () {
         createChart("jobTitle");
         $("#select_node_title").text($.i18n.prop('i_selectJobtitle') + ' : ');
         $("#dialog_tree_chart").dialog("open");
+    });
+    $("#selectAll").parent().on('click', function () {
+        var state = $("#selectAll").prop("checked");
+        $("#selectAll").prop("checked", !state)
+        if (!state) {
+            $("input[name='chkbox_members']").prop("checked", true);
+            $("#table_member_setting tbody tr td").css("background-color", "#e6f5ff");
+        } else {
+            $("input[name='chkbox_members']").prop("checked", false);
+            $("#table_member_setting tbody tr td").css("background-color", "#ffffff");
+        }
+    });
+    $("#selectAll").on('click', function () {
+        $("#selectAll").parent().click();
     });
     $("#excel_import").change(function () {
         var permission = getPermissionOfPage("Member_Setting");
@@ -180,7 +194,6 @@ $(function () {
         link.click();
     });
 });
-
 
 function UpdateMemberList() {
     var getAlarmGroupReq = {
@@ -222,22 +235,24 @@ function UpdateMemberList() {
                                     });
                                     var alarm_group_name = alarm_index > -1 ? alarmGroupArr[alarm_index].name : "";
                                     $("#table_member_setting tbody").append("<tr id=\"" + tr_id + "\">" +
-                                        "<td><input type=\"checkbox\" name=\"chkbox_members\" value=\"" + number +
-                                        "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (i + 1) + "</td>" +
-                                        "<td>" + number + "</td>" +
-                                        "<td>" + user_id + "</td>" +
-                                        "<td>" + memberArray[i].Name + "</td>" +
-                                        "<td>" + memberArray[i].department + "</td>" +
-                                        "<td>" + memberArray[i].jobTitle + "</td>" +
-                                        "<td>" + memberArray[i].type + "</td>" +
-                                        "<td>" + alarm_group_name + "</td>" +
-                                        "<td>" + memberArray[i].note + "</td>" +
-                                        "<td><button class=\"btn btn-primary\"" +
+                                        "<td><input type=\"checkbox\" name=\"chkbox_members\" value=\"" + number + "\" " +
+                                        " /> <label>" + (i + 1) + "</label></td>" +
+                                        "<td class=\"row_number\">" + number + "</td>" +
+                                        "<td class=\"row_user_id\">" + user_id + "</td>" +
+                                        "<td class=\"row_name\">" + memberArray[i].Name + "</td>" +
+                                        "<td class=\"row_dept\">" + memberArray[i].department + "</td>" +
+                                        "<td class=\"row_job_title\">" + memberArray[i].jobTitle + "</td>" +
+                                        "<td class=\"row_user_type\">" + memberArray[i].type + "</td>" +
+                                        "<td class=\"row_alarm_group\">" + alarm_group_name + "</td>" +
+                                        "<td class=\"row_note\">" + memberArray[i].note + "</td>" +
+                                        "<td><button class=\"btn btn-primary btn-edit\"" +
                                         " onclick=\"editMemberData(\'" + number + "\')\">" + $.i18n.prop('i_edit') +
                                         "</button></td>" +
                                         "</tr>");
                                 }
-                                displayBar("table_member_setting");
+                                //displayBar("table_member_setting");
+                                setCheckboxListeners();
+
                             }
                         } else {
                             alert($.i18n.prop('i_alertError_1'));
@@ -287,7 +302,6 @@ function editMemberData(number) {
                 var color_type_index = $("#main_select_tag_color").children('option:selected').index();
                 if (color_type_index == 4) { //自訂
                     $("#main_input_tag_color").val(colorToHex(revInfo.color));
-                    $("#main_input_tag_color").css("background-color", colorToHex(revInfo.color));
                 }
                 $("#main_alarm_group").html(displayNameOptions(alarmGroupArr, revInfo.alarm_group_id));
                 $("#basic_state").html(createI18nOptions(statusArr, revInfo.status));
@@ -409,7 +423,6 @@ function adjustImageSize(src) {
     }
 }
 
-
 function addMemberData() {
     //restore all fields
     $("#main_tid_id").val("");
@@ -425,12 +438,7 @@ function addMemberData() {
     $("#main_picture_thumbnail").attr("href", "");
     $("#main_picture_img").attr("src", "");
     $("#main_select_tag_color").html(createI18nOptions(dotTypeArr, ""));
-    //還原為預設顏色
-    $("#main_input_tag_color").val(default_color);
-    $("#main_input_tag_color").attr("type", "hidden"); //隱藏可選顏色
-    $("#main_input_tag_color").css("background-color", default_color);
-    $("#main_display_color").attr("type", "text"); //顯示不可選顏色
-    $("#main_display_color").css("background-color", default_color);
+    $("#main_input_tag_color").val(default_color).prop("disabled", true); //還原為預設顏色
     $("#main_alarm_group").html(displayNameOptions(alarmGroupArr, ""));
     $("#basic_state").html(createI18nOptions(statusArr, ""));
     $("#basic_gender").html(createI18nOptions(genderArr, ""));
@@ -453,8 +461,6 @@ function addMemberData() {
     setCommand("add");
     $("#dialog_edit_member").dialog("open");
 }
-
-
 
 function removeMemberDatas() {
     var checkboxs = document.getElementsByName("chkbox_members");
@@ -481,7 +487,6 @@ function removeMemberDatas() {
     };
     xmlHttp.send(JSON.stringify(request));
 }
-
 
 function multiEditData() {
     var checkboxs = document.getElementsByName("chkbox_members");
@@ -589,7 +594,6 @@ function createI18nOptions(array, select) {
     }
     return options;
 }
-
 
 function createOptions(array, select) {
     var options = "";

@@ -12,8 +12,7 @@ var mouseDown = false;
 // View parameters
 var xleftView = 0;
 var ytopView = 0;
-var zoomOriginal = 1.0;
-var Zoom = zoomOriginal; //actual width and height of zoomed and panned display
+var Zoom = 1.0; //actual width and height of zoomed and panned display
 var fitZoom = 1;
 var isFitWindow = true;
 var isPosition = false;
@@ -139,7 +138,7 @@ function setMap(map_url, map_scale) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         xleftView = 0;
         ytopView = 0;
-        Zoom = zoomOriginal;
+        Zoom = 1.0;
         ctx.save(); //紀錄原比例
 
         var serImgSize = serverImg.width / serverImg.height;
@@ -147,11 +146,11 @@ function setMap(map_url, map_scale) {
         var cvs_height = parseFloat($("#mapBlock").css("height")) - 7;
         var cvsSize = cvs_width / cvs_height;
         if (serImgSize > cvsSize) { //原圖比例寬邊較長
-            fitZoom = cvs_width / serverImg.width;
-            setCanvas(this.src, cvs_width, serverImg.height * fitZoom);
+            Zoom = cvs_width / serverImg.width;
+            setCanvas(this.src, cvs_width, serverImg.height * Zoom);
         } else {
-            fitZoom = cvs_height / serverImg.height;
-            setCanvas(this.src, serverImg.width * fitZoom, cvs_height);
+            Zoom = cvs_height / serverImg.height;
+            setCanvas(this.src, serverImg.width * Zoom, cvs_height);
         }
         getGroups();
         updateFenceTable();
@@ -177,7 +176,7 @@ function resetCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     xleftView = 0;
     ytopView = 0;
-    Zoom = zoomOriginal;
+    Zoom = 1.0;
 }
 
 function setCanvas(img_src, width, height) {
@@ -192,15 +191,15 @@ function setCanvas(img_src, width, height) {
 function setSize() {
     //縮放canvas與背景圖大小
     if (canvasImg.isPutImg) {
-        canvas.style.backgroundSize = (canvasImg.width * fitZoom / Zoom) + "px " + (canvasImg.height * fitZoom / Zoom) + "px";
-        canvas.width = canvasImg.width * fitZoom * PIXEL_RATIO / Zoom;
-        canvas.height = canvasImg.height * fitZoom * PIXEL_RATIO / Zoom;
-        canvas.style.width = canvasImg.width * fitZoom / Zoom + 'px';
-        canvas.style.height = canvasImg.height * fitZoom / Zoom + 'px';
+        canvas.style.backgroundSize = (canvasImg.width * Zoom) + "px " + (canvasImg.height * Zoom) + "px";
+        canvas.width = canvasImg.width * PIXEL_RATIO * Zoom;
+        canvas.height = canvasImg.height * PIXEL_RATIO * Zoom;
+        canvas.style.width = canvasImg.width * Zoom + 'px';
+        canvas.style.height = canvasImg.height * Zoom + 'px';
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.setTransform(PIXEL_RATIO * fitZoom, 0, 0, PIXEL_RATIO * fitZoom, 0, 0);
-        ctx.scale(1 / Zoom, 1 / Zoom);
-        ctx.translate(-xleftView, -ytopView);
+        ctx.setTransform(PIXEL_RATIO, 0, 0, PIXEL_RATIO, 0, 0);
+        ctx.scale(Zoom, Zoom);
+        ctx.translate(0, 0);
     }
 }
 
@@ -211,22 +210,21 @@ function resizeCanvas() {
     }
     xleftView = 0;
     ytopView = 0;
-    Zoom = zoomOriginal;
+    Zoom = 1.0;
     if (isFitWindow) { //恢復原比例
-        fitZoom = 1;
+        isFitWindow = false; //目前狀態:原比例 
         ctx.restore();
         ctx.save();
-        isFitWindow = false; //目前狀態:原比例 
         document.getElementById("menu_resize").innerHTML = "<i class=\"fas fa-compress\" style='font-size:20px;'></i>";
         document.getElementById("menu_resize").title = $.i18n.prop('i_fit_window');
     } else { //依比例拉伸(Fit in Window)
+        isFitWindow = true; //目前狀態:依比例拉伸
         var cvs_width = parseFloat($("#mapBlock").css("width")) - 2;
         var cvs_height = parseFloat($("#mapBlock").css("height")) - 7;
         if ((serverImg.width / serverImg.height) > (cvs_width / cvs_height)) //原圖比例寬邊較長
-            fitZoom = cvs_width / serverImg.width;
+            Zoom = cvs_width / serverImg.width;
         else
-            fitZoom = cvs_height / serverImg.height;
-        isFitWindow = true; //目前狀態:依比例拉伸
+            Zoom = cvs_height / serverImg.height;
         document.getElementById("menu_resize").innerHTML = "<i class=\"fas fa-expand\" style='font-size:20px;'></i>";
         document.getElementById("menu_resize").title = $.i18n.prop('i_restore_scale');
     }
@@ -234,17 +232,15 @@ function resizeCanvas() {
 }
 
 function handleMouseWheel(event) {
-    window.event ? window.event.cancelBubble = true : event.stopPropagation();
-    if (event.preventDefault)
-        event.preventDefault();
-    var targetX = lastX;
-    var targetY = lastY;
-    var x = targetX + xleftView; // View coordinates
-    var y = targetY + ytopView;
-    var scale = (event.wheelDelta < 0 || event.detail > 0) ? 1.1 : 0.9;
+    event.preventDefault();
+    var scale = 1.0;
+    if (event.wheelDelta < 0 || event.detail > 0) {
+        if (Zoom > 0.1)
+            scale = 0.9;
+    } else {
+        scale = 1.1;
+    }
     Zoom *= scale; //縮放比例
-    xleftView = x - targetX;
-    ytopView = y - targetY;
     draw();
 }
 
@@ -261,31 +257,25 @@ function getEventPosition(ev) { //獲取滑鼠點擊位置
         x: x,
         y: y
     };
-    //注：如果使用此方法無效的話，需要給Canvas元素的position設為absolute。
 }
 
-function handleMouseMove(event) {
-    //滑鼠移動事件
-    var x = event.pageX;
-    var y = event.pageY;
-    var loc = getPointOnCanvas(x, y);
+function handleMouseMove(event) { //滑鼠移動事件
     if (canvasImg.isPutImg) {
-        lastX = loc.x;
-        lastY = loc.y;
-        document.getElementById('x').value = (lastX * Zoom / fitZoom * canvasImg.scale).toFixed(2); //parseInt(lastX * Zoom / fitZoom);
-        document.getElementById('y').value = (lastY * Zoom / fitZoom * canvasImg.scale).toFixed(2); //parseInt(lastY * Zoom / fitZoom);
+        getPointOnCanvas(event.offsetX, event.offsetY);
     }
 }
 
 function getPointOnCanvas(x, y) {
-    //獲取滑鼠在Canvas上的座標(座標起始點從左上換到左下)
-    var BCR = canvas.getBoundingClientRect();
-    var width = canvas.width;
-    var height = canvas.height;
+    var pos_x = x * (canvasImg.width / canvas.width);
+    var pos_y = y * (canvasImg.height / canvas.height);
+    lastX = pos_x;
+    lastY = canvasImg.height - pos_y;
+    document.getElementById('x').innerText = lastX > 0 ? (lastX).toFixed(2) : 0;
+    document.getElementById('y').innerText = lastY > 0 ? (lastY).toFixed(2) : 0;
     return {
-        x: x - BCR.left * (width / BCR.width),
-        y: height - (y - BCR.top * (height / BCR.height))
-    };
+        x: pos_x,
+        y: pos_y
+    }
 }
 
 function updateFenceTable() {
@@ -402,11 +392,10 @@ function getAnchor_Group() {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
                 anchorGroupArray = ('Values' in revObj) ? revObj.Values.slice(0) : [];
+                draw();
             } else {
                 alert($.i18n.prop('i_alarmAlert_31'));
-                return;
             }
-            draw();
         }
     };
     xmlHttp.send(JSON.stringify(request));
@@ -418,9 +407,6 @@ function draw() {
     drawFences();
     drawSettingFence();
     inputFenceGroup();
-    /*dot_arr.forEach(function (v) {
-        drawDot(ctx, v.fence_id, v.x, v.y);
-    });*/
 }
 
 function drawAnchor_Group() {
@@ -460,7 +446,7 @@ function drawAnchor_Group() {
         group.drawGroup();
     });
     /*anchorArray.forEach(function (v) {
-        drawAnchor(ctx, v.id, v.type, v.x, v.y);
+        drawAnchor(ctx, v.id, v.type, point.x, point.y, 1/Zoom);
     });*/
 }
 
@@ -526,21 +512,10 @@ function drawSettingFence() {
     s_fence.drawFenceDots();
 }
 
-function drawDot(dctx, id, x, y) {
-    x = x / canvasImg.scale;
-    y = canvasImg.height - y / canvasImg.scale; //因為Server回傳的座標為左下原點
-    dctx.fillStyle = "blue";
-    //dctx.font = 39 / canvasImg.scale + 'px serif'; //13*3
-    //dctx.fillText(id, x - 15, y - 6); //dot ID
-    dctx.fillRect(x - 5, y - 5, 30 / canvasImg.scale, 30 / canvasImg.scale); //10*3
-}
-
-function drawDotPosition(dctx, x, y) {
-    x = x / canvasImg.scale;
-    y = canvasImg.height - y / canvasImg.scale; //因為Server回傳的座標為左下原點
+function drawDotPosition(dctx, x, y, zoom) {
     dctx.fillStyle = '#99cc00';
     dctx.beginPath();
-    dctx.arc(x, y, 4, 0, Math.PI * 2, true);
+    dctx.arc(x, y, 4 * zoom, 0, Math.PI * 2, true);
     dctx.fill();
 }
 
@@ -552,9 +527,7 @@ function startFencePosition() {
         var delaytime = 100; //0.1s
         pageTimer["timer1"] = setTimeout(function request() {
             draw();
-            var posX = lastX * Zoom / fitZoom * canvasImg.scale;
-            var posY = lastY * Zoom / fitZoom * canvasImg.scale;
-            drawDotPosition(ctx, posX, posY);
+            drawDotPosition(ctx, lastX, canvasImg.height - lastY, 1 / Zoom);
             pageTimer["timer1"] = setTimeout(request, delaytime);
         }, delaytime);
         canvas.addEventListener("click", handleDotPosition);
@@ -709,19 +682,20 @@ function Group() {
     }
 }
 
-function drawAnchor(dctx, id, type, x, y) {
+function drawAnchor(dctx, id, type, x, y, zoom) {
+    var size = 10 * zoom;
     if (type == "main")
         dctx.fillStyle = "red";
     else
         dctx.fillStyle = "blue";
-    dctx.font = 13 * 3 / canvasImg.scale + 'px serif';
-    dctx.fillText(id, x - 15, y - 6); //anchorID
-    dctx.fillRect(x - 5, y - 5, 10 * 3 / canvasImg.scale, 10 * 3 / canvasImg.scale);
+    dctx.font = 13 * zoom + 'px serif';
+    dctx.fillText(id, x - 5 * zoom, y - 7 * zoom); //anchorID
+    dctx.fillRect(x - 5 * zoom, y - 5 * zoom, size, size);
 }
 
 function handleDotPosition() {
-    $("#add_dot_x").val($("#x").val());
-    $("#add_dot_y").val($("#y").val());
+    $("#add_dot_x").val($("#x").text());
+    $("#add_dot_y").val($("#y").text());
     $("#dialog_add_fence_dot").dialog("open");
 }
 

@@ -153,8 +153,6 @@ function setSize() { //縮放canvas與背景圖大小
 function resizeCanvas() {
     if (!canvasImg.isPutImg)
         return;
-    var cvsBlock_width = parseFloat($("#mapBlock").css("width"));
-    var cvsBlock_height = parseFloat($("#mapBlock").css("height"));
     xleftView = 0;
     ytopView = 0;
     Zoom = 1.0;
@@ -166,6 +164,8 @@ function resizeCanvas() {
         document.getElementById("label_resize").title = $.i18n.prop('i_fit_window');
     } else { //依比例拉伸(Fit in Window)
         isFitWindow = true; //目前狀態:依比例拉伸(Fit in Window)
+        var cvsBlock_width = parseFloat($("#mapBlock").css("width"));
+        var cvsBlock_height = parseFloat($("#mapBlock").css("height"));
         if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
             Zoom = cvsBlock_width / serverImg.width;
         else
@@ -178,9 +178,9 @@ function resizeCanvas() {
 
 function handleMouseWheel(event) { //滑鼠滾輪事件
     event.preventDefault();
-    var BCR = canvas.getBoundingClientRect();
-    var pos_x = event.pageX - BCR.left;
-    var pos_y = event.pageY - BCR.top;
+    //var BCR = canvas.getBoundingClientRect();
+    //var pos_x = event.pageX - BCR.left;
+    //var pos_y = event.pageY - BCR.top;
     var scale = 1.0;
     if (event.wheelDelta < 0 || event.detail > 0) {
         if (Zoom > 0.1)

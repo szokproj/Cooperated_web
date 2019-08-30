@@ -38,26 +38,11 @@ function loadMap() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
-                $("#maps_gallery").empty();
                 setMapArray(revObj.Values); //利用抽離全部陣列完成陣列拷貝;
+                $("#maps_gallery").empty();
                 if (mapArray) {
                     for (i = 0; i < mapArray.length; i++) {
-                        var map = "map_id_" + mapArray[i].map_id;
-                        var src = "data:image/" + mapArray[i].map_file_ext + ";base64," + mapArray[i].map_file;
-                        var img_size = adjustImageSize(src);
-                        $("#maps_gallery").append("<div class=\"thumbnail\">" +
-                            "<div class=\"image_block\">" +
-                            "<img src=\"" + src + "\" width=\"" + img_size.width + "\" height=\"" + img_size.height + "\">" +
-                            "</div>" +
-                            "<div class=\"caption\"><table style='width:100%;'><tr>" +
-                            "<th style=\"width:120px;\"><label>" + $.i18n.prop('i_mapName') + " : </label></th>" +
-                            "<th style=\"width:50%;\"><label name=\"" + map + "\">" + mapArray[i].map_name + "</label></th>" +
-                            "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + mapArray[i].map_id + "\')\">" +
-                            $.i18n.prop('i_setting') + "</button></th>" +
-                            "<th><button class='btn btn-primary' onclick=\"deleteMap(\'" + mapArray[i].map_id + "\')\">" +
-                            $.i18n.prop('i_delete') + "</button></th>" +
-                            "</tr></table></div>" +
-                            "</div>");
+                        setThumbnail(mapArray[i]);
                     }
                 }
             }
@@ -146,10 +131,39 @@ function deleteMap(id) {
     }
 }
 
+function setThumbnail(map_info) {
+    var map = "map_id_" + map_info.map_id;
+    var img = new Image();
+    img.src = "data:image/" + map_info.map_file_ext + ";base64," + map_info.map_file;
+    img.onload = function () {
+        var imgSize = img.width / img.height;
+        var thumb_width = 490;
+        var thumb_height = 200;
+        var thumbSize = thumb_width / thumb_height;
+        if (imgSize > thumbSize) //原圖比例寬邊較長
+            thumb_height = img.height * (thumb_width / img.width);
+        else
+            thumb_width = img.width * (thumb_height / img.height);
+        $("#maps_gallery").append("<div class=\"thumbnail\">" +
+            "<div class=\"image_block\">" +
+            "<img src=\"" + this.src + "\" width=\"" + thumb_width + "\" height=\"" + thumb_height + "\">" +
+            "</div>" +
+            "<div class=\"caption\"><table style='width:100%;'><thead><tr>" +
+            "<th style=\"width:30%;\"><label>" + $.i18n.prop('i_mapName') + " : </label></th>" +
+            "<th style=\"width:70%;\"><label id=\"" + map + "\">" + map_info.map_name + "</label></th>" +
+            "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + map_info.map_id + "\')\">" +
+            $.i18n.prop('i_setting') + "</button></th>" +
+            "<th><button class='btn btn-primary' onclick=\"deleteMap(\'" + map_info.map_id + "\')\">" +
+            $.i18n.prop('i_delete') + "</button></th>" +
+            "</tr></thead></table></div>" +
+            "</div>");
+    }
+}
+
 function adjustImageSize(src) {
     var img = new Image();
-    var thumb_width = $("#new_map_block").css("max-width");
-    var thumb_height = $("#new_map_block").css("max-height");
+    var thumb_width = parseFloat($("#new_map_block").css("max-width"));
+    var thumb_height = parseFloat($("#new_map_block").css("max-height"));
     var width = thumb_width,
         height = thumb_height;
     img.src = src;

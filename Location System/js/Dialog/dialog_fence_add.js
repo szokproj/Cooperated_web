@@ -182,7 +182,7 @@ $(function () {
                     "Value": [{
                         "fence_name": add_fence_name.val(),
                         "map_id": $("#select_map_id").val(),
-                        "list_type": "block"
+                        "list_type": "black"
                     }]
                 };
                 var addXmlHttp = createJsonXmlHttp("sql");
@@ -199,7 +199,7 @@ $(function () {
                 addXmlHttp.send(JSON.stringify(addRequest));
             } else if (operating == "Edit") {
                 if (add_fence_id.val() == "") {
-                    alert();
+                    alert("圍籬名稱不得為空!");
                     return;
                 }
 
@@ -208,7 +208,6 @@ $(function () {
                     if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
                         if (revObj.success > 0) {
-                            resetFencePosition();
 
                             var fd_editXmlHttp = createJsonXmlHttp("sql");
                             fd_editXmlHttp.onreadystatechange = function () {
@@ -248,7 +247,7 @@ $(function () {
                     }
                 };
                 editXmlHttp.send(JSON.stringify({
-                    "Command_Type": ["Read"],
+                    "Command_Type": ["Write"],
                     "Command_Name": ["EditFence_Info"],
                     "Value": {
                         "fence_id": add_fence_id.val(),
@@ -271,22 +270,25 @@ $(function () {
         width: 400,
         modal: false,
         buttons: {
-            "Confirm": SendResult,
-            Cancel: function () {
-                form[0].reset();
-                allFields.removeClass("ui-state-error");
+            "Confirm": function () {
+                SendResult();
+                resetFencePosition();
+            },
+            "Cancel": function () {
                 dialog.dialog("close");
             }
         },
-        close: function () {
+        "close": function () {
             form[0].reset();
             allFields.removeClass("ui-state-error");
+            resetFencePosition();
         }
     });
 
     form = dialog.find("form").on("submit", function (event) {
         event.preventDefault();
         SendResult();
+        resetFencePosition();
     });
 
     $("#btn_fence_add").button().on("click", function () {
@@ -312,43 +314,57 @@ $(function () {
         for (k in checkboxs) {
             if (checkboxs[k].checked) {
                 delete_arr.push({
-                    id: checkboxs[k].value
+                    "fence_id": checkboxs[k].value
                 });
             }
         }
         var lan = delete_arr.length;
-        var fdRequest = {
-            "Command_Type": ["Write"],
-            "Command_Name": ["deleteFenceDot"],
-            "Value": delete_arr
-        };
-        var fdXmlHttp = createJsonXmlHttp("sql");
-        fdXmlHttp.onreadystatechange = function () {
-            if (fdXmlHttp.readyState == 4 || fdXmlHttp.readyState == "complete") {
-                var revObj = JSON.parse(this.responseText);
-                if (revObj.success == lan) {
-                    var fgRequest = {
-                        "Command_Type": ["Write"],
-                        "Command_Name": ["deleteFenceGroup"],
-                        "Value": delete_arr
-                    };
-                    var fgXmlHttp = createJsonXmlHttp("sql");
-                    fgXmlHttp.onreadystatechange = function () {
-                        if (fgXmlHttp.readyState == 4 || fgXmlHttp.readyState == "complete") {
-                            var revObj = JSON.parse(this.responseText);
-                            if (revObj.success == lan)
-                                updateFenceArr();
-                        } else {
-                            alert($.i18n.prop('i_alarmAlert_34') + (lan - revObj.success));
+        //刪除圍籬資訊
+        var del_xmlHttp = createJsonXmlHttp("sql");
+        del_xmlHttp.onreadystatechange = function () {
+            if (del_xmlHttp.readyState == 4 || del_xmlHttp.readyState == "complete") {
+                var del_response = JSON.parse(this.responseText);
+                if (del_response && del_response.success == lan) {
+                    //刪除此圍籬的所有座標點
+                    var fd_xmlHttp = createJsonXmlHttp("sql");
+                    fd_xmlHttp.onreadystatechange = function () {
+                        if (fd_xmlHttp.readyState == 4 || fd_xmlHttp.readyState == "complete") {
+                            var fd_respon = JSON.parse(this.responseText);
+                            if (fd_respon && fd_respon.success > 0) {
+                                //刪除此圍籬的所有群組
+                                var fg_xmlHttp = createJsonXmlHttp("sql");
+                                fg_xmlHttp.onreadystatechange = function () {
+                                    if (fg_xmlHttp.readyState == 4 || fg_xmlHttp.readyState == "complete") {
+                                        var fg_respon = JSON.parse(this.responseText);
+                                        if (fg_respon) {
+                                            //更新列表
+                                            updateFenceTable();
+                                        }
+                                    }
+                                };
+                                fg_xmlHttp.send(JSON.stringify({
+                                    "Command_Type": ["Write"],
+                                    "Command_Name": ["DeleteFence_group_by_fid"],
+                                    "Value": delete_arr
+                                }));
+                            }
                         }
                     };
-                    fgXmlHttp.send(JSON.stringify(fgRequest));
+                    fd_xmlHttp.send(JSON.stringify({
+                        "Command_Type": ["Write"],
+                        "Command_Name": ["DeleteFence_point_by_fid"],
+                        "Value": delete_arr
+                    }));
                 } else {
-                    alert($.i18n.prop('i_alarmAlert_35') + (lan - revObj.success));
+                    alert($.i18n.prop('i_alarmAlert_35') + (lan - del_response.success));
                 }
             }
         };
-        fdXmlHttp.send(JSON.stringify(fdRequest));
+        del_xmlHttp.send(JSON.stringify({
+            "Command_Type": ["Write"],
+            "Command_Name": ["DeleteFence_info"],
+            "Value": delete_arr
+        }));
     });
 });
 
