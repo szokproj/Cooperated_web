@@ -25,6 +25,7 @@
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="../js/get_timeline.js"></script>
     <script type="text/javascript" src="../js/draw_timeline.js"></script>
 </head>
 
@@ -65,7 +66,7 @@
                         <option>map_2</option>
                         <option>map_3</option>
                     </select>
-                    <br><br>
+                    <br>
                     <label class="sidebar_title">Time</label> :
                     <table class="noborder-block">
                         <tr>
@@ -84,12 +85,18 @@
                         </tr>
                         <tr>
                             <td><span class="i18n" name="i_end"></span> <span class="i18n" name="i_time"></span> : </td>
-                            <td><input type="time" id="end_time" step="01" value="11:59:59"></td>
+                            <td><input type="time" id="end_time" step="01" value="10:59:59"></td>
                         </tr>
                     </table>
+                    
+                    <label class="sidebar_title">Type</label> :
+                    <select id="target_type">
+                        <option value="Tag">Search Tag</option>
+                        <option value="Group">Search Group</option>
+                    </select>
                     <br>
                     <label class="sidebar_title">Target</label> :
-                    <div style="float: right;">
+                    <div id="control_table" style="float: right;">
                         <label for="btn_target_add" id="label_target_add" class="btn-add i18n-input" selectattr="title"
                             selectname="i_add"><i class="fas fa-plus-square" style='font-size:20px;'></i></label>
                         <input id="btn_target_add" type="button" class="btn-hidden" />
@@ -108,6 +115,9 @@
                         </thead>
                         <tbody></tbody>
                     </table>
+                    <div id="target_group" style="display: none;">
+                        <label class="i18n" name="i_groupID"></label> : <input type="text" id="target_group_id" />
+                    </div>
                     <hr>
                     <label class="sidebar_title">Timeline Player</label> :
                     <div class="btn-group" style="float: right;">
@@ -152,7 +162,8 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
                     </button>
                 </div>-->
-                <label>搜尋中，請稍候 <i class="fas fa-spinner fa-pulse"></i></label>
+                <!--<label>搜尋中，請稍候 <i class="fas fa-spinner fa-pulse"></i></label>-->
+                <label>搜尋中，目前進度 : <span id="progress_bar"></span></label>
             </div>
         </div>
     </div>
