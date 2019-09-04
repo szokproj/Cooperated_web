@@ -88,7 +88,7 @@
                             <td><input type="time" id="end_time" step="01" value="10:59:59"></td>
                         </tr>
                     </table>
-                    
+
                     <label class="sidebar_title">Type</label> :
                     <select id="target_type">
                         <option value="Tag">Search Tag</option>
@@ -116,7 +116,8 @@
                         <tbody></tbody>
                     </table>
                     <div id="target_group" style="display: none;">
-                        <label class="i18n" name="i_groupID"></label> : <input type="text" id="target_group_id" />
+                        <label class="i18n" name="i_groupID"></label> : <input type="text" id="target_group_id" /><br>
+                        <input type="checkbox" id="chk_is_overlap" /> <label>顯示重疊結果</label>
                     </div>
                     <hr>
                     <label class="sidebar_title">Timeline Player</label> :
@@ -163,7 +164,7 @@
                     </button>
                 </div>-->
                 <!--<label>搜尋中，請稍候 <i class="fas fa-spinner fa-pulse"></i></label>-->
-                <label>搜尋中，目前進度 : <span id="progress_bar"></span></label>
+                <label><i class="fas fa-spinner fa-pulse"></i> 搜尋中，目前進度 : <span id="progress_bar"></span></label>
             </div>
         </div>
     </div>

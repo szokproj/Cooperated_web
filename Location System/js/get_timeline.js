@@ -376,7 +376,7 @@ function drawTimeline() {
         document.getElementById("btn_stop").disabled = false;
         document.getElementById("btn_restore").disabled = false;
         document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-pause\" ></i >";
-        document.getElementById("btn_search").disabled = true;
+        document.getElementById("btn_search").disabled = false;
         if (!historyData["search_type"]) {
             alert("請先進行搜尋");
             return false;
@@ -468,11 +468,13 @@ function drawNextTimeByTag() {
 
 function drawNextTimeByGroup() {
     if (isContinue) {
-        setSize();
         if (times == timeslot_array.length) {
-            //setSize();
+            setSize();
             times = 0;
         } else {
+            if (!document.getElementById("chk_is_overlap").checked) {
+                setSize();
+            }
             historyData[timeslot_array[times]].forEach(info => {
                 drawTag(ctx, info.time, info.x, canvasImg.height - info.y, group_color);
             });
@@ -510,8 +512,14 @@ function reDrawTag(dctx) {
             });
             break;
         case "Group":
-            for (i = 0; i < times; i++) {
-                historyData[timeslot_array[i]].forEach(info => {
+            if (document.getElementById("chk_is_overlap").checked) {
+                for (i = 0; i < times; i++) {
+                    historyData[timeslot_array[i]].forEach(info => {
+                        drawTag(dctx, info.time, info.x, canvasImg.height - info.y, group_color);
+                    });
+                }
+            } else {
+                historyData[timeslot_array[times - 1]].forEach(info => {
                     drawTag(dctx, info.time, info.x, canvasImg.height - info.y, group_color);
                 });
             }
@@ -542,38 +550,7 @@ function search() {
             historyData = {
                 search_type: "Tag"
             };
-            for (i in timeDelay.search)
-                clearTimeout(timeDelay.search[i]);
-            /*for (j = 0; j < target_ids.length; j++) {
-                timeDelay.search.push(setTimeout(function () {
-                    getTimelineByTags({
-                        "Command_Type": ["Read"],
-                        "Command_Name": ["GetLocus_combine_hour"],
-                        "Value": {
-                            "tag_id": target_ids[j].value,
-                            "start_date": $("#start_date").val(),
-                            "start_time": checkTimeLength($("#start_time").val()),
-                            "end_date": $("#end_date").val(),
-                            "end_time": checkTimeLength($("#end_time").val())
-                        }
-                    });
-                }, 100 * j));
-            }*/
-            target_ids.forEach(function (tag_id, i) {
-                timeDelay.search.push(setTimeout(function () {
-                    getTimelineByTags({
-                        "Command_Type": ["Read"],
-                        "Command_Name": ["GetLocus_combine_hour"],
-                        "Value": {
-                            "tag_id": tag_id.value,
-                            "start_date": $("#start_date").val(),
-                            "start_time": checkTimeLength($("#start_time").val()),
-                            "end_date": $("#end_date").val(),
-                            "end_time": checkTimeLength($("#end_time").val())
-                        }
-                    });
-                }, 100 * i));
-            });
+            getTimelineByTags();
             break;
         case "Group":
             var group_id = $("#target_group_id").val();
@@ -596,49 +573,77 @@ function search() {
 
 
 
-function getTimelineByTags(request) {
-    var xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
-            if (revObj.success == 1) {
-                for (i = 0; i < revInfo.length; i++) {
-                    if (revInfo[i].map_id in mapCollection) {
-                        var mapInfo = mapCollection[revInfo[i].map_id];
-                        if (!historyData[request.Value.tag_id])
-                            historyData[request.Value.tag_id] = [];
-                        historyData[request.Value.tag_id].push({
-                            map_id: mapInfo.map_id,
-                            map_name: mapInfo.map_name,
-                            x: parseInt(revInfo[i].coordinate_x, 10),
-                            y: parseInt(revInfo[i].coordinate_y, 10),
-                            time: revInfo[i].time
+function getTimelineByTags() {
+    var target_ids = document.getElementsByName("chk_target_id");
+    var interval_times = 0;
+    var count_times = 0;
+    for (i in timeDelay.search)
+        clearTimeout(timeDelay.search[i]);
+    target_ids.forEach(function (tag_id, i) {
+        timeDelay.search.push(setTimeout(function () {
+            sendRequest({
+                "Command_Type": ["Read"],
+                "Command_Name": ["GetLocus_combine_hour"],
+                "Value": {
+                    "tag_id": tag_id.value,
+                    "start_date": $("#start_date").val(),
+                    "start_time": checkTimeLength($("#start_time").val()),
+                    "end_date": $("#end_date").val(),
+                    "end_time": checkTimeLength($("#end_time").val())
+                }
+            });
+        }, 100 * i));
+        interval_times++;
+    });
+
+    function sendRequest(request) {
+        var xmlHttp = createJsonXmlHttp("sql");
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                var revObj = JSON.parse(this.responseText);
+                var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
+                if (revObj.success == 1) {
+                    var tag_id = request.Value.tag_id;
+                    for (i = 0; i < revInfo.length; i++) {
+                        if (revInfo[i].map_id in mapCollection) {
+                            var mapInfo = mapCollection[revInfo[i].map_id];
+                            if (!historyData[tag_id])
+                                historyData[tag_id] = [];
+                            historyData[tag_id].push({
+                                map_id: mapInfo.map_id,
+                                map_name: mapInfo.map_name,
+                                x: parseInt(revInfo[i].coordinate_x, 10),
+                                y: parseInt(revInfo[i].coordinate_y, 10),
+                                time: revInfo[i].time
+                            });
+                        }
+                    }
+                    count_times++;
+                    if (revObj.Status == 1) {
+                        //以1小時為基準，分批接受並傳送要求
+                        getTimelineByTags({
+                            "Command_Type": ["Read"],
+                            "Command_Name": ["GetLocus_combine_hour"],
+                            "Value": {
+                                "tag_id": revObj.tag_id,
+                                "start_date": revObj.start_date,
+                                "start_time": revObj.start_time,
+                                "end_date": revObj.end_date,
+                                "end_time": revObj.end_time
+                            }
                         });
+                    } else {
+                        if (historyData[tag_id] && historyData[tag_id].length > max_times)
+                            max_times = historyData[tag_id].length;
+                        $("#progress_bar").text(Math.round(count_times / interval_times * 100) + " %");
+                        if (interval_times == count_times)
+                            completeSearch();
                     }
                 }
-                if (revObj.Status == 1) {
-                    //以1小時為基準，分批接受並傳送要求
-                    getTimelineByTags({
-                        "Command_Type": ["Read"],
-                        "Command_Name": ["GetLocus_combine_hour"],
-                        "Value": {
-                            "tag_id": revObj.tag_id,
-                            "start_date": revObj.start_date,
-                            "start_time": revObj.start_time,
-                            "end_date": revObj.end_date,
-                            "end_time": revObj.end_time
-                        }
-                    });
-                } else {
-                    if (historyData[request.Value.tag_id] && historyData[request.Value.tag_id].length > max_times)
-                        max_times = historyData[request.Value.tag_id].length;
-                    completeSearch();
-                }
             }
-        }
-    };
-    xmlHttp.send(JSON.stringify(request));
+        };
+        xmlHttp.send(JSON.stringify(request));
+    }
 }
 
 
@@ -712,13 +717,19 @@ function getTimelineByGroup(group_id) {
                             timeslot_array.push(time);
                             historyData[time] = [];
                         }
-                        historyData[time].push({
-                            map_id: group_map.id,
-                            map_name: group_map.name,
-                            x: parseInt(revInfo[i].coordinate_x, 10),
-                            y: parseInt(revInfo[i].coordinate_y, 10),
-                            time: revInfo[i].time
+                        var index = historyData[time].findIndex(function (info) {
+                            return info.tag_id == revInfo[i].tag_id;
                         });
+                        if (index == -1) {
+                            historyData[time].push({
+                                tag_id: revInfo[i].tag_id,
+                                map_id: group_map.id,
+                                map_name: group_map.name,
+                                x: parseInt(revInfo[i].coordinate_x, 10),
+                                y: parseInt(revInfo[i].coordinate_y, 10),
+                                time: revInfo[i].time
+                            });
+                        }
                     }
                     count_times++
                     $("#progress_bar").text(Math.round(count_times / interval_times * 100) + " %");
