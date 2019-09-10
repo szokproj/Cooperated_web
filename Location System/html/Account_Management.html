@@ -21,6 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
     <!--Edit css-->
+    <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
     <style>
         .container {
             width: 100%;
@@ -72,11 +73,7 @@
             border: 0;
         }
 
-        .table-hover {
-            cursor: pointer;
-        }
-
-        .table-line tr:hover {
+        .table-line tbody tr:hover {
             background-color: rgb(179, 215, 238);
             cursor: pointer;
         }
@@ -113,11 +110,33 @@
             clip: rect(0, 0, 0, 0);
             border: 0;
         }
+
+        .btn-delete {
+            cursor: pointer;
+            color: rgb(252, 55, 55);
+            font-size: 18px;
+            margin: 0px 5px 0px 0px;
+        }
+
+        .btn-delete:hover {
+            color: rgb(255, 152, 152)
+        }
+
+        .btn-add {
+            cursor: pointer;
+            color: rgb(105, 196, 0);
+            font-size: 18px;
+        }
+
+        .btn-add:hover {
+            color: rgb(179, 226, 126);
+        }
     </style>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
-    <script type="text/javascript" src="../js/permission_manage.js"></script>
+    <script type="text/javascript" src="../js/check_permission.js"></script>
+    <script type="text/javascript" src="../js/account_manage.js"></script>
 </head>
 
 <body>
@@ -131,7 +150,7 @@
                         <li><a href="../Member_Setting.html">
                                 <i class="fas fa-user-cog"></i><span class="i18n" name="member_settingPage"></span></a>
                         </li>
-                        <li class="active"><a href="#">
+                        <li><a href="../Timeline.html">
                                 <i class="fas fa-route"></i><span class="i18n" name="timelinePage"></span></a></li>
                         <li><a href="../Map_Setting.html">
                                 <i class="fas fa-map"></i><span class="i18n" name="map_settingPage"></span></a></li>
@@ -152,6 +171,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div style="float:right;">
+                    <label id="login_user"></label>
                     <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
                     <select id="language" style="margin-top:5px;">
                         <option value="en">English</option>
@@ -165,78 +185,40 @@
         <!-- Web content -->
         <div class="row">
             <div class="col-lg-8" style="background-color:white;">
+                <div style="float: right;">
+                    <label for="btn_account_add" id="label_account_add" class="btn-add i18n-input" selectattr="title"
+                        selectname="i_add"><i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                    <input id="btn_account_add" type="button" class="btn-hidden" />
+                    <label for="btn_account_delete" id="label_account_delete" class="btn-delete i18n-input"
+                        selectattr="title" selectname="i_delete"><i class="fas fa-minus-square"
+                            style='font-size:20px;'></i></label>
+                    <input id="btn_account_delete" type="button" class="btn-hidden" />
+                </div>
                 <table class="table-line" id="table_account">
                     <thead>
                         <tr>
-                            <th>Account</th>
-                            <th>Password</th>
-                            <th>Permission</th>
+                            <th class="i18n" name="i_item"></th>
+                            <th class="i18n" name="i_account"></th>
+                            <th class="i18n" name="i_permission"></th>
+                            <th class="i18n" name="i_status"></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>a123</td>
-                            <td>123456</td>
-                            <td>1</td>
-                        </tr>
-                        <tr>
-                            <td>bewr</td>
-                            <td>asd45689</td>
-                            <td>2</td>
-                        </tr>
-                        <tr>
-                            <td>frbee</td>
-                            <td>erw9835</td>
-                            <td>3</td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
                 <br>
             </div>
             <div class="col-lg-4" style="background-color:white;">
-                <table class="table table-hover" id="table_permission">
+                <table class="table" id="table_permission" style="margin-top:10px;">
                     <thead>
                         <tr>
-                            <th>Permission</th>
+                            <th class="i18n" name="i_pageName"></th>
+                            <th class="i18n" name="i_permission"></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
-        <!--<ul class="nav nav-tabs">
-            <li class="active">
-                <a data-toggle="tab" href="#tab_account_manage" class="i18n" name="i_accountManage"></a></li>
-            <li><a data-toggle="tab" href="#tab_permission_manage" class="i18n" name="i_permissionManage"></a></li>
-        </ul>
-        <div class="tab-content">
-            <div id="tab_account_manage" class="tab-pane fade in active">
-                <div class="row">
-                    <div class="col-lg-12" style="background-color:white;">
-
-                    </div>
-                </div>
-            </div>
-            <div id="tab_permission_manage" class="tab-pane fade">
-                <div class="row">
-                    <div class="col-lg-12" style="background-color:white;">
-
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        -->
     </div>
 
     <!-- Hidden Dialog -->
@@ -244,14 +226,28 @@
         <form>
             <fieldset style="text-align: left;">
                 <table id="table_account_setting" class="noborder-block">
+                    <input type="hidden" id="edit_id" value="" />
                     <tr>
                         <td><span class="i18n" name="i_account"></span> : </td>
                         <td><input type="text" id="edit_account" /></td>
                     </tr>
                     <tr>
+                        <td><span class="i18n" name="i_name"></span> : </td>
+                        <td><input type="text" id="edit_name" /></td>
+                    </tr>
+                    <tr>
                         <td><span class="i18n" name="i_password"></span> : </td>
                         <td><input type="text" id="edit_password" /></td>
                     </tr>
+                    <tr>
+                        <td><span class="i18n" name="i_status"></span> : </td>
+                        <td><input type="radio" name="edit_is_active" id="is_not_active" value="0" />
+                            <label for="is_not_active" class="i18n" name="i_disable"></label>
+                            <input type="radio" name="edit_is_active" id="is_active" value="1" />
+                            <label for="is_active" class="i18n" name="i_enable"></label>
+                        </td>
+                    </tr>
+                    <!--
                     <tr>
                         <td></td>
                         <td><input type="checkbox" id="edit_setnewpass" />
@@ -260,21 +256,23 @@
                     <tr id="tr_newpassword">
                         <td><span class="i18n" name="i_newPassword"></span> : </td>
                         <td><input type="text" id="edit_newpassword" /></td>
-                    </tr>
+                    </tr>-->
                     <tr>
                         <td><span class="i18n" name="i_permission"></span> : </td>
                         <td><select id="edit_permission">
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                            </select></td>
+                                <option value="0" class="i18n" name="i_low"></option>
+                                <option value="1" class="i18n" name="i_mid"></option>
+                                <option value="2" class="i18n" name="i_high"></option>
+                            </select>
+                        </td>
                     </tr>
                 </table>
                 <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             </fieldset>
         </form>
     </div>
-    <div id="dialog_permission_setting" title="Set Permission">
+    <!--
+    <div id="dialog_permission_setting" title="Permission Table">
         <form>
             <label class="i18n" name="i_addPermission"></label> : <input type="text" id="permission_name" />
             <br><br>
@@ -377,6 +375,7 @@
             </fieldset>
         </form>
     </div>
+    -->
     <!-- i18n 多語言翻譯 -->
     <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
     <script type="text/javascript" src="../js/i18n/language.js"></script>

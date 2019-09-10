@@ -1,3 +1,4 @@
+var token = "";
 var PIXEL_RATIO, // 獲取瀏覽器像素比
     cvsBlock, canvas, ctx,
     serverImg = new Image(),
@@ -38,23 +39,13 @@ var memberArray = [],
 var event_state = {};
 
 $(function () {
+    token = getUser() ? getUser().api_token : "";
     /**
      * Check this page's permission and load navbar
      */
-    var permission = getPermissionOfPage("index");
-    switch (permission) {
-        case "":
-            alert("No permission");
-            history.back();
-            break;
-        case "R":
-            break;
-        case "RW":
-            break;
-        default:
-            alert("網頁錯誤，將跳回上一頁");
-            history.back();
-            break;
+    if (!getPermissionOfPage("index")) {
+        alert("Permission denied!");
+        history.back();
     }
     setNavBar("index", "");
 
@@ -175,7 +166,8 @@ function setup() {
     };
     xmlHttp.send(JSON.stringify({
         "Command_Type": ["Read"],
-        "Command_Name": ["GetMaps"]
+        "Command_Name": ["GetMaps"],
+        "api_token": [token]
     })); //接收並載入Server的地圖設定到按鈕
 }
 
@@ -332,7 +324,8 @@ function getAnchors(map_id) {
         "Command_Name": ["GetAnchorsInMap"],
         "Value": {
             "map_id": map_id
-        }
+        },
+        "api_token": [token]
     };
     var ancXmlHttp = createJsonXmlHttp("sql");
     ancXmlHttp.onreadystatechange = function () {
@@ -362,7 +355,8 @@ function getAnchors(map_id) {
         "Command_Name": ["GetMainAnchorsInMap"],
         "Value": {
             "map_id": map_id
-        }
+        },
+        "api_token": [token]
     };
     var mainXmlHttp = createJsonXmlHttp("sql");
     mainXmlHttp.onreadystatechange = function () {
@@ -391,7 +385,8 @@ function getAnchors(map_id) {
 function getGroups(anchorList) {
     var request = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetGroup_Anchors"]
+        "Command_Name": ["GetGroup_Anchors"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -409,7 +404,8 @@ function getGroups(anchorList) {
 function getGroupList(anchorList) {
     var requestArray = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetGroups"]
+        "Command_Name": ["GetGroups"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -431,7 +427,8 @@ function getGroupList(anchorList) {
 function getMapGroup(groupArray) {
     var requestArray = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetMaps_Groups"]
+        "Command_Name": ["GetMaps_Groups"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -452,7 +449,8 @@ function getMapGroup(groupArray) {
 function getMemberDate() {
     var request = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetStaffs"]
+        "Command_Name": ["GetStaffs"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -475,7 +473,8 @@ function getMemberPhoto(img_id, number) {
         "Command_Name": ["GetOneStaff"],
         "Value": {
             "number": number
-        }
+        },
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -736,7 +735,8 @@ function setAlarmDialog(Obj) {
 function updateAlarmList() {
     var request = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetAlarmTop50List"]
+        "Command_Name": ["GetAlarmTop50List"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("request");
     xmlHttp.onreadystatechange = function () {
@@ -906,7 +906,8 @@ function updateTagList() {
         "Command_Name": ["GetTagList"],
         "Value": {
             "Map_id": Map_id
-        }
+        },
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("requestTagList_json");
     xmlHttp.onreadystatechange = function () {

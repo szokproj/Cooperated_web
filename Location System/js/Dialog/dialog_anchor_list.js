@@ -1,142 +1,11 @@
+var token = "";
 var anchorsInfoArray = [];
 
-function getAnchorList() {
-    var requestArray = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["GetAnchors"]
-    };
-    var xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            getAnchor_Group();
-            var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                anchorsInfoArray = revObj.Values.slice(0); //利用抽離全部陣列完成陣列拷貝
-                $("#table_main_anchor_list tbody").empty();
-                $("#table_anchor_list tbody").empty();
-                var count_main_anchor_list = 0;
-                var count_anchor_list = 0;
-                for (var i = 0; i < anchorsInfoArray.length; i++) {
-                    if (anchorsInfoArray[i].anchor_type == "main") {
-                        count_main_anchor_list++;
-                        var tr_id = "tr_main_anchor_list_" + count_main_anchor_list;
-                        $("#table_main_anchor_list tbody").append("<tr id=\"" + tr_id + "\">" +
-                            "<td><input type=\"checkbox\" name=\"chkbox_main_anchor_list\" value=\"" +
-                            anchorsInfoArray[i].anchor_id + "\" onchange=\"selectColumn(\'" + tr_id + "\')\" /> " +
-                            count_main_anchor_list + "</td>" +
-                            "<td><input type=\"text\" name=\"list_main_anchor_id\" value=\"" +
-                            anchorsInfoArray[i].anchor_id + "\" style=\"max-width:60px;\" readonly/></td></tr>");
-                    } else {
-                        count_anchor_list++;
-                        var tr_id = "tr_anchor_list_" + count_anchor_list;
-                        $("#table_anchor_list tbody").append("<tr id=\"" + tr_id + "\">" +
-                            "<td><input type=\"checkbox\" name=\"chkbox_anchor_list\" value=\"" +
-                            anchorsInfoArray[i].anchor_id + "\" onchange=\"selectColumn(\'" + tr_id + "\')\" /> " +
-                            count_anchor_list + "</td>" +
-                            "<td><input type=\"text\" name=\"list_anchor_id\" value=\"" +
-                            anchorsInfoArray[i].anchor_id + "\" style=\"max-width:60px;\" readonly/></td></tr>");
-                    }
-                }
-            } else {
-                alert("獲取AnchorList失敗，請再試一次!");
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(requestArray));
-}
-
-function deleteMainAnchor(id) {
-    var request = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["DeleteAnchor_Info"],
-        "Value": [{
-            "anchor_id": id
-        }]
-    };
-    var xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                var requestArray = {
-                    "Command_Type": ["Read"],
-                    "Command_Name": ["GetGroups"]
-                };
-                var getXmlHttp = createJsonXmlHttp("sql");
-                getXmlHttp.onreadystatechange = function () {
-                    if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
-                        var deleteArray = [];
-                        if (revObj.success > 0) {
-                            revInfo.forEach(element => {
-                                if (element.main_anchor_id == id) {
-                                    deleteArray.push({
-                                        "group_id": element.group_id
-                                    });
-                                }
-                            });
-                            if (deleteArray.length > 0)
-                                DeleteGroupInfo(deleteArray);
-                            else
-                                getAllDataOfMap();
-                        }
-                    }
-                };
-                getXmlHttp.send(JSON.stringify(requestArray));
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(request));
-}
-
-function deleteAnchor(id) {
-    var request = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["DeleteAnchor_Info"],
-        "Value": [{
-            "anchor_id": id
-        }]
-    };
-    var xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                var gerRequest = {
-                    "Command_Type": ["Read"],
-                    "Command_Name": ["GetGroup_Anchors"]
-                };
-                var getXmlHttp = createJsonXmlHttp("sql");
-                getXmlHttp.onreadystatechange = function () {
-                    if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        if (revObj.success > 0) {
-                            var deleteArr = [];
-                            revObj.Values.forEach(element => {
-                                if (element.anchor_id == id)
-                                    deleteArr.push({
-                                        "group_id": element.group_id,
-                                        "anchor_id": element.anchor_id
-                                    })
-                            });
-                            if (deleteArr.length > 0)
-                                DeleteGroup_Anchor(deleteArr);
-                            else
-                                getAllDataOfMap();
-                        }
-                    }
-                };
-                getXmlHttp.send(JSON.stringify(gerRequest));
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(request));
-}
-
 $(function () {
-    //預設anchor_type為anchor
+    token = getUser() ? getUser().api_token : "";
+
     $("#anchor_id").on('change', function () {
+        //預設anchor_type為anchor
         if ($(this).val().length > 0) {
             var isExist = anchorsInfoArray.every(function (info) {
                 return $(this).val() != info.anchor_id;
@@ -195,7 +64,8 @@ $(function () {
                 "Value": [{
                     "anchor_type": anchor_type.val(),
                     "anchor_id": anchor_id.val()
-                }]
+                }],
+                "api_token": [token]
             };
             var xmlHttp = createJsonXmlHttp("sql");
             xmlHttp.onreadystatechange = function () {
@@ -234,3 +104,142 @@ $(function () {
         submitAddAnchor();
     });
 });
+
+function getAnchorList() {
+    var requestArray = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetAnchors"],
+        "api_token": [token]
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            getAnchor_Group();
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                anchorsInfoArray = revObj.Values.slice(0); //利用抽離全部陣列完成陣列拷貝
+                $("#table_main_anchor_list tbody").empty();
+                $("#table_anchor_list tbody").empty();
+                var count_main_anchor_list = 0;
+                var count_anchor_list = 0;
+                for (var i = 0; i < anchorsInfoArray.length; i++) {
+                    if (anchorsInfoArray[i].anchor_type == "main") {
+                        count_main_anchor_list++;
+                        var tr_id = "tr_main_anchor_list_" + count_main_anchor_list;
+                        $("#table_main_anchor_list tbody").append("<tr id=\"" + tr_id + "\">" +
+                            "<td><input type=\"checkbox\" name=\"chkbox_main_anchor_list\" value=\"" +
+                            anchorsInfoArray[i].anchor_id + "\" onchange=\"selectColumn(\'" + tr_id + "\')\" /> " +
+                            count_main_anchor_list + "</td>" +
+                            "<td><input type=\"text\" name=\"list_main_anchor_id\" value=\"" +
+                            anchorsInfoArray[i].anchor_id + "\" style=\"max-width:60px;\" readonly/></td></tr>");
+                    } else {
+                        count_anchor_list++;
+                        var tr_id = "tr_anchor_list_" + count_anchor_list;
+                        $("#table_anchor_list tbody").append("<tr id=\"" + tr_id + "\">" +
+                            "<td><input type=\"checkbox\" name=\"chkbox_anchor_list\" value=\"" +
+                            anchorsInfoArray[i].anchor_id + "\" onchange=\"selectColumn(\'" + tr_id + "\')\" /> " +
+                            count_anchor_list + "</td>" +
+                            "<td><input type=\"text\" name=\"list_anchor_id\" value=\"" +
+                            anchorsInfoArray[i].anchor_id + "\" style=\"max-width:60px;\" readonly/></td></tr>");
+                    }
+                }
+            } else {
+                alert("獲取AnchorList失敗，請再試一次!");
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(requestArray));
+}
+
+function deleteMainAnchor(id) {
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["DeleteAnchor_Info"],
+        "Value": [{
+            "anchor_id": id
+        }],
+        "api_token": [token]
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                var requestArray = {
+                    "Command_Type": ["Read"],
+                    "Command_Name": ["GetGroups"],
+                    "api_token": [token]
+                };
+                var getXmlHttp = createJsonXmlHttp("sql");
+                getXmlHttp.onreadystatechange = function () {
+                    if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
+                        var deleteArray = [];
+                        if (revObj.success > 0) {
+                            revInfo.forEach(element => {
+                                if (element.main_anchor_id == id) {
+                                    deleteArray.push({
+                                        "group_id": element.group_id
+                                    });
+                                }
+                            });
+                            if (deleteArray.length > 0)
+                                DeleteGroupInfo(deleteArray);
+                            else
+                                getAllDataOfMap();
+                        }
+                    }
+                };
+                getXmlHttp.send(JSON.stringify(requestArray));
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
+}
+
+function deleteAnchor(id) {
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["DeleteAnchor_Info"],
+        "Value": [{
+            "anchor_id": id
+        }],
+        "api_token": [token]
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                var gerRequest = {
+                    "Command_Type": ["Read"],
+                    "Command_Name": ["GetGroup_Anchors"],
+                    "api_token": [token]
+                };
+                var getXmlHttp = createJsonXmlHttp("sql");
+                getXmlHttp.onreadystatechange = function () {
+                    if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (revObj.success > 0) {
+                            var deleteArr = [];
+                            revObj.Values.forEach(element => {
+                                if (element.anchor_id == id)
+                                    deleteArr.push({
+                                        "group_id": element.group_id,
+                                        "anchor_id": element.anchor_id
+                                    })
+                            });
+                            if (deleteArr.length > 0)
+                                DeleteGroup_Anchor(deleteArr);
+                            else
+                                getAllDataOfMap();
+                        }
+                    }
+                };
+                getXmlHttp.send(JSON.stringify(gerRequest));
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
+}

@@ -1,10 +1,16 @@
-var count_all_main_anchor = 0,
+var token = "",
+    count_all_main_anchor = 0,
     count_all_anchor = 0;
+
+$(function () {
+    token = getUser() ? getUser().api_token : "";
+});
 
 function inputAllAnchor() {
     var requestArray = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetAnchors"]
+        "Command_Name": ["GetAnchors"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {

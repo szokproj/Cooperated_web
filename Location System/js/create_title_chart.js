@@ -1,21 +1,12 @@
+var token = "";
 $(function () {
+    token = getUser() ? getUser().api_token : "";
     /**
      * Check this page's permission and load navbar
      */
-    var permission = getPermissionOfPage("Member_Setting");
-    switch (permission) {
-        case "":
-            alert("No permission");
-            history.back();
-            break;
-        case "R":
-            break;
-        case "RW":
-            break;
-        default:
-            alert("網頁錯誤，將跳回上一頁");
-            history.back();
-            break;
+    if (!getPermissionOfPage("Member_Setting")) {
+        alert("Permission denied!");
+        window.location.href = '../index.html';
     }
     setNavBar("Member_Setting", "Job_Title_Setting");
 
@@ -33,7 +24,8 @@ $(function () {
 
     var requestArray = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetJobTitle_relation"]
+        "Command_Name": ["GetJobTitle_relation"],
+        "api_token": [token]
     };
 
     var form, dialog = $("#dialog_edit_node").dialog({
@@ -147,7 +139,8 @@ $(function () {
                     var addColor = colorToHex($("#edit_dot_color").val());
                     var addRequest = {
                         "Command_Type": ["Read"],
-                        "Command_Name": ["AddJobTitle"]
+                        "Command_Name": ["AddJobTitle"],
+                        "api_token": [token]
                     };
                     var addXmlHttp = createJsonXmlHttp('sql');
                     if (nodeType.val() === 'siblings') { //增加同層節點
@@ -239,7 +232,8 @@ $(function () {
                 var deleteRequest = {
                     "Command_Type": ["Read"],
                     "Command_Name": ["DeleteJobTitle"],
-                    "Value": nodeIds
+                    "Value": nodeIds,
+                    "api_token": [token]
                 };
                 var deleteXmlHttp = createJsonXmlHttp('sql');
                 deleteXmlHttp.onreadystatechange = function () {
@@ -310,7 +304,8 @@ $(function () {
                             "c_id": $node[0].id,
                             "name": editName,
                             "color": colorToHex(editColor)
-                        }
+                        },
+                        "api_token": [token]
                     };
                     var editXmlHttp = createJsonXmlHttp('sql');
                     editXmlHttp.onreadystatechange = function () {

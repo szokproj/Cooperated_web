@@ -1,13 +1,8 @@
-function hiddenBlock() {
-    $("#block_info").hide();
-    $("#block_anchor_list").hide();
-    $("#block_group_list").hide();
-    $("#block_anchor_group").hide();
-    $("#block_map_group").hide();
-    $(".sidebar-menu .btn-sidebar").css('background-color', 'rgb(57, 143, 255)');
-}
+var token = "";
 
 $(function () {
+    token = getUser() ? getUser().api_token : "";
+
     hiddenBlock();
     $("#block_info").show();
     $("#label_map_info").css('background-color', 'rgb(40, 108, 197)');
@@ -43,9 +38,7 @@ $(function () {
     });
 
 
-    /**
-     * Map Setting Dialog
-     */
+    //Map Setting Dialog
     var dialog, form,
         //map info
         mapinfo_image = $("#canvas_map"),
@@ -78,7 +71,8 @@ $(function () {
                     "map_file": mapinfo_base64,
                     "map_file_ext": mapinfo_ext,
                     "map_scale": mapinfo_scale.val()
-                }
+                },
+                "api_token": [token]
             });
             var mapHttp = createJsonXmlHttp("sql");
             mapHttp.onreadystatechange = function () {
@@ -136,3 +130,12 @@ $(function () {
             return;
     });
 });
+
+function hiddenBlock() {
+    $("#block_info").hide();
+    $("#block_anchor_list").hide();
+    $("#block_group_list").hide();
+    $("#block_anchor_group").hide();
+    $("#block_map_group").hide();
+    $(".sidebar-menu .btn-sidebar").css('background-color', 'rgb(57, 143, 255)');
+}

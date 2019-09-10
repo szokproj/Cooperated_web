@@ -1,3 +1,4 @@
+var token = "";
 var PIXEL_RATIO; // 獲取瀏覽器像素比
 var cvsBlock, canvas, ctx;
 var canvasImg = {
@@ -32,6 +33,8 @@ var pageTimer = {}; //定義計時器全域變數
 window.addEventListener("load", setupCanvas, false);
 
 function setupCanvas() {
+    token = getUser() ? getUser().api_token : "";
+
     cvsBlock = document.getElementById("mapBlock");
     canvas = document.getElementById("canvas_map");
     ctx = canvas.getContext("2d");
@@ -79,7 +82,8 @@ function resetBlockDisplay() {
 function loadMaps() {
     var requestArray = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetMaps"]
+        "Command_Name": ["GetMaps"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -284,7 +288,8 @@ function updateFenceTable() {
         "Command_Name": ["GetFencesInMap"],
         "Value": {
             "map_id": map_id
-        }
+        },
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -321,7 +326,8 @@ function getFencePointArray(fence_id) {
         "Command_Name": ["GetFence_point"],
         "Value": {
             "fence_id": fence_id
-        }
+        },
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -355,7 +361,8 @@ function updateFenceDotsArr() {
 function getGroups() {
     var request = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetMaps_Groups"]
+        "Command_Name": ["GetMaps_Groups"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -384,7 +391,8 @@ function getAnchor_Group() {
         "Command_Name": ["GetAnchorsInMap"],
         "Value": {
             "map_id": map_id
-        }
+        },
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {

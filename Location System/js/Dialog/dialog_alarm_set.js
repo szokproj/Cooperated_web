@@ -1,3 +1,17 @@
+var token = "";
+
+$(function () {
+    token = getUser() ? getUser().api_token : "";
+
+    var stay_alarm_dialog = new cerateAlarmDialog("dialog_stay_alarm_setting", "setStayAlarmTime");
+    stay_alarm_dialog.inputTimeNode("stay_alarm_time");
+    stay_alarm_dialog.setOpenButton("set_alarm_stay");
+
+    var hidden_alarm_dialog = new cerateAlarmDialog("dialog_hidden_alarm_setting", "setHiddenAlarmTime");
+    hidden_alarm_dialog.inputTimeNode("hidden_alarm_time");
+    hidden_alarm_dialog.setOpenButton("set_alarm_hidden");
+});
+
 function cerateAlarmDialog(dialog_id, request_name) {
     var dialog, form, target, allFields;
 
@@ -10,7 +24,8 @@ function cerateAlarmDialog(dialog_id, request_name) {
             "Command_Name": [request_name],
             "Value": {
                 "time": target.val()
-            }
+            },
+            "api_token": [token]
         });
         if (valid) {
             var xmlHttp = createJsonXmlHttp(request_name);
@@ -64,15 +79,3 @@ function cerateAlarmDialog(dialog_id, request_name) {
         });
     };
 }
-
-
-
-$(function () {
-    var stay_alarm_dialog = new cerateAlarmDialog("dialog_stay_alarm_setting", "setStayAlarmTime");
-    stay_alarm_dialog.inputTimeNode("stay_alarm_time");
-    stay_alarm_dialog.setOpenButton("set_alarm_stay");
-
-    var hidden_alarm_dialog = new cerateAlarmDialog("dialog_hidden_alarm_setting", "setHiddenAlarmTime");
-    hidden_alarm_dialog.inputTimeNode("hidden_alarm_time");
-    hidden_alarm_dialog.setOpenButton("set_alarm_hidden");
-});

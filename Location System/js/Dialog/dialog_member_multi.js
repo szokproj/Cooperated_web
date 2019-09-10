@@ -1,4 +1,8 @@
+var token = "";
+
 $(function () {
+    token = getUser() ? getUser().api_token : "";
+
     var dialog, form,
         sel_item = $("#multi_edit_item"),
         sel_value = $("#multi_edit_value"),
@@ -20,7 +24,8 @@ $(function () {
                     num_arr.push(checkboxs[j].value);
             }
             var request = {
-                "Command_Type": ["Write"]
+                "Command_Type": ["Write"],
+                "api_token": [token]
             };
             var request_arr = [];
 

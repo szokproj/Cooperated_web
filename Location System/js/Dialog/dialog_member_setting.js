@@ -1,5 +1,126 @@
+var token = "";
 var default_color = '#2eb82e';
 var command_name = [];
+
+$(function () {
+    token = getUser() ? getUser().api_token : "";
+
+    var dialog, form,
+        main_tid_id = $("#main_tid_id"),
+        main_user_id = $("#main_user_id"),
+        main_card_id = $("#main_card_id"),
+        main_number = $("#main_number"),
+        main_name = $("#main_name"),
+        main_dept = $("#main_department"),
+        main_title = $("#main_jobTitle"),
+        main_type = $("#main_type"),
+        main_alarm_group = $("#main_alarm_group"),
+        allFields = $([]).add(main_tid_id).add(main_user_id).add(main_number).add(main_name)
+        .add(main_dept).add(main_title).add(main_type).add(main_alarm_group);
+
+    $("#main_select_tag_color").change(selectTagColor);
+
+    var SendResult = function () {
+        var valid = true,
+            photo_ext = "",
+            photo_base64 = "";
+        allFields.removeClass("ui-state-error");
+        valid = valid && checkLength(main_tid_id, $.i18n.prop('i_alertError_10'), 1, 10);
+        valid = valid && checkLength(main_user_id, $.i18n.prop('i_alertError_10'), 1, 10);
+        valid = valid && checkLength(main_number, $.i18n.prop('i_alertError_10'), 1, 50);
+        valid = valid && checkLength(main_name, $.i18n.prop('i_alertError_10'), 1, 50);
+        valid = valid && checkLength(main_dept, $.i18n.prop('i_alertError_10'), 1, 50);
+        valid = valid && checkLength(main_title, $.i18n.prop('i_alertError_10'), 1, 50);
+        valid = valid && checkLength(main_type, $.i18n.prop('i_alertError_10'), 1, 50);
+        valid = valid && checkLength(main_alarm_group, $.i18n.prop('i_alertError_10'), 1, 50);
+
+        var tag_id = combineToTagID(main_tid_id.val(), main_user_id.val());
+
+        if ($("#main_picture_img").attr("src").length > 0) {
+            var photo_file = $("#main_picture_img").attr("src").split(",");
+            photo_ext = getBase64Ext(photo_file[0]);
+            photo_base64 = photo_ext != "" ? photo_file[1].trim() : "";
+        } else { //no image
+            photo_ext = "";
+            photo_base64 = "";
+        }
+
+        if (valid) {
+            var requestJSON = JSON.stringify({
+                "Command_Type": ["Write"],
+                "Command_Name": command_name,
+                "Value": [{
+                    "number": main_number.val(),
+                    "tag_id": tag_id,
+                    "card_id": main_card_id.val(),
+                    "Name": main_name.val(),
+                    "department_id": $("#hidden_department").val(),
+                    "jobTitle_id": $("#hidden_jobTitle").val(),
+                    "type": main_type.val(),
+                    "photo": photo_base64,
+                    "file_ext": photo_ext,
+                    "color_type": $("#main_select_tag_color").val(),
+                    "color": colorToHex($("#main_input_tag_color").val()),
+                    "alarm_group_id": main_alarm_group.val(),
+                    "status": $("#basic_state").val(),
+                    "gender": $("#basic_gender").val(),
+                    "lastName": $("#basic_last_name").val(),
+                    "firstName": $("#basic_first_name").val(),
+                    "EnglishName": $("#basic_english_name").val(),
+                    "birthday": $("#basic_birthday").val(),
+                    "phoneJob": $("#basic_job_phone").val(),
+                    "phoneSelf": $("#basic_self_phone").val(),
+                    "mail": $("#basic_mail").val(),
+                    "address": $("#basic_address").val(),
+                    "education": $("#basic_highest_education").val(),
+                    "school": $("#basic_school").val(),
+                    "grade": $("#basic_grade").val(),
+                    "tech_grade": $("#basic_pro_level").val(),
+                    "dateEntry": $("#basic_entry_date").val(),
+                    "dateLeave": $("#basic_leave_date").val(),
+                    "note": $("#note_text").val(),
+                    "exist": "1"
+                }],
+                "api_token": [token]
+            });
+
+            var xmlHttp = createJsonXmlHttp('sql');
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    var revObj = JSON.parse(this.responseText);
+                    if (revObj.success > 0)
+                        UpdateMemberList();
+                    else
+                        alert($.i18n.prop('i_alertError_3'));
+                }
+            };
+            xmlHttp.send(requestJSON);
+            dialog.dialog("close");
+        }
+        return valid;
+    };
+
+    dialog = $("#dialog_edit_member").dialog({
+        autoOpen: false,
+        height: 640,
+        width: 600,
+        modal: true,
+        buttons: {
+            "Confirm": SendResult,
+            Cancel: function () {
+                form[0].reset();
+                allFields.removeClass("ui-state-error");
+                dialog.dialog("close");
+            }
+        },
+        close: function () {
+            form[0].reset();
+            allFields.removeClass("ui-state-error");
+        }
+    });
+
+    form = dialog.find("form");
+});
 
 
 function setCommand(name) {
@@ -11,7 +132,6 @@ function setCommand(name) {
         return;
 }
 
-
 function selectTagColor() {
     $("#main_input_tag_color").val(default_color);
     //先還原為預設顏色，再依據選擇代入已設定顏色
@@ -21,7 +141,8 @@ function selectTagColor() {
             $("#main_input_tag_color").prop("disabled", true);
             var requestJSON = JSON.stringify({
                 "Command_Type": ["Read"],
-                "Command_Name": ["GetDepartment_relation_list"]
+                "Command_Name": ["GetDepartment_relation_list"],
+                "api_token": [token]
             });
             var xmlHttp = createJsonXmlHttp('sql');
             xmlHttp.onreadystatechange = function () {
@@ -48,7 +169,8 @@ function selectTagColor() {
             $("#main_input_tag_color").prop("disabled", true);
             var requestJSON = JSON.stringify({
                 "Command_Type": ["Read"],
-                "Command_Name": ["GetJobTitle_relation_list"]
+                "Command_Name": ["GetJobTitle_relation_list"],
+                "api_token": [token]
             });
             var xmlHttp = createJsonXmlHttp('sql');
             xmlHttp.onreadystatechange = function () {
@@ -75,7 +197,8 @@ function selectTagColor() {
             $("#main_input_tag_color").prop("disabled", true);
             var requestJSON = JSON.stringify({
                 "Command_Type": ["Read"],
-                "Command_Name": ["GetUserTypes"]
+                "Command_Name": ["GetUserTypes"],
+                "api_token": [token]
             });
             var xmlHttp = createJsonXmlHttp('sql');
             xmlHttp.onreadystatechange = function () {
@@ -141,131 +264,6 @@ function getBase64Ext(urldata) {
         return "";
     }
 }
-
-
-$(function () {
-    var dialog, form,
-        main_tid_id = $("#main_tid_id"),
-        main_user_id = $("#main_user_id"),
-        main_card_id = $("#main_card_id"),
-        main_number = $("#main_number"),
-        main_name = $("#main_name"),
-        main_dept = $("#main_department"),
-        main_title = $("#main_jobTitle"),
-        main_type = $("#main_type"),
-        main_alarm_group = $("#main_alarm_group"),
-        allFields = $([]).add(main_tid_id).add(main_user_id).add(main_number).add(main_name)
-        .add(main_dept).add(main_title).add(main_type).add(main_alarm_group);
-    //tips = $( ".validateTips" );
-
-    $("#main_select_tag_color").change(selectTagColor);
-
-    var SendResult = function () {
-        var permission = getPermissionOfPage("Member_Setting");
-        if (permission != "RW") {
-            alert("No write permission!")
-            return;
-        }
-
-        var valid = true,
-            photo_ext = "",
-            photo_base64 = "";
-        allFields.removeClass("ui-state-error");
-        valid = valid && checkLength(main_tid_id, $.i18n.prop('i_alertError_10'), 1, 10);
-        valid = valid && checkLength(main_user_id, $.i18n.prop('i_alertError_10'), 1, 10);
-        valid = valid && checkLength(main_number, $.i18n.prop('i_alertError_10'), 1, 50);
-        valid = valid && checkLength(main_name, $.i18n.prop('i_alertError_10'), 1, 50);
-        valid = valid && checkLength(main_dept, $.i18n.prop('i_alertError_10'), 1, 50);
-        valid = valid && checkLength(main_title, $.i18n.prop('i_alertError_10'), 1, 50);
-        valid = valid && checkLength(main_type, $.i18n.prop('i_alertError_10'), 1, 50);
-        valid = valid && checkLength(main_alarm_group, $.i18n.prop('i_alertError_10'), 1, 50);
-
-        var tag_id = combineToTagID(main_tid_id.val(), main_user_id.val());
-
-        if ($("#main_picture_img").attr("src").length > 0) {
-            var photo_file = $("#main_picture_img").attr("src").split(",");
-            photo_ext = getBase64Ext(photo_file[0]);
-            photo_base64 = photo_ext != "" ? photo_file[1].trim() : "";
-        } else { //no image
-            photo_ext = "";
-            photo_base64 = "";
-        }
-
-        if (valid) {
-            var requestJSON = JSON.stringify({
-                "Command_Type": ["Write"],
-                "Command_Name": command_name,
-                "Value": [{
-                    "number": main_number.val(),
-                    "tag_id": tag_id,
-                    "card_id": main_card_id.val(),
-                    "Name": main_name.val(),
-                    "department_id": $("#hidden_department").val(),
-                    "jobTitle_id": $("#hidden_jobTitle").val(),
-                    "type": main_type.val(),
-                    "photo": photo_base64,
-                    "file_ext": photo_ext,
-                    "color_type": $("#main_select_tag_color").val(),
-                    "color": colorToHex($("#main_input_tag_color").val()),
-                    "alarm_group_id": main_alarm_group.val(),
-                    "status": $("#basic_state").val(),
-                    "gender": $("#basic_gender").val(),
-                    "lastName": $("#basic_last_name").val(),
-                    "firstName": $("#basic_first_name").val(),
-                    "EnglishName": $("#basic_english_name").val(),
-                    "birthday": $("#basic_birthday").val(),
-                    "phoneJob": $("#basic_job_phone").val(),
-                    "phoneSelf": $("#basic_self_phone").val(),
-                    "mail": $("#basic_mail").val(),
-                    "address": $("#basic_address").val(),
-                    "education": $("#basic_highest_education").val(),
-                    "school": $("#basic_school").val(),
-                    "grade": $("#basic_grade").val(),
-                    "tech_grade": $("#basic_pro_level").val(),
-                    "dateEntry": $("#basic_entry_date").val(),
-                    "dateLeave": $("#basic_leave_date").val(),
-                    "note": $("#note_text").val(),
-                    "exist": "1"
-                }]
-            });
-
-            var xmlHttp = createJsonXmlHttp('sql');
-            xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0)
-                        UpdateMemberList();
-                    else
-                        alert($.i18n.prop('i_alertError_3'));
-                }
-            };
-            xmlHttp.send(requestJSON);
-            dialog.dialog("close");
-        }
-        return valid;
-    };
-
-    dialog = $("#dialog_edit_member").dialog({
-        autoOpen: false,
-        height: 640,
-        width: 600,
-        modal: true,
-        buttons: {
-            "Confirm": SendResult,
-            Cancel: function () {
-                form[0].reset();
-                allFields.removeClass("ui-state-error");
-                dialog.dialog("close");
-            }
-        },
-        close: function () {
-            form[0].reset();
-            allFields.removeClass("ui-state-error");
-        }
-    });
-
-    form = dialog.find("form");
-});
 
 function combineToTagID(tid_id, user_id) {
     var tid_hex = parseInt(tid_id, 10).toString(16).toUpperCase(),

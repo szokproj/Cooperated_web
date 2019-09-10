@@ -124,6 +124,10 @@ canvas:active {
     text-align: left;
 }
 
+.dropdown ul {
+    z-index: 2;
+}
+
 .dropdown button {
     height: 30px;
     font-size: 12px;

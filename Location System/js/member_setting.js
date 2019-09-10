@@ -1,3 +1,5 @@
+var token = "";
+var permission = "0";
 var default_color = '#2eb82e';
 var memberArray = [];
 var deptColorArray = [];
@@ -12,28 +14,12 @@ var educationArr = ['PrimarySchool', 'MiddleSchool', 'HighSchool', 'JuniorSchool
 
 
 $(function () {
-    /**
-     * Check this page's permission and load navbar
-     */
-    var permission = getPermissionOfPage("Member_Setting");
-    switch (permission) {
-        case "":
-            alert("No permission");
-            history.back();
-            break;
-        case "R":
-            $("#add_col").attr("disabled", true);
-            $("#delete_col").attr("disabled", true);
-            $("#multi_edit").attr("disabled", true);
-
-            //$("#excel_import").attr("disabled", true);
-            break;
-        case "RW":
-            break;
-        default:
-            alert("網頁錯誤，將跳回上一頁");
-            history.back();
-            break;
+    //Check this page's permission and load navbar
+    token = getUser() ? getUser().api_token : "";
+    permission = getUser() ? parseInt(getUser().userType, 10) : 0;
+    if (!getPermissionOfPage("Member_Setting")) {
+        alert("Permission denied!");
+        window.location.href = '../index.html';
     }
     setNavBar("Member_Setting", "Member_Setting");
 
@@ -55,9 +41,6 @@ $(function () {
     sortTable('.row_alarm_group', '');
     sortTable('.row_note', '');
 
-    /**
-     * this page's js start
-     */
     UpdateMemberList();
     //Set deptColorArray
     var deptXmlHttp = createJsonXmlHttp('sql');
@@ -72,7 +55,8 @@ $(function () {
     };
     deptXmlHttp.send(JSON.stringify({
         "Command_Type": ["Read"],
-        "Command_Name": ["GetDepartment_relation_list"]
+        "Command_Name": ["GetDepartment_relation_list"],
+        "api_token": [token]
     }));
     //Set titleColorArray
     var titleXmlHttp = createJsonXmlHttp('sql');
@@ -87,7 +71,8 @@ $(function () {
     };
     titleXmlHttp.send(JSON.stringify({
         "Command_Type": ["Read"],
-        "Command_Name": ["GetJobTitle_relation_list"]
+        "Command_Name": ["GetJobTitle_relation_list"],
+        "api_token": [token]
     }));
     //Set userTypeColorArray and userTypeArr
     var userTypeXmlHttp = createJsonXmlHttp('sql');
@@ -104,7 +89,8 @@ $(function () {
     };
     userTypeXmlHttp.send(JSON.stringify({
         "Command_Type": ["Read"],
-        "Command_Name": ["GetUserTypes"]
+        "Command_Name": ["GetUserTypes"],
+        "api_token": [token]
     }));
     $("#main_type").change(function () {
         var type = typeof ($(this).val()) != 'undefined' ? $(this).val() : "";
@@ -157,8 +143,7 @@ $(function () {
         $("#selectAll").parent().click();
     });
     $("#excel_import").change(function () {
-        var permission = getPermissionOfPage("Member_Setting");
-        if (permission == "RW") {
+        if (permission > 0) {
             importf(this);
         } else {
             alert("No write permission!")
@@ -198,7 +183,8 @@ $(function () {
 function UpdateMemberList() {
     var getAlarmGroupReq = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetAlarmGroup_list"]
+        "Command_Name": ["GetAlarmGroup_list"],
+        "api_token": [token]
     };
     var getXmlHttp = createJsonXmlHttp("sql");
     getXmlHttp.onreadystatechange = function () {
@@ -215,7 +201,8 @@ function UpdateMemberList() {
                 });
                 var request = {
                     "Command_Type": ["Read"],
-                    "Command_Name": ["GetStaffs"]
+                    "Command_Name": ["GetStaffs"],
+                    "api_token": [token]
                 };
                 var xmlHttp = createJsonXmlHttp("sql"); //updateMemberList
                 xmlHttp.onreadystatechange = function () {
@@ -273,7 +260,8 @@ function editMemberData(number) {
         "Command_Name": ["GetOneStaff"],
         "Value": {
             "number": number
-        }
+        },
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -337,7 +325,8 @@ function editMemberData(number) {
         "Command_Name": ["GetOneStaffPhoto"],
         "Value": {
             "number": number
-        }
+        },
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -474,7 +463,8 @@ function removeMemberDatas() {
     var request = {
         "Command_Type": ["Read"],
         "Command_Name": ["DeleteStaff"],
-        "Value": num_arr
+        "Value": num_arr,
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -508,7 +498,8 @@ function multiEditData() {
         if (item == "department") {
             var request = {
                 "Command_Type": ["Read"],
-                "Command_Name": ["GetDepartment_relation_list"]
+                "Command_Name": ["GetDepartment_relation_list"],
+                "api_token": [token]
             };
             var xmlHttp = createJsonXmlHttp("sql");
             xmlHttp.onreadystatechange = function () {
@@ -531,7 +522,8 @@ function multiEditData() {
         } else if (item == "jobTitle") {
             var request = {
                 "Command_Type": ["Read"],
-                "Command_Name": ["GetJobTitle_relation_list"]
+                "Command_Name": ["GetJobTitle_relation_list"],
+                "api_token": [token]
             };
             var xmlHttp = createJsonXmlHttp("sql");
             xmlHttp.onreadystatechange = function () {
@@ -554,7 +546,8 @@ function multiEditData() {
         } else if (item == "type") {
             var request = {
                 "Command_Type": ["Read"],
-                "Command_Name": ["GetUserTypes"]
+                "Command_Name": ["GetUserTypes"],
+                "api_token": [token]
             };
             var xmlHttp = createJsonXmlHttp("sql");
             xmlHttp.onreadystatechange = function () {

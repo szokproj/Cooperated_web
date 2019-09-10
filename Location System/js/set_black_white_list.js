@@ -1,4 +1,7 @@
+var token = "";
+
 $(function () {
+    token = getUser() ? getUser().api_token : "";
     getMemberList();
     $("#btn_BW_list_add").on('click', addMembers);
     /*$("input[name='BW_list_type']").on('change', function () {
@@ -17,7 +20,8 @@ $(function () {
 function getMemberList() {
     var request = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetStaffs"]
+        "Command_Name": ["GetStaffs"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql"); //updateMemberList
     xmlHttp.onreadystatechange = function () {
@@ -61,7 +65,8 @@ function addMembers() {
     /*var request = {
         "Command_Type": ["Read"],
         "Command_Name": ["DeleteStaff"],
-        "Value": num_arr
+        "Value": num_arr,
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -91,7 +96,8 @@ function removeMembers() {
     var request = {
         "Command_Type": ["Read"],
         "Command_Name": ["DeleteStaff"],
-        "Value": num_arr
+        "Value": num_arr,
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {

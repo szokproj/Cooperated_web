@@ -1,9 +1,12 @@
+var token = "";
+
 $(function () {
+    token = getUser() ? getUser().api_token : "";
+
     var dialog, form,
         map_name = $("#add_map_name"),
         map_image = $("#add_map_image"),
         allFields = $([]).add(map_name).add(map_image);
-    //tips = $( ".validateTips" );
 
     $("#add_map_file").on("change", function () {
         var file = this.files[0];
@@ -20,7 +23,6 @@ $(function () {
             return;
         }
     });
-
 
     function SubmitNewMap() {
         var r = confirm($.i18n.prop('i_mapAlert_17'), );
@@ -51,7 +53,8 @@ $(function () {
                         "map_scale": "1",
                         "map_file": map_base64,
                         "map_file_ext": map_ext
-                    }]
+                    }],
+                    "api_token": [token]
                 };
                 var mapHttp = createJsonXmlHttp("sql");
                 mapHttp.onreadystatechange = function () {

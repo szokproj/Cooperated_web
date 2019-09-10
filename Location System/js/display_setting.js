@@ -1,24 +1,13 @@
+var token = "";
 var default_color = '#2eb82e';
 var default_size = 10;
 
 $(function () {
-    /**
-     * Check this page's permission and load navbar
-     */
-    var permission = getPermissionOfPage("Member_Setting");
-    switch (permission) {
-        case "":
-            alert("No permission");
-            history.back();
-            break;
-        case "R":
-            break;
-        case "RW":
-            break;
-        default:
-            alert("網頁錯誤，將跳回上一頁");
-            history.back();
-            break;
+    //Check this page's permission and load navbar
+    token = getUser() ? getUser().api_token : "";
+    if (!getPermissionOfPage("Member_Setting")) {
+        alert("Permission denied!");
+        window.location.href = '../index.html';
     }
     setNavBar("Member_Setting", "Display_Setting");
 
@@ -44,7 +33,8 @@ function updateTypeColorList(index) {
             $("#row_name").text($.i18n.prop('i_dept'));
             var request = {
                 "Command_Type": ["Read"],
-                "Command_Name": ["GetDepartment_relation_list"]
+                "Command_Name": ["GetDepartment_relation_list"],
+                "api_token": [token]
             };
             var xmlHttp = createJsonXmlHttp("sql");
             xmlHttp.onreadystatechange = function () {
@@ -72,7 +62,8 @@ function updateTypeColorList(index) {
             $("#row_name").text($.i18n.prop('i_jobTitle'));
             var request = {
                 "Command_Type": ["Read"],
-                "Command_Name": ["GetJobTitle_relation_list"]
+                "Command_Name": ["GetJobTitle_relation_list"],
+                "api_token": [token]
             };
             var xmlHttp = createJsonXmlHttp("sql");
             xmlHttp.onreadystatechange = function () {
@@ -100,7 +91,8 @@ function updateTypeColorList(index) {
             $("#row_name").text($.i18n.prop('i_userType'));
             var request = {
                 "Command_Type": ["Read"],
-                "Command_Name": ["GetUserTypes"]
+                "Command_Name": ["GetUserTypes"],
+                "api_token": [token]
             };
             var xmlHttp = createJsonXmlHttp("sql");
             xmlHttp.onreadystatechange = function () {
@@ -128,7 +120,8 @@ function updateTypeColorList(index) {
             $("#row_name").text($.i18n.prop('i_number'));
             var request = {
                 "Command_Type": ["Read"],
-                "Command_Name": ["GetStaffs"]
+                "Command_Name": ["GetStaffs"],
+                "api_token": [token]
             };
             var xmlHttp = createJsonXmlHttp("sql");
             xmlHttp.onreadystatechange = function () {
@@ -167,7 +160,7 @@ function drawPosition(color) {
         radius = default_size;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height); //先還原
-    
+
     //畫倒水滴形
     ctx.beginPath();
     ctx.lineWidth = 2;

@@ -12,7 +12,6 @@ function EditAlarmDotType(tr) {
 }
 
 $(function () {
-
     var dialog, form;
 
     function sendResult(tr) {

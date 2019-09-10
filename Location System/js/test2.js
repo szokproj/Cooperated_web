@@ -1,3 +1,9 @@
+var token = "";
+
+$(function () {
+    token = getUser() ? getUser().api_token : "";
+});
+
 function Timeline(maps) {
     var times = 0;
     var limitCount = 64;
@@ -38,7 +44,8 @@ function Timeline(maps) {
                             "start_time": checkTimeLength($("#start_time").val()),
                             "end_date": $("#end_date").val(),
                             "end_time": checkTimeLength($("#end_time").val())
-                        }
+                        },
+                        "api_token": [token]
                     });
                 }, 100 * i)
             );
@@ -79,7 +86,8 @@ function Timeline(maps) {
                                 "start_time": revObj.start_time,
                                 "end_date": revObj.end_date,
                                 "end_time": revObj.end_time
-                            }
+                            },
+                            "api_token": [token]
                         });
                     } else {
                         if (historys[request.Value.tag_id] && historys[request.Value.tag_id].length > max_times)

@@ -52,6 +52,7 @@
         }
     </style>
     <!--Edit js-->
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript">
         $(function () {
@@ -68,27 +69,35 @@
             valid = valid && checkLength(account, $.i18n.prop('i_loginError_1'), 1, 50);
             valid = valid && checkLength(password, $.i18n.prop('i_loginError_2'), 1, 50);
             if (valid) {
-                window.location.href = '../index.html';
-                
-                /*var requestJSON = JSON.stringify({
-                    "Command_Type": ["Write"],
-                    "Command_Name": [""],
-                    "Value": {
-                        "account": account.val(),
-                        "password": password.val()
-                    }
-                });
-                var xmlHttp = createJsonXmlHttp('sql');
+                var xmlHttp = createJsonXmlHttp('user');
                 xmlHttp.onreadystatechange = function () {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
-                        if (revObj.success > 0)
-                            window.location.href = '../index.html'; //Verification success
-                        else
-                            alert($.i18n.prop('i_loginFailed_1'));
+                        if (revObj.success > 0) {
+                            //Verification success
+                            if (revObj.Values && revObj.Values[0].api_token) {
+                                Cookies.set("login_user", JSON.stringify(revObj.Values[0]));
+                                alert($.i18n.prop('i_loginSuccess'));
+                                window.location.href = '../index.html';
+                            }
+                        } else {
+                            var msg = revObj.Values[0].msg;
+                            if (msg == "Account not find")
+                                alert($.i18n.prop('i_accountNotFound'));
+                            else if (msg == "password error")
+                                alert($.i18n.prop('i_passwordError'));
+                            else
+                                alert($.i18n.prop('i_loginFailed'));
+                        }
                     }
                 };
-                xmlHttp.send(requestJSON);*/
+                xmlHttp.send(JSON.stringify({
+                    "Command_Name": ["login"],
+                    "Value": [{
+                        "code": account.val(),
+                        "password": password.val()
+                    }]
+                }));
             }
         }
     </script>

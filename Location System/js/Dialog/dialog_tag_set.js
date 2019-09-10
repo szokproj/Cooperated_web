@@ -1,40 +1,16 @@
-var count_tag_set = 0,
+var token = "",
+    count_tag_set = 0,
     RecordSetList = [],
     colorArray = ["transparent", "red", "pink", "orange", "yellow", "green", "blue", "purple", "gray", "white", "black"];
 
-function inputTagSetting(tags_info) {
-    RecordSetList = tags_info;
-    $(function () {
-        $("#dialog_tag_set tbody").empty(); //先重置表格
-        count_tag_set = 0;
-        for (var i = 0; i < tags_info.length; i++) {
-            count_tag_set++;
-            var tr_id = "tr_tag_set_" + count_tag_set;
-            $("#dialog_tag_set tbody").append("<tr id=\"" + tr_id + "\"><td>" +
-                "<input type=\"checkbox\" name=\"chkbox_tag_set\" value=\"" + count_tag_set + "\"" +
-                " onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_tag_set +
-                "</td><td>" +
-                "<input type=\"text\" name=\"tag_set_name\" value=\"" + tags_info[i].tag_name +
-                "\" style=\"max-width:100px;\" />" +
-                "</td><td>" +
-                "<input type=\"text\" name=\"tag_set_id\" value=\"" + tags_info[i].tag_id +
-                "\" style=\"max-width:70px;\" />" +
-                "</td><td>" +
-                "<select name=\"tag_set_color\">" +
-                makeOptions(colorArray, tags_info[i].pic_path) +
-                "</select>" +
-                "</td></tr>");
-        }
-    });
-}
-
 $(function () {
+    token = getUser() ? getUser().api_token : "";
+
     var dialog, form,
         tag_name_row = $("[name=tag_set_name]"),
         tag_id_row = $("[name=tag_set_id]"),
         tag_color_row = $("[name=tag_set_color]"),
         allFields = $([]).add(tag_id_row, tag_name_row, tag_color_row);
-    //tips = $( ".validateTips" );
 
     var SendResult = function () {
         allFields.removeClass("ui-state-error");
@@ -55,7 +31,8 @@ $(function () {
         var requestJSON = JSON.stringify({
             "Command_Type": ["Write"],
             "Command_Name": ["", ""],
-            "Value": tag_array
+            "Value": tag_array,
+            "api_token": [token]
         });
 
         if (valid) {
@@ -144,3 +121,29 @@ $(function () {
         dialog.dialog("open");
     });
 });
+
+function inputTagSetting(tags_info) {
+    RecordSetList = tags_info;
+    $(function () {
+        $("#dialog_tag_set tbody").empty(); //先重置表格
+        count_tag_set = 0;
+        for (var i = 0; i < tags_info.length; i++) {
+            count_tag_set++;
+            var tr_id = "tr_tag_set_" + count_tag_set;
+            $("#dialog_tag_set tbody").append("<tr id=\"" + tr_id + "\"><td>" +
+                "<input type=\"checkbox\" name=\"chkbox_tag_set\" value=\"" + count_tag_set + "\"" +
+                " onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_tag_set +
+                "</td><td>" +
+                "<input type=\"text\" name=\"tag_set_name\" value=\"" + tags_info[i].tag_name +
+                "\" style=\"max-width:100px;\" />" +
+                "</td><td>" +
+                "<input type=\"text\" name=\"tag_set_id\" value=\"" + tags_info[i].tag_id +
+                "\" style=\"max-width:70px;\" />" +
+                "</td><td>" +
+                "<select name=\"tag_set_color\">" +
+                makeOptions(colorArray, tags_info[i].pic_path) +
+                "</select>" +
+                "</td></tr>");
+        }
+    });
+}

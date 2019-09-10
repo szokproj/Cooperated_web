@@ -8,12 +8,17 @@ var timeDelay = {
     send_network: [],
     send_rf: []
 }; //restore timeout
+var token = "";
 
+$(function () {
+    token = getUser() ? getUser().api_token : "";
+});
 
 function Load() {
     var requestArray = {
         "Command_Type": ["Read"],
-        "Command_Name": ["Search_net"]
+        "Command_Name": ["Search_net"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("Command")
     xmlHttp.onreadystatechange = function () {
@@ -54,7 +59,8 @@ function Search() {
         "Value": {
             "net_interface_id": [$("#interface_card").children('option:selected').text()],
             "ip": [$("#local_ip").val()]
-        }
+        },
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("test2")
     xmlHttp.onreadystatechange = function () {
@@ -125,7 +131,8 @@ function Connect() {
             "Command_Name": ["Connect"],
             "Value": {
                 "IP_address": check_val
-            }
+            },
+            "api_token": [token]
         };
         var xmlHttp = createJsonXmlHttp("Command");
         xmlHttp.onreadystatechange = function () {
@@ -193,7 +200,8 @@ function Connect() {
                 "Command_Name": ["Connect"],
                 "Value": {
                     "IP_address": static_ip_1 + "." + static_ip_2 + "." + static_ip_3 + "." + static_ip_4
-                }
+                },
+                "api_token": [token]
             };
             var xmlHttp = createJsonXmlHttp("Command");
             xmlHttp.onreadystatechange = function () {
@@ -232,7 +240,8 @@ function RF_setting_read(ip_address_array) {
                 "rf_PAC", "rf_PGdelay", "rf_PMULT_value", "rf_Power", "rf_SFD_timeout", "rf_SMARTPOWER",
                 "rf_channel", "rf_datarate", "rf_preambleCode", "rf_preambleLength", "rf_prf"
             ]
-        }
+        },
+        "api_token": [token]
     };
     var RF_XmlHttp = createJsonXmlHttp("test2");
     RF_XmlHttp.onreadystatechange = function () {
@@ -320,7 +329,8 @@ function Device_setting_write(i, connected_ip_addr) {
         "Command_Name": ["Network"],
         "Value": {
             "IP_address": [connected_ip_addr]
-        }
+        },
+        "api_token": [token]
     };
     if (ip_mode == "DHCP") { //DHCP
         set_mode = "DHCP";
@@ -368,7 +378,8 @@ function Basic_setting_write(i, connected_ip_addr) {
             "function": ["dev_active_ID"],
             //"dev_transmission_cycle_time": "1000",
             "dev_active_ID": document.getElementsByName("conn_anchor_id")[i].value
-        }
+        },
+        "api_token": [token]
     };
 
     var xmlHttp = createJsonXmlHttp("test2");
@@ -413,7 +424,8 @@ function RF_setting_write(i, connected_ip_addr) {
             "rf_SMARTPOWER": $('#conn_rf_smartpower_' + i).val(),
             "rf_NTM_value": $('#conn_rf_ntm_' + i).val(),
             "rf_PMULT_value": $('#conn_rf_mult_' + i).val()
-        }
+        },
+        "api_token": [token]
     };
 
     var xmlHttp = createJsonXmlHttp("test2");

@@ -1,80 +1,121 @@
-var permissionArray = [];
 var account = "";
-var permission = "";
-var VisitorPermission = { //訪客帳號權限
-    Permission: "",
-    index: "R",
-    Member_Setting: "",
-    Timeline: "R",
-    Map_Setting: "",
-    Anchor_Setting: "",
-    Alarm_Setting: "",
-    Reference: ""
+var permission = "0";
+var MinimumPermission = {
+    index: "0",
+    Member_Setting: "0",
+    Timeline: "0",
+    Map_Setting: "0",
+    Anchor_Setting: "0",
+    Alarm_Setting: "0",
+    Reference: "2",
+    Account_Management: "2"
 };
 
+/**
+ * When web page loading.
+ * First read the permission table from server
+ * Second read the account_permission or get from cookie
+ */
 
-$(function () {
-    //When web page loading.
-    //First read the permission table from server
-    permissionArray = [{
-        Permission: "admin",
-        index: "RW",
-        Member_Setting: "RW",
-        Timeline: "RW",
-        Map_Setting: "RW",
-        Anchor_Setting: "RW",
-        Alarm_Setting: "RW",
-        Reference: "RW"
-    }, {
-        Permission: "2",
-        index: "R",
-        Member_Setting: "R",
-        Timeline: "R",
-        Map_Setting: "R",
-        Anchor_Setting: "R",
-        Alarm_Setting: "R",
-        Reference: "R"
-    }, {
-        Permission: "3",
-        index: "R",
-        Member_Setting: "",
-        Timeline: "R",
-        Map_Setting: "",
-        Anchor_Setting: "",
-        Alarm_Setting: "",
-        Reference: ""
-    }];
-    //Second read the account_permission or  
-    account = "a123"; //get from cookie
-    permission = "admin"; //get the permission of this account (by sending this account to server)
+function getUser() {
+    var cookie = getCookie("login_user");
+    var user_info = typeof (cookie) === 'undefined' ? null : JSON.parse(cookie);
+    if (user_info) {
+        permission = user_info.userType;
+        var html = "<span class=\"i18n\" name=\"i_welcome\">" + $.i18n.prop('i_welcome') +
+            "</span> , <div class=\"dropdown dropdown-input\"><button type=\"button\"" +
+            " class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\">" +
+            "<span>" + user_info.cname + "</span> &nbsp;<span class=\"caret\"></span>" +
+            "</button><ul class=\"dropdown-menu\" role=\"menu\" id=\"user_btn\">";
+        if (user_info.userType == "2") {
+            html += "<li><a href=\"../Account_Management.html\" class=\"i18n\"" +
+                " name=\"account_managementPage\">" + $.i18n.prop('account_managementPage') +
+                "</a></li>";
+        }
+        document.getElementById("login_user").innerHTML = html +
+            "<li><a href=\"javascript: resetLogin();\" class=\"i18n\" name=\"i_logout\">" +
+            $.i18n.prop('i_logout') + "</a></li></ul></div>";
+    } else {
+        document.getElementById("login_user").innerHTML = "<a href=\"../Login.html\" " +
+            "style=\"margin:0px 20px 0px 5px;\"><span class=\"i18n\" name=\"i_login\">" +
+            $.i18n.prop('i_login') + "</span></a>";
+    }
+    return user_info;
+}
 
+function resetLogin() {
+    var xmlHttp = createJsonXmlHttp('user');
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj && revObj.success > 0) {
+                alert($.i18n.prop('i_logoutSuccess'));
+            } else {
+                alert($.i18n.prop('i_loginTimeout'));
+                //alert($.i18n.prop('i_logoutFailed'));
+            }
+            setCookie("login_user", null);
+            location.reload();
+        }
+    };
+    xmlHttp.send(JSON.stringify({
+        "Command_Name": ["logout"],
+        "Value": [{
+            "api_token": getUser() ? getUser().api_token : ""
+        }]
+    }));
+}
 
-
-});
+function getPermission() {
+    return [{
+            page_name: 'homePage',
+            permission: MinimumPermission["index"]
+        },
+        {
+            page_name: 'member_settingPage',
+            permission: MinimumPermission["Member_Setting"]
+        },
+        {
+            page_name: 'timelinePage',
+            permission: MinimumPermission["Timeline"]
+        },
+        {
+            page_name: 'map_settingPage',
+            permission: MinimumPermission["Map_Setting"]
+        },
+        {
+            page_name: 'anchor_settingPage',
+            permission: MinimumPermission["Anchor_Setting"]
+        },
+        {
+            page_name: 'alarm_settingPage',
+            permission: MinimumPermission["Alarm_Setting"]
+        },
+        {
+            page_name: 'advance_settingPage',
+            permission: MinimumPermission["Reference"]
+        },
+        {
+            page_name: 'account_managementPage',
+            permission: MinimumPermission["Account_Management"]
+        }
+    ];
+}
 
 function getPermissionOfPage(parent_page) {
-    var permission_obj = {};
-    var index = permissionArray.findIndex(function (info) {
-        return info.Permission == permission;
-    });
-    if (index > -1)
-        permission_obj = permissionArray[index];
-    else //沒有設定權限等同訪客帳號
-        permission_obj = VisitorPermission;
-    return permission_obj[parent_page];
+    var permission_num = typeof (parseInt(permission, 10)) === 'number' ?
+        parseInt(permission, 10) : 0; //沒有設定權限等同訪客帳號
+    if (parent_page in MinimumPermission) {
+        var minimum = parseInt(MinimumPermission[parent_page], 10);
+        return permission_num >= minimum ? true : false;
+    } else {
+        alert("Error! Please call administrator help.");
+        return false;
+    }
 }
 
 function setNavBar(parent_page, child_page) {
-    var permission_obj = {};
-    var index = permissionArray.findIndex(function (info) {
-        return info.Permission == permission;
-    });
-    if (index > -1)
-        permission_obj = permissionArray[index];
-    else //沒有設定權限等同訪客帳號
-        permission_obj = VisitorPermission;
-
-    var navbar = new Navbar(permission_obj);
+    var navbar = new Navbar();
     if (parent_page != "") {
         navbar.setFirstFloor(parent_page);
         navbar.setSecondFloor(parent_page, child_page);
@@ -84,7 +125,7 @@ function setNavBar(parent_page, child_page) {
     }
 }
 
-function Navbar(permission_obj) {
+function Navbar() {
     var ParentPageArray = [
         "index",
         "Member_Setting",
@@ -99,7 +140,9 @@ function Navbar(permission_obj) {
     var navbarHtml = "<aside class=\"menu\"><div class=\"menu-left\"><nav class=\"sidebar\"><ul class=\"nav\">";
     this.setFirstFloor = function (parent_page) {
         ParentPageArray.forEach(function (PageName, i) {
-            if (permission_obj[PageName] == "R" || permission_obj[PageName] == "RW") {
+            var permission_num = typeof (parseInt(permission, 10)) === 'number' ?
+                parseInt(permission, 10) : 0; //沒有設定權限等同訪客帳號
+            if (permission_num >= parseInt(MinimumPermission[parent_page], 10)) {
                 if (PageName == parent_page)
                     parent_order = i;
                 switch (PageName) {
@@ -129,8 +172,7 @@ function Navbar(permission_obj) {
                         break;
                     case "Reference":
                         navbarHtml += "<li><a href=\"../Reference.html\"><i class=\"fas fa-cogs\"></i>" +
-                            "<span class=\"i18n\" name=\"advance_settingPage\"></span></a></li>" +
-                            "<hr>";
+                            "<span class=\"i18n\" name=\"advance_settingPage\"></span></a></li>";
                         break;
                     default:
                         break;
@@ -140,14 +182,14 @@ function Navbar(permission_obj) {
     };
     this.setSecondFloor = function (parent_page, child_page) {
         if (parent_page == "index") {
-            navbarHtml += "<li class=\"alarmlist\"><a href=\"javascript: alarmSidebarMove();\">" +
+            navbarHtml += "<hr><li class=\"alarmlist\"><a href=\"javascript: alarmSidebarMove();\">" +
                 "<i class=\"fas fa-exclamation-circle\" id=\"alarmSideBar_icon\"></i>" +
                 "<span class=\"i18n\" name=\"i_alarmList\"></span></a></li>" +
                 "<li class=\"taglist\"><a href=\"javascript: tagSidebarMove();\">" +
                 "<i class=\"fas fa-map-marker-alt\" style=\"padding-left:2px;\"></i>" +
                 "<span class=\"i18n\" name=\"i_tagList\"></span></a></li>";
         } else if (parent_page == "Member_Setting") {
-            navbarHtml += "<li class=\"setting-type\"><a href=\"../Member_Setting.html\"><i class=\"fas fa-users\"></i>" +
+            navbarHtml += "<hr><li class=\"setting-type\"><a href=\"../Member_Setting.html\"><i class=\"fas fa-users\"></i>" +
                 "<span class=\"i18n\" name=\"i_memberSetting\"></span></a></li>" +
                 "<li class=\"setting-type\"><a href=\"../Display_Setting.html\">" +
                 "<i class=\"fas fa-map-marker-alt\" style=\"padding-left:4px;\"></i>" +
@@ -178,7 +220,7 @@ function Navbar(permission_obj) {
                     break;
             }
         } else if (parent_page == "Reference") {
-            navbarHtml += "<li class=\"setting-type\"><a href=\"../Reference.html\">" +
+            navbarHtml += "<hr><li class=\"setting-type\"><a href=\"../Reference.html\">" +
                 "<i class=\"fas fa-satellite-dish\"></i><span class=\"i18n\" name=\"i_reference\"></span></a></li>" +
                 "<li class=\"setting-type\"><a href=\"../Advance_cmd.html\">" +
                 "<i class=\"fas fa-code\"></i><span class=\"i18n\" name=\"i_advance_cmd\"></span></a></li>" +

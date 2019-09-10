@@ -1,9 +1,15 @@
+var token = "";
 var count_all_group = 0;
+
+$(function () {
+    token = getUser() ? getUser().api_token : "";
+});
 
 function inputAllGroups() {
     var requestArray = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetGroups"]
+        "Command_Name": ["GetGroups"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {

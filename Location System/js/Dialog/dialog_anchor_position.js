@@ -1,7 +1,10 @@
+var token = "";
 /*----------------AnchorPosition:跳出設定視窗-----------------*\
 |                       使用jquery編寫                         |
 \*-----------------------------------------------------------*/
-function setAddAnchorDialog() {
+$(function () {
+    token = getUser() ? getUser().api_token : "";
+
     var dialog, form,
         // From http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#e-mail-state-%28type=email%29
         anchor_id = $("#anchor_id"),
@@ -27,7 +30,8 @@ function setAddAnchorDialog() {
                 "anchor_type": anchor_type.val(),
                 "set_x": anchor_x.val(),
                 "set_y": anchor_y.val()
-            }]
+            }],
+            "api_token": [token]
         });
 
         if (valid) {
@@ -79,6 +83,8 @@ function setAddAnchorDialog() {
         event.preventDefault();
         addNewAnchor();
     });
+});
 
-    dialog.dialog("open"); //開啟對話框
+function setAddAnchorDialog() {
+    $("#dialog_add_new_anchor").dialog("open"); //開啟對話框
 }

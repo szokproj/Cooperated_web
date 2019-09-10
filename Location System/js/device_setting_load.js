@@ -47,25 +47,16 @@ var displayRowArray = {
     "row_rf_ntm": true,
     "row_rf_mult": true
 };
+var token = "";
 
 $(function () { //Load==>
+    token = getUser() ? getUser().api_token : "";
     /**
      * Check this page's permission and load navbar
      */
-    var permission = getPermissionOfPage("Anchor_Setting");
-    switch (permission) {
-        case "":
-            alert("No permission");
-            history.back();
-            break;
-        case "R":
-            break;
-        case "RW":
-            break;
-        default:
-            alert("網頁錯誤，將跳回上一頁");
-            history.back();
-            break;
+    if (!getPermissionOfPage("Anchor_Setting")) {
+        alert("Permission denied!");
+        window.location.href = '../index.html';
     }
     setNavBar("Anchor_Setting", "");
 

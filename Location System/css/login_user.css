@@ -1,0 +1,27 @@
+#login_user a,
+#login_user a:hover,
+#login_user a:active,
+#login_user a:focus {
+    text-decoration: none !important;
+}
+
+#login_user {
+    margin-right: 10px;
+}
+
+#login_user .dropdown {
+    display: inline-block;
+    font-size: 14px;
+    text-align: left;
+}
+
+#login_user .dropdown ul {
+    z-index: 2;
+}
+
+#login_user .dropdown button {
+    color: black;
+    font-size: 14px;
+    padding: 2px 8px !important;
+    margin-left: 3px !important;
+}

@@ -1,8 +1,13 @@
+var token = "";
 var datafield = ["number", "tag_id", "card_id", "Name", "lastName", "firstName", "EnglishName", "gender", "status",
     "department", "department_id", "department_color", "jobTitle", "jobTitle_id", "jobTitle_color", "type",
     "color_type", "color", "alarm_group_id", "phoneJob", "phoneSelf", "mail", "address", "education", "school",
     "grade", "tech_grade", "birthday", "dateEntry", "dateLeave", "note"
 ];
+
+$(function () {
+    token = getUser() ? getUser().api_token : "";
+});
 
 function arrayKeyTranslate(array) {
     var resultArray = [];
@@ -131,7 +136,8 @@ function excelImportTable(jsonData) {
         };
         getXmlHttp.send(JSON.stringify({
             "Command_Type": ["Read"],
-            "Command_Name": ["GetStaffs"]
+            "Command_Name": ["GetStaffs"],
+            "api_token": [token]
         }));
     }
 }
@@ -187,7 +193,8 @@ function sendMemberData(operate, element) {
             "photo": "",
             "file_ext": "",
             "exist": "1"
-        }]
+        }],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp('sql');
     xmlHttp.onreadystatechange = function () {

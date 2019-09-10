@@ -1,38 +1,21 @@
-var size = 10,
+var token = "",
+    size = 10,
     default_color = '#2eb82e',
     change = "",
     usertypeNameArray = [];
 
 $(function () {
-    /**
-     * Check this page's permission and load navbar
-     */
-    var permission = getPermissionOfPage("Member_Setting");
-    switch (permission) {
-        case "":
-            alert("No permission");
-            history.back();
-            break;
-        case "R":
-            break;
-        case "RW":
-            break;
-        default:
-            alert("網頁錯誤，將跳回上一頁");
-            history.back();
-            break;
+    //Check this page's permission and load navbar
+    token = getUser() ? getUser().api_token : "";
+    if (!getPermissionOfPage("Member_Setting")) {
+        alert("Permission denied!");
+        window.location.href = '../index.html';
     }
     setNavBar("Member_Setting", "User_Type_Setting");
 
     setTimeout(function () {
         $("#loading").hide();
     }, 500);
-
-    var dialog, form,
-        sel_name = $("#set_type_name"),
-        sel_color = $("#set_dot_color"),
-        allFields = $([]).add(sel_name, sel_color);
-    tips = $(".validateTips");
 
     $("#set_dot_color").change(function () { //設定change事件
         drawPosition($(this).val(), size);
@@ -41,6 +24,72 @@ $(function () {
     $("#set_type_add").click(function () {
         addType();
     });
+
+    var dialog, form,
+        sel_name = $("#set_type_name"),
+        sel_color = $("#set_dot_color"),
+        allFields = $([]).add(sel_name, sel_color),
+        tips = $(".validateTips");
+
+    var SendResult = function () {
+        $("#set_type_name").removeClass("ui-state-error");
+        $("#set_dot_color").removeClass("ui-state-error");
+        var valid = true;
+        valid = valid && checkLength($("#set_type_name"), "type set", 0, 20);
+        valid = valid && checkLength($("#set_dot_color"), "type set", 0, 20);
+
+        if (change == "add") {
+            //因為type儲存為key值，所以必須先檢查是否新的type與舊的重複
+            usertypeNameArray.forEach(v => {
+                if (v == $("#set_type_name").val()) {
+                    valid = false;
+                    $("#set_type_name").addClass("ui-state-error");
+                    updateTips($.i18n.prop('i_alertError_5'));
+                }
+            });
+        }
+
+        if (valid) {
+            var request = {};
+            if (change == "add") {
+                request = {
+                    "Command_Type": ["Read"],
+                    "Command_Name": ["AddUserType"],
+                    "Value": [{
+                        "type": $("#set_type_name").val(),
+                        "color": colorToHex($("#set_dot_color").val())
+                    }],
+                    "api_token": [token]
+                }
+            } else if (change == "edit") {
+                request = {
+                    "Command_Type": ["Read"],
+                    "Command_Name": ["EditUserType"],
+                    "Value": {
+                        "type": $("#set_type_name").val(),
+                        "color": colorToHex($("#set_dot_color").val())
+                    },
+                    "api_token": [token]
+                }
+            } else {
+                return;
+            }
+            var xmlHttp = createJsonXmlHttp('sql');
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    var revObj = JSON.parse(this.responseText);
+                    if (revObj.success > 0) {
+                        updateTypeList();
+                    } else {
+                        alert($.i18n.prop('i_alertError_6'));
+                    }
+                }
+            };
+            xmlHttp.send(JSON.stringify(request));
+            $("#dialog_set_type").dialog("close");
+        }
+        return valid;
+    };
 
     dialog = $("#dialog_set_type").dialog({
         autoOpen: false,
@@ -72,72 +121,13 @@ $(function () {
     updateTypeList();
 });
 
-
-function SendResult() {
-    $("#set_type_name").removeClass("ui-state-error");
-    $("#set_dot_color").removeClass("ui-state-error");
-    var valid = true;
-    valid = valid && checkLength($("#set_type_name"), "type set", 0, 20);
-    valid = valid && checkLength($("#set_dot_color"), "type set", 0, 20);
-
-    if (change == "add") {
-        //因為type儲存為key值，所以必須先檢查是否新的type與舊的重複
-        usertypeNameArray.forEach(v => {
-            if (v == $("#set_type_name").val()) {
-                valid = false;
-                $("#set_type_name").addClass("ui-state-error");
-                updateTips($.i18n.prop('i_alertError_5'));
-            }
-        });
-    }
-
-    if (valid) {
-        var request = {};
-        if (change == "add") {
-            request = {
-                "Command_Type": ["Read"],
-                "Command_Name": ["AddUserType"],
-                "Value": [{
-                    "type": $("#set_type_name").val(),
-                    "color": colorToHex($("#set_dot_color").val())
-                }]
-            }
-        } else if (change == "edit") {
-            request = {
-                "Command_Type": ["Read"],
-                "Command_Name": ["EditUserType"],
-                "Value": {
-                    "type": $("#set_type_name").val(),
-                    "color": colorToHex($("#set_dot_color").val())
-                }
-            }
-        } else {
-            return;
-        }
-        var xmlHttp = createJsonXmlHttp('sql');
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
-                    updateTypeList();
-                } else {
-                    alert($.i18n.prop('i_alertError_6'));
-                }
-            }
-        };
-        xmlHttp.send(JSON.stringify(request));
-        $("#dialog_set_type").dialog("close");
-    }
-    return valid;
-}
-
-
 function updateTypeList() {
     $("#table_type_list tbody").empty();
     usertypeNameArray = [];
     var request_getData = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetUserTypes"]
+        "Command_Name": ["GetUserTypes"],
+        "api_token": [token]
     }
     var xmlHttp = createJsonXmlHttp('sql');
     xmlHttp.onreadystatechange = function () {
@@ -201,7 +191,8 @@ function deleteType(name) {
         "Command_Name": ["DeleteUserType"],
         "Value": [{
             "type": name
-        }]
+        }],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp('sql');
     xmlHttp.onreadystatechange = function () {

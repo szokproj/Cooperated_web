@@ -20,6 +20,7 @@
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
     <!--編寫css-->
+    <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
     <style>
         .container {
             width: 100%;
@@ -88,25 +89,15 @@
     <script type="text/javascript" src="../js/check_permission.js"></script>
     <script type="text/javascript">
         var isStart = false;
-
+        var token = "";
         $(function () {
+            token = getUser() ? getUser().api_token : "";
             /*
              * Check this page's permission and load navbar
              */
-            var permission = getPermissionOfPage("Reference");
-            switch (permission) {
-                case "":
-                    alert("No permission");
-                    history.back();
-                    break;
-                case "R":
-                    break;
-                case "RW":
-                    break;
-                default:
-                    alert("網頁錯誤，將跳回上一頁");
-                    history.back();
-                    break;
+            if (!getPermissionOfPage("Reference")) {
+                alert("Permission denied!");
+                window.location.href = '../index.html';
             }
             setNavBar("Reference", "Reference");
         });
@@ -115,7 +106,8 @@
             var delaytime = 100;
             var requestArray = {
                 "Command_Type": ["Write"],
-                "Command_Name": ["Launch"]
+                "Command_Name": ["Launch"],
+                "api_token": [token]
             };
             if (!isStart) {
                 isStart = true;
@@ -148,6 +140,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div style="float:right;">
+                    <label id="login_user"></label>
                     <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
                     <select id="language" style="margin-top:5px;">
                         <option value="en">English</option>

@@ -40,20 +40,10 @@ var PIXEL_RATIO, // 獲取瀏覽器像素比
 
 $(function () {
     //Check this page's permission and load navbar
-    var permission = getPermissionOfPage("index");
-    switch (permission) {
-        case "":
-            alert("No permission");
-            history.back();
-            break;
-        case "R":
-            break;
-        case "RW":
-            break;
-        default:
-            alert("網頁錯誤，將跳回上一頁");
-            history.back();
-            break;
+    token = getUser() ? getUser().api_token : "";
+    if (!getPermissionOfPage("index")) {
+        alert("Permission denied!");
+        history.back();
     }
     setNavBar("index", "");
 
@@ -176,7 +166,8 @@ function setup() {
     };
     xmlHttp.send(JSON.stringify({
         "Command_Type": ["Read"],
-        "Command_Name": ["GetMaps"]
+        "Command_Name": ["GetMaps"],
+        "api_token": [token]
     })); //接收並載入Server的地圖設定到按鈕
 
     Start();
@@ -349,7 +340,8 @@ function getAnchors(map_id) {
         "Command_Name": ["GetAnchorsInMap"],
         "Value": {
             "map_id": map_id
-        }
+        },
+        "api_token": [token]
     };
     var ancXmlHttp = createJsonXmlHttp("sql");
     ancXmlHttp.onreadystatechange = function () {
@@ -379,7 +371,8 @@ function getAnchors(map_id) {
         "Command_Name": ["GetMainAnchorsInMap"],
         "Value": {
             "map_id": map_id
-        }
+        },
+        "api_token": [token]
     };
     var mainXmlHttp = createJsonXmlHttp("sql");
     mainXmlHttp.onreadystatechange = function () {
@@ -408,7 +401,8 @@ function getAnchors(map_id) {
 function getMapGroup() {
     var requestArray = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetMaps_Groups"]
+        "Command_Name": ["GetMaps_Groups"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -428,7 +422,8 @@ function getMapGroup() {
 function getMemberData() {
     var request = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetStaffs"]
+        "Command_Name": ["GetStaffs"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -451,7 +446,8 @@ function getMemberPhoto(img_id, number) {
         "Command_Name": ["GetOneStaff"],
         "Value": {
             "number": number
-        }
+        },
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -652,7 +648,8 @@ function getPointOnCanvas(x, y) {
 function updateAlarmList() {
     var request = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetAlarmTop50List"]
+        "Command_Name": ["GetAlarmTop50List"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("request");
     xmlHttp.onreadystatechange = function () {
@@ -722,7 +719,8 @@ function changeAlarmLight() {
 function updateTagList() {
     var request = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetTagList"]
+        "Command_Name": ["GetTagList"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("requestTagList_json");
     xmlHttp.onreadystatechange = function () {

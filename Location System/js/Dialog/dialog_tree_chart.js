@@ -1,71 +1,12 @@
+var token = "";
 var default_color = '#2eb82e';
 var chart_type = "";
 
-function createChart(type) {
-    chart_type = type;
-    $("#chart-container").html("");
-    var requestArray = {},
-        datascource = {};
-    if (type == "dept") {
-        requestArray = {
-            "Command_Type": ["Read"],
-            "Command_Name": ["GetDepartment_relation"]
-        };
-        datascource = {
-            'name': 'Company',
-            'id': '0',
-            'color': '#929292' //top
-        };
-    } else if (type == "jobTitle") {
-        requestArray = {
-            "Command_Type": ["Read"],
-            "Command_Name": ["GetJobTitle_relation"]
-        };
-        datascource = {
-            'name': 'JobTitle',
-            'id': '0',
-            'color': '#929292' //top
-        };
-    } else {
-        return;
-    }
-
-    var xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            if (revObj.success == 1) {
-                datascource.children = revObj.Values;
-            } else {
-                datascource.children = null;
-            }
-            var oc = $('#chart-container').orgchart({
-                'data': datascource,
-                'chartClass': 'edit-state',
-                'parentNodeSymbol': 'fa-th-large',
-                'createNode': function (data) {
-                    data = datascource;
-                }
-            });
-            oc.$chartContainer.on('click', '.node', function () {
-                var $this = $(this);
-                $('#selected-node').val($this.find('.title').text()).data('node', $this);
-            });
-            oc.$chartContainer.on('click', '.orgchart', function (event) {
-                if (!$(event.target).closest('.node').length) {
-                    $('#selected-node').val('');
-                }
-            });
-        }
-    };
-    xmlHttp.send(JSON.stringify(requestArray));
-}
-
-
 $(function () {
+    token = getUser() ? getUser().api_token : "";
+
     var dialog, form,
         select_node = $('#selected-node');
-    //tips = $( ".validateTips" );
 
     function SendResult() {
         select_node.removeClass("ui-state-error");
@@ -135,3 +76,65 @@ $(function () {
         SendResult();
     });
 });
+
+function createChart(type) {
+    chart_type = type;
+    $("#chart-container").html("");
+    var requestArray = {},
+        datascource = {};
+    if (type == "dept") {
+        requestArray = {
+            "Command_Type": ["Read"],
+            "Command_Name": ["GetDepartment_relation"],
+            "api_token": [token]
+        };
+        datascource = {
+            'name': 'Company',
+            'id': '0',
+            'color': '#929292' //top
+        };
+    } else if (type == "jobTitle") {
+        requestArray = {
+            "Command_Type": ["Read"],
+            "Command_Name": ["GetJobTitle_relation"],
+            "api_token": [token]
+        };
+        datascource = {
+            'name': 'JobTitle',
+            'id': '0',
+            'color': '#929292' //top
+        };
+    } else {
+        return;
+    }
+
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success == 1) {
+                datascource.children = revObj.Values;
+            } else {
+                datascource.children = null;
+            }
+            var oc = $('#chart-container').orgchart({
+                'data': datascource,
+                'chartClass': 'edit-state',
+                'parentNodeSymbol': 'fa-th-large',
+                'createNode': function (data) {
+                    data = datascource;
+                }
+            });
+            oc.$chartContainer.on('click', '.node', function () {
+                var $this = $(this);
+                $('#selected-node').val($this.find('.title').text()).data('node', $this);
+            });
+            oc.$chartContainer.on('click', '.orgchart', function (event) {
+                if (!$(event.target).closest('.node').length) {
+                    $('#selected-node').val('');
+                }
+            });
+        }
+    };
+    xmlHttp.send(JSON.stringify(requestArray));
+}

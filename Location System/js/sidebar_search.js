@@ -1,10 +1,16 @@
+var token = "";
+var pageTimer = {}; //定義計時器全域變數 
+
 $(function () {
+    token = getUser() ? getUser().api_token : "";
+
     $("#search_start").on("click", function () {
         var key = $("#search_select_type").val();
         var value = $("#search_input_target").val();
         var request = {
             "Command_Type": ["Read"],
-            "Command_Name": ["GetStaffs"]
+            "Command_Name": ["GetStaffs"],
+            "api_token": [token]
         };
         var xmlHttp = createJsonXmlHttp("sql");
         xmlHttp.onreadystatechange = function () {
@@ -52,8 +58,6 @@ $(function () {
         show: false
     });
 });
-
-var pageTimer = {}; //定義計時器全域變數 
 
 function showMyModel() {
     $('#myModal').modal('show');

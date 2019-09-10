@@ -27,6 +27,7 @@ var timeDelay = {
 
 
 var timeline = null;
+var token = "";
 
 
 
@@ -34,20 +35,10 @@ $(function () {
     /**
      * Check this page's permission and load navbar
      */
-    var permission = getPermissionOfPage("Timeline");
-    switch (permission) {
-        case "":
-            alert("No permission");
-            history.back();
-            break;
-        case "R":
-            break;
-        case "RW":
-            break;
-        default:
-            alert("網頁錯誤，將跳回上一頁");
-            history.back();
-            break;
+    token = getUser() ? getUser().api_token : "";
+    if (!getPermissionOfPage("Timeline")) {
+        alert("Permission denied!");
+        window.location.href = '../index.html';
     }
     setNavBar("Timeline", "");
 
@@ -170,7 +161,8 @@ function setup() {
     //https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
     var requestArray = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetMaps"]
+        "Command_Name": ["GetMaps"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {

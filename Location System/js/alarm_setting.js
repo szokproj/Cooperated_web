@@ -1,3 +1,4 @@
+var token = "";
 var count_alarm_group = 0;
 var timeGroupArr = [];
 var SubMitType = "";
@@ -32,10 +33,318 @@ var alarmModeArray = [{
     }
 ];
 
+$(function () {
+    token = getUser() ? getUser().api_token : "";
+    /**
+     * Check this page's permission and load navbar
+     */
+    if (!getPermissionOfPage("Alarm_Setting")) {
+        alert("Permission denied!");
+        window.location.href = '../index.html';
+    }
+    setNavBar("Alarm_Setting", "");
+
+
+    $('.timepicker').bootstrapMaterialDatePicker({
+        date: false,
+        clearButton: true,
+        lang: 'en',
+        format: 'HH:mm'
+    });
+
+    $("#btn_submit_alarm_setting").button().on("click", function () {
+        var request = {
+            "Command_Type": ["Write"],
+            "Command_Name": ["UpdateAlarmSetting"],
+            "Value": {
+                "low_power_alarm": {
+                    "on": $("input[name=alarm_low_power]:checked").val()
+                },
+                "help_alarm": {
+                    "on": $("input[name=alarm_help]:checked").val()
+                },
+                "active_alarm": {
+                    "on": $("input[name=alarm_active]:checked").val()
+                },
+                "still_alarm": {
+                    "on": $("input[name=alarm_still]:checked").val()
+                },
+                "stay_alarm": {
+                    "on": $("input[name=alarm_stay]:checked").val(),
+                    "time": $("#stay_alarm_time").val()
+                },
+                "hidden_alarm": {
+                    "on": $("input[name=alarm_hidden]:checked").val(),
+                    "time": $("#hidden_alarm_time").val()
+                },
+                "electronic_fence": {
+                    "on": $("input[name=alarm_fence]:checked").val()
+                }
+            },
+            "api_token": [token]
+        };
+        //var alarm_arr = ["low_power", "help", "active", "still", "stay", "hidden"];
+        /*alarm_arr.forEach(element => {
+            request.Value[element + "_alarm"]["on"] = $("input[name=alarm_" + element + "]:checked").val();
+        });*/
+        var submitXmlHttp = createJsonXmlHttp("sql");
+        submitXmlHttp.onreadystatechange = function () {
+            if (submitXmlHttp.readyState == 4 || submitXmlHttp.readyState == "complete") {
+                var revObj = JSON.parse(this.responseText);
+                if (revObj.success > 0) {
+                    alert($.i18n.prop('i_alarmAlert_2'));
+                } else {
+                    alert($.i18n.prop('i_alarmAlert_3'));
+                }
+            }
+        };
+        submitXmlHttp.send(JSON.stringify(request));
+    });
+
+
+    var dialog, form,
+        name = $("#add_alarm_mode_name"),
+        stay_time = $("#add_alarm_mode_time_5"),
+        hidden_time = $("#add_alarm_mode_time_6"),
+        time_group = $("#add_alarm_time_group"),
+        allFields = $([]).add(name, time_group),
+        modes = $("input[name=add_alarm_mode]"); //不用把add_modes放進allFields
+
+    var SendResult = function () {
+        allFields.removeClass("ui-state-error");
+        stay_time.removeClass("ui-state-error");
+        hidden_time.removeClass("ui-state-error");
+        var valid = true;
+
+        valid = valid && checkLength(name, $.i18n.prop('i_alarmAlert_4'), 1, 20);
+        if ($("#add_alarm_mode_5").prop("checked"))
+            valid = valid && checkLength(stay_time, $.i18n.prop('i_alarmAlert_4'), 1, 20);
+        if ($("#add_alarm_mode_6").prop("checked"))
+            valid = valid && checkLength(hidden_time, $.i18n.prop('i_alarmAlert_4'), 1, 20);
+        valid = valid && checkLength(time_group, $.i18n.prop('i_alarmAlert_4'), 1, 20);
+
+        if (valid) {
+            if (SubMitType == "Add") {
+                var request_addGroupID = JSON.stringify({
+                    "Command_Type": ["Write"],
+                    "Command_Name": ["AddAlarmGroup"],
+                    "Value": {
+                        "alarm_group_name": name.val(),
+                        "time_group_id": time_group.val()
+                    },
+                    "api_token": [token]
+                });
+                var addIdXmlHttp = createJsonXmlHttp("sql");
+                addIdXmlHttp.onreadystatechange = function () {
+                    if (addIdXmlHttp.readyState == 4 || addIdXmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        var revInfo = revObj.Values;
+                        if (revObj.success > 0 && revInfo) {
+                            var alarmModeGroupArr = [];
+                            for (i in alarmModeArray) {
+                                var isSwitch = "0",
+                                    time_value = "-1";
+                                if (modes.eq(i).prop("checked"))
+                                    isSwitch = "1";
+                                if (i == 5 || i == 6) {
+                                    var alarm_time = $("#add_alarm_mode_time_" + i).val();
+                                    time_value = alarm_time.length == 0 ? "-1" : alarm_time;
+                                }
+                                alarmModeGroupArr.push({
+                                    "alarm_name": alarmModeArray[i].id,
+                                    "alarm_switch": isSwitch,
+                                    "alarm_value": time_value,
+                                    "alarm_group_id": revInfo.alarm_gid
+                                });
+                            }
+                            var requestElements = JSON.stringify({
+                                "Command_Type": ["Write"],
+                                "Command_Name": ["AddAlarmInfo"],
+                                "Value": alarmModeGroupArr,
+                                "api_token": [token]
+                            });
+                            var addXmlHttp = createJsonXmlHttp("sql");
+                            addXmlHttp.onreadystatechange = function () {
+                                if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
+                                    var revObj = JSON.parse(this.responseText);
+                                    if (revObj.success > 0) {
+                                        inputAlarmGroupTable();
+                                    }
+                                }
+                            };
+                            addXmlHttp.send(requestElements);
+                            dialog.dialog("close");
+                        }
+                    }
+                };
+                addIdXmlHttp.send(request_addGroupID);
+            } else if (SubMitType == "Edit") {
+                var group_id = $("#edit_alarm_group_id").val();
+                var request_EditInfo = JSON.stringify({
+                    "Command_Type": ["Write"],
+                    "Command_Name": ["EditAlarmGroupInfo"],
+                    "Value": {
+                        "alarm_gid": group_id,
+                        "alarm_group_name": name.val(),
+                        "time_group_id": time_group.val()
+                    },
+                    "api_token": [token]
+                });
+                var addIdXmlHttp = createJsonXmlHttp("sql");
+                addIdXmlHttp.onreadystatechange = function () {
+                    if (addIdXmlHttp.readyState == 4 || addIdXmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (revObj.success > 0) {
+                            var alarmModeGroupArr = [];
+                            for (i in alarmModeArray) {
+                                var isSwitch = "0",
+                                    time_value = "-1";
+                                if (modes.eq(i).prop("checked"))
+                                    isSwitch = "1";
+                                if (i == 5 || i == 6) {
+                                    var alarm_time = $("#add_alarm_mode_time_" + i).val();
+                                    time_value = alarm_time.length == 0 ? "-1" : alarm_time;
+                                }
+                                alarmModeGroupArr.push({
+                                    "alarm_iid": modes.eq(i).val(),
+                                    "alarm_name": alarmModeArray[i].id,
+                                    "alarm_switch": isSwitch,
+                                    "alarm_value": time_value,
+                                    "alarm_group_id": group_id
+                                });
+                            }
+                            var requestElements = JSON.stringify({
+                                "Command_Type": ["Write"],
+                                "Command_Name": ["EditAlarmInfo"],
+                                "Value": alarmModeGroupArr,
+                                "api_token": [token]
+                            });
+                            var addXmlHttp = createJsonXmlHttp("sql");
+                            addXmlHttp.onreadystatechange = function () {
+                                if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
+                                    var revObj = JSON.parse(this.responseText);
+                                    if (revObj.success > 0) {
+                                        inputAlarmGroupTable();
+                                    }
+                                }
+                            };
+                            addXmlHttp.send(requestElements);
+                            dialog.dialog("close");
+                        }
+                    }
+                };
+                addIdXmlHttp.send(request_EditInfo);
+            }
+            return valid;
+        };
+    }
+
+    dialog = $("#dialog_add_alarm_group").dialog({
+        autoOpen: false,
+        height: 550,
+        width: 400,
+        modal: true,
+        buttons: {
+            "Confirm": SendResult,
+            Cancel: function () {
+                form[0].reset();
+                allFields.removeClass("ui-state-error");
+                stay_time.removeClass("ui-state-error");
+                hidden_time.removeClass("ui-state-error");
+                dialog.dialog("close");
+            }
+        },
+        close: function () {
+            form[0].reset();
+            allFields.removeClass("ui-state-error");
+            stay_time.removeClass("ui-state-error");
+            hidden_time.removeClass("ui-state-error");
+        }
+    });
+
+    form = dialog.find("form").on("submit", function (event) {
+        event.preventDefault();
+        SendResult();
+    });
+
+    /**
+     * 新增Alarm Group
+     */
+    $("#btn_add_alarm_group").button().on("click", function () {
+        $("#add_alarm_time_group").empty();
+        $("#add_alarm_time_group").append(
+            createOptions_name(timeGroupArr, timeGroupArr[0].id)
+        );
+        $("input[name=add_alarm_mode]").val("");
+        $("#add_alarm_mode_6_time").val("");
+        $("#add_alarm_mode_7_time").val("");
+        SubMitType = "Add";
+        dialog.dialog("open");
+    });
+
+    /**
+     * 刪除Alarm Groups
+     */
+    $("#btn_delete_alarm_group").button().on("click", function () {
+        var checkboxs = document.getElementsByName("chkbox_alarm_group");
+        var sel_group_arr = [];
+        for (i in checkboxs) {
+            if (checkboxs[i].checked)
+                sel_group_arr.push({
+                    "alarm_gid": checkboxs[i].value
+                });
+        }
+        var request_DelInfo = JSON.stringify({
+            "Command_Type": ["Write"],
+            "Command_Name": ["DeleteAlarmGroupInfo"],
+            "Value": sel_group_arr,
+            "api_token": [token]
+        });
+        var deleteIDXmlHttp = createJsonXmlHttp("sql");
+        deleteIDXmlHttp.onreadystatechange = function () {
+            if (deleteIDXmlHttp.readyState == 4 || deleteIDXmlHttp.readyState == "complete") {
+                var revObj = JSON.parse(this.responseText);
+                if (revObj.success > 0) {
+                    var sel_alarm_arr = [];
+                    for (j in sel_group_arr) {
+                        var g_index = alarmSettingArr.findIndex(function (info) {
+                            return info.alarm_gid == sel_group_arr[j].alarm_gid;
+                        });
+                        alarmSettingArr[g_index].elements.forEach(function (element) {
+                            sel_alarm_arr.push({
+                                "alarm_iid": element.alarm_iid
+                            });
+                        });
+                    }
+                    var requestElements = JSON.stringify({
+                        "Command_Type": ["Write"],
+                        "Command_Name": ["DeleteAlarmInfo"],
+                        "Value": sel_alarm_arr,
+                        "api_token": [token]
+                    });
+                    var deleteXmlHttp = createJsonXmlHttp("sql");
+                    deleteXmlHttp.onreadystatechange = function () {
+                        if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
+                            var revObj = JSON.parse(this.responseText);
+                            if (revObj.success > 0) {
+                                inputAlarmGroupTable();
+                                alert($.i18n.prop('i_alarmAlert_5'));
+                            }
+                        }
+                    };
+                    deleteXmlHttp.send(requestElements);
+                }
+            }
+        };
+        deleteIDXmlHttp.send(request_DelInfo);
+    });
+});
+
 /*function inputAlarmSetting() {
     var request = {
         "Command_Type": ["Read"],
-        "Command_Name": ["time_group_id"]
+        "Command_Name": ["time_group_id"],
+        "api_token": [token]
     };
     var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
@@ -90,7 +399,8 @@ function removeMapGroup() {
 function inputAlarmGroupTable() {
     var alarmRequest = {
         "Command_Type": ["Read"],
-        "Command_Name": ["GetAlarmGroup_list"]
+        "Command_Name": ["GetAlarmGroup_list"],
+        "api_token": [token]
     };
     var alarmXmlHttp = createJsonXmlHttp("sql");
     alarmXmlHttp.onreadystatechange = function () {
@@ -184,317 +494,3 @@ function editAlarmGroup(id) {
     SubMitType = "Edit";
     $("#dialog_add_alarm_group").dialog("open");
 }
-
-
-$(document).ready(function () {
-    /**
-     * Check this page's permission and load navbar
-     */
-    var permission = getPermissionOfPage("Alarm_Setting");
-    switch (permission) {
-        case "":
-            alert("No permission");
-            history.back();
-            break;
-        case "R":
-            break;
-        case "RW":
-            break;
-        default:
-            alert("網頁錯誤，將跳回上一頁");
-            history.back();
-            break;
-    }
-    setNavBar("Alarm_Setting", "");
-
-
-    $('.timepicker').bootstrapMaterialDatePicker({
-        date: false,
-        clearButton: true,
-        lang: 'en',
-        format: 'HH:mm'
-    });
-
-    $("#btn_submit_alarm_setting").button().on("click", function () {
-        var request = {
-            "Command_Type": ["Write"],
-            "Command_Name": ["UpdateAlarmSetting"],
-            "Value": {
-                "low_power_alarm": {
-                    "on": $("input[name=alarm_low_power]:checked").val()
-                },
-                "help_alarm": {
-                    "on": $("input[name=alarm_help]:checked").val()
-                },
-                "active_alarm": {
-                    "on": $("input[name=alarm_active]:checked").val()
-                },
-                "still_alarm": {
-                    "on": $("input[name=alarm_still]:checked").val()
-                },
-                "stay_alarm": {
-                    "on": $("input[name=alarm_stay]:checked").val(),
-                    "time": $("#stay_alarm_time").val()
-                },
-                "hidden_alarm": {
-                    "on": $("input[name=alarm_hidden]:checked").val(),
-                    "time": $("#hidden_alarm_time").val()
-                },
-                "electronic_fence": {
-                    "on": $("input[name=alarm_fence]:checked").val()
-                }
-            }
-        };
-        //var alarm_arr = ["low_power", "help", "active", "still", "stay", "hidden"];
-        /*alarm_arr.forEach(element => {
-            request.Value[element + "_alarm"]["on"] = $("input[name=alarm_" + element + "]:checked").val();
-        });*/
-        var submitXmlHttp = createJsonXmlHttp("sql");
-        submitXmlHttp.onreadystatechange = function () {
-            if (submitXmlHttp.readyState == 4 || submitXmlHttp.readyState == "complete") {
-                var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
-                    alert($.i18n.prop('i_alarmAlert_2'));
-                } else {
-                    alert($.i18n.prop('i_alarmAlert_3'));
-                }
-            }
-        };
-        submitXmlHttp.send(JSON.stringify(request));
-    });
-
-
-    var dialog, form,
-        name = $("#add_alarm_mode_name"),
-        stay_time = $("#add_alarm_mode_time_5"),
-        hidden_time = $("#add_alarm_mode_time_6"),
-        time_group = $("#add_alarm_time_group"),
-        allFields = $([]).add(name, time_group),
-        modes = $("input[name=add_alarm_mode]"); //不用把add_modes放進allFields
-    //tips = $( ".validateTips" );
-
-    var SendResult = function () {
-        allFields.removeClass("ui-state-error");
-        stay_time.removeClass("ui-state-error");
-        hidden_time.removeClass("ui-state-error");
-        var valid = true;
-
-        valid = valid && checkLength(name, $.i18n.prop('i_alarmAlert_4'), 1, 20);
-        if ($("#add_alarm_mode_5").prop("checked"))
-            valid = valid && checkLength(stay_time, $.i18n.prop('i_alarmAlert_4'), 1, 20);
-        if ($("#add_alarm_mode_6").prop("checked"))
-            valid = valid && checkLength(hidden_time, $.i18n.prop('i_alarmAlert_4'), 1, 20);
-        valid = valid && checkLength(time_group, $.i18n.prop('i_alarmAlert_4'), 1, 20);
-
-        if (valid) {
-            if (SubMitType == "Add") {
-                var request_addGroupID = JSON.stringify({
-                    "Command_Type": ["Write"],
-                    "Command_Name": ["AddAlarmGroup"],
-                    "Value": {
-                        "alarm_group_name": name.val(),
-                        "time_group_id": time_group.val()
-                    }
-                });
-                var addIdXmlHttp = createJsonXmlHttp("sql");
-                addIdXmlHttp.onreadystatechange = function () {
-                    if (addIdXmlHttp.readyState == 4 || addIdXmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        var revInfo = revObj.Values;
-                        if (revObj.success > 0 && revInfo) {
-                            var alarmModeGroupArr = [];
-                            for (i in alarmModeArray) {
-                                var isSwitch = "0",
-                                    time_value = "-1";
-                                if (modes.eq(i).prop("checked"))
-                                    isSwitch = "1";
-                                if (i == 5 || i == 6) {
-                                    var alarm_time = $("#add_alarm_mode_time_" + i).val();
-                                    time_value = alarm_time.length == 0 ? "-1" : alarm_time;
-                                }
-                                alarmModeGroupArr.push({
-                                    "alarm_name": alarmModeArray[i].id,
-                                    "alarm_switch": isSwitch,
-                                    "alarm_value": time_value,
-                                    "alarm_group_id": revInfo.alarm_gid
-                                });
-                            }
-                            var requestElements = JSON.stringify({
-                                "Command_Type": ["Write"],
-                                "Command_Name": ["AddAlarmInfo"],
-                                "Value": alarmModeGroupArr
-                            });
-                            var addXmlHttp = createJsonXmlHttp("sql");
-                            addXmlHttp.onreadystatechange = function () {
-                                if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                                    var revObj = JSON.parse(this.responseText);
-                                    if (revObj.success > 0) {
-                                        inputAlarmGroupTable();
-                                    }
-                                }
-                            };
-                            addXmlHttp.send(requestElements);
-                            dialog.dialog("close");
-                        }
-                    }
-                };
-                addIdXmlHttp.send(request_addGroupID);
-            } else if (SubMitType == "Edit") {
-                var group_id = $("#edit_alarm_group_id").val();
-                var request_EditInfo = JSON.stringify({
-                    "Command_Type": ["Write"],
-                    "Command_Name": ["EditAlarmGroupInfo"],
-                    "Value": {
-                        "alarm_gid": group_id,
-                        "alarm_group_name": name.val(),
-                        "time_group_id": time_group.val()
-                    }
-                });
-                var addIdXmlHttp = createJsonXmlHttp("sql");
-                addIdXmlHttp.onreadystatechange = function () {
-                    if (addIdXmlHttp.readyState == 4 || addIdXmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        if (revObj.success > 0) {
-                            var alarmModeGroupArr = [];
-                            for (i in alarmModeArray) {
-                                var isSwitch = "0",
-                                    time_value = "-1";
-                                if (modes.eq(i).prop("checked"))
-                                    isSwitch = "1";
-                                if (i == 5 || i == 6) {
-                                    var alarm_time = $("#add_alarm_mode_time_" + i).val();
-                                    time_value = alarm_time.length == 0 ? "-1" : alarm_time;
-                                }
-                                alarmModeGroupArr.push({
-                                    "alarm_iid": modes.eq(i).val(),
-                                    "alarm_name": alarmModeArray[i].id,
-                                    "alarm_switch": isSwitch,
-                                    "alarm_value": time_value,
-                                    "alarm_group_id": group_id
-                                });
-                            }
-                            var requestElements = JSON.stringify({
-                                "Command_Type": ["Write"],
-                                "Command_Name": ["EditAlarmInfo"],
-                                "Value": alarmModeGroupArr
-                            });
-                            var addXmlHttp = createJsonXmlHttp("sql");
-                            addXmlHttp.onreadystatechange = function () {
-                                if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                                    var revObj = JSON.parse(this.responseText);
-                                    if (revObj.success > 0) {
-                                        inputAlarmGroupTable();
-                                    }
-                                }
-                            };
-                            addXmlHttp.send(requestElements);
-                            dialog.dialog("close");
-                        }
-                    }
-                };
-                addIdXmlHttp.send(request_EditInfo);
-            } else {
-                return;
-            }
-            return valid;
-        };
-    }
-
-    dialog = $("#dialog_add_alarm_group").dialog({
-        autoOpen: false,
-        height: 550,
-        width: 400,
-        modal: true,
-        buttons: {
-            "Confirm": SendResult,
-            Cancel: function () {
-                form[0].reset();
-                allFields.removeClass("ui-state-error");
-                stay_time.removeClass("ui-state-error");
-                hidden_time.removeClass("ui-state-error");
-                dialog.dialog("close");
-            }
-        },
-        close: function () {
-            form[0].reset();
-            allFields.removeClass("ui-state-error");
-            stay_time.removeClass("ui-state-error");
-            hidden_time.removeClass("ui-state-error");
-        }
-    });
-
-    form = dialog.find("form").on("submit", function (event) {
-        event.preventDefault();
-        SendResult();
-    });
-
-    /**
-     * 新增Alarm Group
-     */
-    $("#btn_add_alarm_group").button().on("click", function () {
-        $("#add_alarm_time_group").empty();
-        $("#add_alarm_time_group").append(
-            createOptions_name(timeGroupArr, timeGroupArr[0].id)
-        );
-        $("input[name=add_alarm_mode]").val("");
-        $("#add_alarm_mode_6_time").val("");
-        $("#add_alarm_mode_7_time").val("");
-        SubMitType = "Add";
-        dialog.dialog("open");
-    });
-
-    /**
-     * 刪除Alarm Groups
-     */
-    $("#btn_delete_alarm_group").button().on("click", function () {
-        var checkboxs = document.getElementsByName("chkbox_alarm_group");
-        var sel_group_arr = [];
-        for (i in checkboxs) {
-            if (checkboxs[i].checked)
-                sel_group_arr.push({
-                    "alarm_gid": checkboxs[i].value
-                });
-        }
-        var request_DelInfo = JSON.stringify({
-            "Command_Type": ["Write"],
-            "Command_Name": ["DeleteAlarmGroupInfo"],
-            "Value": sel_group_arr
-        });
-        var deleteIDXmlHttp = createJsonXmlHttp("sql");
-        deleteIDXmlHttp.onreadystatechange = function () {
-            if (deleteIDXmlHttp.readyState == 4 || deleteIDXmlHttp.readyState == "complete") {
-                var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
-                    var sel_alarm_arr = [];
-                    for (j in sel_group_arr) {
-                        var g_index = alarmSettingArr.findIndex(function (info) {
-                            return info.alarm_gid == sel_group_arr[j].alarm_gid;
-                        });
-                        alarmSettingArr[g_index].elements.forEach(function (element) {
-                            sel_alarm_arr.push({
-                                "alarm_iid": element.alarm_iid
-                            });
-                        });
-                    }
-                    var requestElements = JSON.stringify({
-                        "Command_Type": ["Write"],
-                        "Command_Name": ["DeleteAlarmInfo"],
-                        "Value": sel_alarm_arr
-                    });
-                    var deleteXmlHttp = createJsonXmlHttp("sql");
-                    deleteXmlHttp.onreadystatechange = function () {
-                        if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
-                            var revObj = JSON.parse(this.responseText);
-                            if (revObj.success > 0) {
-                                inputAlarmGroupTable();
-                                alert($.i18n.prop('i_alarmAlert_5'));
-                            }
-                        }
-                    };
-                    deleteXmlHttp.send(requestElements);
-                }
-            }
-        };
-        deleteIDXmlHttp.send(request_DelInfo);
-    });
-});
