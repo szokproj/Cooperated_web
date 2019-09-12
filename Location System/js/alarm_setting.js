@@ -419,27 +419,25 @@ function inputAlarmGroupTable() {
                     for (j = 0; j < alarmModeArray.length; j++) {
                         var checkedText = revList[i].elements[j].alarm_switch == "0" ? "" : "checked";
                         var alarm_value = revList[i].elements[j].alarm_value == "-1" ? "" : revList[i].elements[j].alarm_value;
-                        var endHtml = "</label>";
-                        if (j == 5) {
-                            endHtml = ",&nbsp;&nbsp;</label>" + $.i18n.prop('i_wait_time') + " : " + alarm_value + " " +
-                                $.i18n.prop('i_second') + "<br>";
-                        } else if (j == 6) {
-                            endHtml = ",&nbsp;&nbsp;</label>" + $.i18n.prop('i_wait_time') + " : " + alarm_value + " " +
-                                $.i18n.prop('i_second');
-                        }
                         modeCheckHtml += "<input id=\"" + alarm_mode + "_" + j + "\" type='checkbox' class='beauty' " +
                             "name=\"" + alarm_mode + "\" value=\"" + revList[i].elements[j].alarm_iid + "\" " + checkedText +
-                            " disabled/><label for=\"" + alarm_mode + "_" + j + "\">" + $.i18n.prop(alarmModeArray[j].name) + endHtml;
+                            " disabled/><label for=\"" + alarm_mode + "_" + j + "\">" + $.i18n.prop(alarmModeArray[j].name) +
+                            "</label>";
+                        if (j == 4) {
+                            modeCheckHtml += (alarm_value != "" ? " : " + alarm_value : "") + "<br>"; //fence_collection_id
+                        } else if (j > 4) {
+                            modeCheckHtml += (alarm_value != "" ? " : " + alarm_value + " " + $.i18n.prop('i_second') : "");
+                        }
                     }
                     var t_index = timeGroupArr.findIndex(function (info) {
                         return info.id == revList[i].time_group_id;
                     });
                     var timeGroupName = (t_index > -1) ? timeGroupArr[t_index].name : "";
                     $("#table_alarm_mode tbody").append("<tr id=\"" + tr_id + "\"><td>" +
-                        "<input type=\"checkbox\" name=\"chkbox_alarm_group\" value=\"" + revList[i].alarm_gid + "\" " +
-                        "onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_alarm_group + "</td>" +
-                        "<td><input type='text' name=\"alarm_group_name\" value=\"" + revList[i].alarm_group_name + "\" " +
-                        "style=\"width:100px;\" /></td>" +
+                        "<input type=\"checkbox\" name=\"chkbox_alarm_group\" value=\"" + revList[i].alarm_gid + "\"" +
+                        " onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_alarm_group + "</td>" +
+                        "<td><input type='text' name=\"alarm_group_name\" value=\"" + revList[i].alarm_group_name + "\"" +
+                        " style=\"width:100px;\" /></td>" +
                         "<td>" + modeCheckHtml + "</td>" +
                         "<td><label id=\"alarm_group_time\">" + timeGroupName + "</label></td>" +
                         "<td style='text-align:center;'><label for=\"btn_edit_alarm_mode_" + count_alarm_group +
@@ -450,7 +448,6 @@ function inputAlarmGroupTable() {
                 }
             } else {
                 alert($.i18n.prop('i_alarmAlert_1'));
-                return;
             }
         }
     };

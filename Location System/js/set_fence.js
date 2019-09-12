@@ -55,28 +55,26 @@ function setupCanvas() {
     $(function () {
         resetBlockDisplay();
         $("#block_fence_info").show();
-        loadMaps();
-        getMemberList();
         $("#menu_fence_info").on('click', function () {
             resetBlockDisplay();
             $("#block_fence_info").show();
         });
-        $("#menu_BW_list").on('click', function () {
+        $("#menu_fence_collection").on('click', function () {
             resetBlockDisplay();
-            $("#block_BW_list").show();
+            $("#block_fence_collection").show();
         });
         $("#menu_resize").on('click', resizeCanvas);
         $("#select_map").on('change', function () {
             setMapById($(this).val());
         });
         $("#btn_fence_dot_position").on('click', startFencePosition);
-        $("#btn_BW_list_add").on('click', addMembers);
+        loadMaps();
     });
 }
 
 function resetBlockDisplay() {
     $("#block_fence_info").hide();
-    $("#block_BW_list").hide();
+    $("#block_fence_collection").hide();
 }
 
 function loadMaps() {

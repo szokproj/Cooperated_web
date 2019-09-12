@@ -29,8 +29,8 @@
     <script type="text/javascript" src="../js/time_slot_setting.js"></script>
     <script type="text/javascript" src="../js/time_slot_group_setting.js"></script>
     <script type="text/javascript" src="../js/checkInside.js"></script>
-    <script type="text/javascript" src="../js/set_electronic_fence.js"></script>
-    <script type="text/javascript" src="../js/set_black_white_list.js"></script>
+    <script type="text/javascript" src="../js/set_fence.js"></script>
+    <script type="text/javascript" src="../js/set_fence_collection.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_fence_add.js"></script>
     <!--Time picker-->
@@ -189,8 +189,8 @@
                             <thead>
                                 <th class="i18n" name="i_item"></th>
                                 <th class="i18n" name="i_groupName" style="min-width:80px;"></th>
-                                <th class="i18n" name="i_alarmGroup" style="min-width:120px;"></th>
-                                <th class="i18n" name="i_matchTime" style="min-width:80px;"></th>
+                                <th class="i18n" name="i_alarmGroup" style="min-width:150px;"></th>
+                                <th class="i18n" name="i_matchTime" style="min-width:100px;"></th>
                                 <th class="i18n" name="i_edit" style="min-width:50px;"></th>
                             </thead>
                             <tbody></tbody>
@@ -271,10 +271,6 @@
                         </div>
                     </div>
                     <div class="col-lg-5" style="background-color:white;">
-                        <label class="i18n" name="i_currentMap"> : </label>
-                        <input type="hidden" id="select_map_id" />
-                        <input type="text" id="select_map_name" style="width:30%;" readonly />
-                        <br>
                         <div class="btn-group" style="margin:5px 0px 5px 0px;">
                             <div class="btn-group dropdown" id="input_map">
                                 <button type="button" class="btn btn-default dropdown-toggle i18n-input"
@@ -288,14 +284,17 @@
                             <button id="menu_fence_info" class="btn btn-default i18n-input" selectattr="title"
                                 selectname="i_fenceSetting">
                                 <i class="fas fa-vector-square" style='font-size:20px;'></i></button>
-                            <button id="menu_BW_list" class="btn btn-default i18n-input" selectattr="title"
-                                selectname="i_blackWhiteList">
+                            <button id="menu_fence_collection" class="btn btn-default" title="Fence Collection">
                                 <i class="fas fa-file-alt" style='font-size:20px;'></i></button>
                         </div>
                         <br>
+
                         <div id="block_fence_info">
-                            <label class="i18n" name="i_fenceSetting"> : </label><br>
-                            <span>
+                            <label class="i18n" name="i_currentMap"></label> :
+                            <input type="hidden" id="select_map_id" />
+                            <input type="text" id="select_map_name" style="width:30%;" readonly />
+                            <br><br>
+                            <span style="float: right;">
                                 <!--Add-->
                                 <label for="btn_fence_add" id="label_fence_add" class="btn-add i18n-input"
                                     selectattr="title" selectname="i_addFence">
@@ -306,7 +305,8 @@
                                     selectattr="title" selectname="i_deleteFence">
                                     <i class="fas fa-minus-square" style='font-size:20px;'></i></label>
                                 <input id="btn_fence_delete" type="button" class="btn-hidden" />
-                            </span><br>
+                            </span>
+                            <label>Fence Lsit</label> : <br>
                             <div class="block-list">
                                 <table id="table_fence_setting" class="table-line-gray">
                                     <thead>
@@ -321,55 +321,33 @@
                                 </table>
                             </div>
                         </div>
-                        <div id="block_BW_list">
-                            <label class="i18n" name="i_selectFence"> : </label>
-                            <select id="select_fence"></select><br>
-                            <label class="i18n" name="i_setBlackWhiteList"> : </label><br>
-                            <label class="i18n" name="i_listType"> : </label>
-                            <input type="radio" name="BW_list_type" value="Black" checked /> <span class="i18n"
-                                name="i_black"></span>
-                            <input type="radio" name="BW_list_type" value="White" /> <span class="i18n"
-                                name="i_white"></span>
-                            <div style="display:flex; text-align: center;">
-                                <span class="block-bw-list">
-                                    <label class="bw-list-title i18n" name="i_blackList"></label>
-                                    <!-- Default blacklist -->
-                                    <table id="table_BW_list" class="table-line-gray">
-                                        <thead>
-                                            <tr>
-                                                <th class="i18n" name="i_item"></th>
-                                                <th class="i18n" name="i_number"></th>
-                                                <th class="i18n" name="i_name"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </span>
-                                <span style="width:6%; margin-top:200px; display: inline-block;">
-                                    <!--Add-->
-                                    <label for="btn_BW_list_add" id="label_BW_list_add" class="btn-arrow i18n-input"
-                                        selectattr="title" selectname="i_addList">
-                                        <i class="fas fa-caret-square-left" style='font-size:20px;'></i></label>
-                                    <input id="btn_BW_list_add" type="button" class="btn-hidden" /><br>
-                                    <!--Delete-->
-                                    <label for="btn_BW_list_delete" id="label_BW_list_delete"
-                                        class="btn-arrow i18n-input" selectattr="title" selectname="i_deleteList">
-                                        <i class="fas fa-caret-square-right" style='font-size:20px;'></i></label>
-                                    <input id="btn_BW_list_delete" type="button" class="btn-hidden" />
-                                </span>
-                                <span class="block-bw-list">
-                                    <label class="bw-list-title i18n" name="i_listOfExcludedPeople"></label>
-                                    <table id="table_member_list" class="table-line-gray">
-                                        <thead>
-                                            <tr>
-                                                <th class="i18n" name="i_item"></th>
-                                                <th class="i18n" name="i_number"></th>
-                                                <th class="i18n" name="i_name"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </span>
+                        <div id="block_fence_collection">
+                            <br>
+                            <span style="float: right;">
+                                <!--Add-->
+                                <label for="btn_fence_collect_add" id="label_fence_collect_add"
+                                    class="btn-add i18n-input" selectattr="title" selectname="i_addFence">
+                                    <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                                <input id="btn_fence_collect_add" type="button" class="btn-hidden" />
+                                <!--Delete-->
+                                <label for="btn_fence_collect_delete" id="label_fence_collect_delete"
+                                    class="btn-delete i18n-input" selectattr="title" selectname="i_deleteFence">
+                                    <i class="fas fa-minus-square" style='font-size:20px;'></i></label>
+                                <input id="btn_fence_collect_delete" type="button" class="btn-hidden" />
+                            </span>
+                            <label>Fence Collection List</label> : <br>
+                            <div class="block-list">
+                                <table id="table_fence_collection" class="table-line-gray">
+                                    <thead>
+                                        <tr>
+                                            <th class="i18n" name="i_item"></th>
+                                            <th class="i18n" name="i_id"></th>
+                                            <th class="i18n" name="i_name"></th>
+                                            <th class="i18n" name="i_edit"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -378,75 +356,6 @@
         </div>
     </div>
     <div class="hidden_dialog">
-        <!-- Following is a dialog to add a new fence -->
-        <div id="dialog_add_fence" title="Set Electronic Fence">
-            <form>
-                <fieldset style="text-align: left;">
-                    <input type="hidden" id="add_fence_id">
-                    <label for="add_fence_name" class="i18n" name="i_fenceName"> : </label>
-                    <input type="text" id="add_fence_name" style="width:75%;">
-                    <br>
-                    <span>
-                        <!--Add Pos-->
-                        <label for="btn_fence_dot_position" id="label_fence_dot_position" class="btn-add-pos i18n-input"
-                            selectattr="title" selectname="i_addFencePointPos"><i class="fas fa-map-marked-alt"
-                                style='font-size:20px;'></i></label>
-                        <input id="btn_fence_dot_position" type="button" class="btn-hidden" />
-                        <!--Add-->
-                        <label for="btn_fence_dot_add" id="label_fence_dot_add" class="btn-add i18n-input"
-                            selectattr="title" selectname="i_addFencePoint">
-                            <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
-                        <input id="btn_fence_dot_add" type="button" class="btn-hidden" />
-                        <!--Delete-->
-                        <label for="btn_fence_dot_delete" id="label_fence_dot_delete" class="btn-delete i18n-input"
-                            selectattr="title" selectname="i_deleteFencePoint"><i class="fas fa-minus-square"
-                                style='font-size:20px;'></i></label>
-                        <input id="btn_fence_dot_delete" type="button" class="btn-hidden" />
-                    </span><br>
-                    <label class="i18n" name="i_fencePoint"> : </label>
-                    <div class="block-list-helf">
-                        <table id="table_fence_dot_setting" class="table-line-gray">
-                            <thead>
-                                <tr>
-                                    <th class="i18n" name="i_item"></th>
-                                    <th class="i18n" name="i_posX"></th>
-                                    <th class="i18n" name="i_posY"></th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                    <br>
-                    <label class="i18n" name="i_includeGroup"> : </label>
-                    <div class="block-list-helf">
-                        <table id="table_fence_group" class="table-line-gray">
-                            <thead>
-                                <tr>
-                                    <th class="i18n" name="i_item"></th>
-                                    <th class="i18n" name="i_groupName"></th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
-        <!-- Following is a dialog to add a new fence dot -->
-        <div id="dialog_add_fence_dot" title="Set Fence Coordinate Point">
-            <form>
-                <fieldset style="text-align: left;">
-                    <label for="add_dot_x" class="i18n" name="i_posX"> : </label>
-                    <input type="text" id="add_dot_x" style="width:80%;">
-                    <br><br>
-                    <label for="add_dot_y" class="i18n" name="i_posY"> : </label>
-                    <input type="text" id="add_dot_y" style="width:80%;">
-                    <br><br>
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
         <!-- Following is a dialog to set alarm group -->
         <div id="dialog_add_alarm_group" title="Set Alarm Group">
             <form>
@@ -460,7 +369,8 @@
                         <tr>
                             <td style="min-width:110px"><input id="add_alarm_mode_0" type="checkbox" class='beauty'
                                     name="add_alarm_mode" value="1">
-                                <label for="add_alarm_mode_0" class="i18n" name="i_lowPowerAlarm"></label></td>
+                                <label for="add_alarm_mode_0" class="i18n" name="i_lowPowerAlarm"></label>
+                            </td>
                         </tr>
                         <tr>
                             <td><input id="add_alarm_mode_1" type="checkbox" class='beauty' name="add_alarm_mode"
@@ -480,7 +390,13 @@
                         <tr>
                             <td><input id="add_alarm_mode_4" type="checkbox" class='beauty' name="add_alarm_mode"
                                     value="5"><label for="add_alarm_mode_4" class="i18n"
-                                    name="i_electronicFence"></label></td>
+                                    name="i_electronicFence"></label>，圍籬集合 :
+                                <select id="add_alarm_mode_fence_4">
+                                    <option value="1">A</option>
+                                    <option value="2">B</option>
+                                    <option value="3">C</option>
+                                </select>
+                            </td>
                         </tr>
                         <tr>
                             <td><input id="add_alarm_mode_5" type="checkbox" class='beauty' name="add_alarm_mode"
@@ -498,7 +414,6 @@
                                     name="i_second"></span>
                             </td>
                         </tr>
-
                     </table>
                     <br>
                     <label class="i18n" name="i_matchTime"></label> : <select id="add_alarm_time_group"></select>
@@ -512,7 +427,7 @@
                 <fieldset style="text-align: left;">
                     <input type="hidden" id="add_time_slot_id" style="width:70%;">
                     <br>
-                    <label class="i18n" name="i_timeSlotName"> :</label>&nbsp;&nbsp;<input type="text"
+                    <label class="i18n" name="i_timeSlotName"></label> : &nbsp;&nbsp;<input type="text"
                         id="add_time_slot_name" style="width:70%;">
                     <br><br>
                     <!--<label class="i18n" name="i_timeSlotSchedule"></label>
@@ -589,10 +504,10 @@
             <form>
                 <fieldset style="text-align: left;">
                     <input type="hidden" id="add_time_group_id">
-                    <label class="i18n" name="i_timeSlotGroupName"> : </label>&nbsp;&nbsp;
+                    <label class="i18n" name="i_timeSlotGroupName"></label>&nbsp;&nbsp; :
                     <input type="text" id="add_time_group_name" style="width:70%;">
                     <br><br>
-                    <label class="i18n" name="i_timeSlotSetting"> : </label>
+                    <label class="i18n" name="i_timeSlotSetting"></label> :
                     <table id="table_time_group_slot" style="min-width:300px;" class="table-line-gray">
                         <thead>
                             <tr>
@@ -617,9 +532,133 @@
         <div id="dialog_add_time_group_slot" title="Add Time slot Group">
             <form>
                 <fieldset style="text-align: left;">
-                    <label class="i18n" name="i_addTimeSlotSetting"> :</label>
+                    <label class="i18n" name="i_addTimeSlotSetting"></label> :
                     <select id="add_time_group_slot"></select>
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+        <!-- Following is a dialog to add a new fence -->
+        <div id="dialog_add_fence" title="Set Electronic Fence">
+            <form>
+                <fieldset style="text-align: left;">
+                    <input type="hidden" id="add_fence_id">
+                    <label for="add_fence_name" class="i18n" name="i_fenceName"></label> :
+                    <input type="text" id="add_fence_name" style="width:75%;">
+                    <br>
+                    <span>
+                        <!--Add Pos-->
+                        <label for="btn_fence_dot_position" id="label_fence_dot_position" class="btn-add-pos i18n-input"
+                            selectattr="title" selectname="i_addFencePointPos"><i class="fas fa-map-marked-alt"
+                                style='font-size:20px;'></i></label>
+                        <input id="btn_fence_dot_position" type="button" class="btn-hidden" />
+                        <!--Add-->
+                        <label for="btn_fence_dot_add" id="label_fence_dot_add" class="btn-add i18n-input"
+                            selectattr="title" selectname="i_addFencePoint">
+                            <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                        <input id="btn_fence_dot_add" type="button" class="btn-hidden" />
+                        <!--Delete-->
+                        <label for="btn_fence_dot_delete" id="label_fence_dot_delete" class="btn-delete i18n-input"
+                            selectattr="title" selectname="i_deleteFencePoint"><i class="fas fa-minus-square"
+                                style='font-size:20px;'></i></label>
+                        <input id="btn_fence_dot_delete" type="button" class="btn-hidden" />
+                    </span><br>
+                    <label class="i18n" name="i_fencePoint"></label> :
+                    <div class="block-list-helf">
+                        <table id="table_fence_dot_setting" class="table-line-gray">
+                            <thead>
+                                <tr>
+                                    <th class="i18n" name="i_item"></th>
+                                    <th class="i18n" name="i_posX"></th>
+                                    <th class="i18n" name="i_posY"></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <br>
+                    <label class="i18n" name="i_includeGroup"></label> :
+                    <div class="block-list-helf">
+                        <table id="table_fence_group" class="table-line-gray">
+                            <thead>
+                                <tr>
+                                    <th class="i18n" name="i_item"></th>
+                                    <th class="i18n" name="i_groupName"></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+        <!-- Following is a dialog to add a new fence dot -->
+        <div id="dialog_add_fence_dot" title="Set Fence Coordinate Point">
+            <form>
+                <fieldset style="text-align: left;">
+                    <label for="add_dot_x" class="i18n" name="i_posX"></label> :
+                    <input type="text" id="add_dot_x" style="width:80%;">
+                    <br><br>
+                    <label for="add_dot_y" class="i18n" name="i_posY"></label> :
+                    <input type="text" id="add_dot_y" style="width:80%;">
+                    <br><br>
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+        <!-- Following is a dialog to set Fence Collection -->
+        <div id="dialog_fence_collection" title="Set Fence Collection">
+            <form>
+                <fieldset style="text-align: left;">
+                    <input type="hidden" id="add_collection_id">
+                    <label for="add_collection_name">Fence Collection Name</label> :
+                    <input type="text" id="add_collection_name" style="width:50%;">
+                    <br><br>
+                    <table id="table_collection">
+                        <tr>
+                            <td class="left">
+                                <div class="block-fence-list">
+                                    <label class="fence-list-title">Included Fences</label>
+                                    <table id="table_collection_list" class="table-line-gray">
+                                        <thead>
+                                            <tr>
+                                                <th class="i18n" name="i_item"></th>
+                                                <th class="i18n" name="i_id"></th>
+                                                <th class="i18n" name="i_name"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </td>
+                            <td class="midden"><span style="display:inline-block;">
+                                    <label for="btn_fence_list_add" id="label_fence_list_add"
+                                        class="btn-arrow i18n-input" selectattr="title" selectname="i_addList">
+                                        <i class="fas fa-caret-square-left" style='font-size:20px;'></i></label>
+                                    <input id="btn_fence_list_add" type="button" class="btn-hidden" /><br>
+                                    <label for="btn_fence_list_delete" id="label_fence_list_delete"
+                                        class="btn-arrow i18n-input" selectattr="title" selectname="i_deleteList">
+                                        <i class="fas fa-caret-square-right" style='font-size:20px;'></i></label>
+                                    <input id="btn_fence_list_delete" type="button" class="btn-hidden" />
+                                </span></td>
+                            <td class="right">
+                                <div class="block-fence-list">
+                                    <label class="fence-list-title">Not Included Fences</label>
+                                    <table id="table_fence_list" class="table-line-gray">
+                                        <thead>
+                                            <tr>
+                                                <th class="i18n" name="i_item"></th>
+                                                <th class="i18n" name="i_id"></th>
+                                                <th class="i18n" name="i_name"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
                 </fieldset>
             </form>
         </div>

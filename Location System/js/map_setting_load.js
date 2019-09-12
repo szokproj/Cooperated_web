@@ -35,6 +35,8 @@ function loadMap() {
                         setThumbnail(mapArray[i]);
                     }
                 }
+            } else {
+                alert($.i18n.prop('i_mapAlert_18'));
             }
         }
     };

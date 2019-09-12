@@ -126,51 +126,51 @@ function setNavBar(parent_page, child_page) {
 }
 
 function Navbar() {
-    var ParentPageArray = [
-        "index",
-        "Member_Setting",
-        "Timeline",
-        "Map_Setting",
-        "Anchor_Setting",
-        "Alarm_Setting",
-        "Reference"
-    ];
+    var ParentPageArray = Object.keys(MinimumPermission);
+    var count_parents = 0;
     var parent_order = -1;
     var child_order = -1;
     var navbarHtml = "<aside class=\"menu\"><div class=\"menu-left\"><nav class=\"sidebar\"><ul class=\"nav\">";
     this.setFirstFloor = function (parent_page) {
         ParentPageArray.forEach(function (PageName, i) {
-            var permission_num = typeof (parseInt(permission, 10)) === 'number' ?
-                parseInt(permission, 10) : 0; //沒有設定權限等同訪客帳號
-            if (permission_num >= parseInt(MinimumPermission[parent_page], 10)) {
+            var permission_num = typeof (parseInt(permission, 10)) === 'number' ? parseInt(permission, 10) : 0;
+            //沒有設定權限等同訪客帳號
+            if (permission_num >= parseInt(MinimumPermission[PageName], 10)) {
                 if (PageName == parent_page)
                     parent_order = i;
                 switch (PageName) {
                     case "index":
+                        count_parents++;
                         navbarHtml += "<li><a href=\"../index.html\"><i class=\"fas fa-satellite-dish\"></i>" +
                             "<span class=\"i18n\" name=\"homePage\"></span></a></li>";
                         break;
                     case "Member_Setting":
+                        count_parents++;
                         navbarHtml += "<li><a href=\"../Member_Setting.html\"><i class=\"fas fa-user-cog\"></i>" +
                             "<span class=\"i18n\" name=\"member_settingPage\"></span></a></li>";
                         break;
                     case "Timeline":
+                        count_parents++;
                         navbarHtml += "<li><a href=\"../Timeline.html\"><i class=\"fas fa-route\"></i>" +
                             "<span class=\"i18n\" name=\"timelinePage\"></span></a></li>";
                         break;
                     case "Map_Setting":
+                        count_parents++;
                         navbarHtml += "<li><a href=\"../Map_Setting.html\"><i class=\"fas fa-map\"></i>" +
                             "<span class=\"i18n\" name=\"map_settingPage\"></span></a></li>";
                         break;
                     case "Anchor_Setting":
+                        count_parents++;
                         navbarHtml += "<li><a href=\"../Anchor_Setting.html\"><i class=\"fas fa-anchor\"></i>" +
                             "<span class=\"i18n\" name=\"anchor_settingPage\"></span></a></li>";
                         break;
                     case "Alarm_Setting":
+                        count_parents++;
                         navbarHtml += "<li><a href=\"../Alarm_Setting.html\"><i class=\"fas fa-bell\" style=\"padding-left:2px;\"></i>" +
                             "<span class=\"i18n\" name=\"alarm_settingPage\"></span></a></li>";
                         break;
                     case "Reference":
+                        count_parents++;
                         navbarHtml += "<li><a href=\"../Reference.html\"><i class=\"fas fa-cogs\"></i>" +
                             "<span class=\"i18n\" name=\"advance_settingPage\"></span></a></li>";
                         break;
@@ -202,19 +202,19 @@ function Navbar() {
                 "<span class=\"i18n\" name=\"i_usertypeSetting\"></span></a></li>";
             switch (child_page) {
                 case "Member_Setting":
-                    child_order = ParentPageArray.length;
+                    child_order = count_parents;
                     break;
                 case "Display_Setting":
-                    child_order = ParentPageArray.length + 1;
+                    child_order = count_parents + 1;
                     break;
                 case "Dept_Setting":
-                    child_order = ParentPageArray.length + 2;
+                    child_order = count_parents + 2;
                     break;
                 case "Job_Title_Setting":
-                    child_order = ParentPageArray.length + 3;
+                    child_order = count_parents + 3;
                     break;
                 case "User_Type_Setting":
-                    child_order = ParentPageArray.length + 4;
+                    child_order = count_parents + 4;
                     break;
                 default:
                     break;
@@ -231,13 +231,13 @@ function Navbar() {
                 "<span class=\"i18n\" name=\"i_start\"></span></a></li>";
             switch (child_page) {
                 case "Reference":
-                    child_order = ParentPageArray.length;
+                    child_order = count_parents;
                     break;
                 case "Advance_cmd":
-                    child_order = ParentPageArray.length + 1;
+                    child_order = count_parents + 1;
                     break;
                 case "Update":
-                    child_order = ParentPageArray.length + 2;
+                    child_order = count_parents + 2;
                     break;
                 default:
                     break;
