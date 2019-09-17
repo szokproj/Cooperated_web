@@ -2,6 +2,8 @@ var token = "";
 var mapArray = [];
 
 $(function () {
+    var w = document.documentElement.clientWidth;
+    console.log("monitor_width : " + w);
     //Check this page's permission and load navbar
     token = getUser() ? getUser().api_token : "";
     if (!getPermissionOfPage("Map_Setting")) {
@@ -9,13 +11,8 @@ $(function () {
         window.location.href = '../index.html';
     }
     setNavBar("Map_Setting", "");
-
     loadMap();
 });
-
-function setMapArray(new_mapInfos) {
-    mapArray = new_mapInfos.slice(0);
-}
 
 function loadMap() {
     var requestArray = {
@@ -28,7 +25,7 @@ function loadMap() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
-                setMapArray(revObj.Values); //利用抽離全部陣列完成陣列拷貝;
+                mapArray = revObj.Values.slice(0); //利用抽離全部陣列完成陣列拷貝
                 $("#maps_gallery").empty();
                 if (mapArray) {
                     for (i = 0; i < mapArray.length; i++) {
@@ -41,6 +38,35 @@ function loadMap() {
         }
     };
     xmlHttp.send(JSON.stringify(requestArray));
+}
+
+function setThumbnail(map_info) {
+    var map = "map_id_" + map_info.map_id;
+    var img = new Image();
+    img.src = "data:image/" + map_info.map_file_ext + ";base64," + map_info.map_file;
+    img.onload = function () {
+        var imgSize = img.width / img.height;
+        var thumb_width = 490;
+        var thumb_height = 200;
+        var thumbSize = thumb_width / thumb_height;
+        if (imgSize > thumbSize) //原圖比例寬邊較長
+            thumb_height = img.height * (thumb_width / img.width);
+        else
+            thumb_width = img.width * (thumb_height / img.height);
+        $("#maps_gallery").append("<div class=\"thumbnail\">" +
+            "<div class=\"image_block\">" +
+            "<img src=\"" + this.src + "\" width=\"" + thumb_width + "\" height=\"" + thumb_height + "\">" +
+            "</div>" +
+            "<div class=\"caption\"><table style='width:100%;'><thead><tr>" +
+            "<th style=\"width:30%;\"><label>" + $.i18n.prop('i_mapName') + " : </label></th>" +
+            "<th style=\"width:70%;\"><label id=\"" + map + "\">" + map_info.map_name + "</label></th>" +
+            "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + map_info.map_id + "\')\">" +
+            $.i18n.prop('i_setting') + "</button></th>" +
+            "<th><button class='btn btn-primary' onclick=\"deleteMap(\'" + map_info.map_id + "\')\">" +
+            $.i18n.prop('i_delete') + "</button></th>" +
+            "</tr></thead></table></div>" +
+            "</div>");
+    }
 }
 
 function confirmHrefType(href) {
@@ -80,17 +106,67 @@ function newMap() {
     $("#dialog_map_setting").dialog("open");
 }
 
+function addMap() {
+    if (confirm($.i18n.prop('i_mapAlert_17'))) {
+        $("#add_map_name").removeClass("ui-state-error");
+        $("#add_map_image").removeClass("ui-state-error");
+        var valid = true && checkLength($("#add_map_name"), $.i18n.prop('i_mapAlert_13'), 1, 50),
+            map_ext = "",
+            map_base64 = "";
+        if ($("#add_map_image").attr("src").length > 0) {
+            var map_file = $("#add_map_image").attr("src").split(",");
+            map_ext = getBase64Ext(map_file[0]);
+            map_base64 = map_ext != "" ? map_file[1].trim() : "";
+        } else { //no image
+            valid = false;
+            $("#add_map_image").addClass("ui-state-error");
+        }
+        if (valid) {
+            var addMapReq = {
+                "Command_Type": ["Write"],
+                "Command_Name": ["AddListMap"],
+                "Value": [{
+                    "map_name": $("#add_map_name").val(),
+                    "map_scale": "1",
+                    "map_file": map_base64,
+                    "map_file_ext": map_ext
+                }],
+                "api_token": [token]
+            };
+            var mapHttp = createJsonXmlHttp("sql");
+            mapHttp.onreadystatechange = function () {
+                if (mapHttp.readyState == 4 || mapHttp.readyState == "complete") {
+                    var revObj = JSON.parse(this.responseText);
+                    if (revObj && revObj.success > 0) {
+                        $("#maps_gallery").empty();
+                        mapArray = revObj.Values.slice(0);
+                        var lan = mapArray.length;
+                        for (i = 0; i < lan; i++) {
+                            setThumbnail(mapArray[i]);
+                        }
+                        $("#dialog_add_map").dialog("close");
+                        setMapById(mapArray[lan - 1].map_id); //catch last row
+                    } else {
+                        alert("Add map failed!");
+                    }
+                }
+            };
+            mapHttp.send(JSON.stringify(addMapReq));
+        }
+    }
+}
+
+
 function deleteMap(id) {
-    var r = confirm($.i18n.prop('i_mapAlert_10'));
-    if (r == true) {
-        var deleteMapReq = JSON.stringify({
+    if (confirm($.i18n.prop('i_mapAlert_10'))) {
+        var deleteMapReq = {
             "Command_Type": ["Read"],
             "Command_Name": ["DeleteMap"],
             "Value": [{
                 "map_id": id
             }],
             "api_token": [token]
-        });
+        };
         var mapHttp = createJsonXmlHttp("sql");
         mapHttp.onreadystatechange = function () {
             if (mapHttp.readyState == 4 || mapHttp.readyState == "complete") {
@@ -108,49 +184,15 @@ function deleteMap(id) {
                     mapGroupHttp.onreadystatechange = function () {
                         if (mapGroupHttp.readyState == 4 || mapGroupHttp.readyState == "complete") {
                             var revObj = JSON.parse(this.responseText);
-                            if (revObj.success > 0) {
-                                return;
-                            }
+                            if (revObj && revObj.success > 0) return;
                         }
                     };
                     mapGroupHttp.send(deleteMap_GroupReq);
-                    $("#maps_gallery").empty();
                     loadMap();
                 }
             }
         };
-        mapHttp.send(deleteMapReq);
-    } else {
-        return;
-    }
-}
-
-function setThumbnail(map_info) {
-    var map = "map_id_" + map_info.map_id;
-    var img = new Image();
-    img.src = "data:image/" + map_info.map_file_ext + ";base64," + map_info.map_file;
-    img.onload = function () {
-        var imgSize = img.width / img.height;
-        var thumb_width = 490;
-        var thumb_height = 200;
-        var thumbSize = thumb_width / thumb_height;
-        if (imgSize > thumbSize) //原圖比例寬邊較長
-            thumb_height = img.height * (thumb_width / img.width);
-        else
-            thumb_width = img.width * (thumb_height / img.height);
-        $("#maps_gallery").append("<div class=\"thumbnail\">" +
-            "<div class=\"image_block\">" +
-            "<img src=\"" + this.src + "\" width=\"" + thumb_width + "\" height=\"" + thumb_height + "\">" +
-            "</div>" +
-            "<div class=\"caption\"><table style='width:100%;'><thead><tr>" +
-            "<th style=\"width:30%;\"><label>" + $.i18n.prop('i_mapName') + " : </label></th>" +
-            "<th style=\"width:70%;\"><label id=\"" + map + "\">" + map_info.map_name + "</label></th>" +
-            "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + map_info.map_id + "\')\">" +
-            $.i18n.prop('i_setting') + "</button></th>" +
-            "<th><button class='btn btn-primary' onclick=\"deleteMap(\'" + map_info.map_id + "\')\">" +
-            $.i18n.prop('i_delete') + "</button></th>" +
-            "</tr></thead></table></div>" +
-            "</div>");
+        mapHttp.send(JSON.stringify(deleteMapReq));
     }
 }
 

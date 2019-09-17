@@ -123,7 +123,7 @@ function Connect() {
                 check_val.push(v.value);
         });
         if (check_val.length == 0) { //沒有IP Address被勾選
-            alert("Please check at least one device!");
+            alert($.i18n.prop('i_deviceAlert_3'));
             return;
         }
         var Connect_Request = {
@@ -139,7 +139,7 @@ function Connect() {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 var connectedInfo = JSON.parse(this.responseText);
                 if (!connectedInfo) {
-                    alert("Connection failed!");
+                    alert($.i18n.prop('i_deviceAlert_2'));
                     return;
                 }
                 deviceArray.forEach(function (v) {
@@ -212,7 +212,7 @@ function Connect() {
             };
             xmlHttp.send(JSON.stringify(Connect_Request));
         } else {
-            alert("IP Address格式不正確!");
+            alert($.i18n.prop('i_deviceAlert_1'));
         }
     }
 }
@@ -294,7 +294,7 @@ function RF_setting_read(ip_address_array) {
 }
 
 function submitWriteRequest() {
-    if (confirm('Are you sure to submit the settings of devices?')) {
+    if (confirm($.i18n.prop('i_deviceAlert_4'))) {
         var count_write_devices = 0;
 
         DeviceCheckbox.forEach(function (v, i) {
@@ -358,9 +358,8 @@ function Device_setting_write(i, connected_ip_addr) {
                 var d = new Date();
                 console.log("Write Network:" + d.getTime());
                 Basic_setting_write(i, response[0].TARGET_IP);
-                return;
             } else {
-                alert("Modify the network setting of IP address: " + response[0].TARGET_IP + " is failed.");
+                alert($.i18n.prop('i_deviceAlert_5') + response[0].TARGET_IP + $.i18n.prop('i_deviceAlert_6'));
             }
         }
     };
@@ -394,7 +393,7 @@ function Basic_setting_write(i, connected_ip_addr) {
                 RF_setting_write(index, response[0].TARGET_IP);
                 return;
             } else {
-                alert("Modify the network setting of IP address: " + response[0].TARGET_IP + " is failed.");
+                alert($.i18n.prop('i_deviceAlert_5') + response[0].TARGET_IP + $.i18n.prop('i_deviceAlert_7'));
             }
         }
     };
@@ -427,7 +426,6 @@ function RF_setting_write(i, connected_ip_addr) {
         },
         "api_token": [token]
     };
-
     var xmlHttp = createJsonXmlHttp("test2");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
@@ -437,9 +435,9 @@ function RF_setting_write(i, connected_ip_addr) {
             if (response[0].Command_status == 1) {
                 var d = new Date();
                 console.log("Write RF:" + d.getTime());
-                alert("Modify the RF setting of IP address: " + response[0].TARGET_IP + " is successful!");
+                alert($.i18n.prop('i_deviceAlert_6') + response[0].TARGET_IP + $.i18n.prop('i_deviceAlert_8'));
             } else {
-                alert("Modify the RF setting of IP address: " + response[0].TARGET_IP + " is failed.");
+                alert($.i18n.prop('i_deviceAlert_6') + response[0].TARGET_IP + $.i18n.prop('i_deviceAlert_7'));
             }
         }
     };

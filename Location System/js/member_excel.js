@@ -63,6 +63,12 @@ function excelImportTable(jsonData) {
     if (jsonData) {
         var coverArr = [];
         var addArr = [];
+        var successNumber = {
+            add: [],
+            edit: []
+        }
+        var submitNumber = [];
+        var submitCount = 0;
         var allCover = false;
         var allDelete = false;
         var isStop = false;
@@ -85,18 +91,18 @@ function excelImportTable(jsonData) {
                                 coverArr.push(element);
                                 update_delay++;
                             } else if (!allDelete) {
-                                if (confirm("導入的工號: " + element.number + " 已存在，是否覆蓋(相同工號只能有一筆資料)?")) {
-                                    if (confirm("其餘重複的工號是否也採取覆蓋?"))
+                                if (confirm($.i18n.prop('I_confirm_2') + element.number + $.i18n.prop('I_confirm_3'))) {
+                                    if (confirm($.i18n.prop('I_confirm_4')))
                                         allCover = true;
                                     coverArr.push(element);
                                 } else {
-                                    if (confirm("是否略過，不導入(相同工號只能有一筆資料)?")) {
-                                        if (confirm("其餘重複的工號是否也採取略過?"))
+                                    if (confirm($.i18n.prop('I_confirm_5'))) {
+                                        if (confirm($.i18n.prop('I_confirm_6')))
                                             allDelete = true;
                                     } else {
                                         isStop = true;
-                                        if (!confirm("是否取消導入Excel資料?"))
-                                            alert("相同工號只能有一筆資料，仍有重覆工號未選擇處理方式，導入失敗，請重新導入Excel!");
+                                        if (!confirm($.i18n.prop('I_confirm_7')))
+                                            alert($.i18n.prop('I_confirm_8'));
                                     }
                                 }
                             }
@@ -109,6 +115,7 @@ function excelImportTable(jsonData) {
                     if (!isStop) {
                         var delay = 0;
                         if (addArr.length > 0) {
+                            successNumber.add = [];
                             addArr.forEach(element => {
                                 delay++;
                                 setTimeout(function () {
@@ -117,6 +124,7 @@ function excelImportTable(jsonData) {
                             });
                         }
                         if (coverArr.length > 0) {
+                            successNumber.edit = [];
                             coverArr.forEach(element => {
                                 delay++;
                                 setTimeout(function () {
@@ -140,6 +148,71 @@ function excelImportTable(jsonData) {
             "api_token": [token]
         }));
     }
+
+    function sendMemberData(operate, element) {
+        var number = checkExist(element, "number");
+        var request = {
+            "Command_Type": ["Write"],
+            "Command_Name": [operate],
+            "Value": [{
+                "number": number,
+                "tag_id": fullOf8Byte(checkExist(element, "tag_id")),
+                "card_id": checkExist(element, "card_id"),
+                "Name": checkExist(element, "Name"),
+                "lastName": checkExist(element, "lastName"),
+                "firstName": checkExist(element, "firstName"),
+                "EnglishName": checkExist(element, "EnglishName"),
+                "gender": checkExist(element, "gender"),
+                "status": checkExist(element, "status"),
+                "department_id": checkExist(element, "department_id"),
+                "jobTitle_id": checkExist(element, "jobTitle_id"),
+                "type": checkExist(element, "type"),
+                "color_type": checkExist(element, "color_type"),
+                "color": checkExist(element, "color"),
+                "alarm_group_id": checkExist(element, "alarm_group_id"),
+                "phoneJob": checkExist(element, "phoneJob"),
+                "phoneSelf": checkExist(element, "phoneSelf"),
+                "mail": checkExist(element, "mail"),
+                "address": checkExist(element, "address"),
+                "education": checkExist(element, "education"),
+                "school": checkExist(element, "school"),
+                "grade": checkExist(element, "grade"),
+                "tech_grade": checkExist(element, "tech_grade"),
+                "birthday": checkExist(element, "birthday"),
+                "dateEntry": checkExist(element, "dateEntry"),
+                "dateLeave": checkExist(element, "dateLeave"),
+                "note": checkExist(element, "note"),
+                "photo": "",
+                "file_ext": "",
+                "exist": "1"
+            }],
+            "api_token": [token]
+        };
+        var xmlHttp = createJsonXmlHttp('sql');
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                var revObj = JSON.parse(this.responseText);
+                if (revObj && revObj.success > 0) {
+                    submitNumber.splice(submitNumber.indexOf(number), 1);
+                    if (operate == "AddStaff")
+                        successNumber.add.push(number);
+                    else
+                        successNumber.edit.push(number);
+                }
+                if (submitCount >= (addArr.length + coverArr.length)) {
+                    var result = $.i18n.prop('i_importComplete_1') +
+                        (successNumber.add.length + successNumber.edit.length) + "\n" +
+                        $.i18n.prop('i_importComplete_2') + submitNumber.length;
+                    if (submitNumber.length > 0)
+                        result += ", \n" + $.i18n.prop('i_importComplete_3') + submitNumber;
+                    alert(result);
+                }
+            }
+        };
+        xmlHttp.send(JSON.stringify(request));
+        submitNumber.push(number);
+        submitCount++;
+    }
 }
 
 function checkExist(object, key) {
@@ -156,64 +229,4 @@ function fullOf8Byte(tag_id) {
     } else {
         return "";
     }
-}
-
-function sendMemberData(operate, element) {
-    var request = {
-        "Command_Type": ["Write"],
-        "Command_Name": [operate],
-        "Value": [{
-            "number": checkExist(element, "number"),
-            "tag_id": fullOf8Byte(checkExist(element, "tag_id")),
-            "card_id": checkExist(element, "card_id"),
-            "Name": checkExist(element, "Name"),
-            "lastName": checkExist(element, "lastName"),
-            "firstName": checkExist(element, "firstName"),
-            "EnglishName": checkExist(element, "EnglishName"),
-            "gender": checkExist(element, "gender"),
-            "status": checkExist(element, "status"),
-            "department_id": checkExist(element, "department_id"),
-            "jobTitle_id": checkExist(element, "jobTitle_id"),
-            "type": checkExist(element, "type"),
-            "color_type": checkExist(element, "color_type"),
-            "color": checkExist(element, "color"),
-            "alarm_group_id": checkExist(element, "alarm_group_id"),
-            "phoneJob": checkExist(element, "phoneJob"),
-            "phoneSelf": checkExist(element, "phoneSelf"),
-            "mail": checkExist(element, "mail"),
-            "address": checkExist(element, "address"),
-            "education": checkExist(element, "education"),
-            "school": checkExist(element, "school"),
-            "grade": checkExist(element, "grade"),
-            "tech_grade": checkExist(element, "tech_grade"),
-            "birthday": checkExist(element, "birthday"),
-            "dateEntry": checkExist(element, "dateEntry"),
-            "dateLeave": checkExist(element, "dateLeave"),
-            "note": checkExist(element, "note"),
-            "photo": "",
-            "file_ext": "",
-            "exist": "1"
-        }],
-        "api_token": [token]
-    };
-    var xmlHttp = createJsonXmlHttp('sql');
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            if (revObj && revObj.success > 0) {
-                if (operate == "AddStaff")
-                    alert("新增工號 : " + checkExist(element, "number") + " 的人員資料成功");
-                else
-                    alert("修改工號 : " + checkExist(element, "number") + " 的人員資料成功");
-            } else {
-                if (operate == "AddStaff")
-                    //alert($.i18n.prop('i_alertError_3'));
-                    alert("新增工號 : " + checkExist(element, "number") + " 的人員資料失敗");
-                else
-                    //alert($.i18n.prop('i_alertError_11'));
-                    alert("修改工號 : " + checkExist(element, "number") + " 的人員資料失敗");
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(request));
 }

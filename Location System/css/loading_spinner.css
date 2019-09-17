@@ -5,19 +5,20 @@
     position: absolute;
     z-index: 100;
     text-align: center;
+    display: block;
 }
 
-#loading span {
+/*#loading span {
     font-size: 25px;
     top: 45%;
     width: 150px;
     height: 150px;
     position: relative;
-}
+}*/
 
 .loader {
-    top: 20%;
-    margin: 100px auto;
+    top: 32%;
+    margin: auto;
     font-size: 25px;
     width: 1em;
     height: 1em;

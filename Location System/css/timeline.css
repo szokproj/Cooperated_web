@@ -9,6 +9,10 @@
     margin-left: 30px;
 }
 
+.dialog {
+    display: none;
+}
+
 a,
 a:hover,
 a:active,

@@ -168,11 +168,10 @@ function inputUsersTable() {
                         " value=\"" + revInfo[i].id + "\" /> " + (i + 1) + "</td>" +
                         "<td>" + revInfo[i].code + "</td>" +
                         "<td>" + level + "</td>" +
-                        "<td>" + (revInfo[i].isActive == "1" ? "啟用" : "停用") +
+                        "<td>" + (revInfo[i].isActive == "1" ? $.i18n.prop('i_enable') : $.i18n.prop('i_disable')) +
                         "</td></tr>");
                 }
-                $("#table_account tbody tr").off('dblclick')
-                    .on('dblclick', editAccountInfo);
+                $("#table_account tbody tr").off('dblclick').on('dblclick', editAccountInfo);
             }
         }
     };
@@ -224,7 +223,7 @@ function deleteAccountInfo() {
         }
     });
     if (delete_arr.length > 0) {
-        if (confirm("請確認是否刪除已勾選的使用者帳號?")) {
+        if (confirm($.i18n.prop('i_permissionAlert_1'))) {
             var request = {
                 "Command_Type": ["Write"],
                 "Command_Name": ["DeleteAccount_by_id"],
@@ -243,7 +242,7 @@ function deleteAccountInfo() {
             xmlHttp.send(JSON.stringify(request));
         }
     } else {
-        alert("請先勾選至少一個使用者帳號");
+        alert($.i18n.prop('i_permissionAlert_2'));
     }
 }
 

@@ -140,8 +140,6 @@
  *  参数selector是jQuery选择器，data是数据，dataFormat是数据格式。
  *  比如加载上图的数据：
  */
-
-//{"id":"9","group_id":"3","group_name":"3","main_anchor_id":"65503","anchor_id":"65504","set_x":"1044","set_y":"15"}
 function setTreeArray(dataArray) {
     var treeArray = [];
     $('.tree').empty();

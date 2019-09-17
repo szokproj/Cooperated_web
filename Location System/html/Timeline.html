@@ -6,17 +6,17 @@
     <title class="i18n" name='i_pageTitle'>Location System</title>
     <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--JQuery庫-->
+    <!--JQuery-->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!--BootStrap3-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <!-- Add icon library -->
+    <!--Add icon library-->
     <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'
         integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
-    <!-- Icon Navbar-->
+    <!--Icon Navbar-->
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
     <!--Edit css-->
@@ -35,7 +35,7 @@
         <!--icon navbar-->
         <div id="NavbarHtml"></div>
 
-        <!-- Web content -->
+        <!--Web content-->
         <div class="row">
             <div class="col-lg-12">
                 <div style="float:right;">
@@ -63,32 +63,31 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Time</a>
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="i18n"
+                                        name="i_time"></a>
                                 </h4>
                             </div>
                             <div id="collapse1" class="panel-collapse collapse in">
                                 <div class="panel-body">
-                                    <table class="noborder-block">
+                                    <label class="i18n" name="i_start"></label>
+                                    <table class="noborder-block" style="margin-left:20px;">
                                         <tr>
-                                            <td><span class="i18n" name="i_start"></span> <span class="i18n"
-                                                    name="i_date"></span> :
-                                            </td>
+                                            <td><span class="i18n" name="i_date"></span> : </td>
                                             <td><input type="date" id="start_date" value="2019-08-28"></td>
                                         </tr>
                                         <tr>
-                                            <td><span class="i18n" name="i_start"></span> <span class="i18n"
-                                                    name="i_time"></span> :
-                                            </td>
+                                            <td><span class="i18n" name="i_time"></span> : </td>
                                             <td><input type="time" id="start_time" step="01" value="10:00:00"></td>
                                         </tr>
+                                    </table><br>
+                                    <label class="i18n" name="i_end"></label>
+                                    <table class="noborder-block" style="margin-left:20px;">
                                         <tr>
-                                            <td><span class="i18n" name="i_end"></span> <span class="i18n"
-                                                    name="i_date"></span> : </td>
+                                            <td><span class="i18n" name="i_date"></span> : </td>
                                             <td><input type="date" id="end_date" value="2019-08-28"></td>
                                         </tr>
                                         <tr>
-                                            <td><span class="i18n" name="i_end"></span> <span class="i18n"
-                                                    name="i_time"></span> : </td>
+                                            <td><span class="i18n" name="i_time"></span> : </td>
                                             <td><input type="time" id="end_time" step="01" value="10:30:00"></td>
                                         </tr>
                                     </table>
@@ -98,7 +97,8 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Target</a>
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse3" class="i18n"
+                                        name="i_target"></a>
                                 </h4>
                             </div>
                             <div id="collapse3" class="panel-collapse collapse">
@@ -106,32 +106,39 @@
                                     <label for="btn_search" class="btn-search">
                                         <i class="fas fa-search" style='font-size:22px;'></i></label>
                                     <input id="btn_search" type="button" class="btn-hidden" onclick="search()" />
-                                    <label class="sidebar_title">Type :
+                                    <label class="sidebar_title"><span class="i18n" name="i_searchType"></span> :
                                         <select id="target_type" style="color: rgb(85, 85, 85);">
-                                            <option value="Tag">Search Tag</option>
-                                            <option value="Group">Search Group</option>
+                                            <option value="Tag" class="i18n" name="i_tag"></option>
+                                            <option value="Group" class="i18n" name="i_group"></option>
                                         </select></label>
                                     <br>
                                     <div id="target_tag">
-                                        <label>是否限制顯示資料量?</label><br>
-                                        <input type="radio" name="radio_is_limit" value='disabled' checked />否&nbsp;
-                                        <input type="radio" name="radio_is_limit" value='' /> 是, 顯示最新
-                                        <input type="text" id="limit_count" style="width:80px;" disabled /> 筆資料
+                                        <label class="i18n" name="i_limitDisplayData"></label><br>
+                                        <input type="radio" name="radio_is_limit" value='disabled' checked />
+                                        <label class="i18n" name="i_no"></label><br>
+                                        <input type="radio" name="radio_is_limit" value='' />
+                                        <label class="i18n" name="i_yes"></label>
+                                        <label class="i18n" name="i_displayLatestData"></label>&nbsp;
+                                        <input type="text" id="limit_count" style="width:50px;" disabled />
+                                        <label class="i18n" name="i_data"></label>
                                         <br>
-                                        <label for="btn_target_add" id="label_target_add" class="btn-add i18n-input"
-                                            selectattr="title" selectname="i_add"><i class="fas fa-plus-square"
-                                                style='font-size:20px;'></i></label>
-                                        <input id="btn_target_add" type="button" class="btn-hidden" />
-                                        <label for="btn_target_delete" id="label_target_delete"
-                                            class="btn-delete i18n-input" selectattr="title" selectname="i_delete"><i
-                                                class="fas fa-minus-square" style='font-size:20px;'></i></label>
-                                        <input id="btn_target_delete" type="button" class="btn-hidden" />
+                                        <div style="float:right;">
+                                            <label for="btn_target_add" id="label_target_add" class="btn-add i18n-input"
+                                                selectattr="title" selectname="i_add"><i class="fas fa-plus-square"
+                                                    style='font-size:20px;'></i></label>
+                                            <input id="btn_target_add" type="button" class="btn-hidden" />
+                                            <label for="btn_target_delete" id="label_target_delete"
+                                                class="btn-delete i18n-input" selectattr="title"
+                                                selectname="i_delete"><i class="fas fa-minus-square"
+                                                    style='font-size:20px;'></i></label>
+                                            <input id="btn_target_delete" type="button" class="btn-hidden" />
+                                        </div>
                                         <table id="table_target" class="border-block">
                                             <thead>
                                                 <tr>
-                                                    <th>ID</th>
-                                                    <th style="width:30px;">Color</th>
-                                                    <th style="width:30px;">Focus</th>
+                                                    <th class="i18n" name="i_id"></th>
+                                                    <th class="i18n" name="i_color" style="min-width:30px;"></th>
+                                                    <th class="i18n" name="i_move" style="min-width:30px;"></th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -141,14 +148,15 @@
                                         <label class="i18n" name="i_groupID"></label> : <input type="text"
                                             id="target_group_id" style="width:100px;" /><br>
                                         <input type="checkbox" id="chk_is_overlap" style="margin-top:10px" />
-                                        <label for="chk_is_overlap">顯示累積結果</label>
-                                        <button class="btn btn-default" id="btn_resst_locate_tag"
-                                            style="float:right; margin:5px 0px; padding: 3px 5px;">Reset Focus</button>
+                                        <label for="chk_is_overlap" class="i18n" name="i_overlap"></label>
+                                        <button id="btn_resst_locate_tag" class="btn btn-default i18n"
+                                            style="float:right; margin:5px 0px; padding:3px 5px;"
+                                            name="i_notAssigned"></button>
                                         <table id="table_tag_list">
                                             <thead>
                                                 <tr>
-                                                    <th>ID</th>
-                                                    <th style="width:30px;">Focus</th>
+                                                    <th class="i18n" name="i_id"></th>
+                                                    <th class="i18n" name="i_assign" style="min-width:30px;"></th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -160,14 +168,14 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Timeline
-                                        Player</a>
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="i18n"
+                                        name="i_timelinePlayer"></a>
                                 </h4>
                             </div>
                             <div id="collapse2" class="panel-collapse collapse">
                                 <div class="panel-body">
-                                    <label class="sidebar_title">Map : <select id="target_map"
-                                            style="color: rgb(85, 85, 85);"></select></label>
+                                    <label class="sidebar_title"><span class="i18n" name="i_map"></span> :
+                                        <select id="target_map" style="color: rgb(85, 85, 85);"></select></label>
                                     <div class="btn-group" style="float:right;">
                                         <button class="btn btn-default control_btn" id="btn_stop"
                                             onclick="stopTimeline()" disabled="true">
@@ -207,9 +215,8 @@
         </div>
     </div>
 
-    <!-- Hidden Dialog -->
-
-    <!--  Modal -->
+    <!--Hidden Dialog-->
+    <!--Modal-->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -217,14 +224,16 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
                     </button>
                 </div>-->
-                <!--<label>搜尋中，請稍候 <i class="fas fa-spinner fa-pulse"></i></label>-->
-                <label><i class="fas fa-spinner fa-pulse"></i> 搜尋中，目前進度 : <span id="progress_bar"></span></label><br>
+                <label><i class="fas fa-spinner fa-pulse"></i>
+                    <apan class="i18n" name="i_searchingBar"></apan>
+                    <span id="progress_bar"></span>
+                </label><br>
                 <label id="wait_time"></label>
             </div>
         </div>
     </div>
 
-    <div id="timeline_dialog" title="Timeline">
+    <div id="timeline_dialog" class="dialog" title="Timeline">
         <span style="display: block;">
             <label class="i18n" name="i_tagID"></label> :
             <label id="timeline_dialog_tag_id"></label>
@@ -240,7 +249,7 @@
         </span>
     </div>
 
-    <div id="add_target_dialog" title="Add a target">
+    <div id="add_target_dialog" class="dialog" title="Add a target">
         <table class="noborder-block">
             <tr>
                 <td><label class="i18n" name="i_tagID"></label></td>
@@ -252,10 +261,10 @@
             </tr>
         </table>
     </div>
-    <!-- i18n 多語言翻譯 -->
+    <!--i18n translation-->
     <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
     <script type="text/javascript" src="../js/i18n/language.js"></script>
-    <!-- i18n -->
+    <!--i18n-->
 </body>
 
 </html>

@@ -42,7 +42,7 @@ $(function () {
     form = dialog.find("form").on("submit", function (event) {
         event.preventDefault();
         sendResult(type_id);
-        dialog.dialog("close"); //送出後自動關閉視窗
+        dialog.dialog("close");
     });
 
 
@@ -79,7 +79,7 @@ $(function () {
     form2 = dialog2.find("form").on("submit", function (event) {
         event.preventDefault();
         sendResult2(status_id);
-        dialog2.dialog("close"); //送出後自動關閉視窗
+        dialog2.dialog("close");
     });
 });
 

@@ -242,7 +242,7 @@ $(function () {
     dialog = $("#dialog_add_alarm_group").dialog({
         autoOpen: false,
         height: 550,
-        width: 400,
+        width: 450,
         modal: true,
         buttons: {
             "Confirm": SendResult,

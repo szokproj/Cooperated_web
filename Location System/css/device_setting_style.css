@@ -11,6 +11,10 @@
     margin: 10px 0px 0px 50px;
 }
 
+.dialog {
+    display: none;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;

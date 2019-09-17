@@ -14,11 +14,9 @@ var xleftView = 0;
 var ytopView = 0;
 var Zoom = 1.0; //actual width and height of zoomed and panned display
 var isFitWindow = true;
-
 var isPosition = false;
 var serverImg = new Image();
 var anchorArray = [];
-
 var displayMapInfo = true;
 var pageTimer = {}; //定義計時器全域變數
 

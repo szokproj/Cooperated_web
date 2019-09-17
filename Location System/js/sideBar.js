@@ -94,7 +94,7 @@ function inputAlarmData(element, i) {
         " onclick=\"unlockFocusAlarm()\"><img class=\"icon-image\"" +
         " src=\"../image/release_position.png\"></button>" +
         "<button type=\"button\" id=\"" + thumb_focus_btn_id + "\" style=\"margin-left: 10px;\"" +
-        " class=\"btn btn-default\" title=\"" + $.i18n.prop('i_position') + "\">" +
+        " class=\"btn btn-default\" title=\"" + $.i18n.prop('i_locate') + "\">" +
         "<img class=\"icon-image\" src=\"../image/target.png\"></button>" +
         "</div></div>");
     getMemberPhoto(thumb_img, element.number);

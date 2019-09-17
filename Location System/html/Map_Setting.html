@@ -32,7 +32,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_map_draw.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_map_setting.js"></script>
-    <script type="text/javascript" src="../js/Dialog/dialog_add_map.js"></script>
+    <script type="text/javascript" src="../js/Dialog/dialog_map_add.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_anchor_list.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_anchor_group.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_group_list.js"></script>
@@ -73,7 +73,7 @@
     <!-- Hidden Dialog -->
     <div class="hidden_dialog">
         <!-- Following is a dialog to add group's main anchor -->
-        <div id="dialog_add_map" title="Add New Map">
+        <div id="dialog_add_map" class="dialog" title="Add New Map">
             <form>
                 <fieldset style="text-align: left;">
                     <label class="i18n" name="i_mapName"></label> :
@@ -96,7 +96,7 @@
             </form>
         </div>
         <!-- Following is a dialog to set the selected map or add a new map -->
-        <div id="dialog_map_setting" title="Set Map & Anchors" style="overflow:auto;">
+        <div id="dialog_map_setting" class="dialog" title="Set Map & Anchors" style="overflow:auto;">
             <form>
                 <fieldset>
                     <div style="height:490px; float:left;">
@@ -275,7 +275,7 @@
             </form>
         </div>
         <!-- Following is a dialog to add a new anchor -->
-        <div id="dialog_add_new_anchor" title="Add Anchor">
+        <div id="dialog_add_new_anchor" class="dialog" title="Add Anchor">
             <form>
                 <fieldset style="text-align: left;">
                     <label for="anchor_type" class="i18n" name="i_anchorType"></label> :
@@ -293,7 +293,7 @@
             </form>
         </div>
         <!-- Following is a dialog to add group's main anchor -->
-        <div id="dialog_add_group_list" title="Add Group">
+        <div id="dialog_add_group_list" class="dialog" title="Add Group">
             <form>
                 <fieldset style="text-align: left;">
                     <label for="add_grouplist_id" class="i18n" name="i_groupID"></label> :
@@ -317,7 +317,7 @@
             </form>
         </div>
         <!-- Following is a dialog to edit group's main anchor -->
-        <div id="dialog_edit_group_list" title="Edit Group">
+        <div id="dialog_edit_group_list" class="dialog" title="Edit Group">
             <form>
                 <fieldset style="text-align: left;">
                     <label class="i18n" name="i_group"></label> :
@@ -354,7 +354,7 @@
             </form>
         </div>
         <!-- Following is a dialog to create the connection between anchor and group -->
-        <div id="dialog_add_anchor_group" title="Connect Anchor and Group">
+        <div id="dialog_add_anchor_group" class="dialog" title="Connect Anchor and Group">
             <form>
                 <fieldset style="text-align: left;">
                     <label class="i18n" name="i_groupID"></label> :
@@ -386,7 +386,7 @@
             </form>
         </div>
         <!-- Following is a dialog to edit the connection between anchor and group -->
-        <div id="dialog_edit_anchor_group" title="Connect Anchor and Group">
+        <div id="dialog_edit_anchor_group" class="dialog" title="Connect Anchor and Group">
             <form>
                 <fieldset style="text-align: left;">
                     <label class="i18n" name="i_group"></label> :

@@ -109,7 +109,7 @@ function getPermissionOfPage(parent_page) {
         var minimum = parseInt(MinimumPermission[parent_page], 10);
         return permission_num >= minimum ? true : false;
     } else {
-        alert("Error! Please call administrator help.");
+        alert("Error! Please call the administrator for help.");
         return false;
     }
 }
@@ -191,29 +191,29 @@ function Navbar() {
         } else if (parent_page == "Member_Setting") {
             navbarHtml += "<hr><li class=\"setting-type\"><a href=\"../Member_Setting.html\"><i class=\"fas fa-users\"></i>" +
                 "<span class=\"i18n\" name=\"i_memberSetting\"></span></a></li>" +
-                "<li class=\"setting-type\"><a href=\"../Display_Setting.html\">" +
-                "<i class=\"fas fa-map-marker-alt\" style=\"padding-left:4px;\"></i>" +
-                "<span class=\"i18n\" name=\"i_displaySetting\"></span></a></li>" +
                 "<li class=\"setting-type\"><a href=\"../Dept_Setting.html\"><i class=\"fas fa-sitemap\"></i>" +
                 "<span class=\"i18n\" name=\"i_deptSetting\"></span></a></li>" +
                 "<li class=\"setting-type\"><a href=\"../Job_Title_Setting.html\"><i class=\"fas fa-id-card\"></i>" +
                 "<span class=\"i18n\" name=\"i_titleSetting\"></span></a></li>" +
                 "<li class=\"setting-type\"><a href=\"../User_Type_Setting.html\"><i class=\"fas fa-user-tag\"></i>" +
-                "<span class=\"i18n\" name=\"i_usertypeSetting\"></span></a></li>";
+                "<span class=\"i18n\" name=\"i_usertypeSetting\"></span></a></li>" +
+                "<li class=\"setting-type\"><a href=\"../Preview_Color_Setting.html\">" +
+                "<i class=\"fas fa-map-marker-alt\" style=\"padding-left:2px;\"></i>" +
+                "<span class=\"i18n\" name=\"i_previewColorSetting\"></span></a></li>";
             switch (child_page) {
                 case "Member_Setting":
                     child_order = count_parents;
                     break;
-                case "Display_Setting":
+                case "Dept_Setting":
                     child_order = count_parents + 1;
                     break;
-                case "Dept_Setting":
+                case "Job_Title_Setting":
                     child_order = count_parents + 2;
                     break;
-                case "Job_Title_Setting":
+                case "User_Type_Setting":
                     child_order = count_parents + 3;
                     break;
-                case "User_Type_Setting":
+                case "Preview_Color_Setting":
                     child_order = count_parents + 4;
                     break;
                 default:

@@ -29,7 +29,6 @@
     <!-- Edit css -->
     <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
     <link rel="stylesheet" type="text/css" href="../css/member_setting_style.css">
-    <link rel="stylesheet" type="text/css" href="../css/loading_spinner.css">
     <!-- Edit js -->
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
@@ -46,15 +45,12 @@
 
 <body>
     <div class="container">
-        <!--icon navbar-->
+        <!-- icon navbar -->
         <div id="NavbarHtml"></div>
 
-        <!-- 網頁內容 -->
-        <div class="row" style="display:flex;">
+        <!-- Web content -->
+        <div class="row">
             <div class="col-lg-12">
-                <div id="loading">
-                    <div class="loader"></div>
-                </div>
                 <div style="float:right;">
                     <label id="login_user"></label>
                     <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
@@ -64,7 +60,7 @@
                         <option value="zh-CN">简体中文</option>
                     </select>
                 </div>
-                <div>
+                <div style="width:600px;">
                     <button id="add_col" class="btn btn-success i18n" name="i_add"></button>
                     <button id="delete_col" class="btn btn-danger i18n" name="i_delete"></button>
                     <button id="multi_edit" class="btn btn-primary i18n" name="i_batchEdit"></button>
@@ -76,7 +72,12 @@
                     <input type="button" id="excel_example" class="btn-hidden" />
                     <a href="" id="excel_export_download"></a>
                 </div>
-                <div class="table_member">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="member_list">
                     <table id="table_member_setting" class="sticky-table">
                         <thead>
                             <tr>
@@ -122,7 +123,7 @@
 
     <div class="hidden_dialog">
         <!-- Hidden Dialog -->
-        <div id="dialog_edit_member" title="Edit Person Infomation">
+        <div id="dialog_edit_member" class="dialog" title="Edit Person Infomation">
             <form>
                 <fieldset style="text-align: left;">
                     <ul id="setTab" class="nav nav-tabs">
@@ -285,7 +286,7 @@
                 </fieldset>
             </form>
         </div>
-        <div id="dialog_multi_edit" title="Multi set">
+        <div id="dialog_multi_edit" class="dialog" title="Multi set">
             <form>
                 <fieldset style="text-align: center;">
                     <table id="table_multi_edit" class="ui-widget ui-widget-content block">
@@ -307,7 +308,7 @@
                 </fieldset>
             </form>
         </div>
-        <div id="dialog_tree_chart" title="Select Node">
+        <div id="dialog_tree_chart" class="dialog" title="Select Node">
             <form>
                 <fieldset style="text-align: center;">
                     <div id="chart-container"></div>

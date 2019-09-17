@@ -188,7 +188,7 @@ function closeMapTag() {
     $("#map_btn_" + Map_id).prop('disabled', false).css('color', 'black');
     deleteMapToCookie(Map_id);
     if (Map_id == "")
-        return;
+        return false;
     if ($("button[name=map_tab]").length > 0) {
         var tab_map_id = $("button[name=map_tab]").eq(0).attr("id"); //"map_tab_" + map_id
         $("#" + tab_map_id).addClass("selected");
@@ -886,7 +886,7 @@ function changeFocusAlarm(alarm_order) { //改變鎖定定位的Alarm目標
 }
 
 function releaseFocusAlarm(alarm_order) { //解除指定的alarm
-    var r = confirm("請確認事件已完成，確定後將解除警報!");
+    var r = confirm($.i18n.prop('i_alertRelease'));
     if (r == true) {
         var index = alarmFilterArr.findIndex(function (info) {
             return info.order == alarm_order;

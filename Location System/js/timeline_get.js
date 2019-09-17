@@ -26,7 +26,6 @@ var timeDelay = {
     draw: [],
     model: ""
 };
-
 var group_color = "#ff9933";
 var timeslot_array = [];
 var locate_tag = "";
@@ -55,7 +54,7 @@ $(function () {
                 var target_id = $("#add_target_tag_id"),
                     targrt_color = $("#add_target_color");
                 target_id.removeClass("ui-state-error");
-                var valid = true && checkLength(target_id, "Not null", 1, 16);
+                var valid = true && checkLength(target_id, $.i18n.prop('i_targetIdLangth'), 1, 16);
                 if (valid) {
                     $("#table_target tbody").append("<tr><td><input type=\"checkbox\" name=\"chk_target_id\"" +
                         " value=\"" + target_id.val() + "\"/> " + target_id.val() + "</td>" +
@@ -124,12 +123,11 @@ $(function () {
 
     $("#interval_slider").mousedown(function () {
         $(this).mousemove(function () {
-            for (i in timeDelay.draw)
-                clearInterval(timeDelay.draw[i]);
+            clearDrawInterval();
             if (historyData["search_type"] && historyData["search_type"] == "Tag") {
-                timeDelay.draw.push(setInterval("drawNextTimeByTag()", $("#interval").val()));
+                timeDelay["draw"].push(setInterval("drawNextTimeByTag()", $("#interval").val()));
             } else {
-                timeDelay.draw.push(setInterval("drawNextTimeByGroup()", $("#interval").val()));
+                timeDelay["draw"].push(setInterval("drawNextTimeByGroup()", $("#interval").val()));
             }
         });
         $(this).mouseup(function () {
@@ -379,7 +377,7 @@ function handleMouseClick(event) {
             }
             break;
         default:
-            alert("請選擇搜尋類別!");
+            alert($.i18n.prop('i_noSearch'));
             return false;
     }
 }
@@ -392,7 +390,8 @@ function handleMouseMove(event) { //滑鼠移動事件
 
 function drawTimeline() {
     if (!isContinue) {
-        if (!historyData["search_type"]) return alert("請先進行搜尋");
+        if (!historyData["search_type"])
+            return alert($.i18n.prop('i_searchFirst'));
         isContinue = true;
         document.getElementById("btn_stop").disabled = false;
         document.getElementById("btn_restore").disabled = false;
@@ -407,7 +406,7 @@ function drawTimeline() {
                     $("#target_map").val(mapInfo.map_id);
                     loadImage(mapInfo.map_src, mapInfo.map_scale);
                 }
-                timeDelay.draw.push(setInterval("drawNextTimeByTag()", $("#interval").val())); //計時器賦值
+                timeDelay["draw"].push(setInterval("drawNextTimeByTag()", $("#interval").val())); //計時器賦值
                 break;
             case "Group":
                 if (!canvasImg.isPutImg) {
@@ -416,7 +415,7 @@ function drawTimeline() {
                     $("#target_map").val(mapInfo.map_id);
                     loadImage(mapInfo.map_src, mapInfo.map_scale);
                 }
-                timeDelay.draw.push(setInterval("drawNextTimeByGroup()", $("#interval").val())); //計時器賦值
+                timeDelay["draw"].push(setInterval("drawNextTimeByGroup()", $("#interval").val())); //計時器賦值
                 break;
             default:
                 break;
@@ -424,16 +423,14 @@ function drawTimeline() {
     } else {
         isContinue = false;
         document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\" ></i >";
-        for (i in timeDelay.draw)
-            clearInterval(timeDelay.draw[i]);
+        clearDrawInterval();
     }
 }
 
 function stopTimeline() {
     times = 0;
     isContinue = false;
-    for (i in timeDelay.draw)
-        clearInterval(timeDelay.draw[i]);
+    clearDrawInterval();
     setSize();
     document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\" ></i >";
     document.getElementById("btn_stop").disabled = true;
@@ -441,12 +438,14 @@ function stopTimeline() {
 }
 
 function drawNextTimeByTag() {
+    if (!isContinue)
+        return false;
     var locate_map = document.getElementById("target_map").value;
     if (times == 0) {
         document.getElementsByName("chk_target_id").forEach(function (tag_id, i) {
             var color = document.getElementsByName("input_target_color")[i].value;
             var array = historyData[tag_id.value];
-            if (!array) return alert("資料錯誤或是目標tag有變動，請重新搜尋!");
+            if (!array) return alert($.i18n.prop('i_targetTagChange'));
             if (array[0] && array[0].map_id == locate_map) {
                 drawTag(ctx, array[0].time, array[0].x, canvasImg.height - array[0].y, color);
                 document.getElementById("position").innerText = array[0].map_name;
@@ -474,30 +473,41 @@ function drawNextTimeByTag() {
         });
         times++;
     } else {
-        setSize();
-        times = 0;
+        if (confirm($.i18n.prop('i_endOfPlay'))) {
+            setSize();
+            times = 0;
+        } else {
+            isContinue = false;
+            document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\" ></i >";
+            clearDrawInterval();
+        }
     }
 }
 
 function drawNextTimeByGroup() {
-    if (isContinue) {
-        if (times == timeslot_array.length) {
+    if (!isContinue) return false;
+    if (times == timeslot_array.length) {
+        if (confirm($.i18n.prop('i_endOfPlay'))) {
             setSize();
             times = 0;
         } else {
-            if (!document.getElementById("chk_is_overlap").checked)
-                setSize();
-            if (locate_tag == "") {
-                historyData[timeslot_array[times]].forEach(info => {
-                    drawTag(ctx, info.time, info.x, canvasImg.height - info.y, group_color);
-                });
-            } else {
-                reDrawTag(ctx);
-            }
-            document.getElementById("position").innerText = historyData[timeslot_array[times]][0].map_name;
-            document.getElementById("draw_time").innerText = timeslot_array[times];
-            times++;
+            isContinue = false;
+            document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\" ></i >";
+            clearDrawInterval();
         }
+    } else {
+        if (!document.getElementById("chk_is_overlap").checked)
+            setSize();
+        if (locate_tag == "") {
+            historyData[timeslot_array[times]].forEach(info => {
+                drawTag(ctx, info.time, info.x, canvasImg.height - info.y, group_color);
+            });
+        } else {
+            reDrawTag(ctx);
+        }
+        document.getElementById("position").innerText = historyData[timeslot_array[times]][0].map_name;
+        document.getElementById("draw_time").innerText = timeslot_array[times];
+        times++;
     }
 }
 
@@ -554,7 +564,7 @@ function search() {
     var datetime_start = Date.parse($("#start_date").val() + " " + $("#start_time").val());
     var datetime_end = Date.parse($("#end_date").val() + " " + $("#end_time").val());
     if (datetime_end - datetime_start < 60000) {
-        return alert("起始日期要在結束日期之前,並且至少間隔一分鐘");
+        return alert($.i18n.prop('i_alertTimeTooShort'));
     } else if (datetime_end - datetime_start > 86400000 * 7) { //86400000 = 一天的毫秒數
         if (!confirm($.i18n.prop('i_alertTimeTooLong')))
             return false;
@@ -563,7 +573,7 @@ function search() {
         case "Tag":
             var target_ids = document.getElementsByName("chk_target_id");
             if (target_ids.length == 0) {
-                alert("請先新增至少一個目標Tag!");
+                alert($.i18n.prop('i_searchNoTag'));
                 return false;
             }
             historyData = {
@@ -574,7 +584,7 @@ function search() {
         case "Group":
             var group_id = $("#target_group_id").val();
             if (group_id.length == 0) {
-                alert("請輸入搜尋的群組編號");
+                alert($.i18n.prop('i_searchNoGroup'));
                 return false;
             }
             timeslot_array = [];
@@ -584,7 +594,7 @@ function search() {
             getTimelineByGroup(datetime_start, datetime_end, group_id);
             break;
         default:
-            alert("請選擇搜尋類別!");
+            alert($.i18n.prop('i_searchNoType'));
             return false;
     }
     showSearching();
@@ -593,11 +603,12 @@ function search() {
 function getTimelineByTags() {
     var interval_times = 0;
     var count_times = 0;
-    for (i in timeDelay.search)
-        clearTimeout(timeDelay.search[i]);
+    for (i in timeDelay["search"])
+        clearTimeout(timeDelay["search"][i]);
+    timeDelay["search"] = [];
     document.getElementsByName("chk_target_id").forEach(function (tag_id, i) {
         interval_times++;
-        timeDelay.search.push(setTimeout(function () {
+        timeDelay["search"].push(setTimeout(function () {
             sendRequest({
                 "Command_Type": ["Read"],
                 "Command_Name": ["GetLocus_combine_hour"],
@@ -794,12 +805,12 @@ function locateTag(tag_id) {
     if (historyData[tag_id])
         changeFocusMap(historyData[tag_id][times].map_id);
     else
-        alert("資料錯誤，請重新搜尋或刷新頁面");
+        alert($.i18n.prop('i_searchError'));
 }
 
 function changeFocusMap(map_id) {
     if (map_id == "")
-        alert("此地圖不存在");
+        alert($.i18n.prop('i_mapAlert_19'));
     else if (map_id != $("#target_map").val()) {
         if (map_id in mapCollection) {
             $("#target_map").val(map_id);
@@ -809,34 +820,41 @@ function changeFocusMap(map_id) {
     }
 }
 
+function clearDrawInterval() {
+    for (i in timeDelay["draw"])
+        clearInterval(timeDelay["draw"][i]);
+    timeDelay["draw"] = [];
+}
+
 /**
  * Show Search Model
  */
 function showSearching() {
     $('#myModal').modal('show');
     $("#progress_bar").text(0 + " %");
-    timeDelay.model = setTimeout(function () {
+    timeDelay["model"] = setTimeout(function () {
         $('#myModal').modal('hide');
-        clearTimeout(timeDelay.model);
+        clearTimeout(timeDelay["model"]);
     }, 3600000);
 }
 
 function completeSearch() {
     $('#myModal').modal('hide');
-    clearTimeout(timeDelay.model);
+    clearTimeout(timeDelay["model"]);
     alert($.i18n.prop('i_searchOver'));
     var num = Object.keys(historyData).length;
     if (num <= 1)
-        alert("搜尋到0筆資料!");
+        alert($.i18n.prop('i_searchNoData'));
 }
 
 function inputWaitTime(interval_times) {
     var sec = interval_times * 1.3;
     if (sec > 3600)
-        $("#wait_time").text("預計耗時 : " + Math.ceil(sec / 3600) + " 時" +
-            Math.ceil((sec % 3600) / 60) + " 分" + Math.ceil(sec % 60) + " 秒");
+        $("#wait_time").text($.i18n.prop('i_estimatedTime') + Math.ceil(sec / 3600) + $.i18n.prop('i_hour') +
+            Math.ceil((sec % 3600) / 60) + $.i18n.prop('i_minute') + Math.ceil(sec % 60) + $.i18n.prop('i_second'));
     else if (sec > 60)
-        $("#wait_time").text("預計耗時 : " + Math.ceil(sec / 60) + " 分" + Math.ceil(sec % 60) + " 秒");
+        $("#wait_time").text($.i18n.prop('i_estimatedTime') + Math.ceil(sec / 60) + $.i18n.prop('i_minute') +
+            Math.ceil(sec % 60) + $.i18n.prop('i_second'));
     else
-        $("#wait_time").text("預計耗時 : " + Math.ceil(sec) + " 秒");
+        $("#wait_time").text($.i18n.prop('i_estimatedTime') + Math.ceil(sec) + $.i18n.prop('i_second'));
 }

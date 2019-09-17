@@ -128,8 +128,6 @@ function setCommand(name) {
         command_name = ["AddStaff"];
     else if (name == "edit")
         command_name = ["EditStaff"];
-    else
-        return;
 }
 
 function selectTagColor() {

@@ -22,7 +22,7 @@ $(function () {
     });
 
     $("#btn_delete_anchor_group").on("click", function () {
-        if (confirm("確定要刪除已勾選的群組內基站?")) {
+        if (confirm($.i18n.prop('i_mapAlert_20'))) {
             var group_ids = document.getElementsByName("anchorgroup_group_id");
             var anchor_ids = document.getElementsByName("anchorgroup_anchor_id");
             var deleteArr = [];
@@ -144,7 +144,7 @@ $(function () {
             GroupAnchorList.forEach(element => {
                 if (element.group_id == add_group_id.val() && element.anchor_id == add_anchor_id.eq(i).val()) {
                     add_anchor_id.eq(i).addClass("ui-state-error");
-                    alert("Anchor_id : " + element.anchor_id + " 已在此群組中，請刪除後再新增!");
+                    alert($.i18n.prop('i_anchorID') + " : " + element.anchor_id + $.i18n.prop('i_mapAlert_21'));
                     valid = false;
                     return false;
                 }
@@ -251,7 +251,7 @@ $(function () {
                 var anc_group_arr = [];
                 var pass = true;
                 if (edit_group.length == 0) {
-                    alert("請至少新增一個群組")
+                    alert($.i18n.prop('i_mapAlert_22'))
                     return false;
                 }
                 var GroupAnchorList = getRowData_Group_Anchor();
@@ -273,8 +273,7 @@ $(function () {
                     GroupAnchorList.forEach(element => {
                         if (element.anchor_id == edit_anchor.val()) {
                             edit_anchor.addClass("ui-state-error");
-                            alert("Anchor_id : " + element.anchor_id +
-                                " 已經設定在此地圖的群組中，請刪除其他群組位置再進行相同操作!");
+                            alert($.i18n.prop('i_anchorID') + " : " + element.anchor_id + $.i18n.prop('i_mapAlert_23'));
                             pass = false;
                         }
                     });

@@ -20,7 +20,7 @@ $(function () {
     });
 
     $("#btn_delete_group").on('click', function () {
-        if (confirm("確定要刪除已勾選的群組?")) {
+        if (confirm($.i18n.prop('i_mapAlert_26'))) {
             var checkboxs = document.getElementsByName("chkbox_group_list");
             var deleteArray = [];
             for (j in checkboxs) {

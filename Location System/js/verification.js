@@ -1,3 +1,4 @@
+//目前不需要檢驗信箱等等
 //完整js验证Email
 //https://www.cnblogs.com/hakuci/archive/2010/10/20/1856462.html
 

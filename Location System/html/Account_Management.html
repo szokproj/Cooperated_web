@@ -38,6 +38,10 @@
             margin: 10px 0px 0px 50px;
         }
 
+        .dialog {
+            display: none;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -198,7 +202,7 @@
     </div>
 
     <!-- Hidden Dialog -->
-    <div id="dialog_account_setting" title="Set Account Information">
+    <div id="dialog_account_setting" class="dialog" title="Set Account Information">
         <form>
             <fieldset style="text-align: left;">
                 <table id="table_account_setting" class="noborder-block">
@@ -248,7 +252,7 @@
         </form>
     </div>
     <!--
-    <div id="dialog_permission_setting" title="Permission Table">
+    <div id="dialog_permission_setting" class="dialog" title="Permission Table">
         <form>
             <label class="i18n" name="i_addPermission"></label> : <input type="text" id="permission_name" />
             <br><br>

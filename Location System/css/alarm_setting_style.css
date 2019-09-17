@@ -13,6 +13,10 @@
     margin: 10px 0px 0px 50px;
 }
 
+.dialog {
+    display: none;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
@@ -221,8 +225,8 @@ input[type=radio]:not(old).beauty:checked+label {
     padding: 5px 0px 5px 30px;
     text-decoration: none;
     text-align: left;
-    font-family: Sans-serif;
     font-size: 14px;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
 }
 
 .dropdown input:active,

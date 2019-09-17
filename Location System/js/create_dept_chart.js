@@ -10,10 +10,6 @@ $(function () {
     }
     setNavBar("Member_Setting", "Dept_Setting");
 
-    setTimeout(function () {
-        $("#loading").hide();
-    }, 500);
-
     var size = 10;
     var default_color = '#2eb82e';
     var datascource = {

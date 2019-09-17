@@ -13,12 +13,12 @@ $(function () {
 });
 
 function cerateAlarmDialog(dialog_id, request_name) {
-    var dialog, form, target, allFields;
+    var dialog, form, target, allFields = $([]);
 
     var SendResult = function () {
         allFields.removeClass("ui-state-error");
         var valid = true;
-        valid = valid && checkLength(target, "Not nullable", 1, 20);
+        valid = valid && checkLength(target, $.i18n.prop('i_alertError_10'), 1, 20);
         var jsonRequest = JSON.stringify({
             "Command_Type": ["Write"],
             "Command_Name": [request_name],
@@ -33,9 +33,9 @@ function cerateAlarmDialog(dialog_id, request_name) {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
                     if (revObj.success > 0)
-                        alert("設定成功!");
+                        alert($.i18n.prop('i_alarmAlert_2'));
                     else
-                        alert("設定失敗!");
+                        alert($.i18n.prop('i_alarmAlert_3'));
                 }
             };
             xmlHttp.send(jsonRequest);
@@ -70,7 +70,7 @@ function cerateAlarmDialog(dialog_id, request_name) {
 
     this.inputTimeNode = function (node_id) {
         target = $("#" + node_id);
-        allFields = $([]).add(target);
+        allFields = allFields.add(target);
     };
 
     this.setOpenButton = function (btn_id) {

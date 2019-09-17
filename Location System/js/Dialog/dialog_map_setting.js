@@ -82,7 +82,6 @@ $(function () {
                         //reload
                         loadMap();
                         dialog.dialog("close");
-                        resetDialog();
                         alert($.i18n.prop('i_mapAlert_5'));
                     }
                 }

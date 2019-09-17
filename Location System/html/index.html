@@ -6,30 +6,30 @@
     <title class="i18n" name='i_pageTitle'></title>
     <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Jquery庫 -->
+    <!--Jquery-->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
-    <!-- BootStrap3 -->
+    <!--BootStrap3-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <!-- Add icon library -->
+    <!--Add icon library-->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
         integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
-    <!-- Icon Navbar-->
+    <!--Icon Navbar-->
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
-    <!-- Edit css -->
+    <!--Edit css-->
     <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
     <link rel="stylesheet" type="text/css" href="../css/index_style.css" />
     <link rel="stylesheet" type="text/css" href="../css/index_data_sidebar.css" />
     <link rel="stylesheet" type="text/css" href="../css/index_alarm_sidebar.css" />
     <link rel="stylesheet" type="text/css" href="../css/slider.css" />
     <link rel="stylesheet" type="text/css" href="../css/switch_design.css" />
-    <!-- Data Table -->
+    <!--Data Table-->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css" />
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
-    <!-- Edit js -->
+    <!--Edit js-->
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
@@ -38,7 +38,7 @@
     <script type="text/javascript" src="../js/canvas_request.js"></script>
     <script type="text/javascript" src="../js/sidebar_search.js"></script>
     <script type="text/javascript" src="../js/table_filter.js"></script>
-    <!-- JQuery UI - Dialog -->
+    <!--JQuery UI - Dialog-->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_alarm_set.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_display_size.js"></script>
@@ -50,11 +50,11 @@
         <!--icon navbar-->
         <div id="NavbarHtml"></div>
 
-        <!-- Web content -->
+        <!--Web content-->
         <div class="row">
             <div class="col-lg-12" style="background: #ffffff;">
                 <div id="content" style="margin-top:5px;">
-                    <!-- Top -->
+                    <!--Top-->
                     <div style="float:right;">
                         <label id="login_user"></label>
                         <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
@@ -67,9 +67,11 @@
                         <div class="dropdown">
                             <label id="btn_set" class="dropdown-toggle btn-set i18n-input" selectattr="title"
                                 selectname="i_setting" data-toggle="dropdown"><i class="fas fa-cog"></i></label>
-                            <ul class="dropdown-menu" style="left:-100px;">
-                                <li><input type="button" value="鎖定模式調整" id="btn_adjust_focus" /></li>
-                                <li><input type="button" value="物件尺寸調整" id="btn_display_size" /></li>
+                            <ul class="dropdown-menu" style="left:-120px;">
+                                <li><input type="button" id="btn_adjust_focus" class="i18n-input" selectattr="value"
+                                        selectname="i_focusMode" /></li>
+                                <li><input type="button" id="btn_display_size" class="i18n-input" selectattr="value"
+                                        selectname="i_displaySize" /></li>
                             </ul>
                         </div>
 
@@ -79,7 +81,7 @@
                         <input id="btn_remove" type="button" class="btn-hidden" onclick="closeMapTag();" />
                     </div>
 
-                    <!-- Midden -->
+                    <!--Midden-->
                     <div class="btn-group">
                         <div class="dropdown dropdown-input" id="input_map">
                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
@@ -95,7 +97,7 @@
                     <div class="cvsBlock" id="cvsBlock">
                         <div class="transition" id="transition"></div>
                         <!--<div id="loading">
-                            <span class="fa-li"><i class="fas fa-spinner fa-pulse"></i> Loading...</span>
+                            <div class="loader"></div>
                         </div>-->
                         <canvas id="canvas" style="height:1px; width:1px;">
                             <span class="i18n" name="i_no_canvas"></span>
@@ -105,12 +107,14 @@
                     <div style="text-align:right;">
                         <span class="i18n" name="i_mapScale"></span> : <span id="scale_visible"
                             style="margin-right:20px;"></span>
-                        X: <input type="text" id="x" class="coordinate" disabled />
-                        Y: <input type="text" id="y" class="coordinate" disabled />
+                        <span class="i18n" name="i_posX"></span> : <input type="text" id="x" class="coordinate"
+                            disabled />
+                        <span class="i18n" name="i_posY"></span> : <input type="text" id="y" class="coordinate"
+                            disabled />
                     </div>
                 </div>
 
-                <!-- Left (Alarm) Sidebar -->
+                <!--Left (Alarm) Sidebar-->
                 <div class="sideBar">
                     <!--<div class="sideBar-left-button">
                         <label class="btn-alarm i18n-input" for="btn_unlock_alarm" selectattr="title"
@@ -122,7 +126,7 @@
                     </div>
                 </div>
 
-                <!-- Right (Data) Sidebar -->
+                <!--Right (Data) Sidebar-->
                 <div class="page-main" id="page_rightSide">
                     <aside>
                         <div class="main-place">
@@ -155,7 +159,7 @@
                                                     <th class="i18n" name="i_userID" style="width:100px;"></th>
                                                     <th class="i18n" name="i_number"></th>
                                                     <th class="i18n" name="i_name"></th>
-                                                    <th class="i18n" name="i_position" style="width:30px;"></th>
+                                                    <th class="i18n" name="i_locate" style="width:30px;"></th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -206,7 +210,7 @@
                                                     <th class="i18n" name="i_jobTitle"></th>
                                                     <th class="i18n" name="i_userType"></th>
                                                     <!--<th class="i18n" name="i_alarmGroup"></th>-->
-                                                    <th class="i18n" name="i_position" style="width:30px;"></th>
+                                                    <th class="i18n" name="i_locate" style="width:30px;"></th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -221,9 +225,9 @@
         </div>
     </div>
 
-    <!-- Hidden Dialog -->
+    <!--Hidden Dialog-->
     <div class="hidden_dialog">
-        <!--  Modal -->
+        <!--Modal-->
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -236,8 +240,8 @@
                 </div>
             </div>
         </div>
-        <!-- The dialog of tag's infomation -->
-        <div id="member_dialog" title="Tag Infomation" style="background:rgb(195, 228, 230);">
+        <!--The dialog of tag's infomation-->
+        <div id="member_dialog" class="dialog" title="Tag Infomation" style="background:rgb(195, 228, 230);">
             <img id="member_dialog_image" class="member_photo" src="">
             <span style="display: block;">
                 <label class="i18n" name="i_tagID"></label> :
@@ -250,8 +254,8 @@
                 <label id="member_dialog_name"></label>
             </span>
         </div>
-        <!-- The dialog of alarm -->
-        <div id="alarm_dialog" title="Alarm Infomation">
+        <!--The dialog of alarm-->
+        <div id="alarm_dialog" class="dialog" title="Alarm Infomation">
             <img id="alarm_dialog_image" class="member_photo" src="">
             <span style="display: block;">
                 <label class="i18n" name="i_number"></label> :
@@ -278,17 +282,17 @@
                     selectname="i_releasePosition"><img class="icon-image" src="../image/release_position.png">
                 </button>
                 <button id="alarm_dialog_btn_focus" style="margin-left: 20px;" class="btn btn-default i18n-input"
-                    selectattr="title" selectname="i_position">
+                    selectattr="title" selectname="i_locate">
                     <img class="icon-image" src="../image/target.png">
                 </button>
             </div>
         </div>
 
-        <!-- The dialog of adjusting the focus mode -->
-        <div id="adjust_focus_mode" title="Adjust focus mode">
+        <!--The dialog of adjusting the focus mode-->
+        <div id="adjust_focus_mode" class="dialog" title="Adjust focus mode">
             <table class="noborder-block">
                 <tr>
-                    <td><label>以目標為中心移動畫面</label></td>
+                    <td><label class="i18n" name="i_focusCenterMove"></label></td>
                     <td>
                         <div class="wrapper">
                             <input type="checkbox" id="chk_lock_window">
@@ -297,7 +301,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><label>自動調整地圖到符合頁面尺寸</label></td>
+                    <td><label class="i18n" name="i_autoAdjustMap"></label></td>
                     <td>
                         <div class="wrapper">
                             <input type="checkbox" id="chk_fit_window">
@@ -309,27 +313,27 @@
             <br>
         </div>
 
-        <!-- The dialog of controling display dot size -->
-        <div id="displsy_size_dialog" title="Set the size of object">
-            <label>Anchor圖標大小: </label>
+        <!--The dialog of controling display dot size-->
+        <div id="displsy_size_dialog" class="dialog" title="Set the size of object">
+            <label class="i18n" name="i_anchorIconSize"> : </label>
             <span id="anchor_size" style="color:rgb(45, 158, 82);"></span><br>
             <input id="slider_anchor_size" type="range" class="slider" min="2" max="20" value="10">
             <br>
-            <label>Tag圖標大小: </label>
+            <label class="i18n" name="i_tagIconSize"> : </label>
             <span id="tag_size" style="color:rgb(45, 158, 82);"></span><br>
             <input id="slider_tag_size" type="range" class="slider" min="2" max="20" value="10">
             <br>
-            <label>Alarm圖標大小: </label>
+            <label class="i18n" name="i_alarmIconSize"> : </label>
             <span id="alarm_size" style="color:rgb(45, 158, 82);"></span><br>
             <input id="slider_alarm_size" type="range" class="slider" min="2" max="20" value="14">
             <br>
             <canvas id="canvas_display_size"></canvas>
         </div>
     </div>
-    <!-- i18n 多語言翻譯 -->
+    <!--i18n translation-->
     <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
     <script type="text/javascript" src="../js/i18n/language.js"></script>
-    <!-- i18n -->
+    <!--i18n-->
 </body>
 
 </html>

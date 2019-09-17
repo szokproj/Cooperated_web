@@ -13,8 +13,8 @@ $(function () {
     var SendResult = function () {
         allFields.removeClass("ui-state-error");
         var valid = true;
-        valid = valid && checkLength(sel_item, "multi set", 0, 20);
-        valid = valid && checkLength(sel_value, "multi set", 0, 20);
+        valid = valid && checkLength(sel_item, $.i18n.prop('i_mapAlert_13'), 0, 20);
+        valid = valid && checkLength(sel_value, $.i18n.prop('i_mapAlert_13'), 0, 20);
 
         if (valid) {
             var num_arr = [];
@@ -61,7 +61,7 @@ $(function () {
                     request.Value = request_arr;
                     break;
                 default:
-                    alert("Please select other item.");
+                    alert($.i18n.prop('i_alertError_12'));
             }
 
             var xmlHttp = createJsonXmlHttp('sql');

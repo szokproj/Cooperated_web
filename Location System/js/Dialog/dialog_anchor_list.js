@@ -9,7 +9,7 @@ $(function () {
         if ($(this).val().length > 0) {
             var isExist = anchorsInfoArray.every(function (info) {
                 return $(this).val() != info.anchor_id;
-            })
+            });
             if (isExist)
                 $("#anchor_id_alert").text($.i18n.prop('i_existed')).css('color', 'red');
             else
@@ -31,7 +31,7 @@ $(function () {
     });
 
     $("#btn_delete_anchor_list").click(function () {
-        if (confirm("確定要刪除已勾選的基站?")) {
+        if (confirm($.i18n.prop('i_mapAlert_24'))) {
             var chk_main_anc = document.getElementsByName("chkbox_main_anchor_list");
             var chk_anc = document.getElementsByName("chkbox_anchor_list");
             chk_main_anc.forEach(element => {
@@ -144,7 +144,7 @@ function getAnchorList() {
                     }
                 }
             } else {
-                alert("獲取AnchorList失敗，請再試一次!");
+                alert($.i18n.prop('i_mapAlert_25'));
             }
         }
     };
@@ -228,7 +228,7 @@ function deleteAnchor(id) {
                                     deleteArr.push({
                                         "group_id": element.group_id,
                                         "anchor_id": element.anchor_id
-                                    })
+                                    });
                             });
                             if (deleteArr.length > 0)
                                 DeleteGroup_Anchor(deleteArr);

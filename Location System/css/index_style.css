@@ -7,6 +7,10 @@
     margin-left: 30px;
 }
 
+.dialog {
+    display: none;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;

@@ -14,7 +14,7 @@ $(function () {
     var SendToAddFence = function () {
         allFields.removeClass("ui-state-error");
         var valid = true;
-        valid = valid && checkLength(add_fence_name, "Electronic fence check", 1, 20);
+        valid = valid && checkLength(add_fence_name, $.i18n.prop('i_alarmAlert_38'), 1, 100);
         var order = document.getElementsByName("chkbox_fence_dot_setting");
         if (order.length != 4) {
             alert($.i18n.prop('i_alarmAlert_33'));
@@ -46,7 +46,7 @@ $(function () {
                 addXmlHttp.send(JSON.stringify(addRequest));
             } else if (operating == "Edit") {
                 if (add_fence_id.val() == "") {
-                    alert("圍籬名稱不得為空!");
+                    alert($.i18n.prop('i_alarmAlert_38'));
                     return;
                 }
 

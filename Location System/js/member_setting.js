@@ -23,13 +23,7 @@ $(function () {
     }
     setNavBar("Member_Setting", "Member_Setting");
 
-    $("#loading").css("height", document.documentElement.clientHeight + "px");
-    setTimeout(function () {
-        $("#loading").hide();
-    }, 500);
-
     var h = document.documentElement.clientHeight;
-    var w = document.documentElement.clientWidth;
     $(".table_member").css("height", h * 0.9 + "px");
 
     sortTable('.row_number', '');
@@ -239,7 +233,6 @@ function UpdateMemberList() {
                                 }
                                 //displayBar("table_member_setting");
                                 setCheckboxListeners();
-
                             }
                         } else {
                             alert($.i18n.prop('i_alertError_1'));
@@ -452,30 +445,32 @@ function addMemberData() {
 }
 
 function removeMemberDatas() {
-    var checkboxs = document.getElementsByName("chkbox_members");
-    var num_arr = [];
-    for (j in checkboxs) {
-        if (checkboxs[j].checked)
-            num_arr.push({
-                "number": checkboxs[j].value
-            });
-    }
-    var request = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["DeleteStaff"],
-        "Value": num_arr,
-        "api_token": [token]
-    };
-    var xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                UpdateMemberList();
-            }
+    if (confirm($.i18n.prop('i_confirm_1'))) {
+        var checkboxs = document.getElementsByName("chkbox_members");
+        var num_arr = [];
+        for (j in checkboxs) {
+            if (checkboxs[j].checked)
+                num_arr.push({
+                    "number": checkboxs[j].value
+                });
         }
-    };
-    xmlHttp.send(JSON.stringify(request));
+        var request = {
+            "Command_Type": ["Read"],
+            "Command_Name": ["DeleteStaff"],
+            "Value": num_arr,
+            "api_token": [token]
+        };
+        var xmlHttp = createJsonXmlHttp("sql");
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                var revObj = JSON.parse(this.responseText);
+                if (revObj.success > 0) {
+                    UpdateMemberList();
+                }
+            }
+        };
+        xmlHttp.send(JSON.stringify(request));
+    }
 }
 
 function multiEditData() {

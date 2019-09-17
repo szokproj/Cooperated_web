@@ -11,7 +11,7 @@ $(function () {
     function SendResult() {
         select_node.removeClass("ui-state-error");
         var valid = true;
-        valid = valid && checkLength(select_node, "not null", 0, 20);
+        valid = valid && checkLength(select_node, $.i18n.prop('i_alertError_10'), 0, 20);
         if (valid) {
             datascource = {};
             if (chart_type == "dept") {

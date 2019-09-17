@@ -13,10 +13,6 @@ $(function () {
     }
     setNavBar("Member_Setting", "User_Type_Setting");
 
-    setTimeout(function () {
-        $("#loading").hide();
-    }, 500);
-
     $("#set_dot_color").change(function () { //設定change事件
         drawPosition($(this).val(), size);
     });

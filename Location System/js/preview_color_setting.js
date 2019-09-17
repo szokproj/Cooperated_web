@@ -9,11 +9,7 @@ $(function () {
         alert("Permission denied!");
         window.location.href = '../index.html';
     }
-    setNavBar("Member_Setting", "Display_Setting");
-
-    setTimeout(function () {
-        $("#loading").hide();
-    }, 500);
+    setNavBar("Member_Setting", "Preview_Color_Setting");
 
     $("#display_type_select").change(function () {
         var index = $("#display_type_select").children('option:selected').index();
