@@ -30,7 +30,7 @@
     <script type="text/javascript" src="../js/time_slot_group_setting.js"></script>
     <script type="text/javascript" src="../js/checkInside.js"></script>
     <script type="text/javascript" src="../js/set_fence.js"></script>
-    <script type="text/javascript" src="../js/set_fence_collection.js"></script>
+    <script type="text/javascript" src="../js/set_fence_alarm_group.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_fence_add.js"></script>
     <!--Time picker-->
@@ -284,7 +284,7 @@
                             <button id="menu_fence_info" class="btn btn-default i18n-input" selectattr="title"
                                 selectname="i_fenceSetting">
                                 <i class="fas fa-vector-square" style='font-size:20px;'></i></button>
-                            <button id="menu_fence_collection" class="btn btn-default" title="Fence Collection">
+                            <button id="menu_fence_alarm_group" class="btn btn-default" title="Fence Collection">
                                 <i class="fas fa-file-alt" style='font-size:20px;'></i></button>
                         </div>
                         <br>
@@ -295,12 +295,10 @@
                             <input type="text" id="select_map_name" style="width:30%;" readonly />
                             <br><br>
                             <span style="float: right;">
-                                <!--Add-->
                                 <label for="btn_fence_add" id="label_fence_add" class="btn-add i18n-input"
                                     selectattr="title" selectname="i_addFence">
                                     <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
                                 <input id="btn_fence_add" type="button" class="btn-hidden" />
-                                <!--Delete-->
                                 <label for="btn_fence_delete" id="label_fence_delete" class="btn-delete i18n-input"
                                     selectattr="title" selectname="i_deleteFence">
                                     <i class="fas fa-minus-square" style='font-size:20px;'></i></label>
@@ -321,28 +319,25 @@
                                 </table>
                             </div>
                         </div>
-                        <div id="block_fence_collection">
+                        <div id="block_fence_alarm_group">
                             <br>
                             <span style="float: right;">
-                                <!--Add-->
-                                <label for="btn_fence_collect_add" id="label_fence_collect_add"
-                                    class="btn-add i18n-input" selectattr="title" selectname="i_addFence">
+                                <label for="btn_fenceAG_add" id="label_fenceAG_add" class="btn-add i18n-input"
+                                    selectattr="title" selectname="i_addFence">
                                     <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
-                                <input id="btn_fence_collect_add" type="button" class="btn-hidden" />
-                                <!--Delete-->
-                                <label for="btn_fence_collect_delete" id="label_fence_collect_delete"
-                                    class="btn-delete i18n-input" selectattr="title" selectname="i_deleteFence">
+                                <input id="btn_fenceAG_add" type="button" class="btn-hidden" />
+                                <label for="btn_fenceAG_delete" id="label_fenceAG_delete" class="btn-delete i18n-input"
+                                    selectattr="title" selectname="i_deleteFence">
                                     <i class="fas fa-minus-square" style='font-size:20px;'></i></label>
-                                <input id="btn_fence_collect_delete" type="button" class="btn-hidden" />
+                                <input id="btn_fenceAG_delete" type="button" class="btn-hidden" />
                             </span>
-                            <label>Fence Collection List</label> : <br>
+                            <label>Fence Alarm Group</label> : <br>
                             <div class="block-list">
-                                <table id="table_fence_collection" class="table-line-gray">
+                                <table id="table_fence_alarm_group" class="table-line-gray">
                                     <thead>
                                         <tr>
                                             <th class="i18n" name="i_item"></th>
                                             <th class="i18n" name="i_id"></th>
-                                            <th class="i18n" name="i_name"></th>
                                             <th class="i18n" name="i_edit"></th>
                                         </tr>
                                     </thead>
@@ -390,18 +385,17 @@
                         <tr>
                             <td><input id="add_alarm_mode_4" type="checkbox" class='beauty' name="add_alarm_mode"
                                     value="5"><label for="add_alarm_mode_4" class="i18n"
-                                    name="i_electronicFence"></label>，圍籬集合 :
-                                <select id="add_alarm_mode_fence_4">
-                                    <option value="1">A</option>
-                                    <option value="2">B</option>
-                                    <option value="3">C</option>
-                                </select>
+                                    name="i_electronicFence"></label><br><span class="i18n" name="i_fenceAG_info"
+                                    style=" margin-left:28px;"></span> <select id="add_alarm_mode_4_fagID"></select>
+                                <br><span class="i18n" name="i_wait_time" style="margin-left:28px;"></span> : 
+                                <input type="text" id="add_alarm_mode_4_time" style="width:90px; margin-top:5px;" />
+                                <span class="i18n" name="i_hour"></span><input type="hidden" id="add_alarm_mode_4_id" />
                             </td>
                         </tr>
                         <tr>
                             <td><input id="add_alarm_mode_5" type="checkbox" class='beauty' name="add_alarm_mode"
                                     value="6"><label for="add_alarm_mode_5" class="i18n"
-                                    name="i_stayAlarm_time"></label> : <input type="text" id="add_alarm_mode_time_5"
+                                    name="i_stayAlarm_time"></label> <input type="text" id="add_alarm_mode_5_time"
                                     name="add_alarm_mode_time" style="max-width:90px"> <span class="i18n"
                                     name="i_second"></span>
                             </td>
@@ -409,7 +403,7 @@
                         <tr>
                             <td><input id="add_alarm_mode_6" type="checkbox" class='beauty' name="add_alarm_mode"
                                     value="7"><label for="add_alarm_mode_6" class="i18n"
-                                    name="i_hiddenAlarm_time"></label> : <input type="text" id="add_alarm_mode_time_6"
+                                    name="i_hiddenAlarm_time"></label> <input type="text" id="add_alarm_mode_6_time"
                                     name="add_alarm_mode_time" style="max-width:90px"> <span class="i18n"
                                     name="i_second"></span>
                             </td>
@@ -608,19 +602,21 @@
             </form>
         </div>
         <!-- Following is a dialog to set Fence Collection -->
-        <div id="dialog_fence_collection" class="dialog" title="Set Fence Collection">
+        <div id="dialog_fence_alarm_group" class="dialog" title="Set Fence Collection">
             <form>
                 <fieldset style="text-align: left;">
-                    <input type="hidden" id="add_collection_id">
-                    <label for="add_collection_name">Fence Collection Name</label> :
-                    <input type="text" id="add_collection_name" style="width:50%;">
+                    <label for="add_FAG_id">Fence Alarm Group ID</label> :
+                    <input type="text" id="add_FAG_id" style="width:50%;" />
+                    <!--<input type="hidden" id="add_FAG_id">
+                    <label for="add_FAG_name">Fence Alarm Group Name</label> :
+                    <input type="text" id="add_FAG_name" style="width:50%;">-->
                     <br><br>
-                    <table id="table_collection">
+                    <table id="table_fence_list">
                         <tr>
                             <td class="left">
                                 <div class="block-fence-list">
                                     <label class="fence-list-title">Included Fences</label>
-                                    <table id="table_collection_list" class="table-line-gray">
+                                    <table id="table_included_fences" class="table-line-gray">
                                         <thead>
                                             <tr>
                                                 <th class="i18n" name="i_item"></th>
@@ -645,7 +641,7 @@
                             <td class="right">
                                 <div class="block-fence-list">
                                     <label class="fence-list-title">Not Included Fences</label>
-                                    <table id="table_fence_list" class="table-line-gray">
+                                    <table id="table_remaining_fences" class="table-line-gray">
                                         <thead>
                                             <tr>
                                                 <th class="i18n" name="i_item"></th>
@@ -663,7 +659,7 @@
             </form>
         </div>
     </div>
-    <!-- i18n 多語言翻譯 -->
+    <!-- i18n translation -->
     <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
     <script type="text/javascript" src="../js/i18n/language.js"></script>
     <!-- i18n -->

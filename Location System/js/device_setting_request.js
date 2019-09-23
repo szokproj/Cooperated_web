@@ -249,7 +249,7 @@ function RF_setting_read(ip_address_array) {
             var response = JSON.parse(this.responseText);
             if (!response)
                 return;
-            response.forEach(info => {
+            response[0].forEach(info => {
                 if (typeof (info) == 'undefined')
                     return;
                 if (info.Command_status == 1) { //Add RF Setting
@@ -304,7 +304,8 @@ function submitWriteRequest() {
             var status = deviceArray[index].Status;
             if (v.checked && status == 1) {
                 timeDelay["send_network"].push(setTimeout(function () {
-                    Device_setting_write(i, v.value);
+                    //Device_setting_write(i, v.value);
+                    all_setting_write(i, v.value);
                 }, 1100 * count_write_devices));
                 count_write_devices++;
             }
@@ -319,11 +320,6 @@ function submitWriteRequest() {
 }
 
 function Device_setting_write(i, connected_ip_addr) {
-    var ip_mode = document.getElementsByName("conn_ip_mode")[i].value,
-        ip_address = document.getElementsByName("conn_ip_addr")[i].value.split("."),
-        mask_address = document.getElementsByName("conn_mask_addr")[i].value.split("."),
-        gateway_address = document.getElementsByName("conn_gateway_addr")[i].value.split("."),
-        client_ip_address = document.getElementsByName("conn_client_ip_addr")[i].value.split(".");
     var networkRequest = {
         "Command_Type": ["Write"],
         "Command_Name": ["Network"],
@@ -332,7 +328,7 @@ function Device_setting_write(i, connected_ip_addr) {
         },
         "api_token": [token]
     };
-    if (ip_mode == "DHCP") { //DHCP
+    if (document.getElementsByName("conn_ip_mode")[i].value == "DHCP") { //DHCP
         set_mode = "DHCP";
         networkRequest.Value.function = ["dev_Client_IP"];
         networkRequest.Value.dev_IP = ["0", "0", "0", "0"];
@@ -342,10 +338,10 @@ function Device_setting_write(i, connected_ip_addr) {
     } else { //Static IP
         set_mode = "Static IP";
         networkRequest.Value.function = ["dev_IP", "dev_Mask", "dev_GW", "dev_Client_IP"];
-        networkRequest.Value.dev_IP = ip_address;
-        networkRequest.Value.dev_Mask = mask_address;
-        networkRequest.Value.dev_GW = gateway_address;
-        networkRequest.Value.dev_Client_IP = client_ip_address;
+        networkRequest.Value.dev_IP = document.getElementsByName("conn_ip_addr")[i].value.split(".");
+        networkRequest.Value.dev_Mask = document.getElementsByName("conn_mask_addr")[i].value.split(".");
+        networkRequest.Value.dev_GW = document.getElementsByName("conn_gateway_addr")[i].value.split(".");
+        networkRequest.Value.dev_Client_IP = document.getElementsByName("conn_client_ip_addr")[i].value.split(".");
     }
 
     var xmlHttp = createJsonXmlHttp("test2");
@@ -375,7 +371,6 @@ function Basic_setting_write(i, connected_ip_addr) {
         "Value": {
             "IP_address": [connected_ip_addr],
             "function": ["dev_active_ID"],
-            //"dev_transmission_cycle_time": "1000",
             "dev_active_ID": document.getElementsByName("conn_anchor_id")[i].value
         },
         "api_token": [token]
@@ -442,4 +437,71 @@ function RF_setting_write(i, connected_ip_addr) {
         }
     };
     xmlHttp.send(JSON.stringify(rfRequest));
+}
+
+function all_setting_write(i, connected_ip_addr) {
+    var request = {
+        "Command_Type": ["Write", "Write", "Write"],
+        "Command_Name": ["Network", "Basic", "RF"],
+        "Value": {
+            "IP_address": [connected_ip_addr],
+            "function": ["dev_active_ID", "rf_NSD", "rf_NTM_value", "rf_PAC",
+                "rf_PGdelay", "rf_PMULT_value", "rf_Power", "rf_SFD_timeout", "rf_SMARTPOWER",
+                "rf_channel", "rf_datarate", "rf_preambleCode", "rf_preambleLength", "rf_prf"
+            ],
+            "dev_active_ID": document.getElementsByName("conn_anchor_id")[i].value,
+            "rf_channel": $('#conn_rf_channel_' + i).val(),
+            "rf_datarate": $('#conn_rf_datarate_' + i).val(),
+            "rf_prf": $('#conn_rf_prf_' + i).val(),
+            "rf_preambleCode": $('#conn_rf_preamble_code_' + i).val(),
+            "rf_preambleLength": $('#conn_rf_preamble_len_' + i).val(),
+            "rf_PAC": $('#conn_rf_pac_' + i).val(),
+            "rf_PGdelay": $('#conn_rf_pg_delay_' + i).val(),
+            "rf_Power": $('#conn_rf_power_' + i).val(),
+            "rf_NSD": $('#conn_rf_nsd_' + i).val(),
+            "rf_SFD_timeout": $('#conn_rf_sdf_timeoutr_' + i).val(),
+            "rf_SMARTPOWER": $('#conn_rf_smartpower_' + i).val(),
+            "rf_NTM_value": $('#conn_rf_ntm_' + i).val(),
+            "rf_PMULT_value": $('#conn_rf_mult_' + i).val()
+        },
+        "api_token": [token]
+    };
+    if (document.getElementsByName("conn_ip_mode")[i].value == "DHCP") { //DHCP
+        set_mode = "DHCP";
+        request.Value.function.push("dev_Client_IP");
+        request.Value.dev_IP = ["0", "0", "0", "0"];
+        request.Value.dev_Mask = ["0", "0", "0", "0"];
+        request.Value.dev_GW = ["0", "0", "0", "0"];
+        request.Value.dev_Client_IP = document.getElementsByName("conn_client_ip_addr")[i].value.split(".");
+    } else { //Static IP
+        set_mode = "Static IP";
+        request.Value.function.push("dev_IP", "dev_Mask", "dev_GW", "dev_Client_IP");
+        request.Value.dev_IP = document.getElementsByName("conn_ip_addr")[i].value.split(".");
+        request.Value.dev_Mask = document.getElementsByName("conn_mask_addr")[i].value.split(".");
+        request.Value.dev_GW = document.getElementsByName("conn_gateway_addr")[i].value.split(".");
+        request.Value.dev_Client_IP = document.getElementsByName("conn_client_ip_addr")[i].value.split(".");
+    }
+
+    var xmlHttp = createJsonXmlHttp("test2");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var response = JSON.parse(this.responseText);
+            if (response && response[0]) {
+                var d = new Date();
+                console.log("Write test:" + d.getTime());
+                if (response[0][0].Command_status == 0) {
+                    alert("IP Address : " + response[0][0].TARGET_IP + " 寫入Network設定失敗");
+                    //alert($.i18n.prop('i_deviceAlert_6') + response[0].TARGET_IP + $.i18n.prop('i_deviceAlert_8'));
+                } else if (response[1][0].Command_status == 0) {
+                    alert("IP Address : " + response[1][0].TARGET_IP + " 寫入Basic設定失敗");
+                } else if (response[2][0].Command_status == 0) {
+                    alert("IP Address : " + response[2][0].TARGET_IP + " 寫入RF設定失敗");
+                } else {
+                    alert("IP Address : " + response[0][0].TARGET_IP + " 寫入設定成功");
+                    //alert($.i18n.prop('i_deviceAlert_6') + response[0].TARGET_IP + $.i18n.prop('i_deviceAlert_7'));
+                }
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
 }

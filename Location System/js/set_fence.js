@@ -59,9 +59,9 @@ function setupCanvas() {
             resetBlockDisplay();
             $("#block_fence_info").show();
         });
-        $("#menu_fence_collection").on('click', function () {
+        $("#menu_fence_alarm_group").on('click', function () {
             resetBlockDisplay();
-            $("#block_fence_collection").show();
+            $("#block_fence_alarm_group").show();
         });
         $("#menu_resize").on('click', resizeCanvas);
         $("#select_map").on('change', function () {
@@ -74,7 +74,7 @@ function setupCanvas() {
 
 function resetBlockDisplay() {
     $("#block_fence_info").hide();
-    $("#block_fence_collection").hide();
+    $("#block_fence_alarm_group").hide();
 }
 
 function loadMaps() {
@@ -309,6 +309,7 @@ function updateFenceTable() {
                         " type='button' class='btn-hidden' onclick=\"editFenceInfo(\'" + fenceArray[i].fence_id + "\');\" />" +
                         "</td></tr>");
                     getFencePointArray(fenceArray[i].fence_id);
+                    getFences();
                 }
             } else {
                 alert($.i18n.prop('i_alarmAlert_30'));
@@ -396,7 +397,7 @@ function getAnchor_Group() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (revObj && revObj.success > 0) {
                 anchorGroupArray = ('Values' in revObj) ? revObj.Values.slice(0) : [];
                 draw();
             } else {

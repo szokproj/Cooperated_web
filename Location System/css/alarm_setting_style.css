@@ -92,21 +92,21 @@ td {
     width: 50px;
 }
 
-#table_collection td {
+#table_fence_list td {
     border: 1px solid rgb(146, 154, 160);
 }
 
-#table_collection td.left {
+#table_fence_list td.left {
     padding: 0px;
     width: 47%;
 }
 
-#table_collection td.midden {
+#table_fence_list td.midden {
     padding: 0px;
     width: 6%;
 }
 
-#table_collection td.right {
+#table_fence_list td.right {
     padding: 0px;
     width: 47%;
 }
@@ -440,8 +440,8 @@ input[type=radio]:not(old).beauty:checked+label {
     z-index: -1;
 }
 
-#table_fence_list tbody tr:hover,
-#table_fg_list tbody tr:hover {
+#table_remaining_fences tbody tr:hover,
+#table_included_fences tbody tr:hover {
     cursor: pointer;
 }
 

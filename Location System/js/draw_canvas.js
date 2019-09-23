@@ -39,11 +39,11 @@ function drawTags(dctx, id, x, y, color, size, zoom) {
     dctx.fill();
 }
 
-function drawAlarmTags(dctx, id, x, y, status, size, zoom) {
+function drawAlarmTags(dctx, id, x, y, type, size, zoom) {
     var radius = size * zoom; //半徑 //size:14
     var fillColor = '';
     var markColor = ''
-    switch (status) {
+    switch (type) {
         case "low_power":
             fillColor = '#72ac1b';
             markColor = '#496e11';
@@ -59,6 +59,10 @@ function drawAlarmTags(dctx, id, x, y, status, size, zoom) {
         case "active":
             fillColor = '#FF6600';
             markColor = '#cc5200';
+            break;
+        case "Fence":
+            fillColor = '#ffe600';
+            markColor = '#ffae00';
             break;
         default:
             fillColor = '#72ac1b'; //unknown

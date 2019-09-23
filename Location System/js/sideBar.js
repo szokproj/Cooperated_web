@@ -69,6 +69,10 @@ function inputAlarmData(element, i) {
             color = "#FF6600";
             status = $.i18n.prop('i_activeAlarm');
             break;
+        case "Fence":
+            color = '#ffae00'; // '#ffe600';
+            status = $.i18n.prop('i_electronicFence');
+            break;
         default:
             color = "#FFFFFF"; //unknown
             status = "";
@@ -151,6 +155,10 @@ function setAlarmDialog(Obj) {
         case "active":
             color = "#FF6600";
             status = $.i18n.prop('i_activeAlarm');
+            break;
+        case "Fence":
+            color = '#ffae00'; // '#ffe600';
+            status = $.i18n.prop('i_electronicFence');
             break;
         default:
             color = "#FFFFFF"; //unknown
