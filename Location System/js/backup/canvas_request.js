@@ -24,11 +24,7 @@ var PIXEL_RATIO, // 獲取瀏覽器像素比
     tagArray = [],
     alarmArray = [],
     alarmFilterArr = [],
-    last_alarm = {
-        count: 0,
-        type: "",
-        tag_id: ""
-    },
+    alarm_count = 0,
     MemberList = {},
     pageTimer = {}, //定義計時器全域變數 
     RedBling = true,
@@ -668,12 +664,6 @@ function getPointOnCanvas(x, y) {
     }
 }
 
-
-
-function checkAlarmRepeat() {
-
-}
-
 function updateAlarmList() {
     var request = {
         "Command_Type": ["Read"],
@@ -684,14 +674,8 @@ function updateAlarmList() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj && (revObj.length > last_alarm.count ||
-                    last_alarm.type != alarmFilterArr[alarmFilterArr.length - 1].alarm_type ||
-                    last_alarm.tag_id != alarmFilterArr[alarmFilterArr.length - 1].id)) {
-                //Update last_alarm
-                last_alarm.count = revObj.length;
-                last_alarm.type = revObj[revObj.length - 1].tag_alarm_type
-                last_alarm.tag_id = revObj[revObj.length - 1].tag_id
-                //Input alarmFilterArr
+            if (revObj && revObj.length > alarm_count) {
+                alarm_count = revObj.length;
                 alarmFilterArr = [];
                 var list = "";
                 for (var i = 0; i < revObj.length; i++) {
@@ -777,12 +761,12 @@ function updateTagList() {
                         id: tag_id,
                         x: revObj[i].tag_x / canvasImg.scale, // * Zoom,
                         y: canvasImg.height - revObj[i].tag_y / canvasImg.scale, // * Zoom,
-                        group_id: revObj[i].group_id,
                         system_time: revObj[i].tag_time,
                         color: color,
                         number: number,
                         name: name,
-                        type: "normal"
+                        type: "normal",
+                        group_id: revObj[i].group_id
                     }
                 } else {
                     tagArray.push({
@@ -917,7 +901,6 @@ function releaseFocusAlarm(alarm_order) { //解除指定的alarm
     if ($("#alarm_dialog_id").text() == parseInt(alarmFilterArr[index].id.substring(8), 16))
         $("#alarm_dialog").dialog("close");
     alarmFilterArr.splice(index, 1);
-    alarmArray.splice(index, 1);
 }
 
 function unlockFocusAlarm() { //解除定位

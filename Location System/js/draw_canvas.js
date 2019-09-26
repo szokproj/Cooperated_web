@@ -62,7 +62,7 @@ function drawAlarmTags(dctx, id, x, y, type, size, zoom) {
             break;
         case "Fence":
             fillColor = '#ffe600';
-            markColor = '#ffae00';
+            markColor = '#e7a81f';
             break;
         default:
             fillColor = '#72ac1b'; //unknown

@@ -48,6 +48,7 @@ function inputAlarmData(element, i) {
     var time_arr = TimeToArray(element.time);
     var thumb_id = "alarmCard_" + i;
     var thumb_img = "alarmCard_img_" + i;
+    var thumb_number = "alarmCard_number_" + i;
     var thumb_unlock_btn_id = "alarmCard_unlock_btn_" + i;
     var thumb_focus_btn_id = "alarmCard_focus_btn_" + i;
     var color = "",
@@ -82,7 +83,8 @@ function inputAlarmData(element, i) {
         "<table><tr><td>" +
         "<img id=\"" + thumb_img + "\" class=\"member_photo\" src=\"\">" +
         "</td><td>" +
-        "<label>" + $.i18n.prop('i_number') + " : " + element.number + "</label><br>" +
+        "<label>" + $.i18n.prop('i_number') + " : </label>" +
+        "<label id=\"" + thumb_number + "\">" + element.number + "</label><br>" +
         "<label>" + $.i18n.prop('i_name') + " : " + element.name + "</label><br>" +
         "<label>" + $.i18n.prop('i_userID') + " : " + parseInt(element.id.substring(8), 16) + "</label><br>" +
         "<label>" + $.i18n.prop('i_date') + " : " + time_arr.date + "</label><br>" +
@@ -101,11 +103,13 @@ function inputAlarmData(element, i) {
         " class=\"btn btn-default\" title=\"" + $.i18n.prop('i_locate') + "\">" +
         "<img class=\"icon-image\" src=\"../image/target.png\"></button>" +
         "</div></div>");
-    getMemberPhoto(thumb_img, element.number);
+        setMemberPhoto(thumb_img, thumb_number, element.number);
     $("#" + thumb_unlock_btn_id).click(function () {
-        releaseFocusAlarm(element.order);
-        $("#" + thumb_id).hide(); //警告卡片會消失
-        changeAlarmLight();
+        if (confirm("是否記錄此事件已處理?\n(確認後將會把目前畫面中的警報消除，但是刷新頁面後仍會跳出，請確實解除引發警報的原因!)")) {
+            releaseFocusAlarm(element.order);
+            $("#" + thumb_id).hide(); //警告卡片會消失
+            changeAlarmLight();
+        }
     });
     $("#" + thumb_focus_btn_id).click(function () {
         changeFocusAlarm(element.order);
@@ -115,7 +119,7 @@ function inputAlarmData(element, i) {
      *  Alarm Dialog
      */
     $("#alarm_dialog").css('background-color', color);
-    getMemberPhoto("alarm_dialog_image", element.number);
+    setMemberPhoto("alarm_dialog_image", "alarm_dialog_number", element.number);
     $("#alarm_dialog_number").text(element.number);
     $("#alarm_dialog_name").text(element.name);
     $("#alarm_dialog_id").text(parseInt(element.id.substring(8), 16));
@@ -165,7 +169,7 @@ function setAlarmDialog(Obj) {
             status = "";
     }
     $("#alarm_dialog").css('background-color', color);
-    getMemberPhoto("alarm_dialog_image", Obj.number);
+    setMemberPhoto("alarm_dialog_image", "alarm_dialog_number", Obj.number);
     $("#alarm_dialog_number").text(Obj.number);
     $("#alarm_dialog_name").text(Obj.name);
     $("#alarm_dialog_id").text(parseInt(Obj.id.substring(8), 16));

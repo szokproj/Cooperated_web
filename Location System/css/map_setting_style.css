@@ -80,6 +80,10 @@ h1 {
     padding: .3em;
 }
 
+.dialog {
+    overflow: hidden;
+}
+
 /******************/
 .table-line th,
 .table-line td {

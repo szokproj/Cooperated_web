@@ -15,18 +15,27 @@ $(function () {
         allFields.removeClass("ui-state-error");
         var valid = true;
         valid = valid && checkLength(add_fence_name, $.i18n.prop('i_alarmAlert_38'), 1, 100);
-        var order = document.getElementsByName("chkbox_fence_dot_setting");
-        if (order.length != 4) {
+        if (operating == "Add") {
+            document.getElementsByName("fence_name").forEach(element => {
+                if (element.innerText == add_fence_name.val()) {
+                    valid = false;
+                    add_fence_name.addClass("ui-state-error");
+                    return alert("圍籬名稱不可重複!");
+                }
+            });
+        }
+        if (document.getElementsByName("chkbox_fence_dot_setting").length != 4) {
             alert($.i18n.prop('i_alarmAlert_33'));
             return;
         }
         if (valid) {
             if (operating == "Add") {
+                var fence_name = add_fence_name.val();
                 var addRequest = {
                     "Command_Type": ["Write"],
                     "Command_Name": ["AddFenceInfo"],
                     "Value": [{
-                        "fence_name": add_fence_name.val(),
+                        "fence_name": fence_name,
                         "map_id": $("#select_map_id").val(),
                         "list_type": "black"
                     }],
@@ -37,9 +46,14 @@ $(function () {
                     if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
                         if (revObj.success > 0) {
-                            var newFence_id = 'Values' in revObj == true ? revObj.Values.fence_id : "";
-                            addFencePoints(newFence_id);
-                            addFenceGroups(newFence_id);
+                            var fence_id_arr = Object.keys(revObj);
+                            fence_id_arr.splice(fence_id_arr.indexOf("success"), 1);
+                            for (i in fence_id_arr) {
+                                if (revObj[fence_id_arr[i]].info[0].fence_name == fence_name) {
+                                    addFencePoints(fence_id_arr[i]);
+                                    addFenceGroups(fence_id_arr[i]);
+                                }
+                            }
                         }
                     }
                 };
@@ -401,7 +415,7 @@ function addFencePoints(f_id) {
     fd_addXmlHttp.onreadystatechange = function () {
         if (fd_addXmlHttp.readyState == 4 || fd_addXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success == 4) {
+            if (revObj.success > 0) {
                 resetDotArray();
                 updateFenceTable();
             } else {

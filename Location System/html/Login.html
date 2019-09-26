@@ -18,14 +18,14 @@
         integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
     <!--Edit css-->
     <style>
+        h4 {
+            font-family: Sans-serif;
+        }
+
         .container {
             height: 600px;
             width: 100%;
             /*background: lightblue;*/
-        }
-
-        h4 {
-            font-family: Sans-serif;
         }
 
         .block {
@@ -54,53 +54,7 @@
     <!--Edit js-->
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
-    <script type="text/javascript">
-        $(function () {
-            var h = document.documentElement.clientHeight;
-            $(".container").css("height", h + "px");
-        });
-
-        function verifyLogin() {
-            var account = $("#account");
-            var password = $("#password");
-            var valid = true;
-            account.removeClass("ui-state-error");
-            password.removeClass("ui-state-error");
-            valid = valid && checkLength(account, $.i18n.prop('i_loginError_1'), 1, 50);
-            valid = valid && checkLength(password, $.i18n.prop('i_loginError_2'), 1, 50);
-            if (valid) {
-                var xmlHttp = createJsonXmlHttp('user');
-                xmlHttp.onreadystatechange = function () {
-                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        if (revObj.success > 0) {
-                            //Verification success
-                            if (revObj.Values && revObj.Values[0].api_token) {
-                                Cookies.set("login_user", JSON.stringify(revObj.Values[0]));
-                                alert($.i18n.prop('i_loginSuccess'));
-                                window.location.href = '../index.html';
-                            }
-                        } else {
-                            var msg = revObj.Values[0].msg;
-                            if (msg == "Account not find")
-                                alert($.i18n.prop('i_accountNotFound'));
-                            else if (msg == "password error")
-                                alert($.i18n.prop('i_passwordError'));
-                            else
-                                alert($.i18n.prop('i_loginFailed'));
-                        }
-                    }
-                };
-                xmlHttp.send(JSON.stringify({
-                    "Command_Name": ["login"],
-                    "Value": [{
-                        "code": account.val(),
-                        "password": password.val()
-                    }]
-                }));
-            }
-        }
-    </script>
+    <script type="text/javascript" src="../js/login_security.js"></script>
 </head>
 
 <body>
@@ -133,8 +87,8 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                            <input type="text" id="password" class="form-control i18n-input" selectattr="placeholder"
-                                selectname="i_password">
+                            <input type="password" id="password" class="form-control i18n-input"
+                                selectattr="placeholder" selectname="i_password">
                         </div>
                         <hr>
                         <div style="margin-left:10px;">

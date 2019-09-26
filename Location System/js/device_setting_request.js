@@ -293,10 +293,11 @@ function RF_setting_read(ip_address_array) {
     RF_XmlHttp.send(JSON.stringify(rf_Request));
 }
 
+var count_write_devices = 0;
+
 function submitWriteRequest() {
     if (confirm($.i18n.prop('i_deviceAlert_4'))) {
-        var count_write_devices = 0;
-
+        count_write_devices = 0;
         DeviceCheckbox.forEach(function (v, i) {
             var index = deviceArray.findIndex(function (info) {
                 return info.IP_address == v.value;
@@ -311,14 +312,15 @@ function submitWriteRequest() {
             }
         });
 
-        timeDelay["send_network"].push(setTimeout(function () {
+        /*timeDelay["send_network"].push(setTimeout(function () {
             var d = new Date();
             console.log("Re Search:" + d.getTime());
             Search();
-        }, 1100 * count_write_devices));
+        }, 1100 * count_write_devices));*/
     }
 }
 
+/*
 function Device_setting_write(i, connected_ip_addr) {
     var networkRequest = {
         "Command_Type": ["Write"],
@@ -401,9 +403,25 @@ function RF_setting_write(i, connected_ip_addr) {
         "Command_Name": ["RF"],
         "Value": {
             "IP_address": [connected_ip_addr],
-            "function": ["Model_Name", "Version_Name", "rf_MODE", "rf_NSD", "rf_NTM_value",
-                "rf_PAC", "rf_PGdelay", "rf_PMULT_value", "rf_Power", "rf_SFD_timeout", "rf_SMARTPOWER",
-                "rf_channel", "rf_datarate", "rf_preambleCode", "rf_preambleLength", "rf_prf"
+            "function": [
+                //"Model_Name",
+                //"Version_Name",
+                "rf_channel",
+                "rf_datarate",
+                "rf_prf",
+                "rf_preambleCode",
+                "rf_preambleLength",
+                "rf_PAC",
+                "rf_PGdelay",
+                "rf_Power",
+                "rf_NSD",
+                "rf_SFD_timeout",
+                "rf_SMARTPOWER",
+                //"rf_MODE",
+                //"rf_active_ID",
+                "rf_NTM_value",
+                "rf_PMULT_value",
+                "dev_active_ID"
             ],
             "rf_channel": $('#conn_rf_channel_' + i).val(),
             "rf_datarate": $('#conn_rf_datarate_' + i).val(),
@@ -417,7 +435,8 @@ function RF_setting_write(i, connected_ip_addr) {
             "rf_SFD_timeout": $('#conn_rf_sdf_timeoutr_' + i).val(),
             "rf_SMARTPOWER": $('#conn_rf_smartpower_' + i).val(),
             "rf_NTM_value": $('#conn_rf_ntm_' + i).val(),
-            "rf_PMULT_value": $('#conn_rf_mult_' + i).val()
+            "rf_PMULT_value": $('#conn_rf_mult_' + i).val(),
+            "dev_active_ID": document.getElementsByName("conn_anchor_id")[i].value
         },
         "api_token": [token]
     };
@@ -438,18 +457,33 @@ function RF_setting_write(i, connected_ip_addr) {
     };
     xmlHttp.send(JSON.stringify(rfRequest));
 }
+*/
 
 function all_setting_write(i, connected_ip_addr) {
     var request = {
         "Command_Type": ["Write", "Write", "Write"],
-        "Command_Name": ["Network", "Basic", "RF"],
+        "Command_Name": ["Network", "RF", "Basic"],
         "Value": {
             "IP_address": [connected_ip_addr],
-            "function": ["dev_active_ID", "rf_NSD", "rf_NTM_value", "rf_PAC",
-                "rf_PGdelay", "rf_PMULT_value", "rf_Power", "rf_SFD_timeout", "rf_SMARTPOWER",
-                "rf_channel", "rf_datarate", "rf_preambleCode", "rf_preambleLength", "rf_prf"
+            "function": [
+                //"Model_Name",
+                //"Version_Name",
+                "rf_channel",
+                "rf_datarate",
+                "rf_prf",
+                "rf_preambleCode",
+                "rf_preambleLength",
+                "rf_PAC",
+                "rf_PGdelay",
+                "rf_Power",
+                "rf_NSD",
+                "rf_SFD_timeout",
+                "rf_SMARTPOWER",
+                //"rf_MODE",
+                "rf_NTM_value",
+                "rf_PMULT_value",
+                "dev_active_ID"
             ],
-            "dev_active_ID": document.getElementsByName("conn_anchor_id")[i].value,
             "rf_channel": $('#conn_rf_channel_' + i).val(),
             "rf_datarate": $('#conn_rf_datarate_' + i).val(),
             "rf_prf": $('#conn_rf_prf_' + i).val(),
@@ -462,7 +496,8 @@ function all_setting_write(i, connected_ip_addr) {
             "rf_SFD_timeout": $('#conn_rf_sdf_timeoutr_' + i).val(),
             "rf_SMARTPOWER": $('#conn_rf_smartpower_' + i).val(),
             "rf_NTM_value": $('#conn_rf_ntm_' + i).val(),
-            "rf_PMULT_value": $('#conn_rf_mult_' + i).val()
+            "rf_PMULT_value": $('#conn_rf_mult_' + i).val(),
+            "dev_active_ID": document.getElementsByName("conn_anchor_id")[i].value
         },
         "api_token": [token]
     };
@@ -473,7 +508,7 @@ function all_setting_write(i, connected_ip_addr) {
         request.Value.dev_Mask = ["0", "0", "0", "0"];
         request.Value.dev_GW = ["0", "0", "0", "0"];
         request.Value.dev_Client_IP = document.getElementsByName("conn_client_ip_addr")[i].value.split(".");
-    } else { //Static IP
+    } else {
         set_mode = "Static IP";
         request.Value.function.push("dev_IP", "dev_Mask", "dev_GW", "dev_Client_IP");
         request.Value.dev_IP = document.getElementsByName("conn_ip_addr")[i].value.split(".");
@@ -493,12 +528,17 @@ function all_setting_write(i, connected_ip_addr) {
                     alert("IP Address : " + response[0][0].TARGET_IP + " 寫入Network設定失敗");
                     //alert($.i18n.prop('i_deviceAlert_6') + response[0].TARGET_IP + $.i18n.prop('i_deviceAlert_8'));
                 } else if (response[1][0].Command_status == 0) {
-                    alert("IP Address : " + response[1][0].TARGET_IP + " 寫入Basic設定失敗");
+                    alert("IP Address : " + response[1][0].TARGET_IP + " 寫入RF設定失敗");
                 } else if (response[2][0].Command_status == 0) {
-                    alert("IP Address : " + response[2][0].TARGET_IP + " 寫入RF設定失敗");
+                    alert("IP Address : " + response[2][0].TARGET_IP + " 寫入Basic設定失敗");
                 } else {
                     alert("IP Address : " + response[0][0].TARGET_IP + " 寫入設定成功");
-                    //alert($.i18n.prop('i_deviceAlert_6') + response[0].TARGET_IP + $.i18n.prop('i_deviceAlert_7'));
+                }
+                count_write_devices--;
+                if (count_write_devices <= 0) {
+                    var d = new Date();
+                    console.log("Re Search:" + d.getTime());
+                    Search();
                 }
             }
         }

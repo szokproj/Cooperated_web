@@ -1,5 +1,11 @@
-function setCookie(cname, cvalue) {
-    document.cookie = cname + "=" + cvalue + ";";
+function setCookie(cname, cvalue, cday) {
+    if (cday) {
+        var cdate = new Date();
+        cdate.setDate(cdate.getDate() + cday);
+        document.cookie = cname + "=" + cvalue + ";expires=" + cdate;
+    } else {
+        document.cookie = cname + "=" + cvalue + ";";
+    }
 }
 
 function getCookie(cname) {
@@ -43,8 +49,7 @@ function createJsonXmlHttp(url) {
         }
     }
     if (xmlHttp == null) {
-        alert("Browser does not support HTTP Request");
-        return;
+        return alert("Browser does not support HTTP Request");
     }
     xmlHttp.open("POST", url, true);
     xmlHttp.setRequestHeader("Content-type", "application/json");

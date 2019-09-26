@@ -23,20 +23,20 @@ function Timeline() {
         search: []
     };
 
-    this.init = function () {
-        document.getElementById("btn_stop").disabled = true;
-        document.getElementById("btn_restore").disabled = true;
-        document.getElementById("btn_start").disabled = true;
-        document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\" ></i >";
-        var datetime_start = Date.parse($("#start_date").val() + " " + $("#start_time").val());
-        var datetime_end = Date.parse($("#end_date").val() + " " + $("#end_time").val());
-        if (datetime_end - datetime_start < 60000) {
-            return alert($.i18n.prop('i_alertTimeTooShort'));
-        } else if (datetime_end - datetime_start > 86400000 * 7) { //86400000 = 一天的毫秒數
-            if (!confirm($.i18n.prop('i_alertTimeTooLong')))
-                return false;
-        }
+
+    document.getElementById("btn_stop").disabled = true;
+    document.getElementById("btn_restore").disabled = true;
+    document.getElementById("btn_start").disabled = true;
+    document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\" ></i >";
+    var datetime_start = Date.parse($("#start_date").val() + " " + $("#start_time").val());
+    var datetime_end = Date.parse($("#end_date").val() + " " + $("#end_time").val());
+    if (datetime_end - datetime_start < 60000) {
+        return alert($.i18n.prop('i_alertTimeTooShort'));
+    } else if (datetime_end - datetime_start > 86400000 * 7) { //86400000 = 一天的毫秒數
+        if (!confirm($.i18n.prop('i_alertTimeTooLong')))
+            return false;
     }
+
 
     this.getTimeline = {
         byTags: (function () {

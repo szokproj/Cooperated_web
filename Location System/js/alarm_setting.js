@@ -20,7 +20,7 @@ var alarmModeArray = [{
         name: 'i_stillAlarm'
     },
     {
-        id: "fence",
+        id: "Fence",
         name: 'i_electronicFence'
     },
     {
@@ -177,7 +177,6 @@ $(function () {
                                     var revObj = JSON.parse(this.responseText);
                                     if (revObj.success > 0) {
                                         addFenceAG_info(revInfo.alarm_gid);
-                                        dialog.dialog("close");
                                     }
                                 }
                             };
@@ -237,7 +236,6 @@ $(function () {
                                     var revObj = JSON.parse(this.responseText);
                                     if (revObj.success > 0) {
                                         editFenceAG_info(group_id);
-                                        dialog.dialog("close");
                                     }
                                 }
                             };
@@ -362,7 +360,10 @@ function addFenceAG_info(alarm_group_id) {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
-                inputAlarmGroupTable();
+                var index = revObj.Values.findIndex(function (info) {
+                    return info.alarm_group_id == alarm_group_id;
+                });
+                editAlarmGroupInfo_fence(revObj.Values[index].id);
             } else {
                 alert($.i18n.prop('i_alarmAlert_50'));
             }
@@ -392,7 +393,7 @@ function editFenceAG_info(alarm_group_id) {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (revObj.success > 0) {
-                inputAlarmGroupTable();
+                editAlarmGroupInfo_fence($("#add_alarm_mode_4_id").val());
             } else {
                 alert($.i18n.prop('i_alarmAlert_51'));
             }
@@ -417,6 +418,7 @@ function deleteFenceAG_info() {
                 var revObj = JSON.parse(this.responseText);
                 if (revObj.success > 0) {
                     inputAlarmGroupTable();
+                    editAlarmGroupInfo_fence("-1");
                 } else {
                     alert($.i18n.prop('i_alarmAlert_52'));
                 }
@@ -424,6 +426,33 @@ function deleteFenceAG_info() {
         };
         xmlHttp.send(JSON.stringify(request));
     }
+}
+
+function editAlarmGroupInfo_fence(id) {
+    var modes = $("input[name=add_alarm_mode]");
+    var request = {
+        "Command_Type": ["Write"],
+        "Command_Name": ["EditAlarmInfo"],
+        "Value": [{
+            "alarm_iid": modes.eq(4).val(),
+            "alarm_name": alarmModeArray[4].id,
+            "alarm_switch": modes.eq(4).prop("checked") ? "1" : "0",
+            "alarm_value": id,
+            "alarm_group_id": $("#edit_alarm_group_id").val()
+        }],
+        "api_token": [token]
+    };
+    var editXmlHttp = createJsonXmlHttp("sql");
+    editXmlHttp.onreadystatechange = function () {
+        if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj.success > 0) {
+                inputAlarmGroupTable();
+                $("#dialog_add_alarm_group").dialog("close");
+            }
+        }
+    };
+    editXmlHttp.send(JSON.stringify(request));
 }
 
 /*function inputAlarmSetting() {

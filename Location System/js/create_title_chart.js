@@ -96,7 +96,7 @@ $(function () {
                 //設定add node的跳出視窗
                 dialog = $("#dialog_edit_node").dialog({
                     autoOpen: false,
-                    height: 500,
+                    height: 450,
                     width: 400,
                     modal: true,
                     buttons: {
@@ -259,7 +259,7 @@ $(function () {
                 //設定edit node的跳出視窗
                 dialog = $("#dialog_edit_node").dialog({
                     autoOpen: false,
-                    height: 500,
+                    height: 450,
                     width: 400,
                     modal: true,
                     buttons: {
@@ -349,29 +349,6 @@ $(function () {
         }
     }
 
-    function colorToRGBA(color) {
-        color = typeof (color) != "string" ? color.toString() : color;
-        if (color.indexOf('#') == 0) {
-            colorLen = color.length;
-            if (colorLen == 7) { //rgb
-                var r = parseInt(color.substring(1, 2), 16);
-                var g = parseInt(color.substring(3, 4), 16);
-                var b = parseInt(color.substring(5, 6), 16);
-                return 'rgb(' + r + ', ' + g + ', ' + b + ')';
-            } else if (colorLen == 9) { //rgba
-                var r = parseInt(color.substring(1, 2), 16);
-                var g = parseInt(color.substring(3, 4), 16);
-                var b = parseInt(color.substring(5, 6), 16);
-                var a = parseInt(color.substring(7, 8), 16);
-                return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + a + ')';
-            } else {
-                return color;
-            }
-        } else {
-            return color;
-        }
-    }
-
     function drawPosition(color, size) {
         var canvas = document.getElementById('canvas_dot');
         var ctx = canvas.getContext('2d');
@@ -379,16 +356,18 @@ $(function () {
             y = canvas.height / 2,
             radius = size; //30;
         ctx.clearRect(0, 0, canvas.width, canvas.height); //先還原
-        //畫倒水滴形
         ctx.beginPath();
-        ctx.arc(x, y, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);
-        ctx.lineTo(x, y + radius * 2);
+        ctx.lineWidth = 2;
+        ctx.arc(x, y - radius * 2, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);
+        //circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
+        ctx.lineTo(x, y);
         ctx.closePath();
-        ctx.fillStyle = color; //'#00e68a';
+        ctx.strokeStyle = '#000000';
+        ctx.stroke();
+        ctx.fillStyle = color != "" ? color : '#2eb82e';
         ctx.fill();
-        //畫中心白色圓形
         ctx.beginPath();
-        ctx.arc(x, y, radius / 2.5, 0, Math.PI * 2, true);
+        ctx.arc(x, y - radius * 2, radius / 2.5, 0, Math.PI * 2, true);
         ctx.closePath();
         ctx.fillStyle = '#ffffff';
         ctx.fill();

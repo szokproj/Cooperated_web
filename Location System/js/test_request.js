@@ -414,35 +414,36 @@ $(function () {
         xmlHttp.send(JSON.stringify(request));
     }
 
-    function getMemberPhoto(img_id, number) {
-        var pictureBox = $("#" + img_id);
-        pictureBox.attr('src', ""); //reset
-        if (number == "")
-            return;
-        var request = {
-            "Command_Type": ["Read"],
-            "Command_Name": ["GetOneStaff"],
-            "Value": {
-                "number": number
-            },
-            "api_token": [token]
-        };
-        var xmlHttp = createJsonXmlHttp("sql");
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                var revObj = JSON.parse(this.responseText);
-                if (!revObj)
-                    return;
-                if (revObj.success > 0 && "Values" in revObj) {
-                    var revInfo = revObj.Values[0];
-                    if (revInfo.file_ext != "" && revInfo.photo != "") {
-                        var src = "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
-                        pictureBox.attr('src', src);
+    function setMemberPhoto(img_id, number) {
+        if (number == "") {
+            $("#" + img_id).attr('src', "");
+        } else {
+            var request = {
+                "Command_Type": ["Read"],
+                "Command_Name": ["GetOneStaff"],
+                "Value": {
+                    "number": number
+                },
+                "api_token": [token]
+            };
+            var xmlHttp = createJsonXmlHttp("sql");
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    var revObj = JSON.parse(this.responseText);
+                    if (revObj && revObj.success > 0 && "Values" in revObj) {
+                        var revInfo = revObj.Values[0];
+                        if ($("#" + number_id).text() != number)
+                            return;
+                        if (revInfo.file_ext != "" && revInfo.photo != "") {
+                            $("#" + img_id).attr('src', "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo);
+                        } else {
+                            $("#" + img_id).attr('src', "");
+                        }
                     }
                 }
-            }
-        };
-        xmlHttp.send(JSON.stringify(request));
+            };
+            xmlHttp.send(JSON.stringify(request));
+        }
     }
 
     function setCanvas(img_src, width, height) {
@@ -546,7 +547,7 @@ $(function () {
                 $("#member_dialog_tag_id").text(parseInt(v.id.substring(8), 16));
                 $("#member_dialog_number").text(v.number);
                 $("#member_dialog_name").text(v.name);
-                getMemberPhoto("member_dialog_image", v.number);
+                setMemberPhoto("member_dialog_image", v.number);
                 $("#member_dialog").dialog("open");
             }
         });
@@ -572,7 +573,7 @@ $(function () {
                     $("#member_dialog_tag_id").text(parseInt(v.id.substring(8), 16));
                     $("#member_dialog_number").text(v.number);
                     $("#member_dialog_name").text(v.name);
-                    getMemberPhoto("member_dialog_image", v.number);
+                    setMemberPhoto("member_dialog_image", v.number);
                     $("#member_dialog").dialog("open");
                 }
             });

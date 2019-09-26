@@ -91,13 +91,6 @@ $(function () {
         return valid;
     }
 
-    function resetDialog() {
-        hiddenBlock();
-        $("#block_info").show();
-        $("#label_map_info").css('background-color', 'rgb(40, 108, 197)');
-        allFields.removeClass("ui-state-error");
-    }
-
     dialog = $("#dialog_map_setting").dialog({
         autoOpen: false,
         height: 640,
@@ -116,7 +109,10 @@ $(function () {
             }
         },
         close: function () {
-            resetDialog();
+            hiddenBlock();
+            $("#block_info").show();
+            $("#label_map_info").css('background-color', 'rgb(40, 108, 197)');
+            allFields.removeClass("ui-state-error");
         }
     });
 
