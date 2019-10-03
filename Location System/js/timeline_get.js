@@ -46,7 +46,7 @@ $(function () {
     var dialog = $("#add_target_dialog");
     dialog.dialog({
         autoOpen: false,
-        height: 200,
+        height: 180,
         width: 300,
         modal: true,
         buttons: {
@@ -57,7 +57,7 @@ $(function () {
                 var valid = true && checkLength(target_id, $.i18n.prop('i_targetIdLangth'), 1, 16);
                 if (valid) {
                     $("#table_target tbody").append("<tr><td><input type=\"checkbox\" name=\"chk_target_id\"" +
-                        " value=\"" + target_id.val() + "\"/> " + target_id.val() + "</td>" +
+                        " value=\"" + fullOf4Byte(target_id.val()) + "\"/> " + target_id.val() + "</td>" +
                         "<td><input type=\"color\" name=\"input_target_color\" value=\"" + targrt_color.val() + "\" /></td>" +
                         "<td><button class=\"btn btn-default btn-focus\" onclick=\"locateTag(\'" + target_id.val() +
                         "\')\"><img class=\"icon-image\" src=\"../image/target.png\"></button></td></tr>");
@@ -187,9 +187,9 @@ function setup() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success == 1) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                 $("#target_map").empty();
-                revObj.Values.forEach(element => {
+                revObj.Value[0].Values.forEach(element => {
                     //mapCollection => key: map_id | value: {map_id, map_name, map_src, map_scale}
                     mapCollection[element.map_id] = {
                         map_id: element.map_id,
@@ -630,8 +630,8 @@ function getTimelineByTags() {
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
-                if (revObj.success == 1) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                    var revInfo = revObj.Value[0].Values || [];
                     var tag_id = request.Value.tag_id;
                     for (i = 0; i < revInfo.length; i++) {
                         if (revInfo[i].map_id in mapCollection) {
@@ -647,17 +647,17 @@ function getTimelineByTags() {
                             });
                         }
                     }
-                    if (revObj.Status == "1") {
+                    if (revObj.Value[0].Status == "1") {
                         //以1小時為基準，分批接受並傳送要求
                         sendRequest({
                             "Command_Type": ["Read"],
                             "Command_Name": ["GetLocus_combine_hour"],
                             "Value": {
-                                "tag_id": revObj.tag_id,
-                                "start_date": revObj.start_date,
-                                "start_time": revObj.start_time,
-                                "end_date": revObj.end_date,
-                                "end_time": revObj.end_time
+                                "tag_id": revObj.Value[0].tag_id,
+                                "start_date": revObj.Value[0].start_date,
+                                "start_time": revObj.Value[0].start_time,
+                                "end_date": revObj.Value[0].end_date,
+                                "end_time": revObj.Value[0].end_time
                             },
                             "api_token": [token]
                         });
@@ -689,8 +689,8 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
     getMapGroup.onreadystatechange = function () {
         if (getMapGroup.readyState == 4 || getMapGroup.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
-            if (revObj.success == 1) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                var revInfo = revObj.Value[0].Values || [];
                 var index = revInfo.findIndex(function (info) {
                     return info.group_id == group_id;
                 });
@@ -729,8 +729,8 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
-                if (revObj.success == 1) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                    var revInfo = revObj.Value[0].Values || [];
                     for (i = 0; i < revInfo.length; i++) {
                         //改成按照時間分類排序
                         var time_arr = (revInfo[i].time.split(" ")[1]).split(":");
@@ -857,4 +857,17 @@ function inputWaitTime(interval_times) {
             Math.ceil(sec % 60) + $.i18n.prop('i_second'));
     else
         $("#wait_time").text($.i18n.prop('i_estimatedTime') + Math.ceil(sec) + $.i18n.prop('i_second'));
+}
+
+function fullOf4Byte(id) {
+    id = parseInt(id).toString(16).toUpperCase();
+    var length = id.length;
+    if (length > 0 && length < 9) {
+        for (i = 0; i < 8 - length; i++) {
+            id = "0" + id;
+        }
+        return id;
+    } else {
+        return "";
+    }
 }

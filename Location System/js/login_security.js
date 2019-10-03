@@ -45,15 +45,16 @@ function verifyLogin() {
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
+                if (revObj && revObj.Value[0].success > 0) {
                     //Verification success
-                    if (revObj.Values && revObj.Values[0].api_token) {
-                        Cookies.set("login_user", JSON.stringify(revObj.Values[0]));
+                    var revInfo = revObj.Value[0].Values;
+                    if (revInfo && revInfo[0].api_token) {
+                        Cookies.set("login_user", JSON.stringify(revInfo[0]));
                         alert($.i18n.prop('i_loginSuccess'));
                         window.location.href = '../index.html';
                     }
                 } else {
-                    var msg = revObj.Values[0].msg;
+                    var msg = revObj.Value[0].Values[0].msg;
                     if (msg == "Account not find")
                         alert($.i18n.prop('i_accountNotFound'));
                     else if (msg == "password error")

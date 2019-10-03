@@ -45,11 +45,11 @@ $(function () {
                 addXmlHttp.onreadystatechange = function () {
                     if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
-                        if (revObj.success > 0) {
-                            var fence_id_arr = Object.keys(revObj);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                            var fence_id_arr = Object.keys(revObj.Value[0]);
                             fence_id_arr.splice(fence_id_arr.indexOf("success"), 1);
                             for (i in fence_id_arr) {
-                                if (revObj[fence_id_arr[i]].info[0].fence_name == fence_name) {
+                                if (revObj.Value[0][fence_id_arr[i]].info[0].fence_name == fence_name) {
                                     addFencePoints(fence_id_arr[i]);
                                     addFenceGroups(fence_id_arr[i]);
                                 }
@@ -63,18 +63,17 @@ $(function () {
                     alert($.i18n.prop('i_alarmAlert_38'));
                     return;
                 }
-
                 var editXmlHttp = createJsonXmlHttp("sql");
                 editXmlHttp.onreadystatechange = function () {
                     if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
-                        if (revObj.success > 0) {
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
 
                             var fd_editXmlHttp = createJsonXmlHttp("sql");
                             fd_editXmlHttp.onreadystatechange = function () {
                                 if (fd_editXmlHttp.readyState == 4 || fd_editXmlHttp.readyState == "complete") {
-                                    var revObj = JSON.parse(this.responseText);
-                                    if (revObj.success > 0) {
+                                    var fd_revObj = JSON.parse(this.responseText);
+                                    if (checkTokenAlive(token, fd_revObj) && fd_revObj.Value[0].success > 0) {
                                         addFencePoints(add_fence_id.val());
                                     }
                                 }
@@ -91,9 +90,9 @@ $(function () {
                             var fg_editXmlHttp = createJsonXmlHttp("sql");
                             fg_editXmlHttp.onreadystatechange = function () {
                                 if (fg_editXmlHttp.readyState == 4 || fg_editXmlHttp.readyState == "complete") {
-                                    var revObj = JSON.parse(this.responseText);
+                                    var fg_revObj = JSON.parse(this.responseText);
                                     var count_group = addFenceContainGroup.length;
-                                    if (revObj.success > 0 && count_group > 0) {
+                                    if (checkTokenAlive(token, fg_revObj) && fg_revObj.Value[0].success > 0 && count_group > 0) {
                                         addFenceGroups(add_fence_id.val());
                                     }
                                 }
@@ -188,22 +187,20 @@ $(function () {
         del_xmlHttp.onreadystatechange = function () {
             if (del_xmlHttp.readyState == 4 || del_xmlHttp.readyState == "complete") {
                 var del_response = JSON.parse(this.responseText);
-                if (del_response && del_response.success == lan) {
+                if (checkTokenAlive(token, del_response) && del_response.Value[0].success == lan) {
                     //刪除此圍籬的所有座標點
                     var fd_xmlHttp = createJsonXmlHttp("sql");
                     fd_xmlHttp.onreadystatechange = function () {
                         if (fd_xmlHttp.readyState == 4 || fd_xmlHttp.readyState == "complete") {
-                            var fd_respon = JSON.parse(this.responseText);
-                            if (fd_respon && fd_respon.success > 0) {
+                            var fd_response = JSON.parse(this.responseText);
+                            if (checkTokenAlive(token, fd_response) && fd_response.Value[0].success > 0) {
                                 //刪除此圍籬的所有群組
                                 var fg_xmlHttp = createJsonXmlHttp("sql");
                                 fg_xmlHttp.onreadystatechange = function () {
                                     if (fg_xmlHttp.readyState == 4 || fg_xmlHttp.readyState == "complete") {
-                                        var fg_respon = JSON.parse(this.responseText);
-                                        if (fg_respon) {
-                                            //更新列表
-                                            updateFenceTable();
-                                        }
+                                        var fg_response = JSON.parse(this.responseText);
+                                        if (checkTokenAlive(token, fg_response))
+                                            updateFenceTable(); //更新列表
                                     }
                                 };
                                 fg_xmlHttp.send(JSON.stringify({
@@ -222,7 +219,7 @@ $(function () {
                         "api_token": [token]
                     }));
                 } else {
-                    alert($.i18n.prop('i_alarmAlert_35') + (lan - del_response.success));
+                    alert($.i18n.prop('i_alarmAlert_35') + (lan - del_response.Value[0].success));
                 }
             }
         };
@@ -316,10 +313,10 @@ function editFenceInfo(f_id) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 operating = "Edit";
-                if (revObj.Values) {
-                    var editFence = revObj.Values[0];
+                if (revObj.Value[0].Values) {
+                    var editFence = revObj.Value[0].Values[0];
                     $("#add_fence_id").val(editFence.fence_id);
                     $("#add_fence_name").val(editFence.fence_name);
                     getFencePoints(editFence.fence_id);
@@ -349,9 +346,9 @@ function getFencePoints(f_id) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 operating = "Edit";
-                var fencePoints = 'Values' in revObj == true ? revObj.Values : [];
+                var fencePoints = revObj.Value[0].Values || [];
                 $("#table_fence_dot_setting tbody").empty();
                 for (j = 0; j < fencePoints.length; j++) {
                     var tr_id = "tr_fence_dot_setting_" + fencePoints[j].point_order;
@@ -382,9 +379,9 @@ function getFenceGroups(f_id) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 operating = "Edit";
-                var fenceGroups = 'Values' in revObj == true ? revObj.Values : [];
+                var fenceGroups = revObj.Value[0].Values || [];
                 $("#table_fence_group tbody").empty();
                 fenceGroups.forEach(function (element, index) {
                     $("#table_fence_group tbody").append("<tr><td>" + (index + 1) + "</td>" +
@@ -415,7 +412,7 @@ function addFencePoints(f_id) {
     fd_addXmlHttp.onreadystatechange = function () {
         if (fd_addXmlHttp.readyState == 4 || fd_addXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 resetDotArray();
                 updateFenceTable();
             } else {
@@ -443,7 +440,7 @@ function addFenceGroups(f_id) {
     fg_addXmlHttp.onreadystatechange = function () {
         if (fg_addXmlHttp.readyState == 4 || fg_addXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 resetDotGroup();
             } else {
                 alert($.i18n.prop('i_alarmAlert_32'));

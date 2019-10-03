@@ -88,7 +88,7 @@ $(function () {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0)
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0)
                         UpdateMemberList();
                     else
                         alert($.i18n.prop('i_alertError_3'));
@@ -146,8 +146,8 @@ function selectTagColor() {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    var revInfo = revObj.Values;
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        var revInfo = revObj.Value[0].Values;
                         var nodeArray = [];
                         for (i = 0; i < revInfo.length; i++)
                             nodeArray.push(revInfo[i]);
@@ -174,8 +174,8 @@ function selectTagColor() {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    var revInfo = revObj.Values;
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        var revInfo = revObj.Value[0].Values;
                         var nodeArray = [];
                         for (i = 0; i < revInfo.length; i++)
                             nodeArray.push(revInfo[i]);
@@ -202,8 +202,8 @@ function selectTagColor() {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    var revInfo = revObj.Values;
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        var revInfo = revObj.Value[0].Values;
                         var nodeArray = [];
                         for (i = 0; i < revInfo.length; i++)
                             nodeArray.push(revInfo[i]);

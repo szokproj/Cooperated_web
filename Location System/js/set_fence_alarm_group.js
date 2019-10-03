@@ -28,9 +28,9 @@ $(function () {
                 addXmlHttp.onreadystatechange = function () {
                     if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
-                        if (revObj && revObj.success > 0) {
-                            if (!revObj.Value) return;
-                            var key = Object.keys(revObj.Value);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                            if (!revObj.Value[0].Value) return;
+                            var key = Object.keys(revObj.Value[0].Value);
                             updateFenceAG_List(key);
                             alert($.i18n.prop('i_alarmAlert_41'));
                         } else {
@@ -49,14 +49,14 @@ $(function () {
                 deleteXmlHttp.onreadystatechange = function () {
                     if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
-                        if (revObj.success > 0) {
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                             var addXmlHttp = createJsonXmlHttp("sql");
                             addXmlHttp.onreadystatechange = function () {
                                 if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                                    var revObj = JSON.parse(this.responseText);
-                                    if (revObj && revObj.success > 0) {
-                                        if (!revObj.Value) return;
-                                        var key = Object.keys(revObj.Value);
+                                    var revObj2 = JSON.parse(this.responseText);
+                                    if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
+                                        if (!revObj2.Value[0].Value) return;
+                                        var key = Object.keys(revObj2.Value[0].Value);
                                         updateFenceAG_List(key);
                                         alert($.i18n.prop('i_alarmAlert_43'));
                                     } else {
@@ -148,9 +148,9 @@ $(function () {
             deleteXmlHttp.onreadystatechange = function () {
                 if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj && revObj.success > 0) {
-                        if (!revObj.Value) return;
-                        var key = Object.keys(revObj.Value);
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        if (!revObj.Value[0].Value) return;
+                        var key = Object.keys(revObj.Value[0].Value);
                         updateFenceAG_List(key);
                         alert($.i18n.prop('i_alarmAlert_45'));
                     } else {
@@ -197,8 +197,8 @@ function getFenceAlarmGroup() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj && revObj.success > 0) {
-                var key = Object.keys(revObj.Value);
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var key = Object.keys(revObj.Value[0].Value);
                 updateFenceAG_List(key);
             } else {
                 alert($.i18n.prop('i_alarmAlert_48'));
@@ -219,8 +219,8 @@ function editFenceAlarmGroup(fence_alarm_gid) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj && revObj.success > 0) {
-                var revInfo = 'Values' in revObj ? revObj.Values.slice(0) : [];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var revInfo = revObj.Value[0].Values.slice(0) || [];
                 $("#add_FAG_id").val(fence_alarm_gid).prop('disabled', true);
                 fenceArray.forEach(function (element, index) {
                     var included = revInfo.findIndex(Values => {
@@ -246,6 +246,8 @@ function editFenceAlarmGroup(fence_alarm_gid) {
                             "<td>" + element.fence_name + "</td></tr>");
                     }
                 });
+                resetListNumber("included_fences");
+                resetListNumber("remaining_fences");
                 $("#dialog_fence_alarm_group").dialog("open");
             } else {
                 alert($.i18n.prop('i_alarmAlert_30'));
@@ -268,8 +270,8 @@ function getFences() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                fenceArray = 'Values' in revObj == true ? revObj.Values.slice(0) : [];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                fenceArray = revObj.Value[0].Values.slice(0) || [];
             } else {
                 alert($.i18n.prop('i_alarmAlert_30'));
             }

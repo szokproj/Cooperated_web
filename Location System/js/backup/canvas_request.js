@@ -147,8 +147,8 @@ function setup() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                var MapList = revObj.Values;
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var MapList = revObj.Value[0].Values || [];
                 mapArray = MapList.slice(0); //Copy array
                 var html = "";
                 for (i = 0; i < MapList.length; i++) {
@@ -347,8 +347,8 @@ function getAnchors(map_id) {
     ancXmlHttp.onreadystatechange = function () {
         if (ancXmlHttp.readyState == 4 || ancXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            var anchorList = revObj.Values;
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var anchorList = revObj.Value[0].Values;
                 var x, y;
                 for (i in anchorList) {
                     x = anchorList[i].set_x / canvasImg.scale;
@@ -378,8 +378,8 @@ function getAnchors(map_id) {
     mainXmlHttp.onreadystatechange = function () {
         if (mainXmlHttp.readyState == 4 || mainXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            var anchorList = revObj.Values;
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var anchorList = revObj.Value[0].Values;
                 var x, y;
                 for (i in anchorList) {
                     x = anchorList[i].set_x / canvasImg.scale;
@@ -408,8 +408,8 @@ function getMapGroup() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                var revInfo = "Values" in revObj ? revObj.Values.slice(0) : [];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var revInfo = revObj.Value[0].Values || [];
                 revInfo.forEach(element => {
                     groupfindMap[element.group_id] = element.map_id;
                 });
@@ -429,8 +429,9 @@ function getMemberData() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0 && revObj.Values) {
-                revObj.Values.forEach(element => {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var revInfo = revObj.Value[0].Values || [];
+                revInfo.forEach(element => {
                     MemberList[element.tag_id] = element;
                 });
             }
@@ -455,8 +456,8 @@ function setMemberPhoto(img_id, number_id, number) {
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj && revObj.success > 0 && "Values" in revObj) {
-                    var revInfo = revObj.Values[0];
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0 && revObj.Value[0].Values) {
+                    var revInfo = revObj.Value[0].Values[0];
                     if ($("#" + number_id).text() != number)
                         return;
                     if (revInfo.file_ext != "" && revInfo.photo != "")
@@ -674,23 +675,30 @@ function updateAlarmList() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj && revObj.length > alarm_count) {
-                alarm_count = revObj.length;
-                alarmFilterArr = [];
+            if (checkTokenAlive(token, revObj) && (revObj.Value[0].length > last_alarm.count ||
+                    last_alarm.type != alarmFilterArr[alarmFilterArr.length - 1].alarm_type ||
+                    last_alarm.tag_id != alarmFilterArr[alarmFilterArr.length - 1].id)) {
+                var revInfo = revObj.Value[0];
                 var list = "";
-                for (var i = 0; i < revObj.length; i++) {
-                    var tag_id = revObj[i].tag_id;
+                //Update last_alarm
+                last_alarm.count = revInfo.length;
+                last_alarm.type = revInfo[revInfo.length - 1].tag_alarm_type
+                last_alarm.tag_id = revInfo[revInfo.length - 1].tag_id
+                //Input alarmFilterArr
+                alarmFilterArr = [];
+                for (var i = 0; i < revInfo.length; i++) {
+                    var tag_id = revInfo[i].tag_id;
                     var number = tag_id in MemberList ? MemberList[tag_id].number : "";
                     var name = tag_id in MemberList ? MemberList[tag_id].Name : "";
                     list += "<tr><td>" + (i + 1) +
                         "</td><td>" + number +
                         "</td><td>" + name +
                         "</td><td>" + parseInt(tag_id.substring(8), 16) +
-                        "</td><td>" + revObj[i].tag_alarm_type +
-                        "</td><td>" + revObj[i].tag_time +
+                        "</td><td>" + revInfo[i].tag_alarm_type +
+                        "</td><td>" + revInfo[i].tag_time +
                         "</td></tr>";
                     var repeat = alarmFilterArr.findIndex(function (info) {
-                        return info.id == tag_id && info.alarm_type == revObj[i].tag_alarm_type;
+                        return info.id == tag_id && info.alarm_type == revInfo[i].tag_alarm_type;
                     });
                     if (repeat > -1)
                         alarmFilterArr.splice(repeat, 1);
@@ -699,8 +707,8 @@ function updateAlarmList() {
                         id: tag_id,
                         number: number,
                         name: name,
-                        alarm_type: revObj[i].tag_alarm_type,
-                        time: revObj[i].tag_time
+                        alarm_type: revInfo[i].tag_alarm_type,
+                        time: revInfo[i].tag_time
                     });
                 }
                 $("#table_rightbar_alarm_list tbody").html(list);
@@ -740,98 +748,98 @@ function updateTagList() {
     var xmlHttp = createJsonXmlHttp("requestTagList_json");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            if (!this.responseText)
-                return;
+            if (!this.responseText) return false;
             var revObj = JSON.parse(this.responseText);
-            if (!revObj)
-                return false;
-            //if (canvasImg.isPutImg) {
-            var temp_arr = tagArray;
-            var update = 0;
-            var focus_data = null;
-            tagArray = [];
-            for (var i = 0; i < revObj.length; i++) {
-                var tag_id = revObj[i].tag_id;
-                var number = tag_id in MemberList ? MemberList[tag_id].number : "";
-                var name = tag_id in MemberList ? MemberList[tag_id].Name : "";
-                var color = tag_id in MemberList ? MemberList[tag_id].color : "";
-                //update tag array
-                if (tag_id == locating_id) {
-                    focus_data = {
-                        id: tag_id,
-                        x: revObj[i].tag_x / canvasImg.scale, // * Zoom,
-                        y: canvasImg.height - revObj[i].tag_y / canvasImg.scale, // * Zoom,
-                        system_time: revObj[i].tag_time,
-                        color: color,
-                        number: number,
-                        name: name,
-                        type: "normal",
-                        group_id: revObj[i].group_id
-                    }
-                } else {
-                    tagArray.push({
-                        id: tag_id,
-                        x: revObj[i].tag_x / canvasImg.scale, // * Zoom,
-                        y: canvasImg.height - revObj[i].tag_y / canvasImg.scale, // * Zoom,
-                        group_id: revObj[i].group_id,
-                        system_time: revObj[i].tag_time,
-                        color: color,
-                        number: number,
-                        name: name,
-                        type: "normal"
-                    });
-                }
-                update += temp_arr.findIndex(function (info) {
-                    return info.id == tag_id;
-                }) > -1 ? 0 : 1;
-            }
-
-            if (focus_data != null)
-                tagArray.push(focus_data);
-
-            if (update > 0) {
-                //update member list
-                $("#table_rightbar_member_list tbody").empty();
-                tagArray.sort(function (a, b) {
-                    var A = parseInt(a.id.substring(8), 16);
-                    var B = parseInt(b.id.substring(8), 16);
-                    return A - B;
-                });
-                tagArray.forEach(function (v, i) {
-                    $("#table_rightbar_member_list tbody").append("<tr><td>" + (i + 1) +
-                        "</td><td>" + parseInt(v.id.substring(8), 16) +
-                        "</td><td>" + v.number +
-                        "</td><td>" + v.name +
-                        "</td><td><button class=\"btn btn-default\"" +
-                        " onclick=\"locateTag(\'" + v.id + "\')\">" +
-                        "<img class=\"icon-image\" src=\"../image/target.png\"></button>" +
-                        "</td></tr>");
-                });
-            }
-            tableFilter("table_filter_member", "table_rightbar_member_list");
-
-            //定時比對tagArray更新alarmArray
-            alarmArray = []; //每次更新都必須重置alarmArray
-            if (alarmFilterArr.length > 0) {
-                for (var j = 0; j < alarmFilterArr.length; j++) {
-                    var alarmIndex = tagArray.findIndex(function (tag) {
-                        return tag.id == alarmFilterArr[j].id; //比對Alarm與Tag的ID
-                    });
-                    if (alarmIndex > -1) {
-                        alarmArray.push({ //依序將Tag資料放入AlarmArray中
-                            order: alarmFilterArr[j].order,
-                            id: tagArray[alarmIndex].id,
-                            x: tagArray[alarmIndex].x,
-                            y: tagArray[alarmIndex].y,
-                            group_id: tagArray[alarmIndex].group_id,
-                            status: alarmFilterArr[j].alarm_type,
-                            time: alarmFilterArr[j].time
+            if (!checkTokenAlive(token, revObj)) {
+                //if (canvasImg.isPutImg) {
+                var revInfo = revObj.Value[0];
+                var temp_arr = tagArray;
+                var update = 0;
+                var focus_data = null;
+                tagArray = [];
+                for (var i = 0; i < revInfo.length; i++) {
+                    var tag_id = revInfo[i].tag_id;
+                    var number = tag_id in MemberList ? MemberList[tag_id].number : "";
+                    var name = tag_id in MemberList ? MemberList[tag_id].Name : "";
+                    var color = tag_id in MemberList ? MemberList[tag_id].color : "";
+                    //update tag array
+                    if (tag_id == locating_id) {
+                        focus_data = {
+                            id: tag_id,
+                            x: revInfo[i].tag_x / canvasImg.scale, // * Zoom,
+                            y: canvasImg.height - revInfo[i].tag_y / canvasImg.scale, // * Zoom,
+                            system_time: revInfo[i].tag_time,
+                            color: color,
+                            number: number,
+                            name: name,
+                            type: "normal",
+                            group_id: revInfo[i].group_id
+                        }
+                    } else {
+                        tagArray.push({
+                            id: tag_id,
+                            x: revInfo[i].tag_x / canvasImg.scale, // * Zoom,
+                            y: canvasImg.height - revInfo[i].tag_y / canvasImg.scale, // * Zoom,
+                            group_id: revInfo[i].group_id,
+                            system_time: revInfo[i].tag_time,
+                            color: color,
+                            number: number,
+                            name: name,
+                            type: "normal"
                         });
-                        tagArray[alarmIndex].type = "alarm";
+                    }
+                    update += temp_arr.findIndex(function (info) {
+                        return info.id == tag_id;
+                    }) > -1 ? 0 : 1;
+                }
+
+                if (focus_data != null)
+                    tagArray.push(focus_data);
+
+                if (update > 0) {
+                    //update member list
+                    $("#table_rightbar_member_list tbody").empty();
+                    tagArray.sort(function (a, b) {
+                        var A = parseInt(a.id.substring(8), 16);
+                        var B = parseInt(b.id.substring(8), 16);
+                        return A - B;
+                    });
+                    tagArray.forEach(function (v, i) {
+                        $("#table_rightbar_member_list tbody").append("<tr><td>" + (i + 1) +
+                            "</td><td>" + parseInt(v.id.substring(8), 16) +
+                            "</td><td>" + v.number +
+                            "</td><td>" + v.name +
+                            "</td><td><button class=\"btn btn-default\"" +
+                            " onclick=\"locateTag(\'" + v.id + "\')\">" +
+                            "<img class=\"icon-image\" src=\"../image/target.png\"></button>" +
+                            "</td></tr>");
+                    });
+                }
+                tableFilter("table_filter_member", "table_rightbar_member_list");
+
+                //定時比對tagArray更新alarmArray
+                alarmArray = []; //每次更新都必須重置alarmArray
+                if (alarmFilterArr.length > 0) {
+                    for (var j = 0; j < alarmFilterArr.length; j++) {
+                        var alarmIndex = tagArray.findIndex(function (tag) {
+                            return tag.id == alarmFilterArr[j].id; //比對Alarm與Tag的ID
+                        });
+                        if (alarmIndex > -1) {
+                            alarmArray.push({ //依序將Tag資料放入AlarmArray中
+                                order: alarmFilterArr[j].order,
+                                id: tagArray[alarmIndex].id,
+                                x: tagArray[alarmIndex].x,
+                                y: tagArray[alarmIndex].y,
+                                group_id: tagArray[alarmIndex].group_id,
+                                status: alarmFilterArr[j].alarm_type,
+                                time: alarmFilterArr[j].time
+                            });
+                            tagArray[alarmIndex].type = "alarm";
+                        }
                     }
                 }
+                //}
             }
-            //}
         }
     };
     xmlHttp.send(JSON.stringify(request));
@@ -901,6 +909,7 @@ function releaseFocusAlarm(alarm_order) { //解除指定的alarm
     if ($("#alarm_dialog_id").text() == parseInt(alarmFilterArr[index].id.substring(8), 16))
         $("#alarm_dialog").dialog("close");
     alarmFilterArr.splice(index, 1);
+    alarmArray.splice(index, 1);
 }
 
 function unlockFocusAlarm() { //解除定位

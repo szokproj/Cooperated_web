@@ -127,7 +127,8 @@
             var xmlHttp = createJsonXmlHttp("test2");
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                    return 0;
+                    var revObj = JSON.parse(this.responseText);
+                    var pass = checkTokenAlive(token, revObj);
                 }
             };
             xmlHttp.send(JSON.stringify(requestArray));

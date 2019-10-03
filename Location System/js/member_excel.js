@@ -15,7 +15,8 @@ function arrayKeyTranslate(array) {
     //input translation title row
     resultArray.push({
         "number": $.i18n.prop("i_number"),
-        "tag_id": $.i18n.prop("i_tagID"),
+        "tid_id": $.i18n.prop("i_tidID"),
+        "user_id": $.i18n.prop("i_userID"),
         "card_id": $.i18n.prop("i_cardID"),
         "Name": $.i18n.prop("i_name"),
         "lastName": $.i18n.prop("i_lastName"),
@@ -51,7 +52,12 @@ function arrayKeyTranslate(array) {
     array.forEach(value => {
         var obj = {};
         datafield.forEach(key => {
-            obj[key] = value[key];
+            if (key == "tag_id") {
+                obj["tid_id"] = parseInt(value[key].substring(0, 8), 16);
+                obj["user_id"] = parseInt(value[key].substring(8), 16);
+            } else {
+                obj[key] = value[key];
+            }
         });
         resultArray.push(obj);
     });
@@ -77,8 +83,23 @@ function excelImportTable(jsonData) {
         getXmlHttp.onreadystatechange = function () {
             if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
-                    var memberArray = 'Values' in revObj == true ? revObj.Values : [];
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                    /*if (!revObj.Value[0].Values)
+                        return;
+                        var memberArray =[];
+                    revObj.Value[0].Values.forEach(element=>{
+                        var obj
+                        datafield.forEach(key => {
+                            if (key == "tag_id") {
+                                obj["tid_id"] = parseInt(value[key].substring(0, 8), 16);
+                                obj["user_id"] = parseInt(value[key].substring(8), 16);
+                            } else {
+                                obj[key] = value[key];
+                            }
+                        });
+                        memberArray.push("")
+                    })*/
+                    var memberArray = revObj.Value[0].Values || [];
                     var dataArray = JSON.parse(jsonData);
                     dataArray.forEach(function (element, index) {
                         if (index == 0 || isStop || !element.number)
@@ -151,12 +172,13 @@ function excelImportTable(jsonData) {
 
     function sendMemberData(operate, element) {
         var number = checkExist(element, "number");
+        var tag_id = fullOf4Byte(checkExist(element, "tid_id")) + fullOf4Byte(checkExist(element, "user_id"));
         var request = {
             "Command_Type": ["Write"],
             "Command_Name": [operate],
             "Value": [{
                 "number": number,
-                "tag_id": fullOf8Byte(checkExist(element, "tag_id")),
+                "tag_id": tag_id,
                 "card_id": checkExist(element, "card_id"),
                 "Name": checkExist(element, "Name"),
                 "lastName": checkExist(element, "lastName"),
@@ -192,7 +214,7 @@ function excelImportTable(jsonData) {
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj && revObj.success > 0) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     submitNumber.splice(submitNumber.indexOf(number), 1);
                     if (operate == "AddStaff")
                         successNumber.add.push(number);
@@ -219,13 +241,14 @@ function checkExist(object, key) {
     return key in object ? object[key].toString() : "";
 }
 
-function fullOf8Byte(tag_id) {
-    var length = tag_id.length;
-    if (length > 0 && length < 17) {
-        for (i = 0; i < 16 - length; i++) {
-            tag_id = "0" + tag_id;
+function fullOf4Byte(id) {
+    id = parseInt(id).toString(16).toUpperCase();
+    var length = id.length;
+    if (length > 0 && length < 9) {
+        for (i = 0; i < 8 - length; i++) {
+            id = "0" + id;
         }
-        return tag_id;
+        return id;
     } else {
         return "";
     }

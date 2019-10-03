@@ -17,6 +17,31 @@ var MinimumPermission = {
  * Second read the account_permission or get from cookie
  */
 
+function checkTokenAlive(token, response) {
+    if (!response) {
+        return false;
+    } else if (response.status == 1) {
+        return true;
+    } else {
+        if (response.msg == "Without token access") {
+            //login overtime
+            alert("帳號閒置過久，此次登入失效");
+            //window.location.href = '../Login.html';
+            setCookie("login_user", null);
+            location.reload();
+        } else if (response.msg == "Account is not exist") {
+            //other user use the account login successfully
+            if (token != "") {
+                alert("此帳號已在別處登入，此次登入失效");
+                //window.location.href = '../Login.html';
+                setCookie("login_user", null);
+                location.reload();
+            }
+        }
+        return false;
+    }
+}
+
 function getUser() {
     var cookie = getCookie("login_user");
     var user_info = typeof (cookie) === 'undefined' ? null : JSON.parse(cookie);
@@ -48,12 +73,13 @@ function resetLogin() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj && revObj.success > 0) {
+            if (revObj && revObj.Value[0].success > 0) {
                 alert($.i18n.prop('i_logoutSuccess'));
-            } else {
+            }
+            /*else {
                 alert($.i18n.prop('i_loginTimeout'));
                 //alert($.i18n.prop('i_logoutFailed'));
-            }
+            }*/
             setCookie("login_user", null);
             location.reload();
         }

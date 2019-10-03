@@ -16,9 +16,9 @@ $(function () {
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     var memberArray = [];
-                    var revInfo = 'Values' in revObj == true ? revObj.Values : [];
+                    var revInfo = revObj.Value[0].Values || [];
                     revInfo.forEach(element => {
                         if (key == "user_id") {
                             var user_id = parseInt(element["tag_id"].substring(8), 16);
@@ -64,5 +64,5 @@ function showMyModel() {
     pageTimer["model"] = setTimeout(function () {
         $('#myModal').modal('hide');
         clearTimeout(pageTimer["model"]);
-    }, 2000);
+    }, 1200);
 }

@@ -71,7 +71,7 @@ $(function () {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         getAllDataOfMap();
                         dialog.dialog("close");
                     }
@@ -116,8 +116,8 @@ function getAnchorList() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             getAnchor_Group();
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                anchorsInfoArray = revObj.Values.slice(0); //利用抽離全部陣列完成陣列拷貝
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                anchorsInfoArray = revObj.Value[0].Values.slice(0); //利用抽離全部陣列完成陣列拷貝
                 $("#table_main_anchor_list tbody").empty();
                 $("#table_anchor_list tbody").empty();
                 var count_main_anchor_list = 0;
@@ -164,7 +164,7 @@ function deleteMainAnchor(id) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 var requestArray = {
                     "Command_Type": ["Read"],
                     "Command_Name": ["GetGroups"],
@@ -173,10 +173,10 @@ function deleteMainAnchor(id) {
                 var getXmlHttp = createJsonXmlHttp("sql");
                 getXmlHttp.onreadystatechange = function () {
                     if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        var revInfo = ('Values' in revObj) == true ? revObj.Values : [];
-                        var deleteArray = [];
-                        if (revObj.success > 0) {
+                        var revObj2 = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
+                            var deleteArray = [];
+                            var revInfo = revObj2.Value[0].Values || [];
                             revInfo.forEach(element => {
                                 if (element.main_anchor_id == id) {
                                     deleteArray.push({
@@ -211,7 +211,7 @@ function deleteAnchor(id) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 var gerRequest = {
                     "Command_Type": ["Read"],
                     "Command_Name": ["GetGroup_Anchors"],
@@ -220,10 +220,11 @@ function deleteAnchor(id) {
                 var getXmlHttp = createJsonXmlHttp("sql");
                 getXmlHttp.onreadystatechange = function () {
                     if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        if (revObj.success > 0) {
+                        var revObj2 = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
                             var deleteArr = [];
-                            revObj.Values.forEach(element => {
+                            var revInfo = revObj2.Value[0].Values || [];
+                            revInfo.forEach(element => {
                                 if (element.anchor_id == id)
                                     deleteArr.push({
                                         "group_id": element.group_id,

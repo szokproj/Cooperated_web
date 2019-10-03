@@ -24,8 +24,8 @@ function loadMap() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                mapArray = revObj.Values.slice(0); //利用抽離全部陣列完成陣列拷貝
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                mapArray = revObj.Value[0].Values.slice(0); //利用抽離全部陣列完成陣列拷貝
                 $("#maps_gallery").empty();
                 if (mapArray) {
                     for (i = 0; i < mapArray.length; i++) {
@@ -137,9 +137,9 @@ function addMap() {
             mapHttp.onreadystatechange = function () {
                 if (mapHttp.readyState == 4 || mapHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj && revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         $("#maps_gallery").empty();
-                        mapArray = revObj.Values.slice(0);
+                        mapArray = revObj.Value[0].Values.slice(0);
                         var lan = mapArray.length;
                         for (i = 0; i < lan; i++) {
                             setThumbnail(mapArray[i]);
@@ -171,7 +171,7 @@ function deleteMap(id) {
         mapHttp.onreadystatechange = function () {
             if (mapHttp.readyState == 4 || mapHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     var deleteMap_GroupReq = JSON.stringify({
                         "Command_Type": ["Read"],
                         "Command_Name": ["DeleteMap_Group"],
@@ -183,8 +183,9 @@ function deleteMap(id) {
                     var mapGroupHttp = createJsonXmlHttp("sql");
                     mapGroupHttp.onreadystatechange = function () {
                         if (mapGroupHttp.readyState == 4 || mapGroupHttp.readyState == "complete") {
-                            var revObj = JSON.parse(this.responseText);
-                            if (revObj && revObj.success > 0) return;
+                            var revObj2 = JSON.parse(this.responseText);
+                            if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0)
+                                return;
                         }
                     };
                     mapGroupHttp.send(deleteMap_GroupReq);

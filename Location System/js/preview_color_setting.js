@@ -36,8 +36,8 @@ function updateTypeColorList(index) {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    var revInfo = revObj.Values;
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        var revInfo = revObj.Value[0].Values || [];
                         for (i = 0; i < revInfo.length; i++) {
                             $("#table_display_type").append("<tr id='tr_display_type_" + i + "'>" +
                                 "<td>" + revInfo[i].children + "</td>" +
@@ -65,8 +65,8 @@ function updateTypeColorList(index) {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    var revInfo = revObj.Values;
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        var revInfo = revObj.Value[0].Values || [];
                         for (i = 0; i < revInfo.length; i++) {
                             $("#table_display_type").append("<tr id='tr_display_type_" + i + "'>" +
                                 "<td>" + revInfo[i].children + "</td>" +
@@ -94,8 +94,8 @@ function updateTypeColorList(index) {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    var revInfo = revObj.Values;
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        var revInfo = revObj.Value[0].Values || [];
                         for (i = 0; i < revInfo.length; i++) {
                             $("#table_display_type").append("<tr id='tr_display_type_" + i + "'>" +
                                 "<td>" + revInfo[i].type + "</td>" +
@@ -123,8 +123,8 @@ function updateTypeColorList(index) {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    var revInfo = revObj.Values;
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        var revInfo = revObj.Value[0].Values || [];
                         for (i = 0; i < revInfo.length; i++) {
                             if (revInfo[i].color_type == 'Custom') {
                                 $("#table_display_type").append("<tr id='tr_display_type_" + i + "'>" +

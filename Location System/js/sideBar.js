@@ -74,6 +74,14 @@ function inputAlarmData(element, i) {
             color = '#ffae00'; // '#ffe600';
             status = $.i18n.prop('i_electronicFence');
             break;
+        case "stay":
+            color = '#1a53ff';
+            status = $.i18n.prop('i_stayAlarm');
+            break;
+        case "hidden":
+            color = '#3333cc';
+            status = $.i18n.prop('i_hiddenAlarm');
+            break;
         default:
             color = "#FFFFFF"; //unknown
             status = "";
@@ -103,9 +111,9 @@ function inputAlarmData(element, i) {
         " class=\"btn btn-default\" title=\"" + $.i18n.prop('i_locate') + "\">" +
         "<img class=\"icon-image\" src=\"../image/target.png\"></button>" +
         "</div></div>");
-        setMemberPhoto(thumb_img, thumb_number, element.number);
+    setMemberPhoto(thumb_img, thumb_number, element.number);
     $("#" + thumb_unlock_btn_id).click(function () {
-        if (confirm("是否記錄此事件已處理?\n(確認後將會把目前畫面中的警報消除，但是刷新頁面後仍會跳出，請確實解除引發警報的原因!)")) {
+        if (confirm("是否記錄此事件已處理?\n(確認後會消除目前警報列表中相關的警報，請確實解除警報的發生原因!)")) {
             releaseFocusAlarm(element.order);
             $("#" + thumb_id).hide(); //警告卡片會消失
             changeAlarmLight();
@@ -163,6 +171,14 @@ function setAlarmDialog(Obj) {
         case "Fence":
             color = '#ffae00'; // '#ffe600';
             status = $.i18n.prop('i_electronicFence');
+            break;
+        case "stay":
+            color = '#1a53ff';
+            status = $.i18n.prop('i_stayAlarm');
+            break;
+        case "hidden":
+            color = '#3333cc';
+            status = $.i18n.prop('i_hiddenAlarm');
             break;
         default:
             color = "#FFFFFF"; //unknown

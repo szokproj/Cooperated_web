@@ -162,7 +162,7 @@ $(function () {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         EditGroupAnchorByAnc(
                             add_anchor_id.eq(i).val(),
                             add_anchor_x.eq(i).val(),
@@ -239,7 +239,7 @@ $(function () {
                     xmlHttp.onreadystatechange = function () {
                         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                             var revObj = JSON.parse(this.responseText);
-                            if (revObj.success > 0) {
+                            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                                 getAllDataOfMap();
                                 dialog2.dialog("close");
                             }
@@ -289,7 +289,7 @@ $(function () {
                     xmlHttp.onreadystatechange = function () {
                         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                             var revObj = JSON.parse(this.responseText);
-                            if (revObj.success > 0) {
+                            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                                 getAllDataOfMap();
                                 dialog.dialog("close");
                             }
@@ -341,8 +341,8 @@ function getAnchor_Group() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                var group_anchors = 'Values' in revObj == true ? revObj.Values : [];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var group_anchors = revObj.Value[0].Values || [];
                 setTreeArray(group_anchors);
                 $("#table_anchor_group tbody").empty();
                 group_anchors.forEach(function (info, i) {
@@ -429,8 +429,8 @@ function EditGroupAnchorByAnc(anchor_id, set_x, set_y) {
     getXmlHttp.onreadystatechange = function () {
         if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                var mapGroupAnchor = 'Values' in revObj == true ? revObj.Values : [];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var mapGroupAnchor = revObj.Value[0].Values || [];
                 mapGroupAnchor.forEach(function (v, i) {
                     if (v.anchor_id == anchor_id) {
                         var editRequest = {
@@ -449,7 +449,7 @@ function EditGroupAnchorByAnc(anchor_id, set_x, set_y) {
                         editXmlHttp.onreadystatechange = function () {
                             if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
                                 var revObj2 = JSON.parse(this.responseText);
-                                if (revObj2.success > 0) {
+                                if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
                                     return;
                                 }
                             }
@@ -477,7 +477,7 @@ function DeleteGroup_Anchor(deleteArr) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0)
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0)
                 getAllDataOfMap();
         }
     };

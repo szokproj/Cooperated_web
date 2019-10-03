@@ -36,7 +36,7 @@ $(function () {
             addXmlHttp.onreadystatechange = function () {
                 if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0)
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0)
                         inputTimeGroups();
                     dialog.dialog("close");
                 }
@@ -110,7 +110,7 @@ $(function () {
         deleteXmlHttp.onreadystatechange = function () {
             if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     inputTimeGroups();
                     inputTimeGroupSlots(add_group_id.val())
                     alert($.i18n.prop('i_alarmAlert_12'));
@@ -134,11 +134,11 @@ $(function () {
         getTimesXmlHttp.onreadystatechange = function () {
             if (getTimesXmlHttp.readyState == 4 || getTimesXmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                var revList = revObj.Values;
-                if (revObj.success > 0) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     $("#table_time_group_settings tbody").empty();
                     count_time_group_settings = 0;
                     TimeSlotArr = [];
+                    var revList = revObj.Value[0].Values;
                     if (revList) {
                         revList.forEach(element => {
                             TimeSlotArr.push({
@@ -147,10 +147,12 @@ $(function () {
                             });
                         });
                         dialog.dialog("open");
-                    } else
+                    } else {
                         alert($.i18n.prop('i_alarmAlert_13'));
-                } else
+                    }
+                } else {
                     alert($.i18n.prop('i_alarmAlert_14'));
+                }
             }
         };
         getTimesXmlHttp.send(requestJSON);
@@ -180,7 +182,7 @@ $(function () {
         deleteXmlHttp.onreadystatechange = function () {
             if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     inputTimeGroups();
                     alert($.i18n.prop('i_alarmAlert_9'));
                 }
@@ -220,7 +222,7 @@ $(function () {
             addXmlHttp.onreadystatechange = function () {
                 if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         inputTimeGroups();
                         var getRequest = {
                             "Command_Type": ["Read"],
@@ -230,13 +232,11 @@ $(function () {
                         var xmlHttp = createJsonXmlHttp("sql");
                         xmlHttp.onreadystatechange = function () {
                             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                                var revObj = JSON.parse(this.responseText);
-                                if (revObj.success > 0) {
+                                var revObj2 = JSON.parse(this.responseText);
+                                if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
                                     count_time_groups = 0;
                                     $("#table_time_group tbody").empty();
-                                    TimeGroupArr = revObj.Values.slice(0);
-                                    if (!TimeGroupArr)
-                                        return;
+                                    TimeGroupArr = revObj2.Value[0].Values.slice(0) || [];
                                     for (i = 0; i < TimeGroupArr.length; i++) {
                                         var timelist_name = [];
                                         if (TimeGroupArr[i].elements) {
@@ -297,8 +297,8 @@ $(function () {
             addXmlHttp.onreadystatechange = function () {
                 if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    var revInfo = revObj.Values;
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        var revInfo = revObj.Value[0].Values || [];
                         time_group_id.val(revInfo.time_gid);
                         SubmitGroup_Slot();
                     } else {
@@ -347,10 +347,10 @@ function inputTimeGroups() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 count_time_groups = 0;
                 $("#table_time_group tbody").empty();
-                TimeGroupArr = ('Values' in revObj) == true ? revObj.Values.slice(0) : [];
+                TimeGroupArr = revObj.Value[0].Values.slice(0) || [];
                 getTimeGroups(TimeGroupArr);
                 inputAlarmGroupTable(); //載入警報群組已設定的內容
                 for (i = 0; i < TimeGroupArr.length; i++) {
@@ -401,8 +401,8 @@ function inputTimeGroupSlots(time_group_id) {
         getTimesXmlHttp.onreadystatechange = function () {
             if (getTimesXmlHttp.readyState == 4 || getTimesXmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                var revList = revObj.Values;
-                if (revObj.success > 0) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                    var revList = revObj.Value[0].Values || [];
                     TimeSlotArr = [];
                     revList.forEach(element => {
                         TimeSlotArr.push({

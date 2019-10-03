@@ -86,7 +86,7 @@ $(function () {
             xmlHttp2.onreadystatechange = function () {
                 if (xmlHttp2.readyState == 4 || xmlHttp2.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         dialog2.dialog("close");
                         inputUsersTable();
                     }
@@ -150,8 +150,8 @@ function inputUsersTable() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.accountNum > 0) {
-                var revInfo = "Values" in revObj ? revObj.Values : [];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].accountNum > 0) {
+                var revInfo = revObj.Value[0].Values || [];
                 $("#table_account tbody").empty();
                 userArray = [];
                 for (i = 0; i < revInfo.length; i++) {
@@ -234,7 +234,7 @@ function deleteAccountInfo() {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         inputUsersTable();
                     }
                 }

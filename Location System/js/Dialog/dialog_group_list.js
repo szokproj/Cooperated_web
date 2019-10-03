@@ -131,7 +131,7 @@ $(function () {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         var request2 = {
                             "Command_Type": ["Write"],
                             "Command_Name": ["AddListMap_Group"],
@@ -145,7 +145,7 @@ $(function () {
                         xmlHttp2.onreadystatechange = function () {
                             if (xmlHttp2.readyState == 4 || xmlHttp2.readyState == "complete") {
                                 var revObj = JSON.parse(this.responseText);
-                                if (revObj.success > 0) {
+                                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                                     getAllDataOfMap();
                                     EditGroupInfoByMA(
                                         add_main_anchor.val(),
@@ -231,7 +231,7 @@ $(function () {
                     xmlHttp.onreadystatechange = function () {
                         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                             var revObj = JSON.parse(this.responseText);
-                            if (revObj.success > 0) {
+                            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                                 getAllDataOfMap();
                                 dialog2.dialog("close");
                             }
@@ -279,8 +279,8 @@ function getMaps_Groups() {
     groupsXmlHttp.onreadystatechange = function () {
         if (groupsXmlHttp.readyState == 4 || groupsXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                allGroups = 'Values' in revObj ? revObj.Values.slice(0) : [];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                allGroups = revObj.Value[0].Values.slice(0) || [];
                 var getMapGroupRequest = {
                     "Command_Type": ["Read"],
                     "Command_Name": ["GetMaps_Groups"],
@@ -289,9 +289,9 @@ function getMaps_Groups() {
                 var mapGroupXmlHttp = createJsonXmlHttp("sql");
                 mapGroupXmlHttp.onreadystatechange = function () {
                     if (mapGroupXmlHttp.readyState == 4 || mapGroupXmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        if (revObj.success > 0) {
-                            maps_groupsArray = 'Values' in revObj ? revObj.Values.slice(0) : [];
+                        var revObj2 = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
+                            maps_groupsArray = revObj2.Value[0].Values.slice(0) || [];
                         } else {
                             alert($.i18n.prop('i_mapAlert_12'));
                         }
@@ -315,7 +315,7 @@ function AddMapGroup(map_groupArray) {
     addXmlHttp.onreadystatechange = function () {
         if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 return;
             }
         }
@@ -337,9 +337,9 @@ function getGroupList() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var revInfo = revObj.Value[0].Values || [];
                 var mainAnchorArr = [];
-                var revInfo = 'Values' in revObj == true ? revObj.Values : [];
                 $("#table_group_list tbody").empty();
                 revInfo.forEach(function (element, index) {
                     element.group_name = typeof (element.group_name) != 'undefined' ? element.group_name : "";
@@ -423,8 +423,8 @@ function EditGroupInfoByMA(main_anchor_id, set_x, set_y) {
     getXmlHttp.onreadystatechange = function () {
         if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                var mapGroupInfo = 'Values' in revObj == true ? revObj.Values : [];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var mapGroupInfo = revObj.Value[0].Values || [];
                 mapGroupInfo.forEach(function (v, i) {
                     if (v.main_anchor_id == main_anchor_id) {
                         var editRequest = {
@@ -446,7 +446,7 @@ function EditGroupInfoByMA(main_anchor_id, set_x, set_y) {
                         editXmlHttp.onreadystatechange = function () {
                             if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
                                 var revObj2 = JSON.parse(this.responseText);
-                                if (revObj2.success > 0) {
+                                if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
                                     return;
                                 }
                             }
@@ -474,7 +474,7 @@ function DeleteGroupInfo(deleteArray) {
     deleteXmlHttp.onreadystatechange = function () {
         if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 var deleteMapGroupArr = [];
                 deleteArray.forEach(info => {
                     maps_groupsArray.forEach(element => {
@@ -495,8 +495,8 @@ function DeleteGroupInfo(deleteArray) {
                 var xmlHttp = createJsonXmlHttp("sql");
                 xmlHttp.onreadystatechange = function () {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        if (revObj.success > 0)
+                        var revObj2 = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0)
                             DeleteGroup_Anchor(deleteArray);
                     }
                 };

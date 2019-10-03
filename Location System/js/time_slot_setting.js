@@ -111,7 +111,7 @@ $(function () {
                 addXmlHttp.onreadystatechange = function () {
                     if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
-                        if (revObj.success > 0) {
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                             inputTimeSetting();
                             dialog.dialog("close");
                             resetWeekSchedule();
@@ -134,7 +134,7 @@ $(function () {
                 editXmlHttp.onreadystatechange = function () {
                     if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
-                        if (revObj.success > 0) {
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                             inputTimeSetting();
                             dialog.dialog("close");
                             resetWeekSchedule();
@@ -211,7 +211,7 @@ $(function () {
         deleteXmlHttp.onreadystatechange = function () {
             if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     inputTimeSetting();
                     alert($.i18n.prop('i_alarmAlert_26'));
                 } else {
@@ -235,8 +235,8 @@ function inputTimeSetting() {
             var revObj = JSON.parse(this.responseText);
             $("#table_time_slot tbody").empty(); //先重置表格
             count_time_slot = 0;
-            if (revObj.success > 0) {
-                timeSlotArray = ('Values' in revObj) == true ? revObj.Values.slice(0) : [];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                timeSlotArray = revObj.Value[0].Values.slice(0) || [];
                 for (i = 0; i < timeSlotArray.length; i++) {
                     count_time_slot++;
                     var tr_id = "tr_time_slot_" + count_time_slot;

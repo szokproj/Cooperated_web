@@ -112,8 +112,8 @@ function createChart(type) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success == 1) {
-                datascource.children = revObj.Values;
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                datascource.children = revObj.Value[0].Values;
             } else {
                 datascource.children = null;
             }

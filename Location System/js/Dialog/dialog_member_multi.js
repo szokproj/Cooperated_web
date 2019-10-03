@@ -68,7 +68,7 @@ $(function () {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0)
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0)
                         UpdateMemberList();
                 }
             };

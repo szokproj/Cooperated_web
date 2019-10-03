@@ -52,7 +52,7 @@ $(function () {
         format: 'HH:mm'
     });
 
-    $("#btn_submit_alarm_setting").button().on("click", function () {
+    /*$("#btn_submit_alarm_setting").button().on("click", function () {
         var request = {
             "Command_Type": ["Write"],
             "Command_Name": ["UpdateAlarmSetting"],
@@ -84,14 +84,14 @@ $(function () {
             "api_token": [token]
         };
         //var alarm_arr = ["low_power", "help", "active", "still", "stay", "hidden"];
-        /*alarm_arr.forEach(element => {
-            request.Value[element + "_alarm"]["on"] = $("input[name=alarm_" + element + "]:checked").val();
-        });*/
+        //alarm_arr.forEach(element => {
+        //    request.Value[element + "_alarm"]["on"] = $("input[name=alarm_" + element + "]:checked").val();
+        //});
         var submitXmlHttp = createJsonXmlHttp("sql");
         submitXmlHttp.onreadystatechange = function () {
             if (submitXmlHttp.readyState == 4 || submitXmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     alert($.i18n.prop('i_alarmAlert_2'));
                 } else {
                     alert($.i18n.prop('i_alarmAlert_3'));
@@ -99,7 +99,7 @@ $(function () {
             }
         };
         submitXmlHttp.send(JSON.stringify(request));
-    });
+    });*/
 
 
     var dialog, form,
@@ -142,8 +142,8 @@ $(function () {
                 addIdXmlHttp.onreadystatechange = function () {
                     if (addIdXmlHttp.readyState == 4 || addIdXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
-                        var revInfo = revObj.Values;
-                        if (revObj.success > 0 && revInfo) {
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                            var revInfo = revObj.Value[0].Values;
                             var alarmModeGroupArr = [];
                             for (i in alarmModeArray) {
                                 var isSwitch = "0",
@@ -175,7 +175,7 @@ $(function () {
                             addXmlHttp.onreadystatechange = function () {
                                 if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                                     var revObj = JSON.parse(this.responseText);
-                                    if (revObj.success > 0) {
+                                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                                         addFenceAG_info(revInfo.alarm_gid);
                                     }
                                 }
@@ -201,7 +201,7 @@ $(function () {
                 addIdXmlHttp.onreadystatechange = function () {
                     if (addIdXmlHttp.readyState == 4 || addIdXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
-                        if (revObj.success > 0) {
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                             var alarmModeGroupArr = [];
                             for (i in alarmModeArray) {
                                 var isSwitch = "0",
@@ -234,7 +234,7 @@ $(function () {
                             addXmlHttp.onreadystatechange = function () {
                                 if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                                     var revObj = JSON.parse(this.responseText);
-                                    if (revObj.success > 0) {
+                                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                                         editFenceAG_info(group_id);
                                     }
                                 }
@@ -308,7 +308,7 @@ $(function () {
         deleteIDXmlHttp.onreadystatechange = function () {
             if (deleteIDXmlHttp.readyState == 4 || deleteIDXmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     var sel_alarm_arr = [];
                     for (j in sel_group_arr) {
                         var g_index = alarmSettingArr.findIndex(function (info) {
@@ -330,7 +330,7 @@ $(function () {
                     deleteXmlHttp.onreadystatechange = function () {
                         if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
                             var revObj = JSON.parse(this.responseText);
-                            if (revObj.success > 0) {
+                            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                                 deleteFenceAG_info();
                                 alert($.i18n.prop('i_alarmAlert_5'));
                             }
@@ -359,11 +359,12 @@ function addFenceAG_info(alarm_group_id) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                var index = revObj.Values.findIndex(function (info) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var revInfo = revObj.Value[0].Values;
+                var index = revInfo.findIndex(function (info) {
                     return info.alarm_group_id == alarm_group_id;
                 });
-                editAlarmGroupInfo_fence(revObj.Values[index].id);
+                editAlarmGroupInfo_fence(revInfo[index].id);
             } else {
                 alert($.i18n.prop('i_alarmAlert_50'));
             }
@@ -392,7 +393,7 @@ function editFenceAG_info(alarm_group_id) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 editAlarmGroupInfo_fence($("#add_alarm_mode_4_id").val());
             } else {
                 alert($.i18n.prop('i_alarmAlert_51'));
@@ -416,7 +417,7 @@ function deleteFenceAG_info() {
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     inputAlarmGroupTable();
                     editAlarmGroupInfo_fence("-1");
                 } else {
@@ -446,7 +447,7 @@ function editAlarmGroupInfo_fence(id) {
     editXmlHttp.onreadystatechange = function () {
         if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 inputAlarmGroupTable();
                 $("#dialog_add_alarm_group").dialog("close");
             }
@@ -465,8 +466,8 @@ function editAlarmGroupInfo_fence(id) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            var revList = revObj.Values;
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value.success > 0) {
+                var revList = revObj.Value[0].Values;
                 var alarm_arr = ["low_power", "help", "active", "still", "stay", "hidden"];
                 alarm_arr.forEach(element => {
                     if (revList[element + "_alarm"].on == 1)
@@ -521,9 +522,9 @@ function inputAlarmGroupTable() {
     alarmXmlHttp.onreadystatechange = function () {
         if (alarmXmlHttp.readyState == 4 || alarmXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            //get all data of alarm_group and input alarmSettingArr variable
-            alarmSettingArr = ('Values' in revObj) == true ? revObj.Values.slice(0) : [];
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                //get all data of alarm_group and input alarmSettingArr variable
+                alarmSettingArr = revObj.Value[0].Values.slice(0) || [];
                 //send request to get all data of fence_alarm_group
                 var fagRequest = {
                     "Command_Type": ["Write"],
@@ -534,8 +535,8 @@ function inputAlarmGroupTable() {
                 fagXmlHttp.onreadystatechange = function () {
                     if (fagXmlHttp.readyState == 4 || fagXmlHttp.readyState == "complete") {
                         var response = JSON.parse(this.responseText);
-                        var values = ('Values' in response) == true ? response.Values : [];
-                        if (response.success > 0) {
+                        if (checkTokenAlive(token, response) && response.Value[0].success > 0) {
+                            var values = response.Value[0].Values || [];
                             $("#table_alarm_mode tbody").empty();
                             count_alarm_group = 0;
                             alarmSettingArr.forEach(ag_info => {

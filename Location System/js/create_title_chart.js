@@ -38,8 +38,8 @@ $(function () {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success == 1) {
-                datascource.children = revObj.Values;
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                datascource.children = revObj.Value[0].Values;
             } else {
                 datascource.children = null;
             }
@@ -147,12 +147,12 @@ $(function () {
                         addXmlHttp.onreadystatechange = function () {
                             if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                                 var revObj = JSON.parse(this.responseText);
-                                if (revObj.success == 1) {
+                                if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                                     oc.addSiblings($node, nodeVals.map(function (item) {
                                         return {
                                             'name': item,
                                             'relationship': '110',
-                                            'id': revObj.Values.c_id,
+                                            'id': revObj.Value[0].Values.c_id,
                                             "color": addColor
                                         };
                                     }));
@@ -235,7 +235,7 @@ $(function () {
                 deleteXmlHttp.onreadystatechange = function () {
                     if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
-                        if (revObj.success == 1) {
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                             oc.removeNodes($node);
                             $('#selected-node').val('').data('node', null);
                         }
@@ -307,7 +307,7 @@ $(function () {
                     editXmlHttp.onreadystatechange = function () {
                         if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
                             var revObj = JSON.parse(this.responseText);
-                            if (revObj.success == 1) {
+                            if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                                 var nodeTitle = $node.children('.title');
                                 if ($node.find('.symbol').length) {
                                     nodeTitle.text(editName).css('background-color', editColor)

@@ -137,7 +137,8 @@
             var xmlHttp = createJsonXmlHttp("test2");
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                    return 0;
+                    var revObj = JSON.parse(this.responseText);
+                    var pass = checkTokenAlive(token, revObj);
                 }
             };
             xmlHttp.send(JSON.stringify(requestArray));
@@ -148,8 +149,8 @@
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0) {
-                        for (i = 0; i < revObj.Values.length; i++) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        for (i = 0; i < revObj.Value[0].Values.length; i++) {
                             $("#table_advance_cmd tbody").append("<tr>" +
                                 "<td>" + (i + 1) + "</td>" +
                                 "<td></td>" +

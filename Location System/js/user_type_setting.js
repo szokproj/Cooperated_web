@@ -74,7 +74,7 @@ $(function () {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         updateTypeList();
                     } else {
                         alert($.i18n.prop('i_alertError_6'));
@@ -129,8 +129,8 @@ function updateTypeList() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            var revInfo = revObj.Values;
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var revInfo = revObj.Value[0].Values;
                 for (i = 0; i < revInfo.length; i++) {
                     $("#table_type_list tbody").append("<tr>" +
                         "<td>" + (i + 1) + "</td>" +
@@ -194,12 +194,11 @@ function deleteType(name) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 updateTypeList();
             } else {
                 alert($.i18n.prop('i_alertError_8'));
             }
-            return;
         }
     };
     xmlHttp.send(JSON.stringify(request_delete));

@@ -78,7 +78,7 @@ $(function () {
             mapHttp.onreadystatechange = function () {
                 if (mapHttp.readyState == 4 || mapHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj && revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         //reload
                         loadMap();
                         dialog.dialog("close");

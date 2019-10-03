@@ -41,9 +41,10 @@ $(function () {
     deptXmlHttp.onreadystatechange = function () {
         if (deptXmlHttp.readyState == 4 || deptXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                for (i = 0; i < revObj.Values.length; i++)
-                    deptColorArray.push(revObj.Values[i]);
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var revInfo = revObj.Value[0].Values || [];
+                for (i = 0; i < revInfo.length; i++)
+                    deptColorArray.push(revInfo[i]);
             }
         }
     };
@@ -57,9 +58,11 @@ $(function () {
     titleXmlHttp.onreadystatechange = function () {
         if (titleXmlHttp.readyState == 4 || titleXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                for (i = 0; i < revObj.Values.length; i++)
-                    titleColorArray.push(revObj.Values[i]);
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var revInfo = revObj.Value[0].Values || [];
+                revInfo.forEach(element => {
+                    titleColorArray.push(element);
+                });
             }
         }
     };
@@ -73,11 +76,12 @@ $(function () {
     userTypeXmlHttp.onreadystatechange = function () {
         if (userTypeXmlHttp.readyState == 4 || userTypeXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                for (i = 0; i < revObj.Values.length; i++) {
-                    userTypeColorArray.push(revObj.Values[i]);
-                    userTypeArr.push(revObj.Values[i].type);
-                }
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var revInfo = revObj.Value[0].Values || [];
+                revInfo.forEach(element => {
+                    userTypeColorArray.push(element);
+                    userTypeArr.push(element.type);
+                });
             }
         }
     };
@@ -184,8 +188,8 @@ function UpdateMemberList() {
     getXmlHttp.onreadystatechange = function () {
         if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            var revList = revObj.Values;
-            if (revObj.success > 0 && revList) {
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var revList = revObj.Value[0].Values || [];
                 alarmGroupArr = [];
                 revList.forEach(element => {
                     alarmGroupArr.push({
@@ -201,39 +205,36 @@ function UpdateMemberList() {
                 var xmlHttp = createJsonXmlHttp("sql"); //updateMemberList
                 xmlHttp.onreadystatechange = function () {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        if (revObj.success > 0) {
+                        var revObj2 = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
                             $("#table_member_setting tbody").empty(); //先重置表格
-                            //var memberArray = revObj.Values;
-                            memberArray = revObj.Values.slice(0);
-                            if (memberArray) {
-                                for (var i = 0; i < memberArray.length; i++) {
-                                    var tr_id = "tr_member_" + i;
-                                    var user_id = parseInt(memberArray[i].tag_id.substring(8), 16);
-                                    var number = memberArray[i].number;
-                                    var alarm_index = alarmGroupArr.findIndex(function (array) {
-                                        return array.id == memberArray[i].alarm_group_id;
-                                    });
-                                    var alarm_group_name = alarm_index > -1 ? alarmGroupArr[alarm_index].name : "";
-                                    $("#table_member_setting tbody").append("<tr id=\"" + tr_id + "\">" +
-                                        "<td><input type=\"checkbox\" name=\"chkbox_members\" value=\"" + number + "\" " +
-                                        " /> <label>" + (i + 1) + "</label></td>" +
-                                        "<td class=\"row_number\">" + number + "</td>" +
-                                        "<td class=\"row_user_id\">" + user_id + "</td>" +
-                                        "<td class=\"row_name\">" + memberArray[i].Name + "</td>" +
-                                        "<td class=\"row_dept\">" + memberArray[i].department + "</td>" +
-                                        "<td class=\"row_job_title\">" + memberArray[i].jobTitle + "</td>" +
-                                        "<td class=\"row_user_type\">" + memberArray[i].type + "</td>" +
-                                        "<td class=\"row_alarm_group\">" + alarm_group_name + "</td>" +
-                                        "<td class=\"row_note\">" + memberArray[i].note + "</td>" +
-                                        "<td><button class=\"btn btn-primary btn-edit\"" +
-                                        " onclick=\"editMemberData(\'" + number + "\')\">" + $.i18n.prop('i_edit') +
-                                        "</button></td>" +
-                                        "</tr>");
-                                }
-                                //displayBar("table_member_setting");
-                                setCheckboxListeners();
+                            memberArray = revObj2.Value[0].Values.slice(0) || [];
+                            for (var i = 0; i < memberArray.length; i++) {
+                                var tr_id = "tr_member_" + i;
+                                var user_id = parseInt(memberArray[i].tag_id.substring(8), 16);
+                                var number = memberArray[i].number;
+                                var alarm_index = alarmGroupArr.findIndex(function (array) {
+                                    return array.id == memberArray[i].alarm_group_id;
+                                });
+                                var alarm_group_name = alarm_index > -1 ? alarmGroupArr[alarm_index].name : "";
+                                $("#table_member_setting tbody").append("<tr id=\"" + tr_id + "\">" +
+                                    "<td><input type=\"checkbox\" name=\"chkbox_members\" value=\"" + number + "\" " +
+                                    " /> <label>" + (i + 1) + "</label></td>" +
+                                    "<td class=\"row_number\">" + number + "</td>" +
+                                    "<td class=\"row_user_id\">" + user_id + "</td>" +
+                                    "<td class=\"row_name\">" + memberArray[i].Name + "</td>" +
+                                    "<td class=\"row_dept\">" + memberArray[i].department + "</td>" +
+                                    "<td class=\"row_job_title\">" + memberArray[i].jobTitle + "</td>" +
+                                    "<td class=\"row_user_type\">" + memberArray[i].type + "</td>" +
+                                    "<td class=\"row_alarm_group\">" + alarm_group_name + "</td>" +
+                                    "<td class=\"row_note\">" + memberArray[i].note + "</td>" +
+                                    "<td><button class=\"btn btn-primary btn-edit\"" +
+                                    " onclick=\"editMemberData(\'" + number + "\')\">" + $.i18n.prop('i_edit') +
+                                    "</button></td>" +
+                                    "</tr>");
                             }
+                            //displayBar("table_member_setting");
+                            setCheckboxListeners();
                         } else {
                             alert($.i18n.prop('i_alertError_1'));
                         }
@@ -260,8 +261,8 @@ function editMemberData(number) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                var revInfo = revObj.Values[0];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var revInfo = revObj.Value[0].Values[0];
                 $("#main_tid_id").val(parseInt(revInfo.tag_id.substring(0, 8), 16));
                 $("#main_user_id").val(parseInt(revInfo.tag_id.substring(8), 16));
                 $("#main_card_id").val(revInfo.card_id);
@@ -325,8 +326,8 @@ function editMemberData(number) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                var revInfo = revObj.Values[0]
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var revInfo = revObj.Value[0].Values[0]
                 //$("#main_picture_thumbnail").attr("href", "data:image/png;base64," + revInfo.photo);
                 $("#main_picture_img").attr("src", "data:image/png;base64," + revInfo.photo);
             }
@@ -464,7 +465,7 @@ function removeMemberDatas() {
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                if (revObj.success > 0) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     UpdateMemberList();
                 }
             }
@@ -500,9 +501,9 @@ function multiEditData() {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        var revInfo = revObj.Value[0].Values || [];
                         var deptArr = [];
-                        var revInfo = 'Values' in revObj == true ? revObj.Values : [];
                         revInfo.forEach(element => {
                             deptArr.push({
                                 id: element.c_id,
@@ -524,9 +525,9 @@ function multiEditData() {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        var revInfo = revObj.Value[0].Values || [];
                         var titleArr = [];
-                        var revInfo = 'Values' in revObj == true ? revObj.Values : [];
                         revInfo.forEach(element => {
                             titleArr.push({
                                 id: element.c_id,
@@ -548,9 +549,9 @@ function multiEditData() {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0) {
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        var revInfo = revObj.Value[0].Values || [];
                         var typeArr = [];
-                        var revInfo = 'Values' in revObj == true ? revObj.Values : [];
                         revInfo.forEach(element => {
                             typeArr.push(element.type);
                         });
@@ -559,8 +560,6 @@ function multiEditData() {
                 }
             };
             xmlHttp.send(JSON.stringify(request));
-        } else {
-            return;
         }
     });
     $("#multi_edit_item").removeClass("ui-state-error");

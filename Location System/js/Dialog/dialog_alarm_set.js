@@ -32,7 +32,7 @@ function cerateAlarmDialog(dialog_id, request_name) {
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
-                    if (revObj.success > 0)
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0)
                         alert($.i18n.prop('i_alarmAlert_2'));
                     else
                         alert($.i18n.prop('i_alarmAlert_3'));

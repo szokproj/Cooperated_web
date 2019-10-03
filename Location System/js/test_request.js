@@ -325,8 +325,8 @@ $(function () {
         ancXmlHttp.onreadystatechange = function () {
             if (ancXmlHttp.readyState == 4 || ancXmlHttp.readyState == "complete") {
                 var revObj = JSON.parse(this.responseText);
-                var anchorList = revObj.Values;
-                if (revObj.success > 0) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                    var anchorList = revObj.Value[0].Values || [];
                     var x, y;
                     for (i in anchorList) {
                         x = anchorList[i].set_x / canvasImg.scale;

@@ -87,8 +87,8 @@ function loadMaps() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                var revInfo = 'Values' in revObj == true ? revObj.Values.slice(0) : [];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var revInfo = revObj.Value[0].Values.slice(0) || [];
                 mapArray = [];
                 $("#select_map").empty()
                 revInfo.forEach(v => {
@@ -293,8 +293,8 @@ function updateFenceTable() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                fenceArray = 'Values' in revObj == true ? revObj.Values.slice(0) : [];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                fenceArray = revObj.Value[0].Values.slice(0) || [];
                 $("#table_fence_setting tbody").empty();
                 fenceDotArray = [];
                 for (i = 0; i < fenceArray.length; i++) {
@@ -332,8 +332,8 @@ function getFencePointArray(fence_id) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                var arr = 'Values' in revObj == true ? revObj.Values.slice(0) : [];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var arr = revObj.Value[0].Values.slice(0) || [];
                 for (i = 0; i < arr.length; i++)
                     fenceDotArray.push(arr[i]);
                 draw();
@@ -367,8 +367,8 @@ function getGroups() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj.success > 0) {
-                var mapGroups = ('Values' in revObj) ? revObj.Values : [];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var mapGroups = revObj.Value[0].Values || [];
                 groupArray = [];
                 mapGroups.forEach(element => {
                     if (element.map_id == map_id)
@@ -397,8 +397,8 @@ function getAnchor_Group() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (revObj && revObj.success > 0) {
-                anchorGroupArray = ('Values' in revObj) ? revObj.Values.slice(0) : [];
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                anchorGroupArray = revObj.Value[0].Values.slice(0) || [];
                 draw();
             } else {
                 alert($.i18n.prop('i_alarmAlert_31'));
