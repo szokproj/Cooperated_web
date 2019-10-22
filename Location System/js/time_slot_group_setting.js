@@ -314,7 +314,7 @@ $(function () {
 
     dialog2 = $("#dialog_add_time_group_slot").dialog({
         autoOpen: false,
-        height: 180,
+        height: 170,
         width: 220,
         modal: true,
         buttons: {

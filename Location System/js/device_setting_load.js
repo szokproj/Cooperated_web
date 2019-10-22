@@ -60,9 +60,7 @@ $(function () { //Load==>
     }
     setNavBar("Anchor_Setting", "");
 
-    var h = screen.availHeight;
-    //var w = screen.availWidth;
-    $(".middle").css("height", h * 0.75 + "px");
+    $(".middle").css("height", screen.availHeight * 0.75 + "px");
 
     var dialog, form;
     dialog = $("#dialog_set_table_display").dialog({
@@ -158,12 +156,12 @@ $(function () { //Load==>
     sortTable('.row_gateway_addr', 'input');
     sortTable('.row_mask_addr', 'input');
     sortTable('.row_client_ip_addr', 'input');
-    sortTable('.row_tcp_server_port', 'input');
-    sortTable('.row_udp_server_port', 'input');
-    sortTable('.row_tcp_client_src_port', 'input');
-    sortTable('.row_tcp_client_des_port', 'input');
     sortTable('.row_machine_number', 'input');
-    sortTable('.row_model', 'input');
+    sortTable('.row_model', '');
+    sortTable('.row_tcp_server_port', '');
+    sortTable('.row_udp_server_port', '');
+    sortTable('.row_tcp_client_src_port', '');
+    sortTable('.row_tcp_client_des_port', '');
     sortTable('.row_rf_mode', '');
     sortTable('.row_rf_version', '');
     sortTable('.row_rf_channel', 'select');
@@ -268,12 +266,12 @@ function inputSetAllRow() {
         "<th class=\"row_gateway_addr\"><input type='text' id=\"all_gateway_addr\" /></th>" +
         "<th class=\"row_mask_addr\"><input type='text' id=\"all_mask_addr\" /></th>" +
         "<th class=\"row_client_ip_addr\"><input type='text' id=\"all_client_ip_addr\" /></th>" +
-        "<th class=\"row_tcp_server_port\"><input type='text' id=\"all_tcp_server_port\" /></th>" +
-        "<th class=\"row_udp_server_port\"><input type='text' id=\"all_udp_server_port\" /></th>" +
-        "<th class=\"row_tcp_client_src_port\"><input type='text' id=\"all_tcp_client_src_port\" /></th>" +
-        "<th class=\"row_tcp_client_des_port\"><input type='text' id=\"all_tcp_client_des_port\" /></th>" +
         "<th class=\"row_machine_number\"><input type='text' id=\"all_machine_number\" /></th>" +
-        "<th class=\"row_model\"><input type='text' id=\"all_model\" /></th>" +
+        "<th class=\"row_model\">N/A</th>" +
+        "<th class=\"row_tcp_server_port\">N/A</th>" +
+        "<th class=\"row_udp_server_port\">N/A</th>" +
+        "<th class=\"row_tcp_client_src_port\">N/A</th>" +
+        "<th class=\"row_tcp_client_des_port\">N/A</th>" +
         "<th></th>" +
         "<th class=\"row_rf_mode\" id=\"all_rf_mode\">N/A</th>" +
         "<th class=\"row_rf_version\" id=\"all_rf_version\">N/A</th>" +
@@ -397,8 +395,7 @@ function setListenerOfSetAllRow() {
      * Synchronize all rows of this column
      */
     var network_name_array = [
-        "gateway_addr", "mask_addr", "client_ip_addr", "tcp_server_port", "udp_server_port",
-        "tcp_client_src_port", "tcp_client_des_port", "machine_number", "model"
+        "gateway_addr", "mask_addr", "client_ip_addr", "machine_number"
     ];
     var rf_name_array = [
         "rf_channel", "rf_datarate", "rf_prf", "rf_preamble_code", "rf_preamble_len", "rf_pac",
@@ -435,12 +432,12 @@ function inputDataToColumns(element) {
             "<td class=\"row_gateway_addr\"><input type='text' name=\"conn_gateway_addr\" value=\"" + element.Gateway_address + "\" /></td>" +
             "<td class=\"row_mask_addr\"><input type='text' name=\"conn_mask_addr\" value=\"" + element.Mask_address + "\" /></td>" +
             "<td class=\"row_client_ip_addr\"><input type='text' name=\"conn_client_ip_addr\" value=\"" + element.Client_ip_addr + "\" /></td>" +
-            "<td class=\"row_tcp_server_port\"><input type='text' name=\"conn_tcp_server_port\" value=\"" + element.TCP_Serve_Port + "\" /></td>" +
-            "<td class=\"row_udp_server_port\"><input type='text' name=\"conn_udp_server_port\" value=\"" + element.UDP_Serve_Port + "\" /></td>" +
-            "<td class=\"row_tcp_client_src_port\"><input type='text' name=\"conn_tcp_client_src_port\" value=\"" + element.TCP_Client_Src_Port + "\" /></td>" +
-            "<td class=\"row_tcp_client_des_port\"><input type='text' name=\"conn_tcp_client_des_port\" value=\"" + element.TCP_Client_Des_Port + "\" /></td>" +
             "<td class=\"row_machine_number\"><input type='text' name=\"conn_machine_number\" value=\"" + element.Machine_Number + "\" /></td>" +
-            "<td class=\"row_model\"><input type='text' name=\"conn_model\" value=\"" + element.Model + "\" /></td>" +
+            "<td class=\"row_model\">" + element.Model + "</td>" +
+            "<td class=\"row_tcp_server_port\">" + element.TCP_Serve_Port + "</td>" +
+            "<td class=\"row_udp_server_port\">" + element.UDP_Serve_Port + "</td>" +
+            "<td class=\"row_tcp_client_src_port\">" + element.TCP_Client_Src_Port + "</td>" +
+            "<td class=\"row_tcp_client_des_port\">" + element.TCP_Client_Des_Port + "</td>" +
             "<td></td></tr>");
         $("#table_ip_address_info tbody tr:eq(0) td:lt(16)").css("background-color", "#c7d8e2");
     } else {
@@ -458,12 +455,12 @@ function inputDataToColumns(element) {
             "</td><td class=\"row_gateway_addr\">" + element.Gateway_address +
             "</td><td class=\"row_mask_addr\">" + element.Mask_address +
             "</td><td class=\"row_client_ip_addr\">" + element.Client_ip_addr +
+            "</td><td class=\"row_machine_number\">" + element.Machine_Number +
+            "</td><td class=\"row_model\">" + element.Model +
             "</td><td class=\"row_tcp_server_port\">" + element.TCP_Serve_Port +
             "</td><td class=\"row_udp_server_port\">" + element.UDP_Serve_Port +
             "</td><td class=\"row_tcp_client_src_port\">" + element.TCP_Client_Src_Port +
             "</td><td class=\"row_tcp_client_des_port\">" + element.TCP_Client_Des_Port +
-            "</td><td class=\"row_machine_number\">" + element.Machine_Number +
-            "</td><td class=\"row_model\">" + element.Model +
             "</td><td></td></tr>");
     }
 }

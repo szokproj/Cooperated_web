@@ -121,6 +121,14 @@
                             selectname="i_releasePosition"><i class="fas fa-unlock-alt drop-shadow"></i></label>
                         <input type="button" id="btn_unlock_alarm" class="btn-hidden" onclick="unlockFocusAlarm();" />
                     </div>-->
+                    <div class="sideBar-left-button">
+                        <button id="btn_sort_alarm" class="btn btn-default i18n-input" selectattr="title"
+                            selectname="i_lastestTop" onclick="sortAlarm();"><i class="fas fa-sort-amount-up"></i>
+                        </button>
+                        <!--<label class="btn-alarm i18n-input" for="btn_sort_alarm" id="label_sort_alarm"
+                            selectattr="title" selectname="i_sort"><i class="fas fa-sort-up"></i></label>
+                        <input type="button" id="btn_sort_alarm" class="btn-hidden" onclick="sortAlarm();" />-->
+                    </div>
                     <div class="sideBar-left">
                         <div class="thumbnail_columns"></div>
                     </div>
@@ -134,7 +142,8 @@
                                 <li class="active">
                                     <a href="#sidebar_right_member" data-toggle="tab" class="i18n" name="i_member"></a>
                                 </li>
-                                <li><a href="#sidebar_right_alarm" data-toggle="tab" class="i18n" name="i_alarm"></a>
+                                <li><a href="#sidebar_right_alarm" data-toggle="tab" class="i18n"
+                                        name="i_alarmHandle"></a>
                                 </li>
                                 <li><a href="#sidebar_right_search" data-toggle="tab" class="i18n" name="i_search"></a>
                                 </li>
@@ -151,12 +160,11 @@
                                         <img class="icon-image" src="../image/release_position.png">
                                     </button>
                                     <div class="sidebar-table member-table">
-                                        <table id="table_rightbar_member_list" class="order-table"
-                                            style="width: 400px;">
+                                        <table id="table_rightbar_member_list" class="order-table" style="width:300px;">
                                             <thead>
                                                 <tr>
                                                     <th class="i18n" name="i_item"></th>
-                                                    <th class="i18n" name="i_userID" style="width:100px;"></th>
+                                                    <th class="i18n" name="i_userID" style="width:70px;"></th>
                                                     <th class="i18n" name="i_number"></th>
                                                     <th class="i18n" name="i_name"></th>
                                                     <th class="i18n" name="i_locate" style="width:30px;"></th>
@@ -168,15 +176,16 @@
                                 </div>
                                 <div class="tab-pane fade" id="sidebar_right_alarm">
                                     <div class="sidebar-table alarm-table">
-                                        <table id="table_rightbar_alarm_list" style="width: 800px;">
+                                        <table id="table_rightbar_alarm_list" style="width:600px;">
                                             <thead>
                                                 <tr>
                                                     <th class="i18n" name="i_item"></th>
-                                                    <th class="i18n" name="i_number"></th>
-                                                    <th class="i18n" name="i_name"></th>
-                                                    <th class="i18n" name="i_userID" style="width:100px;"></th>
                                                     <th class="i18n" name="i_alarmStatus"></th>
-                                                    <th class="i18n" name="i_happenTime"></th>
+                                                    <th class="i18n" name="i_userID" style="width:70px;"></th>
+                                                    <th class="i18n" name="i_number" style="width:70px;"></th>
+                                                    <th class="i18n" name="i_name" style="width:70px;"></th>
+                                                    <th class="i18n" name="i_executor"></th>
+                                                    <th class="i18n" name="i_time" style="width:160px;"></th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -306,6 +315,24 @@
                         <div class="wrapper">
                             <input type="checkbox" id="chk_fit_window">
                             <label for="chk_fit_window"><span></span></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="i18n" name="i_displayFenceArea"></label></td>
+                    <td>
+                        <div class="wrapper">
+                            <input type="checkbox" id="chk_display_fence">
+                            <label for="chk_display_fence"><span></span></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="i18n" name="i_displayNoPosition"></label></td>
+                    <td>
+                        <div class="wrapper">
+                            <input type="checkbox" id="chk_display_no_position">
+                            <label for="chk_display_no_position"><span></span></label>
                         </div>
                     </td>
                 </tr>

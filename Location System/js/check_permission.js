@@ -141,22 +141,22 @@ function getPermissionOfPage(parent_page) {
 }
 
 function setNavBar(parent_page, child_page) {
-    var navbar = new Navbar();
-    if (parent_page != "") {
+    $(function () {
+        var navbar = new Navbar();
         navbar.setFirstFloor(parent_page);
         navbar.setSecondFloor(parent_page, child_page);
         navbar.loadNavbar();
-    } else {
-        alert("Loading navbar failed!");
-    }
+    });
 }
 
 function Navbar() {
+    var lock_stste = getCookie('lock_state') || "unlocked";
     var ParentPageArray = Object.keys(MinimumPermission);
     var count_parents = 0;
     var parent_order = -1;
     var child_order = -1;
-    var navbarHtml = "<aside class=\"menu\"><div class=\"menu-left\"><nav class=\"sidebar\"><ul class=\"nav\">";
+    var navbarHtml = "<aside class=\"menu\"><div class=\"menu-left" + (lock_stste == "locked" ? " locked" : "") + "\">" +
+        "<nav class=\"sidebar\"><ul class=\"nav\">";
     this.setFirstFloor = function (parent_page) {
         ParentPageArray.forEach(function (PageName, i) {
             var permission_num = typeof (parseInt(permission, 10)) === 'number' ? parseInt(permission, 10) : 0;
@@ -168,37 +168,37 @@ function Navbar() {
                     case "index":
                         count_parents++;
                         navbarHtml += "<li><a href=\"../index.html\"><i class=\"fas fa-satellite-dish\"></i>" +
-                            "<span class=\"i18n\" name=\"homePage\"></span></a></li>";
+                            "<span>" + $.i18n.prop('homePage') + "</span></a></li>";
                         break;
                     case "Member_Setting":
                         count_parents++;
                         navbarHtml += "<li><a href=\"../Member_Setting.html\"><i class=\"fas fa-user-cog\"></i>" +
-                            "<span class=\"i18n\" name=\"member_settingPage\"></span></a></li>";
+                            "<span>" + $.i18n.prop('member_settingPage') + "</span></a></li>";
                         break;
                     case "Timeline":
                         count_parents++;
                         navbarHtml += "<li><a href=\"../Timeline.html\"><i class=\"fas fa-route\"></i>" +
-                            "<span class=\"i18n\" name=\"timelinePage\"></span></a></li>";
+                            "<span>" + $.i18n.prop('timelinePage') + "</span></a></li>";
                         break;
                     case "Map_Setting":
                         count_parents++;
                         navbarHtml += "<li><a href=\"../Map_Setting.html\"><i class=\"fas fa-map\"></i>" +
-                            "<span class=\"i18n\" name=\"map_settingPage\"></span></a></li>";
+                            "<span>" + $.i18n.prop('map_settingPage') + "</span></a></li>";
                         break;
                     case "Anchor_Setting":
                         count_parents++;
                         navbarHtml += "<li><a href=\"../Anchor_Setting.html\"><i class=\"fas fa-anchor\"></i>" +
-                            "<span class=\"i18n\" name=\"anchor_settingPage\"></span></a></li>";
+                            "<span>" + $.i18n.prop('anchor_settingPage') + "</span></a></li>";
                         break;
                     case "Alarm_Setting":
                         count_parents++;
                         navbarHtml += "<li><a href=\"../Alarm_Setting.html\"><i class=\"fas fa-bell\" style=\"padding-left:2px;\"></i>" +
-                            "<span class=\"i18n\" name=\"alarm_settingPage\"></span></a></li>";
+                            "<span>" + $.i18n.prop('alarm_settingPage') + "</span></a></li>";
                         break;
                     case "Reference":
                         count_parents++;
                         navbarHtml += "<li><a href=\"../Reference.html\"><i class=\"fas fa-cogs\"></i>" +
-                            "<span class=\"i18n\" name=\"advance_settingPage\"></span></a></li>";
+                            "<span>" + $.i18n.prop('advance_settingPage') + "</span></a></li>";
                         break;
                     default:
                         break;
@@ -210,22 +210,22 @@ function Navbar() {
         if (parent_page == "index") {
             navbarHtml += "<hr><li class=\"alarmlist\"><a href=\"javascript: alarmSidebarMove();\">" +
                 "<i class=\"fas fa-exclamation-circle\" id=\"alarmSideBar_icon\"></i>" +
-                "<span class=\"i18n\" name=\"i_alarmList\"></span></a></li>" +
+                "<span>" + $.i18n.prop('i_alarmList') + "</span></a></li>" +
                 "<li class=\"taglist\"><a href=\"javascript: tagSidebarMove();\">" +
                 "<i class=\"fas fa-map-marker-alt\" style=\"padding-left:2px;\"></i>" +
-                "<span class=\"i18n\" name=\"i_tagList\"></span></a></li>";
+                "<span>" + $.i18n.prop('i_tagList') + "</span></a></li>";
         } else if (parent_page == "Member_Setting") {
             navbarHtml += "<hr><li class=\"setting-type\"><a href=\"../Member_Setting.html\"><i class=\"fas fa-users\"></i>" +
-                "<span class=\"i18n\" name=\"i_memberSetting\"></span></a></li>" +
+                "<span>" + $.i18n.prop('i_memberSetting') + "</span></a></li>" +
                 "<li class=\"setting-type\"><a href=\"../Dept_Setting.html\"><i class=\"fas fa-sitemap\"></i>" +
-                "<span class=\"i18n\" name=\"i_deptSetting\"></span></a></li>" +
+                "<span>" + $.i18n.prop('i_deptSetting') + "</span></a></li>" +
                 "<li class=\"setting-type\"><a href=\"../Job_Title_Setting.html\"><i class=\"fas fa-id-card\"></i>" +
-                "<span class=\"i18n\" name=\"i_titleSetting\"></span></a></li>" +
+                "<span>" + $.i18n.prop('i_titleSetting') + "</span></a></li>" +
                 "<li class=\"setting-type\"><a href=\"../User_Type_Setting.html\"><i class=\"fas fa-user-tag\"></i>" +
-                "<span class=\"i18n\" name=\"i_usertypeSetting\"></span></a></li>" +
+                "<span>" + $.i18n.prop('i_usertypeSetting') + "</span></a></li>" +
                 "<li class=\"setting-type\"><a href=\"../Preview_Color_Setting.html\">" +
                 "<i class=\"fas fa-map-marker-alt\" style=\"padding-left:2px;\"></i>" +
-                "<span class=\"i18n\" name=\"i_previewColorSetting\"></span></a></li>";
+                "<span>" + $.i18n.prop('i_previewColorSetting') + "</span></a></li>";
             switch (child_page) {
                 case "Member_Setting":
                     child_order = count_parents;
@@ -247,14 +247,14 @@ function Navbar() {
             }
         } else if (parent_page == "Reference") {
             navbarHtml += "<hr><li class=\"setting-type\"><a href=\"../Reference.html\">" +
-                "<i class=\"fas fa-satellite-dish\"></i><span class=\"i18n\" name=\"i_reference\"></span></a></li>" +
+                "<i class=\"fas fa-satellite-dish\"></i><span>" + $.i18n.prop('i_reference') + "</span></a></li>" +
                 "<li class=\"setting-type\"><a href=\"../Advance_cmd.html\">" +
-                "<i class=\"fas fa-code\"></i><span class=\"i18n\" name=\"i_advance_cmd\"></span></a></li>" +
+                "<i class=\"fas fa-code\"></i><span>" + $.i18n.prop('i_advance_cmd') + "</span></a></li>" +
                 "<li class=\"setting-type\"><a href=\"../Update.html\">" +
-                "<i class=\"fas fa-download\"></i><span class=\"i18n\" name=\"i_update\"></span></a></li>" +
+                "<i class=\"fas fa-download\"></i><span>" + $.i18n.prop('i_update') + "</span></a></li>" +
                 "<li class=\"start\"><a href=\"javascript: StartClick();\" id=\"btn_start\">" +
                 "<i class=\"fas fa-play\" style=\"padding-left:2px;\"></i>" +
-                "<span class=\"i18n\" name=\"i_start\"></span></a></li>";
+                "<span>" + $.i18n.prop('i_start') + "</span></a></li>";
             switch (child_page) {
                 case "Reference":
                     child_order = count_parents;
@@ -271,11 +271,28 @@ function Navbar() {
         }
     };
     this.loadNavbar = function () {
-        navbarHtml += "</ul></nav></div></aside>";
+        navbarHtml += "<hr><li class=\"lock\"><a href=\"javascript: lockLeftMemu();\">";
+        if (lock_stste == "unlocked")
+            navbarHtml += "<i class=\"fas fa-lock-open\"></i><span>" + $.i18n.prop('i_lock') + "</span>";
+        else
+            navbarHtml += "<i class=\"fas fa-lock\"></i><span>" + $.i18n.prop('i_unlock') + "</span>";
+        navbarHtml += "</a></li></ul></nav></div></aside>";
         $("#NavbarHtml").html(navbarHtml);
         if (parent_order > -1)
             $("#NavbarHtml ul.nav li").eq(parent_order).addClass("active").children("a").prop("href", "#");
         if (child_order > -1)
             $("#NavbarHtml ul.nav li").eq(child_order).addClass("active").children("a").prop("href", "#");
     };
+}
+
+function lockLeftMemu() {
+    if ($(".menu-left").hasClass("locked")) { //is locked
+        $(".menu-left").removeClass("locked");
+        $(".lock a").html("<i class=\"fas fa-lock-open\"></i><span>" + $.i18n.prop('i_lock') + "</span></a>");
+        setCookie('lock_state', "unlocked");
+    } else {
+        $(".menu-left").addClass("locked");
+        $(".lock a").html("<i class=\"fas fa-lock\"></i><span>" + $.i18n.prop('i_unlock') + "</span></a>");
+        setCookie('lock_state', "locked");
+    }
 }

@@ -80,6 +80,18 @@ canvas:active {
     border: 1px rgb(207, 207, 207) solid;
 }
 
+#alarmBlock {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    background: rgb(255, 255, 255);
+    height: 690px;
+    width: 77%;
+    overflow: auto;
+    position: relative;
+    border: 1px rgb(207, 207, 207) solid;
+}
+
 hr {
     border-color: rgb(207, 207, 207);
 }
@@ -177,7 +189,7 @@ hr {
 
 .btn-focus {
     height: 26px;
-    width: 40px;
+    width: 100%;
     padding: 0px;
 }
 
@@ -189,6 +201,9 @@ hr {
     border-radius: 50px;
 }
 
+#table_target input[type='color'] {
+    width: 100%;
+}
 
 /* Model */
 .modal-content {

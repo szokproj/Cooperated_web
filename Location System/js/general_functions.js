@@ -171,3 +171,41 @@ Date.prototype.format = function (fmt) {
     }
     return fmt;
 }
+
+function stopDLL(token) {
+    var xmlHttp = createJsonXmlHttp("test2");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (checkTokenAlive(token, revObj)) {
+                //alert("Position has stopped!");
+                return;
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify({
+        "Command_Type": ["Write"],
+        "Command_Name": ["Launch"],
+        "Value": "Stop",
+        "api_token": [token]
+    }));
+}
+
+function startDLL(token) {
+    var xmlHttp = createJsonXmlHttp("test2");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (checkTokenAlive(token, revObj)) {
+                //alert("Position has stopped!");
+                return;
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify({
+        "Command_Type": ["Write"],
+        "Command_Name": ["Launch"],
+        "Value": "Start",
+        "api_token": [token]
+    }));
+}

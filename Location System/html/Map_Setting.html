@@ -96,125 +96,164 @@
             </form>
         </div>
         <!-- Following is a dialog to set the selected map or add a new map -->
-        <div id="dialog_map_setting" class="dialog" title="Set Map & Anchors" style="overflow:hidden;">
-            <form>
-                <fieldset>
-                    <div style="height:490px; float:left;">
-                        <div class="cvsBlock" id="mapBlock">
-                            <canvas id="canvas_map" height="1" width="1">
-                                <span class="i18n" name="i_no_canvas"></span>
-                            </canvas>
-                        </div>
-                        <div style="height:40px;">
-                            <span style="float:left;">
-                                <span class="i18n" name="i_posX"></span> : <label id="x" style="width:100px;"></label>
-                                <span class="i18n" name="i_posY"></span> : <label id="y" style="width:100px;"></label>
-                            </span>
-                        </div>
-                    </div>
-                    <div style="height:490px; float:left;">
-                        <div style="margin: 0px 0px 40px 10px;">
-                            <nav class="sidebar-menu">
-                                <ul class="nav">
-                                    <!--Load Map-->
-                                    <li><label for="menu_load_map" class="btn-sidebar i18n-input" selectattr="title"
-                                            selectname="i_input_map">
-                                            <i class="far fa-image" style='font-size:20px;'></i></label>
-                                        <input id="menu_load_map" type="file" accept="image/*" /></li>
-                                    <!--Restore Size-->
-                                    <li><label for="menu_resize" id="label_resize" class="btn-sidebar i18n-input"
-                                            selectattr="title" selectname="i_restore_scale">
-                                            <i class="fas fa-expand" style='font-size:20px;'></i></label>
-                                        <input id="menu_resize" type="button" class="btn-hidden" /></li>
-                                    <!--Map Info-->
-                                    <li><label for="menu_map_info" id="label_map_info" class="btn-sidebar i18n-input"
-                                            selectattr="title" selectname="i_mapInfo">
-                                            <i class="fas fa-info-circle" style='font-size:20px;'></i></label>
-                                        <input id="menu_map_info" type="button" class="btn-hidden" /></li>
-                                    <!--Anchor List-->
-                                    <li><label for="menu_anchor_list" id="label_anchor_list"
-                                            class="btn-sidebar i18n-input" selectattr="title" selectname="i_anchorList">
-                                            <i class="fas fa-map-pin" style='font-size:20px;'></i></label>
-                                        <input id="menu_anchor_list" type="button" class="btn-hidden" /></li>
-                                    <!--Group List-->
-                                    <li><label for="menu_group_list" id="label_group_list"
-                                            class="btn-sidebar i18n-input" selectattr="title" selectname="i_groupList">
-                                            <i class="fas fa-draw-polygon" style='font-size:20px;'></i></label>
-                                        <input id="menu_group_list" type="button" class="btn-hidden" /></li>
-                                    <!--Anchor Group-->
-                                    <li><label for="menu_anchor_group" id="label_anchor_group"
-                                            class="btn-sidebar i18n-input" selectattr="title"
-                                            selectname="i_anchorGroup">
-                                            <i class="far fa-object-ungroup" style='font-size:20px;'></i></label>
-                                        <input id="menu_anchor_group" type="button" class="btn-hidden" /></li>
-                                </ul>
-                            </nav>
-                        </div>
+        <div id="dialog_map_setting" class="dialog" title="Set Map & Anchors"
+            style="display: inline-block; overflow: hidden;">
+            <div style="height:490px; float:left;">
+                <div class="cvsBlock" id="mapBlock">
+                    <canvas id="canvas_map" height="1" width="1">
+                        <span class="i18n" name="i_no_canvas"></span>
+                    </canvas>
+                </div>
+                <div style="height:40px;">
+                    <span style="float:left;">
+                        <span class="i18n" name="i_posX"></span> : <label id="x" style="width:100px;"></label>
+                        <span class="i18n" name="i_posY"></span> : <label id="y" style="width:100px;"></label>
+                    </span>
+                </div>
+            </div>
+            <div style="height:490px; float:left;">
+                <div style="margin: 0px 0px 40px 10px;">
+                    <nav class="sidebar-menu">
+                        <ul class="nav">
+                            <!--Load Map-->
+                            <li><label for="menu_load_map" class="btn-sidebar i18n-input" selectattr="title"
+                                    selectname="i_input_map">
+                                    <i class="far fa-image" style='font-size:20px;'></i></label>
+                                <input id="menu_load_map" type="file" accept="image/*" /></li>
+                            <!--Restore Size-->
+                            <li><label for="menu_resize" id="label_resize" class="btn-sidebar i18n-input"
+                                    selectattr="title" selectname="i_restore_scale">
+                                    <i class="fas fa-expand" style='font-size:20px;'></i></label>
+                                <input id="menu_resize" type="button" class="btn-hidden" /></li>
+                            <!--Map Info-->
+                            <li><label for="menu_map_info" id="label_map_info" class="btn-sidebar i18n-input"
+                                    selectattr="title" selectname="i_mapInfo">
+                                    <i class="fas fa-info-circle" style='font-size:20px;'></i></label>
+                                <input id="menu_map_info" type="button" class="btn-hidden" /></li>
+                            <!--Anchor List-->
+                            <li><label for="menu_anchor_list" id="label_anchor_list" class="btn-sidebar i18n-input"
+                                    selectattr="title" selectname="i_anchorList">
+                                    <i class="fas fa-map-pin" style='font-size:20px;'></i></label>
+                                <input id="menu_anchor_list" type="button" class="btn-hidden" /></li>
+                            <!--Group List-->
+                            <li><label for="menu_group_list" id="label_group_list" class="btn-sidebar i18n-input"
+                                    selectattr="title" selectname="i_groupList">
+                                    <i class="fas fa-draw-polygon" style='font-size:20px;'></i></label>
+                                <input id="menu_group_list" type="button" class="btn-hidden" /></li>
+                            <!--Anchor Group-->
+                            <li><label for="menu_anchor_group" id="label_anchor_group" class="btn-sidebar i18n-input"
+                                    selectattr="title" selectname="i_anchorGroup">
+                                    <i class="far fa-object-ungroup" style='font-size:20px;'></i></label>
+                                <input id="menu_anchor_group" type="button" class="btn-hidden" /></li>
+                        </ul>
+                    </nav>
+                </div>
 
-                        <div id="block_info" style="margin-left:10px; padding:20px;">
-                            <input type="hidden" id="map_info_id" />
-                            <label class="i18n" name="i_mapName"></label> :&nbsp;
-                            <input type="text" id="map_info_name" style="width:120px;" />
-                            <br><br>
-                            <label class="i18n" name="i_mapScale"></label> :&nbsp;&nbsp;&nbsp;1 :
-                            <input type="text" id="map_info_scale" style="width:100px;" />
-                        </div>
-                        <div id="block_anchor_list">
-                            <span style="margin: 0px 0px 0px 10px">
-                                <label for="btn_add_anchor_list" id="label_add_anchor_list" class="btn-add i18n-input"
-                                    selectattr="title" selectname="i_addAnchorGroup">
-                                    <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
-                                <input id="btn_add_anchor_list" type="button" class="btn-hidden" />
-                                <label for="btn_delete_anchor_list" id="label_delete_anchor_list"
-                                    class="btn-delete i18n-input" selectattr="title" selectname="i_deleteAnchorGroup"><i
-                                        class="fas fa-minus-square" style='font-size:20px;'></i></label>
-                                <input id="btn_delete_anchor_list" type="button" class="btn-hidden" />
-                            </span>
-                            <div class="block-list">
-                                <table id="table_main_anchor_list" class="table-line">
-                                    <thead>
-                                        <tr>
-                                            <th style="min-width:60px;" class="i18n" name="i_item"></th>
-                                            <th style="min-width:90px;" class="i18n" name="i_mainAnchorID"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                                <br>
-                                <table id="table_anchor_list" class="table-line">
-                                    <thead>
-                                        <tr>
-                                            <th style="min-width:60px;" class="i18n" name="i_item"></th>
-                                            <th style="min-width:90px;" class="i18n" name="i_anchorID"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div id="block_group_list">
-                            <span style="margin: 0px 0px 0px 10px">
-                                <label for="btn_add_group" id="label_add_group" class="btn-add i18n-input"
-                                    selectattr="title" selectname="i_addGroup">
-                                    <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
-                                <input id="btn_add_group" type="button" class="btn-hidden" />
-                                <label for="btn_delete_group" id="label_delete_group" class="btn-delete i18n-input"
-                                    selectattr="title" selectname="i_deleteGroup"><i class="fas fa-minus-square"
-                                        style='font-size:20px;'></i></label>
-                                <input id="btn_delete_group" type="button" class="btn-hidden" />
-                                <!--Add Pos-->
-                                <label for="btn_pos_group" id="label_pos_group" class="btn-add-pos i18n-input"
-                                    selectattr="title" selectname="i_anchorPosition">
-                                    <i class="fas fa-map-marked-alt" style='font-size:20px;'></i></label>
-                                <input id="btn_pos_group" type="button" class="btn-hidden" />
-                            </span>
-                            <div class="block-list">
-                                <table id="table_group_list" class="table-line">
+                <div id="block_info" style="margin-left:10px; padding:20px;">
+                    <input type="hidden" id="map_info_id" />
+                    <label class="i18n" name="i_mapName"></label> :&nbsp;
+                    <input type="text" id="map_info_name" style="width:120px;" />
+                    <br><br>
+                    <label class="i18n" name="i_mapScale"></label> :&nbsp;&nbsp;&nbsp;1 :
+                    <input type="text" id="map_info_scale" style="width:100px;" />
+                </div>
+                <div id="block_anchor_list">
+                    <span style="margin: 0px 0px 0px 10px">
+                        <label for="btn_add_anchor_list" id="label_add_anchor_list" class="btn-add i18n-input"
+                            selectattr="title" selectname="i_addAnchorGroup">
+                            <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                        <input id="btn_add_anchor_list" type="button" class="btn-hidden" />
+                        <label for="btn_delete_anchor_list" id="label_delete_anchor_list" class="btn-delete i18n-input"
+                            selectattr="title" selectname="i_deleteAnchorGroup"><i class="fas fa-minus-square"
+                                style='font-size:20px;'></i></label>
+                        <input id="btn_delete_anchor_list" type="button" class="btn-hidden" />
+                    </span>
+                    <div class="block-list">
+                        <table id="table_main_anchor_list" class="table-line">
+                            <thead>
+                                <tr>
+                                    <th style="min-width:60px;" class="i18n" name="i_item"></th>
+                                    <th style="min-width:90px;" class="i18n" name="i_mainAnchorID"></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <br>
+                        <table id="table_anchor_list" class="table-line">
+                            <thead>
+                                <tr>
+                                    <th style="min-width:60px;" class="i18n" name="i_item"></th>
+                                    <th style="min-width:90px;" class="i18n" name="i_anchorID"></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="block_group_list">
+                    <span style="margin: 0px 0px 0px 10px">
+                        <label for="btn_add_group" id="label_add_group" class="btn-add i18n-input" selectattr="title"
+                            selectname="i_addGroup">
+                            <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                        <input id="btn_add_group" type="button" class="btn-hidden" />
+                        <label for="btn_delete_group" id="label_delete_group" class="btn-delete i18n-input"
+                            selectattr="title" selectname="i_deleteGroup"><i class="fas fa-minus-square"
+                                style='font-size:20px;'></i></label>
+                        <input id="btn_delete_group" type="button" class="btn-hidden" />
+                        <!--Add Pos-->
+                        <label for="btn_pos_group" id="label_pos_group" class="btn-add-pos i18n-input"
+                            selectattr="title" selectname="i_anchorPosition">
+                            <i class="fas fa-map-marked-alt" style='font-size:20px;'></i></label>
+                        <input id="btn_pos_group" type="button" class="btn-hidden" />
+                    </span>
+                    <div class="block-list">
+                        <table id="table_group_list" class="table-line">
+                            <thead>
+                                <tr>
+                                    <th class="i18n" name="i_item" style="min-width: 60px;"></th>
+                                    <th class="i18n" name="i_groupName"></th>
+                                    <th class="i18n" name="i_mainAnchorID"></th>
+                                    <th class="i18n" name="i_posX"></th>
+                                    <th class="i18n" name="i_posY"></th>
+                                    <th class="i18n" name="i_edit"></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="block_anchor_group">
+                    <span style="margin: 0px 0px 0px 10px">
+                        <label for="btn_add_anchor_group" id="label_add_anchor_group" class="btn-add i18n-input"
+                            selectattr="title" selectname="i_addAnchorGroup">
+                            <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                        <input id="btn_add_anchor_group" type="button" class="btn-hidden" />
+                        <label for="btn_delete_anchor_group" id="label_delete_anchor_group"
+                            class="btn-delete i18n-input" selectattr="title" selectname="i_deleteAnchorGroup"><i
+                                class="fas fa-minus-square" style='font-size:20px;'></i></label>
+                        <input id="btn_delete_anchor_group" type="button" class="btn-hidden" />
+                        <!--Add Pos-->
+                        <label for="btn_pos_anchor_group" id="label_pos_anchor_group" class="btn-add-pos i18n-input"
+                            selectattr="title" selectname="i_anchorPosition">
+                            <i class="fas fa-map-marked-alt" style='font-size:20px;'></i></label>
+                        <input id="btn_pos_anchor_group" type="button" class="btn-hidden" />
+                    </span>
+                    <div style="margin: 0px 0px 0px 10px; max-width: 300px;">
+                        <ul id="myTab" class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#anchor_group_list" data-toggle="tab">List</a>
+                            </li>
+                            <li><a href="#anchor_group_chart" data-toggle="tab">Chart</a></li>
+                        </ul>
+                        <div id="myTabContent" class="tab-content">
+                            <div class="tab-pane fade in active" id="anchor_group_list">
+                                <table id="table_anchor_group" class="table-line">
                                     <thead>
                                         <tr>
                                             <th class="i18n" name="i_item" style="min-width: 60px;"></th>
-                                            <th class="i18n" name="i_groupName"></th>
-                                            <th class="i18n" name="i_mainAnchorID"></th>
+                                            <th class="i18n" name="i_group"></th>
+                                            <th class="i18n" name="i_mainAnchor"></th>
+                                            <th class="i18n" name="i_anchor"></th>
                                             <th class="i18n" name="i_posX"></th>
                                             <th class="i18n" name="i_posY"></th>
                                             <th class="i18n" name="i_edit"></th>
@@ -223,56 +262,13 @@
                                     <tbody></tbody>
                                 </table>
                             </div>
-                        </div>
-                        <div id="block_anchor_group">
-                            <span style="margin: 0px 0px 0px 10px">
-                                <label for="btn_add_anchor_group" id="label_add_anchor_group" class="btn-add i18n-input"
-                                    selectattr="title" selectname="i_addAnchorGroup">
-                                    <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
-                                <input id="btn_add_anchor_group" type="button" class="btn-hidden" />
-                                <label for="btn_delete_anchor_group" id="label_delete_anchor_group"
-                                    class="btn-delete i18n-input" selectattr="title" selectname="i_deleteAnchorGroup"><i
-                                        class="fas fa-minus-square" style='font-size:20px;'></i></label>
-                                <input id="btn_delete_anchor_group" type="button" class="btn-hidden" />
-                                <!--Add Pos-->
-                                <label for="btn_pos_anchor_group" id="label_pos_anchor_group"
-                                    class="btn-add-pos i18n-input" selectattr="title" selectname="i_anchorPosition">
-                                    <i class="fas fa-map-marked-alt" style='font-size:20px;'></i></label>
-                                <input id="btn_pos_anchor_group" type="button" class="btn-hidden" />
-                            </span>
-                            <div style="margin: 0px 0px 0px 10px;">
-                                <ul id="myTab" class="nav nav-tabs">
-                                    <li class="active">
-                                        <a href="#anchor_group_list" data-toggle="tab">List</a>
-                                    </li>
-                                    <li><a href="#anchor_group_chart" data-toggle="tab">Chart</a></li>
-                                </ul>
-                                <div id="myTabContent" class="tab-content">
-                                    <div class="tab-pane fade in active" id="anchor_group_list">
-                                        <table id="table_anchor_group" class="table-line">
-                                            <thead>
-                                                <tr>
-                                                    <th class="i18n" name="i_item" style="min-width: 60px;"></th>
-                                                    <th class="i18n" name="i_group"></th>
-                                                    <th class="i18n" name="i_mainAnchor"></th>
-                                                    <th class="i18n" name="i_anchor"></th>
-                                                    <th class="i18n" name="i_posX"></th>
-                                                    <th class="i18n" name="i_posY"></th>
-                                                    <th class="i18n" name="i_edit"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody></tbody>
-                                        </table>
-                                    </div>
-                                    <div class="tab-pane fade" id="anchor_group_chart">
-                                        <div class="tree"></div>
-                                    </div>
-                                </div>
+                            <div class="tab-pane fade" id="anchor_group_chart">
+                                <div class="tree"></div>
                             </div>
                         </div>
                     </div>
-                </fieldset>
-            </form>
+                </div>
+            </div>
         </div>
         <!-- Following is a dialog to add a new anchor -->
         <div id="dialog_add_new_anchor" class="dialog" title="Add Anchor">

@@ -3,8 +3,8 @@ var rightSide_isOpen = false;
 
 function alarmSidebarMove() {
     $(function () {
-        //側邊欄由左向右滑動
         if (!leftSide_isOpen) {
+            //側邊欄由左向右滑動
             $('#content').addClass('left_open');
             $('.sideBar').animate({
                 left: '30px'
@@ -45,12 +45,14 @@ function inputAlarmData(element, i) {
     /**
      * Alarm Card
      */
-    var time_arr = TimeToArray(element.time);
+    var html = "";
+    var time_arr = TimeToArray(element.alarm_time);
     var thumb_id = "alarmCard_" + i;
     var thumb_img = "alarmCard_img_" + i;
     var thumb_number = "alarmCard_number_" + i;
     var thumb_unlock_btn_id = "alarmCard_unlock_btn_" + i;
     var thumb_focus_btn_id = "alarmCard_focus_btn_" + i;
+    var tagid_alarm = element.id + element.alarm_type; //used by count & date & time 
     var color = "",
         status = "";
     switch (element.alarm_type) {
@@ -75,28 +77,31 @@ function inputAlarmData(element, i) {
             status = $.i18n.prop('i_electronicFence');
             break;
         case "stay":
-            color = '#1a53ff';
+            color = '#4876ff';
             status = $.i18n.prop('i_stayAlarm');
             break;
         case "hidden":
-            color = '#3333cc';
+            color = '#6f6ff8';
             status = $.i18n.prop('i_hiddenAlarm');
             break;
         default:
             color = "#FFFFFF"; //unknown
             status = "";
     }
-    $(".thumbnail_columns").prepend("<div class=\"thumbnail\" id=\"" + thumb_id + "\"" +
+
+    html = "<div class=\"thumbnail\" id=\"" + thumb_id + "\"" +
         "style=\"background:" + color + "\">" +
+        "<div class=\"thumb-count\"><label id=\"count_" + tagid_alarm + "\">" + element.count + "</label></div>" +
         "<table><tr><td>" +
         "<img id=\"" + thumb_img + "\" class=\"member_photo\" src=\"\">" +
         "</td><td>" +
-        "<label>" + $.i18n.prop('i_number') + " : </label>" +
-        "<label id=\"" + thumb_number + "\">" + element.number + "</label><br>" +
+        "<label>" + $.i18n.prop('i_number') + " : " +
+        "<span id=\"" + thumb_number + "\">" + element.number + "</span></label><br>" +
         "<label>" + $.i18n.prop('i_name') + " : " + element.name + "</label><br>" +
         "<label>" + $.i18n.prop('i_userID') + " : " + parseInt(element.id.substring(8), 16) + "</label><br>" +
-        "<label>" + $.i18n.prop('i_date') + " : " + time_arr.date + "</label><br>" +
-        "<label>" + $.i18n.prop('i_time') + " : " + time_arr.time + "</label>" +
+        "<label>" + $.i18n.prop('i_date') + " : <span id=\"date_" + tagid_alarm + "\">" + time_arr.date + "</span></label>" +
+        "<br>" +
+        "<label>" + $.i18n.prop('i_time') + " : <span id=\"time_" + tagid_alarm + "\">" + time_arr.time + "</span></label>" +
         "</td></tr></table>" +
         "<label style=\"margin-left:10px; color:white;\">" + $.i18n.prop('i_status') + " : " + status + "</label>" +
         "<br><div style=\"text-align:center; margin:5px;\">" +
@@ -110,17 +115,23 @@ function inputAlarmData(element, i) {
         "<button type=\"button\" id=\"" + thumb_focus_btn_id + "\" style=\"margin-left: 10px;\"" +
         " class=\"btn btn-default\" title=\"" + $.i18n.prop('i_locate') + "\">" +
         "<img class=\"icon-image\" src=\"../image/target.png\"></button>" +
-        "</div></div>");
+        "</div></div>";
+
+    if ($("#btn_sort_alarm i").hasClass("fa-sort-amount-up"))
+        $(".thumbnail_columns").prepend(html);
+    else
+        $(".thumbnail_columns").append(html);
+
     setMemberPhoto(thumb_img, thumb_number, element.number);
     $("#" + thumb_unlock_btn_id).click(function () {
-        if (confirm("是否記錄此事件已處理?\n(確認後會消除目前警報列表中相關的警報，請確實解除警報的發生原因!)")) {
-            releaseFocusAlarm(element.order);
+        if (confirm("是否記錄此事件已處理?\n(若未解除警報原因，警報將會再次發出，請確實完成!)")) {
+            releaseFocusAlarm(element.id, element.alarm_type);
             $("#" + thumb_id).hide(); //警告卡片會消失
             changeAlarmLight();
         }
     });
     $("#" + thumb_focus_btn_id).click(function () {
-        changeFocusAlarm(element.order);
+        changeFocusAlarm(element.id, element.alarm_type);
         changeAlarmLight();
     });
     /**
@@ -141,14 +152,14 @@ function inputAlarmData(element, i) {
     });
     $("#alarm_dialog_btn_focus").unbind();
     $("#alarm_dialog_btn_focus").click(function () {
-        changeFocusAlarm(element.order);
+        changeFocusAlarm(element.id, element.alarm_type);
     });
     $("#alarm_dialog").dialog("open");
 }
 
 
 function setAlarmDialog(Obj) {
-    var time_arr = TimeToArray(Obj.time);
+    var time_arr = TimeToArray(Obj.alarm_time);
     var color = "",
         status = "";
     switch (Obj.status) {
@@ -173,11 +184,11 @@ function setAlarmDialog(Obj) {
             status = $.i18n.prop('i_electronicFence');
             break;
         case "stay":
-            color = '#1a53ff';
+            color = '#4876ff';
             status = $.i18n.prop('i_stayAlarm');
             break;
         case "hidden":
-            color = '#3333cc';
+            color = '#6f6ff8';
             status = $.i18n.prop('i_hiddenAlarm');
             break;
         default:
@@ -199,7 +210,7 @@ function setAlarmDialog(Obj) {
     });
     $("#alarm_dialog_btn_focus").unbind();
     $("#alarm_dialog_btn_focus").click(function () {
-        changeFocusAlarm(Obj.order);
+        changeFocusAlarm(Obj.id, Obj.status);
     });
     $("#alarm_dialog").dialog("open");
 }

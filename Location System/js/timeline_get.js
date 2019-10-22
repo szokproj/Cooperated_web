@@ -136,14 +136,24 @@ $(function () {
     });
 
     $("#target_type").on('change', function () {
-        if ($(this).val() == "Group") {
-            $("#table_target").hide();
-            $("#target_tag").hide();
-            $("#target_group").show();
-        } else {
+        if ($(this).val() == "Tag") {
             $("#target_group").hide();
-            $("#table_target").show();
+            $("#target_alarm_handle").hide();
             $("#target_tag").show();
+            $("#alarmBlock").hide();
+            $("#cvsBlock").show();
+        } else if ($(this).val() == "Group") {
+            $("#target_tag").hide();
+            $("#target_alarm_handle").hide();
+            $("#target_group").show();
+            $("#alarmBlock").hide();
+            $("#cvsBlock").show();
+        } else {
+            $("#target_tag").hide();
+            $("#target_group").hide();
+            $("#target_alarm_handle").show();
+            $("#cvsBlock").hide();
+            $("#alarmBlock").show();
         }
     });
 
@@ -560,6 +570,9 @@ function reDrawTag(dctx) {
 }
 
 function search() {
+    if ($("#target_type").val() == "AlarmHandle") {
+        return getAlarmHandleByTime();
+    }
     stopTimeline();
     var datetime_start = Date.parse($("#start_date").val() + " " + $("#start_time").val());
     var datetime_end = Date.parse($("#end_date").val() + " " + $("#end_time").val());
@@ -825,6 +838,67 @@ function clearDrawInterval() {
         clearInterval(timeDelay["draw"][i]);
     timeDelay["draw"] = [];
 }
+
+
+function getAlarmHandleByTime() {
+    var getStaff = createJsonXmlHttp("sql");
+    getStaff.onreadystatechange = function () {
+        if (getStaff.readyState == 4 || getStaff.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var MemberList = {};
+                var revInfo = revObj.Value[0].Values || [];
+                revInfo.forEach(element => {
+                    MemberList[element.tag_id] = element;
+                });
+                var xmlHttp = createJsonXmlHttp("alarmhandle");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0]) {
+                            var revInfo = revObj.Value[0].Values;
+                            if (revObj.Value[0].success == 0 || !revInfo || revInfo.length == 0)
+                                return alert($.i18n.prop('i_searchNoData'));
+
+                            $("#table_alarm_handle tbody").empty();
+                            for (var i = 0; i < revInfo.length; i++) {
+                                var tag_id = revInfo[i].tagid;
+                                var number = tag_id in MemberList ? MemberList[tag_id].number : "";
+                                var name = tag_id in MemberList ? MemberList[tag_id].Name : "";
+                                $("#table_alarm_handle tbody").prepend("<tr><td>" + (revInfo.length - i) +
+                                    "</td><td>" + revInfo[i].alarmtype +
+                                    "</td><td>" + parseInt(tag_id.substring(8), 16) +
+                                    "</td><td>" + number +
+                                    "</td><td>" + name +
+                                    "</td><td>" + revInfo[i].alarmhelper +
+                                    "</td><td>" + revInfo[i].endtime +
+                                    "</td></tr>");
+                            }
+
+                        }
+                    }
+                };
+                xmlHttp.send(JSON.stringify({
+                    "Command_Type": ["Read"],
+                    "Command_Name": ["gethandlerecordbytime"],
+                    "Value": [{
+                        "start_date": $("#start_date").val(),
+                        "start_time": checkTimeLength($("#start_time").val()),
+                        "end_date": $("#end_date").val(),
+                        "end_time": checkTimeLength($("#end_time").val())
+                    }],
+                    "api_token": [token]
+                }));
+            }
+        }
+    };
+    getStaff.send(JSON.stringify({
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetStaffs"],
+        "api_token": [token]
+    }));
+}
+
 
 /**
  * Show Search Model

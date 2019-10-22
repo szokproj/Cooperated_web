@@ -13,9 +13,11 @@ function drawAnchor(dctx, id, type, x, y, size, zoom) {
 function drawInvisiblePoints(dctx, id, x, y, size, zoom) {
     var radius = size * zoom; //半徑 //size:10
     dctx.beginPath();
-    dctx.fillStyle = '#ffffff00';
-    dctx.arc(x, y - radius * 2, radius, 0, Math.PI * 2, true);
-    // circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
+    dctx.lineWidth = 2 * zoom;
+    dctx.arc(x, y - radius * 2, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);
+    //circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
+    dctx.lineTo(x, y);
+    dctx.fillStyle = 'orange';
     dctx.fill(); //填滿圓形
     dctx.closePath();
 }
@@ -63,6 +65,14 @@ function drawAlarmTags(dctx, id, x, y, type, size, zoom) {
         case "Fence":
             fillColor = '#ffe600';
             markColor = '#e7a81f';
+            break;
+        case "stay":
+            fillColor = '#1a53ff';
+            markColor = '#0033ca';
+            break;
+        case "hidden":
+            fillColor = '#5151dd';
+            markColor = '#2f2f83';
             break;
         default:
             fillColor = '#72ac1b'; //unknown
@@ -202,4 +212,37 @@ function drawAlarmFocusFrame(dctx, x, y, size, zoom) {
         y - (3 * radius + 5) * zoom,
         (2 * radius + 10) * zoom,
         (3 * radius + 10) * zoom);
+}
+
+function Fence(dctx) {
+    var fence_dot_array = [];
+    this.setFenceDot = function (fence_name, x, y) {
+        fence_dot_array.push({
+            fence_name: fence_name,
+            x: x,
+            y: y
+        });
+    };
+    this.drawFence = function () {
+        var len = fence_dot_array.length;
+        var displace = 5 / canvasImg.scale;
+        dctx.beginPath();
+        fence_dot_array.forEach(function (v, i, arr) {
+            dctx.lineTo(v.x + displace, v.y + displace);
+            if (i == len - 1)
+                dctx.lineTo(arr[0].x + displace, arr[0].y + displace);
+        })
+        dctx.strokeStyle = "rgb(0, 153, 51)";
+        dctx.stroke();
+        dctx.fillStyle = "rgba(0, 153, 51, 0.61)";
+        dctx.fill();
+        //在圍籬中間畫出群組名稱
+        dctx.fillStyle = "blue";
+        dctx.font = 60 / canvasImg.scale + 'px serif';
+        var arr = fence_dot_array;
+        var displace_x = (arr[2].x - arr[0].x) / 2;
+        var displace_y = (arr[2].y - arr[0].y) / 2;
+        dctx.fillText(arr[0].fence_name, arr[0].x + displace_x - 15, arr[0].y + displace_y - 6);
+        dctx.closePath();
+    };
 }

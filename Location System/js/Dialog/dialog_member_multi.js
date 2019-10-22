@@ -60,6 +60,16 @@ $(function () {
                     }
                     request.Value = request_arr;
                     break;
+                case "alarm_group":
+                    request.Command_Name = ["multiEdit_StaffAlarmGroup"];
+                    for (i = 0; i < num_arr.length; i++) {
+                        request_arr.push({
+                            "number": num_arr[i],
+                            "alarm_group": sel_value.val()
+                        });
+                    }
+                    request.Value = request_arr;
+                    break;
                 default:
                     alert($.i18n.prop('i_alertError_12'));
             }

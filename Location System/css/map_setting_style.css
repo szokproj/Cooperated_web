@@ -303,11 +303,17 @@ canvas {
     border: 1px gray solid;
 }
 
+#dialog_map_setting {
+    max-width: 1000px;
+    max-height: 640px;
+
+}
+
 .block-list {
     overflow: auto;
     max-height: 414px;
-    max-width: 340px;
-    width: 340px;
+    max-width: 300px;
+    width: 300px;
     margin: 0px 0px 0px 10px;
 }
 
@@ -318,8 +324,8 @@ canvas {
 .tab-pane {
     overflow: auto;
     max-height: 340px;
-    max-width: 340px;
-    width: 340px;
+    max-width: 300px;
+    width:300px;
 }
 
 .coordinate {

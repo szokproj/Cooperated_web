@@ -36,6 +36,7 @@ $(function () {
     sortTable('.row_note', '');
 
     UpdateMemberList();
+
     //Set deptColorArray
     var deptXmlHttp = createJsonXmlHttp('sql');
     deptXmlHttp.onreadystatechange = function () {
@@ -146,6 +147,7 @@ $(function () {
         } else {
             alert("No write permission!")
         }
+        $(this).val(''); //reset input[type='file']
     });
     $("#excel_export").click(function () {
         var array = arrayKeyTranslate(memberArray);
@@ -207,34 +209,37 @@ function UpdateMemberList() {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                         var revObj2 = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
-                            $("#table_member_setting tbody").empty(); //先重置表格
-                            memberArray = revObj2.Value[0].Values.slice(0) || [];
-                            for (var i = 0; i < memberArray.length; i++) {
-                                var tr_id = "tr_member_" + i;
-                                var user_id = parseInt(memberArray[i].tag_id.substring(8), 16);
-                                var number = memberArray[i].number;
-                                var alarm_index = alarmGroupArr.findIndex(function (array) {
-                                    return array.id == memberArray[i].alarm_group_id;
-                                });
-                                var alarm_group_name = alarm_index > -1 ? alarmGroupArr[alarm_index].name : "";
-                                $("#table_member_setting tbody").append("<tr id=\"" + tr_id + "\">" +
-                                    "<td><input type=\"checkbox\" name=\"chkbox_members\" value=\"" + number + "\" " +
-                                    " /> <label>" + (i + 1) + "</label></td>" +
-                                    "<td class=\"row_number\">" + number + "</td>" +
-                                    "<td class=\"row_user_id\">" + user_id + "</td>" +
-                                    "<td class=\"row_name\">" + memberArray[i].Name + "</td>" +
-                                    "<td class=\"row_dept\">" + memberArray[i].department + "</td>" +
-                                    "<td class=\"row_job_title\">" + memberArray[i].jobTitle + "</td>" +
-                                    "<td class=\"row_user_type\">" + memberArray[i].type + "</td>" +
-                                    "<td class=\"row_alarm_group\">" + alarm_group_name + "</td>" +
-                                    "<td class=\"row_note\">" + memberArray[i].note + "</td>" +
-                                    "<td><button class=\"btn btn-primary btn-edit\"" +
-                                    " onclick=\"editMemberData(\'" + number + "\')\">" + $.i18n.prop('i_edit') +
-                                    "</button></td>" +
-                                    "</tr>");
-                            }
-                            //displayBar("table_member_setting");
-                            setCheckboxListeners();
+                            $(function () {
+                                $("#table_member_setting tbody").empty(); //先重置表格
+                                memberArray = revObj2.Value[0].Values.slice(0) || [];
+                                for (var i = 0; i < memberArray.length; i++) {
+                                    var tr_id = "tr_member_" + i;
+                                    var user_id = parseInt(memberArray[i].tag_id.substring(8), 16);
+                                    var number = memberArray[i].number;
+                                    var alarm_index = alarmGroupArr.findIndex(function (array) {
+                                        return array.id == memberArray[i].alarm_group_id;
+                                    });
+                                    var alarm_group_name = alarm_index > -1 ? alarmGroupArr[alarm_index].name : "";
+                                    $("#table_member_setting tbody").append("<tr id=\"" + tr_id + "\">" +
+                                        "<td><input type=\"checkbox\" name=\"chkbox_members\" value=\"" + number + "\" " +
+                                        " /> <label>" + (i + 1) + "</label></td>" +
+                                        "<td class=\"row_number\">" + number + "</td>" +
+                                        "<td class=\"row_user_id\">" + user_id + "</td>" +
+                                        "<td class=\"row_name\">" + memberArray[i].Name + "</td>" +
+                                        "<td class=\"row_dept\">" + memberArray[i].department + "</td>" +
+                                        "<td class=\"row_job_title\">" + memberArray[i].jobTitle + "</td>" +
+                                        "<td class=\"row_user_type\">" + memberArray[i].type + "</td>" +
+                                        "<td class=\"row_alarm_group\">" + alarm_group_name + "</td>" +
+                                        "<td class=\"row_note\">" + memberArray[i].note + "</td>" +
+                                        "<td><button class=\"btn btn-primary btn-edit\"" +
+                                        " onclick=\"editMemberData(\'" + number + "\')\">" + $.i18n.prop('i_edit') +
+                                        "</button></td>" +
+                                        "</tr>");
+                                }
+                                //displayBar("table_member_setting");
+                                setCheckboxListeners();
+                                $("#selectAll").prop('checked', false);
+                            });
                         } else {
                             alert($.i18n.prop('i_alertError_1'));
                         }
@@ -304,7 +309,7 @@ function editMemberData(number) {
                 $("#basic_leave_date").val(revInfo.dateLeave);
                 $("#note_text").val(revInfo.note);
                 //開啟編輯框
-                setCommand("edit");
+                setEditNumber(revInfo.number);
                 $("#dialog_edit_member").dialog("open");
             }
         }
@@ -441,22 +446,24 @@ function addMemberData() {
     $("#basic_leave_date").val("");
     $("#note_text").val("");
     //open member dialog
-    setCommand("add");
+    setEditNumber("");
     $("#dialog_edit_member").dialog("open");
 }
 
 function removeMemberDatas() {
+    var checkboxs = document.getElementsByName("chkbox_members");
+    var num_arr = [];
+    for (j in checkboxs) {
+        if (checkboxs[j].checked)
+            num_arr.push({
+                "number": checkboxs[j].value
+            });
+    }
+    if (num_arr.length == 0)
+        return alert($.i18n.prop('i_alertError_2'));
     if (confirm($.i18n.prop('i_confirm_1'))) {
-        var checkboxs = document.getElementsByName("chkbox_members");
-        var num_arr = [];
-        for (j in checkboxs) {
-            if (checkboxs[j].checked)
-                num_arr.push({
-                    "number": checkboxs[j].value
-                });
-        }
         var request = {
-            "Command_Type": ["Read"],
+            "Command_Type": ["Write"],
             "Command_Name": ["DeleteStaff"],
             "Value": num_arr,
             "api_token": [token]
@@ -481,85 +488,117 @@ function multiEditData() {
         if (checkboxs[j].checked)
             num_arr.push(checkboxs[j].value);
     }
-    if (!num_arr.length) {
-        alert($.i18n.prop('i_alertError_2'));
-        return;
-    }
+    if (!num_arr.length)
+        return alert($.i18n.prop('i_alertError_2'));
+
     $("#multi_edit_title").text("");
-    $("#multi_edit_item").children("option:eq(0)").prop("selected", true);
     $("#multi_edit_value").html("");
+    $("#multi_edit_item").children("option:eq(0)").prop("selected", true);
     $("#multi_edit_item").change(function () {
-        var item = $(this).val();
-        $("#multi_edit_title").text(item);
-        if (item == "department") {
-            var request = {
-                "Command_Type": ["Read"],
-                "Command_Name": ["GetDepartment_relation_list"],
-                "api_token": [token]
-            };
-            var xmlHttp = createJsonXmlHttp("sql");
-            xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
-                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                        var revInfo = revObj.Value[0].Values || [];
-                        var deptArr = [];
-                        revInfo.forEach(element => {
-                            deptArr.push({
-                                id: element.c_id,
-                                name: element.children
+        switch ($(this).val()) {
+            case "department":
+                $("#multi_edit_title").text($.i18n.prop('i_dept'));
+                var request = {
+                    "Command_Type": ["Read"],
+                    "Command_Name": ["GetDepartment_relation_list"],
+                    "api_token": [token]
+                };
+                var xmlHttp = createJsonXmlHttp("sql");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                            var revInfo = revObj.Value[0].Values || [];
+                            var deptArr = [];
+                            revInfo.forEach(element => {
+                                deptArr.push({
+                                    id: element.c_id,
+                                    name: element.children
+                                });
                             });
-                        });
-                        $("#multi_edit_value").html(displayNameOptions(deptArr, deptArr[0].id));
+                            $("#multi_edit_value").html(displayNameOptions(deptArr, deptArr[0].id));
+                        }
                     }
-                }
-            };
-            xmlHttp.send(JSON.stringify(request));
-        } else if (item == "jobTitle") {
-            var request = {
-                "Command_Type": ["Read"],
-                "Command_Name": ["GetJobTitle_relation_list"],
-                "api_token": [token]
-            };
-            var xmlHttp = createJsonXmlHttp("sql");
-            xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
-                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                        var revInfo = revObj.Value[0].Values || [];
-                        var titleArr = [];
-                        revInfo.forEach(element => {
-                            titleArr.push({
-                                id: element.c_id,
-                                name: element.children
+                };
+                xmlHttp.send(JSON.stringify(request));
+                break;
+            case "jobTitle":
+                $("#multi_edit_title").text($.i18n.prop('i_jobTitle'));
+                var request = {
+                    "Command_Type": ["Read"],
+                    "Command_Name": ["GetJobTitle_relation_list"],
+                    "api_token": [token]
+                };
+                var xmlHttp = createJsonXmlHttp("sql");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                            var revInfo = revObj.Value[0].Values || [];
+                            var titleArr = [];
+                            revInfo.forEach(element => {
+                                titleArr.push({
+                                    id: element.c_id,
+                                    name: element.children
+                                });
                             });
-                        });
-                        $("#multi_edit_value").html(displayNameOptions(titleArr, titleArr[0].id));
+                            $("#multi_edit_value").html(displayNameOptions(titleArr, titleArr[0].id));
+                        }
                     }
-                }
-            };
-            xmlHttp.send(JSON.stringify(request));
-        } else if (item == "type") {
-            var request = {
-                "Command_Type": ["Read"],
-                "Command_Name": ["GetUserTypes"],
-                "api_token": [token]
-            };
-            var xmlHttp = createJsonXmlHttp("sql");
-            xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
-                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                        var revInfo = revObj.Value[0].Values || [];
-                        var typeArr = [];
-                        revInfo.forEach(element => {
-                            typeArr.push(element.type);
-                        });
-                        $("#multi_edit_value").html(createOptions(typeArr, typeArr[0]));
+                };
+                xmlHttp.send(JSON.stringify(request));
+                break;
+            case "type":
+                $("#multi_edit_title").text($.i18n.prop('i_userType'));
+                var request = {
+                    "Command_Type": ["Read"],
+                    "Command_Name": ["GetUserTypes"],
+                    "api_token": [token]
+                };
+                var xmlHttp = createJsonXmlHttp("sql");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                            var revInfo = revObj.Value[0].Values || [];
+                            var typeArr = [];
+                            revInfo.forEach(element => {
+                                typeArr.push(element.type);
+                            });
+                            $("#multi_edit_value").html(createOptions(typeArr, typeArr[0]));
+                        }
                     }
-                }
-            };
-            xmlHttp.send(JSON.stringify(request));
+                };
+                xmlHttp.send(JSON.stringify(request));
+                break;
+            case "alarm_group":
+                $("#multi_edit_title").text($.i18n.prop('i_alarmGroup'));
+                var request = {
+                    "Command_Type": ["Read"],
+                    "Command_Name": ["GetAlarmGroup_list"],
+                    "api_token": [token]
+                };
+                var xmlHttp = createJsonXmlHttp("sql");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                            var revInfo = revObj.Value[0].Values || [];
+                            var alarmGroupArr = [];
+                            revInfo.forEach(element => {
+                                alarmGroupArr.push({
+                                    id: element.alarm_gid,
+                                    name: element.alarm_group_name
+                                });
+                            });
+                            $("#multi_edit_value").html(displayNameOptions(alarmGroupArr, alarmGroupArr[0].id));
+                        }
+                    }
+                };
+                xmlHttp.send(JSON.stringify(request));
+                break;
+            default:
+                break;
         }
     });
     $("#multi_edit_item").removeClass("ui-state-error");

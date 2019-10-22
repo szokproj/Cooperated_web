@@ -58,11 +58,12 @@ function setThumbnail(map_info) {
             "<img src=\"" + this.src + "\" width=\"" + thumb_width + "\" height=\"" + thumb_height + "\">" +
             "</div>" +
             "<div class=\"caption\"><table style='width:100%;'><thead><tr>" +
-            "<th style=\"width:30%;\"><label>" + $.i18n.prop('i_mapName') + " : </label></th>" +
+            "<th style=\"width:30%;\"><label class=\"i18n\" name=\"i_mapName\">" +
+            $.i18n.prop('i_mapName') + "</label> : </th>" +
             "<th style=\"width:70%;\"><label id=\"" + map + "\">" + map_info.map_name + "</label></th>" +
-            "<th><button class='btn btn-primary' onclick=\"setMapById(\'" + map_info.map_id + "\')\">" +
+            "<th><button class='btn btn-primary i18n' name=\"i_setting\" onclick=\"setMapById(\'" + map_info.map_id + "\')\">" +
             $.i18n.prop('i_setting') + "</button></th>" +
-            "<th><button class='btn btn-primary' onclick=\"deleteMap(\'" + map_info.map_id + "\')\">" +
+            "<th><button class='btn btn-primary i18n' name=\"i_delete\" onclick=\"deleteMap(\'" + map_info.map_id + "\')\">" +
             $.i18n.prop('i_delete') + "</button></th>" +
             "</tr></thead></table></div>" +
             "</div>");

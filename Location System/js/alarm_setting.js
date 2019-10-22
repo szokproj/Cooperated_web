@@ -44,7 +44,6 @@ $(function () {
     }
     setNavBar("Alarm_Setting", "");
 
-
     $('.timepicker').bootstrapMaterialDatePicker({
         date: false,
         clearButton: true,
@@ -544,28 +543,30 @@ function inputAlarmGroupTable() {
                                 var tr_id = "tr_alarm_group_" + count_alarm_group;
                                 var alarm_mode = "alarm_mode_" + count_alarm_group;
                                 var modeCheckHtml = "";
-                                for (j = 0; j < alarmModeArray.length; j++) {
-                                    var checkedText = ag_info.elements[j].alarm_switch == "0" ? "" : "checked";
-                                    var alarm_value = ag_info.elements[j].alarm_value == "-1" ? "" : ag_info.elements[j].alarm_value;
-                                    modeCheckHtml += "<input id=\"" + alarm_mode + "_" + j + "\" type='checkbox' class='beauty' " +
-                                        "name=\"" + alarm_mode + "\" value=\"" + ag_info.elements[j].alarm_iid + "\" " + checkedText +
-                                        " disabled/><label for=\"" + alarm_mode + "_" + j + "\">" + $.i18n.prop(alarmModeArray[j].name) +
-                                        "</label>";
-                                    if (j == 4) {
-                                        var fag_index = values.findIndex(function (info) {
-                                            return info.alarm_group_id == ag_info.alarm_gid;
-                                        });
-                                        if (fag_index > -1) {
-                                            var fag_info = values[fag_index];
-                                            ag_info.elements[j]["alarm_value"] = fag_info.id || "";
-                                            ag_info.elements[j]["fenceAG_id"] = fag_info.fenceAG_id || "";
-                                            ag_info.elements[j]["overtime_hour"] = fag_info.overtime_hour || "";
-                                            modeCheckHtml += (fag_info.fenceAG_id != "" ? " : " + fag_info.fenceAG_id + ", " +
-                                                (fag_info.overtime_hour != "" ? fag_info.overtime_hour + " " + $.i18n.prop('i_hour') : "") :
-                                                "") + "<br>";
+                                if ("elements" in ag_info) {
+                                    for (j = 0; j < alarmModeArray.length; j++) {
+                                        var checkedText = ag_info.elements[j].alarm_switch == "0" ? "" : "checked";
+                                        var alarm_value = ag_info.elements[j].alarm_value == "-1" ? "" : ag_info.elements[j].alarm_value;
+                                        modeCheckHtml += "<input id=\"" + alarm_mode + "_" + j + "\" type='checkbox' class='beauty' " +
+                                            "name=\"" + alarm_mode + "\" value=\"" + ag_info.elements[j].alarm_iid + "\" " + checkedText +
+                                            " disabled/><label for=\"" + alarm_mode + "_" + j + "\">" + $.i18n.prop(alarmModeArray[j].name) +
+                                            "</label>";
+                                        if (j == 4) {
+                                            var fag_index = values.findIndex(function (info) {
+                                                return info.alarm_group_id == ag_info.alarm_gid;
+                                            });
+                                            if (fag_index > -1) {
+                                                var fag_info = values[fag_index];
+                                                ag_info.elements[j]["alarm_value"] = fag_info.id || "";
+                                                ag_info.elements[j]["fenceAG_id"] = fag_info.fenceAG_id || "";
+                                                ag_info.elements[j]["overtime_hour"] = fag_info.overtime_hour || "";
+                                                modeCheckHtml += (fag_info.fenceAG_id != "" ? " : " + fag_info.fenceAG_id + ", " +
+                                                    (fag_info.overtime_hour != "" ? fag_info.overtime_hour + " " + $.i18n.prop('i_hour') : "") :
+                                                    "") + "<br>";
+                                            }
+                                        } else if (j > 4) {
+                                            modeCheckHtml += (alarm_value != "" ? " : " + alarm_value + " " + $.i18n.prop('i_second') : "");
                                         }
-                                    } else if (j > 4) {
-                                        modeCheckHtml += (alarm_value != "" ? " : " + alarm_value + " " + $.i18n.prop('i_second') : "");
                                     }
                                 }
                                 var t_index = timeGroupArr.findIndex(function (info) {

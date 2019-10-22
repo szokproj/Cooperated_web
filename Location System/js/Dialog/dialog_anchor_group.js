@@ -220,8 +220,7 @@ $(function () {
         valid = valid && checkLength(edit_y, $.i18n.prop('i_mapAlert_13'), 1, 50);
 
         if (valid) {
-            var isEdit = edit_anchor.prop("disabled"); //disabled==>edit mode
-            if (isEdit) {
+            if (edit_anchor.prop("disabled")) { //disabled==>edit mode
                 edit_id.each(function (i) {
                     var request = {
                         "Command_Type": ["Write"],
@@ -291,7 +290,7 @@ $(function () {
                             var revObj = JSON.parse(this.responseText);
                             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                                 getAllDataOfMap();
-                                dialog.dialog("close");
+                                dialog2.dialog("close");
                             }
                         }
                     };

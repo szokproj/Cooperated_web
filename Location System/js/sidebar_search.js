@@ -1,5 +1,4 @@
 var token = "";
-var pageTimer = {}; //定義計時器全域變數 
 
 $(function () {
     token = getUser() ? getUser().api_token : "";
@@ -51,18 +50,4 @@ $(function () {
         };
         xmlHttp.send(JSON.stringify(request));
     });
-
-
-    $('#myModal').modal({
-        backdrop: false,
-        show: false
-    });
 });
-
-function showMyModel() {
-    $('#myModal').modal('show');
-    pageTimer["model"] = setTimeout(function () {
-        $('#myModal').modal('hide');
-        clearTimeout(pageTimer["model"]);
-    }, 1200);
-}

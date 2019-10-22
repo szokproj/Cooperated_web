@@ -29,6 +29,16 @@
     /*解除定位按鈕*/
     height: 30px;
 }
+.sideBar-left-button button{
+    margin-left: 30px;
+    width: 280px;
+    height: 100%;
+}
+
+.sideBar-left-button i {
+    margin: auto;
+    color: black;
+}
 
 .sideBar .sideBar-left {
     padding-top: 10px;
@@ -38,7 +48,7 @@
     overflow-y: auto;
     margin-left: 30px;
     width: 300px;
-    height: 100%;
+    height: 95%;
 }
 
 /*Alarm Dialog*/
@@ -86,7 +96,7 @@
 
 .btn-alarm {
     padding: 5px 10px 5px 10px;
-    font-size: 20px;
+    font-size: 16px;
     color: rgb(233, 0, 0);
     float: right;
 }
@@ -100,8 +110,17 @@
     filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.7));
 }
 
-.icon-image {
-    max-height: 20px;
-    max-width: 20px;
-    background: transparent !important;
+.thumb-count {
+    float: right;
+    background: rgb(211, 38, 38);
+    border: 2px solid rgb(194, 38, 38);
+    border-radius: 50px;
+    box-shadow: 2px 2px 3px rgb(46, 46, 46);
+    padding: 0px 6px;
+    text-align: center;
+}
+
+.thumb-count label {
+    color: rgb(255, 255, 255);
+    margin: auto;
 }

@@ -8,7 +8,7 @@ $(function () {
         alert("Permission denied!");
         history.back();
     }
-    setNavBar("Account_Management", "");
+    setNavBar("", "");
     inputUsersTable();
     inputPermissionTable();
     $("#btn_account_add").on('click', newAccountInfo);

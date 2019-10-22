@@ -62,10 +62,9 @@
                 <div class="mode_ethernet">
                     <div class="top">
                         <button id="open_dialog_set">Set <i class='fas fa-cog'></i></button>&nbsp;
-                        <button type="button" id="btn_search" onclick="Search()">Search</button>&nbsp;
-                        <button type="button" id="btn_connect" onclick="Connect()">Connect</button>&nbsp;
+                        <button id="btn_search" onclick="Search()">Search</button>&nbsp;
+                        <button id="btn_connect" onclick="Connect()">Connect</button>&nbsp;
                         <button id="btn_submit" onclick="submitWriteRequest()">Submit</button>
-
                         <span style="float:right;">
                             <input type="checkbox" id="is_static_ip_connect" value="true" />
                             <label>Static IP connect : </label>
@@ -91,12 +90,12 @@
                                     <th class="row_gateway_addr">Gateway</th>
                                     <th class="row_mask_addr">Subnet Mask</th>
                                     <th class="row_client_ip_addr">Client IP</th>
+                                    <th class="row_machine_number">Machine Number</th>
+                                    <th class="row_model">Model Name</th>
                                     <th class="row_tcp_server_port">TCP Server Port</th>
                                     <th class="row_udp_server_port">Udp Server Port</th>
                                     <th class="row_tcp_client_src_port">Tcp Client Src Port</th>
                                     <th class="row_tcp_client_des_port">Tcp Client Des Port</th>
-                                    <th class="row_machine_number">Machine Number</th>
-                                    <th class="row_model">Model Name</th>
                                     <th style="width:3px; padding:0px;"></th>
                                     <th class="row_rf_mode">MODE</th>
                                     <th class="row_rf_version">Version</th>
@@ -124,6 +123,20 @@
 
     </div>
     <div class="hidden_dialog">
+        <!--Modal-->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <apan>寫入中，進度 : </apan>
+                    <span id="progress_bar"></span>
+                    <!--<div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                        </button>
+                    </div>-->
+                </div>
+            </div>
+        </div>
         <div id="dialog_set_table_display" class="dialog" title="Check the display field name">
             <form>
                 <fieldset style="text-align: left;">

@@ -294,7 +294,7 @@ function updateFenceTable() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                fenceArray = revObj.Value[0].Values.slice(0) || [];
+                fenceArray = "Values" in revObj.Value[0] ? revObj.Value[0].Values.slice(0) : [];
                 $("#table_fence_setting tbody").empty();
                 fenceDotArray = [];
                 for (i = 0; i < fenceArray.length; i++) {
@@ -398,7 +398,7 @@ function getAnchor_Group() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                anchorGroupArray = revObj.Value[0].Values.slice(0) || [];
+                anchorGroupArray = "Values" in revObj.Value[0] ? revObj.Value[0].Values.slice(0) : [];
                 draw();
             } else {
                 alert($.i18n.prop('i_alarmAlert_31'));

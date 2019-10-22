@@ -28,6 +28,19 @@ aside button {
     background-color: rgb(211, 211, 211);
 }
 
+.btn-focus {
+    height: 26px;
+    width: 40px;
+    padding: 0px;
+}
+
+.icon-image {
+    max-height: 18px;
+    max-width: 18px;
+    margin: auto;
+    background: transparent !important;
+}
+
 .page-main {
     position: relative;
 }

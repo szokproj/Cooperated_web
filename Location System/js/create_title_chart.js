@@ -170,7 +170,7 @@ $(function () {
                         addXmlHttp.onreadystatechange = function () {
                             if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                                 var revObj = JSON.parse(this.responseText);
-                                if (revObj.success == 1) {
+                                if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                                     var hasChild = $node.parent().attr('colspan') > 0 ? true : false;
                                     if (!hasChild) {
                                         var rel = nodeVals.length > 1 ? '110' : '100';
@@ -178,7 +178,7 @@ $(function () {
                                             return {
                                                 'name': item,
                                                 'relationship': rel,
-                                                'id': revObj.Values.c_id,
+                                                'id': revObj.Value[0].Values.c_id,
                                                 "color": addColor
                                             };
                                         }));
@@ -187,7 +187,7 @@ $(function () {
                                             return {
                                                 'name': item,
                                                 'relationship': '110',
-                                                'id': revObj.Values.c_id,
+                                                'id': revObj.Value[0].Values.c_id,
                                                 "color": addColor
                                             };
                                         }));

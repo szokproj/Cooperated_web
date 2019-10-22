@@ -215,8 +215,8 @@ function handleMouseDown(event) { //滑鼠按下綁定事件
         }
         if (!pos.x || !pos.y)
             return;
+        var zoom = 1 / Zoom;
         var index = anchorArray.findIndex(function (v) {
-            var zoom = 1 / Zoom;
             ctx.beginPath();
             ctx.rect(v.x - 5 * zoom, v.y - 5 * zoom, 10 * zoom, 10 * zoom);
             ctx.closePath();
@@ -225,7 +225,6 @@ function handleMouseDown(event) { //滑鼠按下綁定事件
         if (index > -1) {
             $(function () {
                 $("#canvas_map").on("mousemove", function (e) {
-                    var zoom = 1 / Zoom;
                     anchorArray[index].x += (e.pageX - downx) * zoom;
                     anchorArray[index].y += (e.pageY - downy) * zoom;
                     downx = e.pageX;
@@ -251,16 +250,16 @@ function handleMouseDown(event) { //滑鼠按下綁定事件
 }
 
 function handleMouseMove(event) { //滑鼠移動事件
-    if (canvasImg.isPutImg) {
-        getPointOnCanvas(event.offsetX, event.offsetY);
-    }
+    if (canvasImg.isPutImg)
+        getPointOnCanvas(event.clientX, event.clientY);
 }
 
 function getPointOnCanvas(x, y) {
     //獲取滑鼠在Canvas物件上座標(座標起始點從左上換到左下)
-    //var BCR = canvas.getBoundingClientRect();
-    var pos_x = x * (canvasImg.width / canvas.width);
-    var pos_y = y * (canvasImg.height / canvas.height);
+    var zoom = 1 / Zoom;
+    var BCR = canvas.getBoundingClientRect();
+    var pos_x = (x - BCR.left) * zoom;
+    var pos_y = (y - BCR.top) * zoom;
     lastX = pos_x;
     lastY = canvasImg.height - pos_y;
     document.getElementById('x').innerText = lastX > 0 ? (lastX).toFixed(2) : 0;
@@ -301,10 +300,11 @@ function drawAnchor(dctx, id, type, x, y, zoom) {
 
 function drawAnchorPosition(dctx, x, y, zoom) {
     var size = 4 * zoom;
-    dctx.fillStyle = '#99cc00';
     dctx.beginPath();
     dctx.arc(x, y, size, 0, Math.PI * 2, true);
+    dctx.fillStyle = '#99cc00';
     dctx.fill();
+    dctx.closePath();
 }
 
 function catchMap_Anchors() {

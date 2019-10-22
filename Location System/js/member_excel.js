@@ -69,6 +69,7 @@ function excelImportTable(jsonData) {
     if (jsonData) {
         var coverArr = [];
         var addArr = [];
+        var overwriteArr = []
         var successNumber = {
             add: [],
             edit: []
@@ -100,41 +101,56 @@ function excelImportTable(jsonData) {
                         memberArray.push("")
                     })*/
                     var memberArray = revObj.Value[0].Values || [];
-                    var dataArray = JSON.parse(jsonData);
+                    var dataArray = JSON.parse(jsonData) || [];
                     dataArray.forEach(function (element, index) {
                         if (index == 0 || isStop || !element.number)
                             return;
-                        var repeat = memberArray.findIndex(function (info) {
+                        var repeat_number = memberArray.findIndex(function (info) {
                             return info.number == element.number;
                         });
-                        if (repeat > -1) {
-                            if (allCover) {
-                                coverArr.push(element);
-                                update_delay++;
-                            } else if (!allDelete) {
-                                if (confirm($.i18n.prop('I_confirm_2') + element.number + $.i18n.prop('I_confirm_3'))) {
-                                    if (confirm($.i18n.prop('I_confirm_4')))
+                        var repeat_tagid = memberArray.findIndex(function (info) {
+                            return parseInt(info.tag_id.substring(8), 16) == element.user_id;
+                        });
+                        if (repeat_number > -1) { //工號重複
+                            if (allDelete) return; //全部略過 
+                            if (allCover) { //全部覆蓋
+                                question(repeat_number, repeat_tagid, element);
+                            } else { //不全部覆蓋(一筆筆詢問)
+                                if (confirm($.i18n.prop('i_confirm_2') + element.number + $.i18n.prop('i_confirm_3'))) {
+                                    if (confirm($.i18n.prop('i_confirm_4')))
                                         allCover = true;
-                                    coverArr.push(element);
+                                    question(repeat_number, repeat_tagid, element);
                                 } else {
-                                    if (confirm($.i18n.prop('I_confirm_5'))) {
-                                        if (confirm($.i18n.prop('I_confirm_6')))
+                                    if (confirm($.i18n.prop('i_confirm_5'))) {
+                                        if (confirm($.i18n.prop('i_confirm_6')))
                                             allDelete = true;
                                     } else {
-                                        isStop = true;
-                                        if (!confirm($.i18n.prop('I_confirm_7')))
-                                            alert($.i18n.prop('I_confirm_8'));
+                                        question(repeat_number, repeat_tagid, element);
                                     }
                                 }
                             }
                         } else if (element.number != "") {
-                            addArr.push(element);
-                            update_delay++;
+                            if (repeat_tagid > -1) {
+                                if (confirm($.i18n.prop('i_confirm_9') + element.number + $.i18n.prop('i_confirm_10'))) {
+                                    overwriteArr.push({
+                                        "number": memberArray[repeat_tagid].number
+                                    });
+                                    addArr.push(element);
+                                    update_delay++;
+                                }
+                            } else {
+                                addArr.push(element);
+                                update_delay++;
+                            }
                         }
                     });
 
                     if (!isStop) {
                         var delay = 0;
+                        if (overwriteArr.length > 0) {
+                            delay++;
+                            deleteMemberData(overwriteArr);
+                        }
                         if (addArr.length > 0) {
                             successNumber.add = [];
                             addArr.forEach(element => {
@@ -168,6 +184,31 @@ function excelImportTable(jsonData) {
             "Command_Name": ["GetStaffs"],
             "api_token": [token]
         }));
+    }
+
+    function question(repeat_index1, repeat_index2, data) {
+        if (repeat_index2 > -1) {
+            if (repeat_index2 == repeat_index1) {
+                //工號且使用者編號皆重複==>可覆蓋重複工號者
+                coverArr.push(data);
+                update_delay++;
+            } else {
+                //工號重複但使用者編號與其他已存在的人員重複==>必須略過
+                if (confirm($.i18n.prop('I_confirm_11') + data.number + $.i18n.prop('I_confirm_12'))) {
+                    if (confirm($.i18n.prop('i_confirm_6')))
+                        allDelete = true;
+                } else {
+                    if (confirm($.i18n.prop('I_confirm_13')))
+                        isStop = true;
+                    else
+                        question(repeat_index1, repeat_index2, data);
+                }
+            }
+        } else {
+            //工號重複但使用者編號都沒有重複==>可覆蓋重複工號者
+            coverArr.push(data);
+            update_delay++;
+        }
     }
 
     function sendMemberData(operate, element) {
@@ -222,11 +263,16 @@ function excelImportTable(jsonData) {
                         successNumber.edit.push(number);
                 }
                 if (submitCount >= (addArr.length + coverArr.length)) {
-                    var result = $.i18n.prop('i_importComplete_1') +
-                        (successNumber.add.length + successNumber.edit.length) + "\n" +
-                        $.i18n.prop('i_importComplete_2') + submitNumber.length;
-                    if (submitNumber.length > 0)
-                        result += ", \n" + $.i18n.prop('i_importComplete_3') + submitNumber;
+                    var successConut = successNumber.add.length + successNumber.edit.length;
+                    var result = $.i18n.prop('i_importSuccessNum') + successConut;
+
+                    result += (successConut > 0) ? ", \n" + $.i18n.prop('i_importSuccessJobNumber') +
+                        successNumber.add.concat(successNumber.edit) : "";
+
+                    result += "\n" + $.i18n.prop('i_importFailedNum') + submitNumber.length;
+
+                    result += (submitNumber.length > 0) ? ", \n" + $.i18n.prop('i_importFailedJobNumber') + submitNumber : "";
+
                     alert(result);
                 }
             }
@@ -235,6 +281,25 @@ function excelImportTable(jsonData) {
         submitNumber.push(number);
         submitCount++;
     }
+}
+
+function deleteMemberData(number_array) {
+    var request = {
+        "Command_Type": ["Write"],
+        "Command_Name": ["DeleteStaff"],
+        "Value": number_array,
+        "api_token": [token]
+    };
+    var xmlHttp = createJsonXmlHttp('sql');
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                return;
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
 }
 
 function checkExist(object, key) {

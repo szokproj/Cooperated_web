@@ -49,7 +49,8 @@ $(function () {
                             var fence_id_arr = Object.keys(revObj.Value[0]);
                             fence_id_arr.splice(fence_id_arr.indexOf("success"), 1);
                             for (i in fence_id_arr) {
-                                if (revObj.Value[0][fence_id_arr[i]].info[0].fence_name == fence_name) {
+                                if (revObj.Value[0][fence_id_arr[i]].info &&
+                                    revObj.Value[0][fence_id_arr[i]].info[0].fence_name == fence_name) {
                                     addFencePoints(fence_id_arr[i]);
                                     addFenceGroups(fence_id_arr[i]);
                                 }

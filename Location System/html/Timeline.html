@@ -58,6 +58,23 @@
                     </canvas>
                 </div>
 
+                <div id="alarmBlock" style="display:none;">
+                    <table id="table_alarm_handle">
+                        <thead>
+                            <tr>
+                                <th class="i18n" name="i_item"></th>
+                                <th class="i18n" name="i_alarmStatus"></th>
+                                <th class="i18n" name="i_userID" style="min-width:70px;"></th>
+                                <th class="i18n" name="i_number" style="width:70px;"></th>
+                                <th class="i18n" name="i_name" style="width:70px;"></th>
+                                <th class="i18n" name="i_executor"></th>
+                                <th class="i18n" name="i_time" style="width:160px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
                 <div class="sidebar_right">
                     <div class="panel-group" id="accordion">
                         <div class="panel panel-default">
@@ -110,6 +127,7 @@
                                         <select id="target_type" style="color: rgb(85, 85, 85);">
                                             <option value="Tag" class="i18n" name="i_tag"></option>
                                             <option value="Group" class="i18n" name="i_group"></option>
+                                            <option value="AlarmHandle" class="i18n" name="i_alarmHandle"></option>
                                         </select></label>
                                     <br>
                                     <div id="target_tag">
@@ -152,7 +170,7 @@
                                         <button id="btn_resst_locate_tag" class="btn btn-default i18n"
                                             style="float:right; margin:5px 0px; padding:3px 5px;"
                                             name="i_notAssigned"></button>
-                                        <table id="table_tag_list">
+                                        <table id="table_tag_list" style="max-height: 400px;">
                                             <thead>
                                                 <tr>
                                                     <th class="i18n" name="i_id"></th>
@@ -162,6 +180,21 @@
                                             <tbody></tbody>
                                         </table>
                                     </div>
+
+                                    <div id="target_alarm_handle" style="display: none;">
+                                        <label class="i18n" name="i_alarmType"></label> : <select
+                                            id="target_alarm_type">
+                                            <option class="i18n" name="i_all" value="all"></option>
+                                            <option class="i18n" name="i_lowPowerAlarm" value="low_power"></option>
+                                            <option class="i18n" name="i_helpAlarm" value="help"></option>
+                                            <option class="i18n" name="i_activeAlarm" value="active"></option>
+                                            <option class="i18n" name="i_stillAlarm" value="still"></option>
+                                            <option class="i18n" name="i_stayAlarm" value="stay"></option>
+                                            <option class="i18n" name="i_hiddenAlarm" value="hidden"></option>
+                                            <option class="i18n" name="i_electronicFence" value="Fence"></option>
+                                        </select>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>

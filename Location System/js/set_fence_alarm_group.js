@@ -198,8 +198,10 @@ function getFenceAlarmGroup() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                var key = Object.keys(revObj.Value[0].Value);
-                updateFenceAG_List(key);
+                if (revObj.Value[0].Value) {
+                    var key = Object.keys(revObj.Value[0].Value);
+                    updateFenceAG_List(key);
+                }
             } else {
                 alert($.i18n.prop('i_alarmAlert_48'));
             }

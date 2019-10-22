@@ -1,6 +1,6 @@
 var token = "";
 var default_color = '#2eb82e';
-var command_name = [];
+var delete_job_number = "";
 
 $(function () {
     token = getUser() ? getUser().api_token : "";
@@ -46,56 +46,64 @@ $(function () {
         }
 
         if (valid) {
-            var requestJSON = JSON.stringify({
-                "Command_Type": ["Write"],
-                "Command_Name": command_name,
-                "Value": [{
-                    "number": main_number.val(),
-                    "tag_id": tag_id,
-                    "card_id": main_card_id.val(),
-                    "Name": main_name.val(),
-                    "department_id": $("#hidden_department").val(),
-                    "jobTitle_id": $("#hidden_jobTitle").val(),
-                    "type": main_type.val(),
-                    "photo": photo_base64,
-                    "file_ext": photo_ext,
-                    "color_type": $("#main_select_tag_color").val(),
-                    "color": colorToHex($("#main_input_tag_color").val()),
-                    "alarm_group_id": main_alarm_group.val(),
-                    "status": $("#basic_state").val(),
-                    "gender": $("#basic_gender").val(),
-                    "lastName": $("#basic_last_name").val(),
-                    "firstName": $("#basic_first_name").val(),
-                    "EnglishName": $("#basic_english_name").val(),
-                    "birthday": $("#basic_birthday").val(),
-                    "phoneJob": $("#basic_job_phone").val(),
-                    "phoneSelf": $("#basic_self_phone").val(),
-                    "mail": $("#basic_mail").val(),
-                    "address": $("#basic_address").val(),
-                    "education": $("#basic_highest_education").val(),
-                    "school": $("#basic_school").val(),
-                    "grade": $("#basic_grade").val(),
-                    "tech_grade": $("#basic_pro_level").val(),
-                    "dateEntry": $("#basic_entry_date").val(),
-                    "dateLeave": $("#basic_leave_date").val(),
-                    "note": $("#note_text").val(),
-                    "exist": "1"
-                }],
-                "api_token": [token]
-            });
+            var delay = 0;
+            if (delete_job_number != "") {
+                delay++;
+                deleteMemberData([{
+                    "number": delete_job_number
+                }]);
+            }
 
-            var xmlHttp = createJsonXmlHttp('sql');
-            xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
-                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0)
-                        UpdateMemberList();
-                    else
-                        alert($.i18n.prop('i_alertError_3'));
-                }
-            };
-            xmlHttp.send(requestJSON);
-            dialog.dialog("close");
+            setTimeout(function () {
+                var xmlHttp = createJsonXmlHttp('sql');
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0)
+                            UpdateMemberList();
+                        else
+                            alert($.i18n.prop('i_alertError_3'));
+                        dialog.dialog("close");
+                    }
+                };
+                xmlHttp.send(JSON.stringify({
+                    "Command_Type": ["Write"],
+                    "Command_Name": ["AddStaff"],
+                    "Value": [{
+                        "number": main_number.val(),
+                        "tag_id": tag_id,
+                        "card_id": main_card_id.val(),
+                        "Name": main_name.val(),
+                        "department_id": $("#hidden_department").val(),
+                        "jobTitle_id": $("#hidden_jobTitle").val(),
+                        "type": main_type.val(),
+                        "photo": photo_base64,
+                        "file_ext": photo_ext,
+                        "color_type": $("#main_select_tag_color").val(),
+                        "color": colorToHex($("#main_input_tag_color").val()),
+                        "alarm_group_id": main_alarm_group.val(),
+                        "status": $("#basic_state").val(),
+                        "gender": $("#basic_gender").val(),
+                        "lastName": $("#basic_last_name").val(),
+                        "firstName": $("#basic_first_name").val(),
+                        "EnglishName": $("#basic_english_name").val(),
+                        "birthday": $("#basic_birthday").val(),
+                        "phoneJob": $("#basic_job_phone").val(),
+                        "phoneSelf": $("#basic_self_phone").val(),
+                        "mail": $("#basic_mail").val(),
+                        "address": $("#basic_address").val(),
+                        "education": $("#basic_highest_education").val(),
+                        "school": $("#basic_school").val(),
+                        "grade": $("#basic_grade").val(),
+                        "tech_grade": $("#basic_pro_level").val(),
+                        "dateEntry": $("#basic_entry_date").val(),
+                        "dateLeave": $("#basic_leave_date").val(),
+                        "note": $("#note_text").val(),
+                        "exist": "1"
+                    }],
+                    "api_token": [token]
+                }));
+            }, 100 * delay);
         }
         return valid;
     };
@@ -122,12 +130,8 @@ $(function () {
     form = dialog.find("form");
 });
 
-
-function setCommand(name) {
-    if (name == "add")
-        command_name = ["AddStaff"];
-    else if (name == "edit")
-        command_name = ["EditStaff"];
+function setEditNumber(number) {
+    delete_job_number = number;
 }
 
 function selectTagColor() {
