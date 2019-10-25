@@ -5,7 +5,7 @@ var TimeSlotArr = [];
 var TimeGroupArr = [];
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
     inputTimeGroups();
 
     //Dialog to edit time group.

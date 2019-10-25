@@ -3,7 +3,7 @@ var operating = "";
 var addFenceContainGroup = [];
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 
     //Dialog to add fence.
     var dialog, form,
@@ -20,7 +20,7 @@ $(function () {
                 if (element.innerText == add_fence_name.val()) {
                     valid = false;
                     add_fence_name.addClass("ui-state-error");
-                    return alert("圍籬名稱不可重複!");
+                    return alert($.i18n.prop('i_alarmAlert_53'));
                 }
             });
         }
@@ -236,7 +236,6 @@ $(function () {
     var dialog2, form2,
         add_x = $("#add_dot_x"),
         add_y = $("#add_dot_y"),
-        count_dot = 0,
         allFields2 = $([]).add(add_x, add_y);
 
     var SendToAddDot = function () {
@@ -245,8 +244,7 @@ $(function () {
         valid = valid && checkLength(add_x, $.i18n.prop('i_alarmAlert_36'), 1, 20);
         valid = valid && checkLength(add_y, $.i18n.prop('i_alarmAlert_37'), 1, 20);
         if (valid) {
-            count_dot++
-            addDotArray(count_dot, add_x.val(), add_y.val());
+            addDotArray(add_x.val(), add_y.val());
             dialog2.dialog("close");
         }
         return valid;
@@ -260,8 +258,6 @@ $(function () {
         buttons: {
             "Confirm": SendToAddDot,
             Cancel: function () {
-                form2[0].reset();
-                allFields2.removeClass("ui-state-error");
                 dialog2.dialog("close");
             }
         },
@@ -280,20 +276,7 @@ $(function () {
         dialog2.dialog("open");
     });
 
-    $("#btn_fence_dot_delete").button().on("click", function () {
-        var checkboxs = document.getElementsByName("chkbox_fence_dot_setting");
-        var delete_arr = [];
-        for (k in checkboxs) {
-            if (checkboxs[k].checked)
-                delete_arr.push(checkboxs[k].value);
-        }
-        delete_arr.forEach(id => {
-            $("#tr_fence_dot_setting_" + id).remove();
-            deleteDotArray(id);
-        });
-        updateFenceDotsArr();
-        draw();
-    });
+    $("#btn_fence_dot_delete").button().on("click", deleteDotArray);
 });
 
 

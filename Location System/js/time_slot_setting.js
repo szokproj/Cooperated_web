@@ -5,7 +5,7 @@ var weekday_arr = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 var timeSlotArray = [];
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 
     inputTimeSetting();
     resetWeekSchedule();

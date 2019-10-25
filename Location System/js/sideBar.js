@@ -145,18 +145,12 @@ function inputAlarmData(element, i) {
     $("#alarm_dialog_date").text(time_arr.date);
     $("#alarm_dialog_time").text(time_arr.time);
     $("#alarm_dialog_status").text(status);
-    $("#alarm_dialog_btn_unlock").unbind();
-    $("#alarm_dialog_btn_unlock").click(function () {
-        unlockFocusAlarm();
-        $("#alarm_dialog").dialog("close");
-    });
-    $("#alarm_dialog_btn_focus").unbind();
-    $("#alarm_dialog_btn_focus").click(function () {
+    $("#alarm_dialog_btn_focus").off("click").on("click", function () {
         changeFocusAlarm(element.id, element.alarm_type);
     });
+    $("#member_dialog").dialog("close");
     $("#alarm_dialog").dialog("open");
 }
-
 
 function setAlarmDialog(Obj) {
     var time_arr = TimeToArray(Obj.alarm_time);
@@ -203,18 +197,25 @@ function setAlarmDialog(Obj) {
     $("#alarm_dialog_date").text(time_arr.date);
     $("#alarm_dialog_time").text(time_arr.time);
     $("#alarm_dialog_status").text(status);
-    $("#alarm_dialog_btn_unlock").unbind();
-    $("#alarm_dialog_btn_unlock").click(function () {
-        unlockFocusAlarm();
-        $("#alarm_dialog").dialog("close");
-    });
-    $("#alarm_dialog_btn_focus").unbind();
-    $("#alarm_dialog_btn_focus").click(function () {
+    $("#alarm_dialog_btn_focus").off("click").on("click", function () {
         changeFocusAlarm(Obj.id, Obj.status);
     });
+    $("#member_dialog").dialog("close");
     $("#alarm_dialog").dialog("open");
 }
 
+function setTagDialog(Obj) {
+    $("#member_dialog_tag_id").text(parseInt(Obj.id.substring(8), 16));
+    $("#member_dialog_number").text(Obj.number);
+    $("#member_dialog_name").text(Obj.name);
+    setMemberPhoto("member_dialog_image", "member_dialog_number", Obj.number);
+    $("#member_dialog_btn_focus").off("click").on("click", function () {
+        var tag_id = Obj.id;
+        locateTag(tag_id);
+    });
+    $("#alarm_dialog").dialog("close");
+    $("#member_dialog").dialog("open");
+}
 
 function TimeToArray(time_str) {
     if (time_str.length > 0) {

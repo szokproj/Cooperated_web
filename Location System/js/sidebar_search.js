@@ -1,7 +1,7 @@
 var token = "";
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 
     $("#search_start").on("click", function () {
         var key = $("#search_select_type").val();

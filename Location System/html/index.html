@@ -20,6 +20,7 @@
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
     <!--Edit css-->
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
     <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
     <link rel="stylesheet" type="text/css" href="../css/index_style.css" />
     <link rel="stylesheet" type="text/css" href="../css/index_data_sidebar.css" />
@@ -64,21 +65,23 @@
                             <option value="zh-CN">简体中文</option>
                         </select>
 
-                        <div class="dropdown">
-                            <label id="btn_set" class="dropdown-toggle btn-set i18n-input" selectattr="title"
-                                selectname="i_setting" data-toggle="dropdown"><i class="fas fa-cog"></i></label>
-                            <ul class="dropdown-menu" style="left:-120px;">
-                                <li><input type="button" id="btn_adjust_focus" class="i18n-input" selectattr="value"
-                                        selectname="i_focusMode" /></li>
-                                <li><input type="button" id="btn_display_size" class="i18n-input" selectattr="value"
-                                        selectname="i_displaySize" /></li>
-                            </ul>
-                        </div>
+                        <div class="tool-bar">
+                            <div class="dropdown">
+                                <label id="btn_set" class="dropdown-toggle btn-set i18n-input" selectattr="title"
+                                    selectname="i_setting" data-toggle="dropdown"><i class="fas fa-cog"></i></label>
+                                <ul class="dropdown-menu" style="left:-120px;">
+                                    <li><input type="button" id="btn_adjust_focus" class="i18n-input" selectattr="value"
+                                            selectname="i_focusMode" /></li>
+                                    <li><input type="button" id="btn_display_size" class="i18n-input" selectattr="value"
+                                            selectname="i_displaySize" /></li>
+                                </ul>
+                            </div>
 
-                        <label for="btn_remove" id="label_remove" class="btn-delete i18n-input" selectattr="title"
-                            selectname="i_closeMap">
-                            <i class="fas fa-window-close" style='font-size:20px;'></i></label>
-                        <input id="btn_remove" type="button" class="btn-hidden" onclick="closeMapTag();" />
+                            <label for="btn_remove" id="label_remove" class="btn-delete i18n-input" selectattr="title"
+                                selectname="i_closeMap">
+                                <i class="fas fa-window-close" style='font-size:20px;'></i></label>
+                            <input id="btn_remove" type="button" class="btn-hidden" onclick="closeMapTag();" />
+                        </div>
                     </div>
 
                     <!--Midden-->
@@ -253,15 +256,25 @@
         <div id="member_dialog" class="dialog" title="Tag Infomation" style="background:rgb(195, 228, 230);">
             <img id="member_dialog_image" class="member_photo" src="">
             <span style="display: block;">
-                <label class="i18n" name="i_userID"></label> :
-                <label id="member_dialog_tag_id"></label>
-                <br>
                 <label class="i18n" name="i_number"></label> :
                 <label id="member_dialog_number"></label>
                 <br>
                 <label class="i18n" name="i_name"></label> :
                 <label id="member_dialog_name"></label>
+                <br>
+                <label class="i18n" name="i_userID"></label> :
+                <label id="member_dialog_tag_id"></label>
             </span>
+            <br>
+            <div style="text-align: center;">
+                <button id="member_dialog_btn_unlock" class="btn btn-default i18n-input" selectattr="title"
+                    selectname="i_releasePosition"><img class="icon-image" src="../image/release_position.png">
+                </button>
+                <button id="member_dialog_btn_focus" style="margin-left: 20px;" class="btn btn-default i18n-input"
+                    selectattr="title" selectname="i_locate">
+                    <img class="icon-image" src="../image/target.png">
+                </button>
+            </div>
         </div>
         <!--The dialog of alarm-->
         <div id="alarm_dialog" class="dialog" title="Alarm Infomation">

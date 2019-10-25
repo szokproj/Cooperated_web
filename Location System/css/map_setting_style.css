@@ -52,6 +52,12 @@ input[type="file"] {
 }
 
 /* 網頁內的輸入框 */
+.dialog input[type="button"] {
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+    font-size: 14px;
+}
+
 label,
 input {
     display: inline-block;
@@ -325,11 +331,15 @@ canvas {
     overflow: auto;
     max-height: 340px;
     max-width: 300px;
-    width:300px;
+    width: 300px;
 }
 
 .coordinate {
     background-color: white;
     max-width: 100px;
     border: none;
+}
+
+.btn-no-change {
+    color: rgb(150, 148, 148);
 }

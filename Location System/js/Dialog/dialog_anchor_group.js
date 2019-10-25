@@ -1,7 +1,7 @@
 var token = "";
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 
     var dialog, form,
         add_group_id = $("#add_group_id"),

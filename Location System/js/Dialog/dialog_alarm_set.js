@@ -1,7 +1,7 @@
 var token = "";
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 
     var stay_alarm_dialog = new cerateAlarmDialog("dialog_stay_alarm_setting", "setStayAlarmTime");
     stay_alarm_dialog.inputTimeNode("stay_alarm_time");

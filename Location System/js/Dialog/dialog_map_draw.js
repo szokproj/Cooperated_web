@@ -15,6 +15,7 @@ var ytopView = 0;
 var Zoom = 1.0; //actual width and height of zoomed and panned display
 var isFitWindow = true;
 var isPosition = false;
+var isPosition_main = false;
 var serverImg = new Image();
 var anchorArray = [];
 var displayMapInfo = true;
@@ -206,7 +207,7 @@ function getEventPosition(ev) { //獲取滑鼠點擊位置
 }
 
 function handleMouseDown(event) { //滑鼠按下綁定事件    
-    if (!isPosition) {
+    if (!isPosition && !isPosition_main) {
         var downx = event.pageX;
         var downy = event.pageY;
         var pos = {
@@ -256,10 +257,9 @@ function handleMouseMove(event) { //滑鼠移動事件
 
 function getPointOnCanvas(x, y) {
     //獲取滑鼠在Canvas物件上座標(座標起始點從左上換到左下)
-    var zoom = 1 / Zoom;
     var BCR = canvas.getBoundingClientRect();
-    var pos_x = (x - BCR.left) * zoom;
-    var pos_y = (y - BCR.top) * zoom;
+    var pos_x = (x - BCR.left) / Zoom;
+    var pos_y = (y - BCR.top) / Zoom;
     lastX = pos_x;
     lastY = canvasImg.height - pos_y;
     document.getElementById('x').innerText = lastX > 0 ? (lastX).toFixed(2) : 0;
@@ -379,8 +379,11 @@ function handleAnchorPosition() {
 }
 
 function startMainAnchorPosition() {
-    if (!isPosition) {
-        isPosition = true;
+    if (isPosition) {
+        startAnchorPosition();
+    }
+    if (!isPosition_main) {
+        isPosition_main = true;
         document.getElementById("label_pos_group").innerHTML = "<i class='fas fa-map-marked' style='font-size:20px;'></i>";
         document.getElementById("label_pos_group").title = $.i18n.prop('i_mapAlert_7');
         canvas.addEventListener("click", handleMainAnchorPosition);
@@ -391,7 +394,7 @@ function startMainAnchorPosition() {
             pageTimer["timer1"] = setTimeout(request, delaytime);
         }, delaytime);
     } else {
-        isPosition = false;
+        isPosition_main = false;
         document.getElementById("label_pos_group").innerHTML = "<i class='fas fa-map-marked-alt' style='font-size:20px;'></i>";
         document.getElementById("label_pos_group").title = $.i18n.prop('i_mapAlert_8');
         canvas.removeEventListener("click", handleMainAnchorPosition);
@@ -404,6 +407,9 @@ function startMainAnchorPosition() {
 
 
 function startAnchorPosition() {
+    if (isPosition_main) {
+        startMainAnchorPosition();
+    }
     if (!isPosition) {
         isPosition = true;
         document.getElementById("label_pos_anchor_group").innerHTML = "<i class='fas fa-map-marked' style='font-size:20px;'></i>";

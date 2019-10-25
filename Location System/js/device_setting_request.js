@@ -12,7 +12,7 @@ var timeDelay = {
 
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 
     $('#myModal').modal({
         backdrop: false,

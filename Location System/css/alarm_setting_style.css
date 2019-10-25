@@ -349,8 +349,6 @@ input[type=radio]:not(old).beauty:checked+label {
 }
 
 .block-list-helf {
-    overflow: auto;
-    max-height: 200px;
     height: 200px;
     width: 100%;
 }

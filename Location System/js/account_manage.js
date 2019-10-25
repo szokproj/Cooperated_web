@@ -3,7 +3,7 @@ var CommandName_account = "";
 var userArray = [];
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
     if (!getPermissionOfPage("Account_Management")) {
         alert("Permission denied!");
         history.back();

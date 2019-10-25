@@ -5,7 +5,7 @@ $(function () {
     var w = document.documentElement.clientWidth;
     console.log("monitor_width : " + w);
     //Check this page's permission and load navbar
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
     if (!getPermissionOfPage("Map_Setting")) {
         alert("Permission denied!");
         window.location.href = '../index.html';

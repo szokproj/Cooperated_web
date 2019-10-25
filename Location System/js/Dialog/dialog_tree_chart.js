@@ -3,7 +3,7 @@ var default_color = '#2eb82e';
 var chart_type = "";
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 
     var dialog, form,
         select_node = $('#selected-node');

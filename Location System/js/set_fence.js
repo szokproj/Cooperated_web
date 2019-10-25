@@ -33,7 +33,7 @@ var pageTimer = {}; //定義計時器全域變數
 window.addEventListener("load", setupCanvas, false);
 
 function setupCanvas() {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 
     cvsBlock = document.getElementById("mapBlock");
     canvas = document.getElementById("canvas_map");
@@ -246,30 +246,16 @@ function handleMouseWheel(event) {
     draw();
 }
 
-function getEventPosition(ev) { //獲取滑鼠點擊位置
-    var x, y;
-    if (ev.layerX || ev.layerX == 0) {
-        x = ev.layerX;
-        y = ev.layerY;
-    } else if (ev.offsetX || ev.offsetX == 0) { // Opera
-        x = ev.offsetX;
-        y = ev.offsetY;
-    }
-    return {
-        x: x,
-        y: y
-    };
-}
-
 function handleMouseMove(event) { //滑鼠移動事件
     if (canvasImg.isPutImg) {
-        getPointOnCanvas(event.offsetX, event.offsetY);
+        getPointOnCanvas(event.clientX, event.clientY);
     }
 }
 
 function getPointOnCanvas(x, y) {
-    var pos_x = x * (canvasImg.width / canvas.width);
-    var pos_y = y * (canvasImg.height / canvas.height);
+    var BCR = canvas.getBoundingClientRect();
+    var pos_x = (x - BCR.left) / Zoom;
+    var pos_y = (y - BCR.top) / Zoom;
     lastX = pos_x;
     lastY = canvasImg.height - pos_y;
     document.getElementById('x').innerText = lastX > 0 ? (lastX).toFixed(2) : 0;
@@ -348,9 +334,9 @@ function getFencePointArray(fence_id) {
 function updateFenceDotsArr() {
     $("#table_fence_dot_setting tbody").empty();
     for (j = 0; j < addFenceDotArray.length; j++) {
-        var tr_id = "tr_fence_dot_setting_" + addFenceDotArray[j].number;
+        var tr_id = "tr_fence_dot_setting_" + (j + 1);
         $("#table_fence_dot_setting tbody").append("<tr id=\"" + tr_id + "\"><td>" +
-            "<input type=\"checkbox\" name=\"chkbox_fence_dot_setting\" value=\"" + addFenceDotArray[j].number +
+            "<input type=\"checkbox\" name=\"chkbox_fence_dot_setting\" value=\"" + j +
             "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (j + 1) + "</td>" +
             "<td><label name=\"dot_x\">" + addFenceDotArray[j].x + "</label></td>" +
             "<td><label name=\"dot_y\">" + addFenceDotArray[j].y + "</label></td></tr>");
@@ -556,11 +542,11 @@ function resetFencePosition() {
         document.getElementById("label_fence_dot_position").title = $.i18n.prop('i_startFencePointPos');
         for (var each in pageTimer)
             clearTimeout(pageTimer[each]);
+        addFenceDotArray = [];
         draw();
         canvas.removeEventListener("click", handleDotPosition);
     }
 }
-
 
 function Fence() {
     var fence_dot_array = [];
@@ -601,7 +587,7 @@ function SettingFence() {
     var fence_dot_array = [];
     var canvas = document.getElementById("canvas_map");
     var ctx = canvas.getContext("2d");
-    var displace = 5 / canvasImg.scale;
+    var displace = 5 / Zoom;
     this.setFenceDot = function (x, y) {
         fence_dot_array.push({
             x: x,
@@ -613,10 +599,10 @@ function SettingFence() {
         ctx.beginPath();
         fence_dot_array.forEach(function (v, i, arr) {
             if (i == len - 1) {
-                ctx.lineTo(v.x + displace, v.y + displace);
-                ctx.lineTo(arr[0].x + displace, arr[0].y + displace);
+                ctx.lineTo(v.x, v.y);
+                ctx.lineTo(arr[0].x, arr[0].y);
             } else {
-                ctx.lineTo(v.x + displace, v.y + displace);
+                ctx.lineTo(v.x, v.y);
             }
         })
         ctx.strokeStyle = "rgb(255, 80, 80)";
@@ -626,16 +612,16 @@ function SettingFence() {
         ctx.closePath();
     };
     this.drawFenceDots = function () {
+        var size = 10 / Zoom;
         fence_dot_array.forEach(function (v) {
             ctx.fillStyle = "rgb(255, 80, 80)";
-            ctx.fillRect(v.x - displace, v.y - displace, 30 / canvasImg.scale, 30 / canvasImg.scale); //10*3
+            ctx.fillRect(v.x - displace, v.y - displace, size, size); //10*3
         });
     };
 }
 
-function addDotArray(num, x, y) {
+function addDotArray(x, y) {
     addFenceDotArray.push({
-        id: num,
         x: x,
         y: y
     });
@@ -643,12 +629,17 @@ function addDotArray(num, x, y) {
     draw();
 }
 
-function deleteDotArray(id) {
-    var del_index = addFenceDotArray.findIndex(function (info) {
-        return id == info.id;
-    });
-    addFenceDotArray.splice(del_index, 1);
+function deleteDotArray() {
+    var checkboxs = document.getElementsByName("chkbox_fence_dot_setting");
+    var retain_arr = [];
+    for (k = 0; k < checkboxs.length; k++) {
+        if (!checkboxs[k].checked)
+            retain_arr.push(addFenceDotArray[k]);
+    }
+    addFenceDotArray = retain_arr;
     addFenceContainGroup = [];
+    updateFenceDotsArr();
+    draw();
 }
 
 function resetDotArray() {

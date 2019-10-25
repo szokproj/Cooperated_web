@@ -3,7 +3,7 @@ var allGroups = [];
 var maps_groupsArray = [];
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 
     $("#btn_add_group").on('click', function () {
         $("#add_grouplist_id").val("");

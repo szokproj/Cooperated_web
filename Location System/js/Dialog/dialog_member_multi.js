@@ -1,7 +1,7 @@
 var token = "";
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 
     var dialog, form,
         sel_item = $("#multi_edit_item"),

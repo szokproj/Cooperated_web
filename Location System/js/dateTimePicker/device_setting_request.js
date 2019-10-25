@@ -13,7 +13,7 @@ var count_write_devices = 0;
 
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 });
 
 function Load() {

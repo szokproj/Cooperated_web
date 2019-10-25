@@ -47,7 +47,7 @@ var token = "",
 $(function () {
     //Check this page's permission and load navbar
     var userInfo = getUser();
-    token = userInfo ? userInfo.api_token : "";
+    token = getToken();
     userName = userInfo ? userInfo.cname : "";
     if (!getPermissionOfPage("index")) {
         alert("Permission denied!");
@@ -56,12 +56,12 @@ $(function () {
     setNavBar("index", "");
 
     //https://www.minwt.com/webdesign-dev/js/16298.html
-    var h = document.documentElement.clientHeight * 0.9;
+    /*var h = document.documentElement.clientHeight * 0.9;
     var w = document.documentElement.clientWidth;
     $(".cvsBlock").css("height", h + "px");
     $(".member-table").css("max-height", h + "px");
     $(".alarm-table").css("max-height", h + "px");
-    $(".search-table").css("max-height", h + "px");
+    $(".search-table").css("max-height", h + "px");*/
     //預設彈跳視窗載入後隱藏
     $("#member_dialog").dialog({
         autoOpen: false
@@ -108,6 +108,14 @@ $(function () {
             //手指離開時=>div取消事件 
             $("#canvas").off("touchmove");
         });
+    });
+    $("#member_dialog_btn_unlock").click(function () {
+        unlockFocusAlarm();
+        $("#member_dialog").dialog("close");
+    });
+    $("#alarm_dialog_btn_unlock").click(function () {
+        unlockFocusAlarm();
+        $("#alarm_dialog").dialog("close");
     });
     $('#myModal').modal({
         backdrop: false,
@@ -182,10 +190,11 @@ function setup() {
         "api_token": [token]
     })); //接收並載入Server的地圖設定到按鈕
 
-    Start();
-
-    clearInterval(pageTimer["bling"]);
-    pageTimer["bling"] = setInterval('changeAlarmLight()', 1000);
+    if (token) {
+        Start();
+        clearInterval(pageTimer["bling"]);
+        pageTimer["bling"] = setInterval('changeAlarmLight()', 1000);
+    }
 }
 
 function addMapTab(map_id, map_name) {
@@ -543,8 +552,8 @@ function restoreCanvas() {
 
 function handleMouseWheel(event) { //滑鼠滾輪事件
     var BCR = canvas.getBoundingClientRect();
-    var pos_x = event.pageX - BCR.left;
-    var pos_y = event.pageY - BCR.top;
+    var pos_x = event.clientX - BCR.left;
+    var pos_y = event.clientY - BCR.top;
     var scale = 1.0;
     if (event.wheelDelta < 0 || event.detail > 0) {
         if (Zoom > 0.1)
@@ -596,11 +605,7 @@ function handleMouseClick(event) { //滑鼠點擊事件
             var radius = dot_size.tag / Zoom;
             var distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y + 20 / Zoom), 2));
             if (distance <= radius) {
-                $("#member_dialog_tag_id").text(parseInt(v.id.substring(8), 16));
-                $("#member_dialog_number").text(v.number);
-                $("#member_dialog_name").text(v.name);
-                setMemberPhoto("member_dialog_image", "member_dialog_number", v.number);
-                $("#member_dialog").dialog("open");
+                setTagDialog(v);
             }
         }
     }
@@ -662,10 +667,9 @@ function handleMouseMove(event) { //滑鼠移動事件
 
 function getPointOnCanvas(x, y) {
     //獲取滑鼠在Canvas物件上座標(座標起始點從左上換到左下)
-    var zoom = 1 / Zoom;
     var BCR = canvas.getBoundingClientRect();
-    var pos_x = (x - BCR.left) * zoom;
-    var pos_y = (y - BCR.top) * zoom;
+    var pos_x = (x - BCR.left) / Zoom;
+    var pos_y = (y - BCR.top) / Zoom;
     lastX = pos_x;
     lastY = canvasImg.height - pos_y;
     document.getElementById('x').value = (lastX).toFixed(2);
@@ -1024,7 +1028,7 @@ function draw() {
 }
 
 function Start() {
-    var delaytime = 100; //設定計時器
+    var delaytime = 200; //設定計時器
     clearInterval(pageTimer["timer1"]);
     pageTimer["timer1"] = setInterval(function () {
         updateAlarmList();

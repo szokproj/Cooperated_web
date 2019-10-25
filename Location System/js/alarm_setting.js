@@ -34,7 +34,7 @@ var alarmModeArray = [{
 ];
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
     /**
      * Check this page's permission and load navbar
      */

@@ -1,7 +1,7 @@
 var token = "";
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 
     var dialog, form,
         allFields = $([]).add($("#add_map_name")).add($("#add_map_image"));

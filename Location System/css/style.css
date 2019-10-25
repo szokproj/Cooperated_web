@@ -1,0 +1,61 @@
+@media only screen and (min-width: 769px) {
+    .container {
+        width: 1400px;
+        height: 700px;
+    }
+
+
+    .cvsBlock {
+        -webkit-flex: 1;
+        -ms-flex: 1;
+        flex: 1;
+        background: #ccc;
+        max-height: 80%;
+        height: 680px;
+        width: 100%;
+        overflow: hidden;
+        /*border-radius: 25px;*/
+        /*border: 1px black solid;*/
+    }
+}
+
+@media only screen and (min-width: 321px) and (max-width: 768px) {
+    .container {
+        width: 375px;
+        height: 100%;
+    }
+
+
+    .cvsBlock {
+        -webkit-flex: 1;
+        -ms-flex: 1;
+        flex: 1;
+        background: #ccc;
+        max-height: 70%;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        /*border-radius: 25px;*/
+        /*border: 1px black solid;*/
+    }
+}
+
+@media only screen and (min-width: 0px) and (max-width: 320px) {
+    .container {
+        width: 300px;
+        height: 100%;
+    }
+
+    .cvsBlock {
+        -webkit-flex: 1;
+        -ms-flex: 1;
+        flex: 1;
+        background: #ccc;
+        max-height: 80%;
+        height: 300px;
+        width: 100%;
+        overflow: hidden;
+        /*border-radius: 25px;*/
+        /*border: 1px black solid;*/
+    }
+}

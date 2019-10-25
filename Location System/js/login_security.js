@@ -49,9 +49,10 @@ function verifyLogin() {
                     //Verification success
                     var revInfo = revObj.Value[0].Values;
                     if (revInfo && revInfo[0].api_token) {
+                        revInfo[0].api_token = btoa(revInfo[0].api_token);
                         Cookies.set("login_user", JSON.stringify(revInfo[0]));
                         alert($.i18n.prop('i_loginSuccess'));
-                        window.location.href = '../index.html';
+                        history.back();
                     }
                 } else {
                     var msg = revObj.Value[0].Values[0].msg;

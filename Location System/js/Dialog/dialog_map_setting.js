@@ -1,7 +1,7 @@
 var token = "";
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 
     hiddenBlock();
     $("#block_info").show();
@@ -10,10 +10,10 @@ $(function () {
         var file = this.files[0];
         var valid = checkExt(this.value);
         valid = valid && checkImageSize(file);
-        if (valid)
+        if (valid) {
             transBase64(file);
-        else
-            return;
+            $("#btn_submit_map_info").prop('disabled', false).removeClass('btn-no-change');
+        }
     });
     $("#menu_resize").on("click", resizeCanvas);
     $("#menu_map_info").on("click", function () {
@@ -38,14 +38,13 @@ $(function () {
     });
 
 
-    //Map Setting Dialog
-    var dialog, form,
-        //map info
-        mapinfo_image = $("#canvas_map"),
+    //map info
+    var mapinfo_image = $("#canvas_map"),
         mapinfo_id = $("#map_info_id"),
         mapinfo_name = $("#map_info_name"),
         mapinfo_scale = $("#map_info_scale"),
         allFields = $([]).add(mapinfo_image).add(mapinfo_name).add(mapinfo_scale);
+
 
     function SubmitResult() {
         allFields.removeClass("ui-state-error");
@@ -79,9 +78,8 @@ $(function () {
                 if (mapHttp.readyState == 4 || mapHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                        //reload
-                        loadMap();
-                        dialog.dialog("close");
+                        loadMap(); //reload
+                        $("#btn_submit_map_info").prop('disabled', true).addClass('btn-no-change');
                         alert($.i18n.prop('i_mapAlert_5'));
                     }
                 }
@@ -91,38 +89,29 @@ $(function () {
         return valid;
     }
 
-    dialog = $("#dialog_map_setting").dialog({
+    //Map Setting Dialog
+    $("#dialog_map_setting").dialog({
         autoOpen: false,
-        height: 640,
-        width: 1000,
+        height: 580,
+        width: 950,
         modal: true,
-        buttons: {
-            Confirm: function () {
-                var r = confirm($.i18n.prop('i_mapAlert_4'));
-                if (r == true)
-                    SubmitResult();
-                else
-                    return;
-            },
-            Cancel: function () {
-                dialog.dialog("close");
-            }
-        },
         close: function () {
             hiddenBlock();
             $("#block_info").show();
             $("#label_map_info").css('background-color', 'rgb(40, 108, 197)');
+            $("#btn_submit_map_info").prop('disabled', true).addClass('btn-no-change');
             allFields.removeClass("ui-state-error");
         }
     });
-
-    form = dialog.find("form").on("submit", function (event) {
-        event.preventDefault();
-        var r = confirm($.i18n.prop('i_mapAlert_4'));
-        if (r == true)
+    mapinfo_name.on("change", function () {
+        $("#btn_submit_map_info").prop('disabled', false).removeClass('btn-no-change');
+    });
+    mapinfo_scale.on("change", function () {
+        $("#btn_submit_map_info").prop('disabled', false).removeClass('btn-no-change');
+    });
+    $("#btn_submit_map_info").on('click', function () {
+        if (confirm($.i18n.prop('i_mapAlert_4')) == true)
             SubmitResult();
-        else
-            return;
     });
 });
 

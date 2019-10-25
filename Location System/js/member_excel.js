@@ -6,7 +6,7 @@ var datafield = ["number", "tag_id", "card_id", "Name", "lastName", "firstName",
 ];
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 });
 
 function arrayKeyTranslate(array) {

@@ -15,7 +15,7 @@ var educationArr = ['PrimarySchool', 'MiddleSchool', 'HighSchool', 'JuniorSchool
 
 $(function () {
     //Check this page's permission and load navbar
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
     permission = getUser() ? parseInt(getUser().userType, 10) : 0;
     if (!getPermissionOfPage("Member_Setting")) {
         alert("Permission denied!");
@@ -112,7 +112,7 @@ $(function () {
             transBase64(file);
     });
     $("#main_picture_clear").click(function () {
-        $("#main_picture_img").attr('src', '');
+        $("#main_picture_img").attr('src', '').width(0).height(0);
     });
     $("#add_col").click(addMemberData);
     $("#delete_col").click(removeMemberDatas);
@@ -389,8 +389,8 @@ function convertTobase64(file) {
 }
 
 function adjustImageSize(src) {
-    var thumb_width = $("#main_picture_block").css('max-width');
-    var thumb_height = $("#main_picture_block").css('max-height');
+    var thumb_width = parseInt($("#main_picture_block").css('max-width'), 10);
+    var thumb_height = parseInt($("#main_picture_block").css('max-height'), 10);
     if (src.length > 0) {
         var img = new Image();
         img.src = src;
@@ -406,8 +406,8 @@ function adjustImageSize(src) {
             }
         }
     } else {
-        $("#main_picture_img").attr('src', '');
-        $("#main_picture_img").width(thumb_width).height(thumb_height);
+        //$("#main_picture_img").attr('src', '../image/no_image.png').width(thumb_width).height(thumb_height);
+        $("#main_picture_img").attr('src', '').width(0).height(0);
     }
 }
 

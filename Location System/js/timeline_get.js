@@ -32,7 +32,7 @@ var locate_tag = "";
 
 $(function () {
     //Check this page's permission and load navbar
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
     if (!getPermissionOfPage("Timeline")) {
         alert("Permission denied!");
         window.location.href = '../index.html';

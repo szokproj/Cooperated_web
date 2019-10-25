@@ -6,7 +6,7 @@ var fenceArray = [];
  */
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 
     var dialog, form;
     var sendFAG_Set = function () {

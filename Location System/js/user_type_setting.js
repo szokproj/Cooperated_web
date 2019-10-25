@@ -6,7 +6,7 @@ var token = "",
 
 $(function () {
     //Check this page's permission and load navbar
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
     if (!getPermissionOfPage("Member_Setting")) {
         alert("Permission denied!");
         window.location.href = '../index.html';

@@ -2,7 +2,7 @@ var token = "";
 var anchorsInfoArray = [];
 
 $(function () {
-    token = getUser() ? getUser().api_token : "";
+    token = getToken();
 
     $("#anchor_id").on('change', function () {
         //預設anchor_type為anchor

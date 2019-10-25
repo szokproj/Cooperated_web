@@ -18,21 +18,23 @@ var MinimumPermission = {
  */
 
 function checkTokenAlive(token, response) {
-    if (!response) {
+    if (token == "") {
+        return false;
+    } else if (!response) {
         return false;
     } else if (response.status == 1) {
         return true;
     } else {
         if (response.msg == "Without token access") {
             //login overtime
-            alert("帳號閒置過久，此次登入失效");
+            alert("帳號閒置過久，此次登入失效，請重新登入");
             //window.location.href = '../Login.html';
             setCookie("login_user", null);
             location.reload();
         } else if (response.msg == "Account is not exist") {
             //other user use the account login successfully
             if (token != "") {
-                alert("此帳號已在別處登入，此次登入失效");
+                alert("此帳號已在別處登入，此次登入失效，請重新登入");
                 //window.location.href = '../Login.html';
                 setCookie("login_user", null);
                 location.reload();
@@ -68,6 +70,16 @@ function getUser() {
     return user_info;
 }
 
+function getToken() {
+    var user_info = getUser();
+    if (user_info) {
+        var atob_token = atob(user_info.api_token);
+        return atob_token ? atob_token : "";
+    } else {
+        return "";
+    }
+}
+
 function resetLogin() {
     var xmlHttp = createJsonXmlHttp('user');
     xmlHttp.onreadystatechange = function () {
@@ -87,7 +99,7 @@ function resetLogin() {
     xmlHttp.send(JSON.stringify({
         "Command_Name": ["logout"],
         "Value": [{
-            "api_token": getUser() ? getUser().api_token : ""
+            "api_token": getToken()
         }]
     }));
 }
