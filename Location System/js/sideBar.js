@@ -6,13 +6,13 @@ function alarmSidebarMove() {
         if (!leftSide_isOpen) {
             //側邊欄由左向右滑動
             $('#content').addClass('left_open');
-            $('.sideBar').animate({
+            $('.alarm-sideBar').animate({
                 left: '30px'
             }, 370); //0
         } else {
             //側邊欄由右向左滑動
             $('#content').removeClass('left_open');
-            $('.sideBar').animate({
+            $('.alarm-sideBar').animate({
                 left: '-330px'
             }, 310); //-330
         }

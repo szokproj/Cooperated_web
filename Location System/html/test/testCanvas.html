@@ -4,12 +4,12 @@
 <head>
     <title>Location System</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <style>
-        nav {
+        .cvsBlock {
             -webkit-flex: 1;
             -ms-flex: 1;
             flex: 1;
@@ -18,6 +18,10 @@
             width: 600px;
             overflow: hidden;
             border: 1px black solid;
+        }
+
+        canvas {
+            background: gray;
         }
 
         canvas:hover {
@@ -55,11 +59,16 @@
             margin-top: -1px;
         }
     </style>
+    <script type="text/javascript" src="../js/import/hammer.min.js"></script>
     <script src='https://code.jquery.com/jquery-2.1.3.min.js'></script>
     <script type="text/javascript">
         var PIXEL_RATIO; // 獲取瀏覽器像素比
         var cvsBlock, canvas, ctx;
-        var canvasImg = { isPutImg: false, width: 0, height: 0 };
+        var canvasImg = {
+            isPutImg: false,
+            width: 0,
+            height: 0
+        };
         var lastX = 0; //滑鼠最後位置的X座標
         var lastY = 0; //滑鼠最後位置的Y座標
         var mouseDown = false;
@@ -68,7 +77,7 @@
         var xleftView = 0;
         var ytopView = 0;
         var zoomOriginal = 1.0;
-        var Zoom = zoomOriginal;  //actual width and height of zoomed and panned display
+        var Zoom = zoomOriginal; //actual width and height of zoomed and panned display
         var fitZoom = 1;
 
         $(document).ready(function () {
@@ -109,22 +118,40 @@
         window.addEventListener("load", setup, false);
 
         function setup() {
-            cvsBlock = document.getElementById("nav");
+            cvsBlock = document.getElementById("cvsBlock");
             canvas = document.getElementById("canvas");
             ctx = canvas.getContext("2d");
             PIXEL_RATIO = (function () {
                 var dpr = window.devicePixelRatio || 1,
                     bsr = ctx.webkitBackingStorePixelRatio ||
-                        ctx.mozBackingStorePixelRatio ||
-                        ctx.msBackingStorePixelRatio ||
-                        ctx.oBackingStorePixelRatio ||
-                        ctx.backingStorePixelRatio || 1;
+                    ctx.mozBackingStorePixelRatio ||
+                    ctx.msBackingStorePixelRatio ||
+                    ctx.oBackingStorePixelRatio ||
+                    ctx.backingStorePixelRatio || 1;
                 return dpr / bsr;
             })();
             canvas.addEventListener("dblclick", handleDblClick, false);
             canvas.addEventListener("mousemove", handleMouseMove, false);
             cvsBlock.addEventListener("mousewheel", handleMouseWheel, false); // mousewheel duplicates dblclick function
             cvsBlock.addEventListener("DOMMouseScroll", handleMouseWheel, false); // for Firefox
+
+            //Hammer mobile touch:
+            var hammertime = new Hammer(canvas);
+            hammertime.get('pinch').set({
+                enable: true
+            });
+            hammertime.on('pinch pinchmove', ev => {
+                /*displayImageCurrentScale = clampScale(ev.scale * displayImageScale);
+                updateRange();
+                displayImageCurrentX = clamp(displayImageX + ev.deltaX, rangeMinX, rangeMaxX);
+                displayImageCurrentY = clamp(displayImageY + ev.deltaY, rangeMinY, rangeMaxY);
+                updateDisplayImage(displayImageCurrentX, displayImageCurrentY, displayImageCurrentScale);*/
+
+                document.getElementById("deltaX").value = ev.deltaX;
+                document.getElementById("deltaY").value = ev.deltaY;
+                document.getElementById("scale").value = ev.scale;
+                document.getElementById("distance").value = ev.distance;
+            });
         }
 
         function handleDblClick(event) {
@@ -150,7 +177,7 @@
 
             var targetX = lastX;
             var targetY = lastY;
-            var x = targetX + xleftView;  // View coordinates
+            var x = targetX + xleftView; // View coordinates
             var y = targetY + ytopView;
 
             var scale = (event.wheelDelta < 0 || event.detail > 0) ? 0.5 : 1.5;
@@ -164,9 +191,9 @@
         }
 
         function handleMouseWheel(event) {
-            var targetX = lastX;
+            /*var targetX = lastX;
             var targetY = lastY;
-            var x = targetX + xleftView;  // View coordinates
+            var x = targetX + xleftView; // View coordinates
             var y = targetY + ytopView;
 
             var scale = (event.wheelDelta < 0 || event.detail > 0) ? 1.1 : 0.9;
@@ -176,7 +203,27 @@
             // scale about center of view, rather than mouse position. This is different than dblclick behavior.
             xleftView = x - targetX;
             ytopView = y - targetY;
+            setSize();*/
+
+            let BCR = canvas.getBoundingClientRect(),
+                pos_x = event.clientX - BCR.left,
+                pos_y = event.clientY - BCR.top,
+                scale = 1.0;
+            if (event.wheelDelta < 0 || event.detail > 0) {
+                if (Zoom > 0.1)
+                    scale = 0.9;
+            } else {
+                scale = 1.1;
+            }
+            Zoom = (Zoom * scale).toFixed(2); //縮放比例
             setSize();
+            let Next_x = lastX * Zoom, //縮放後滑鼠位移後的位置(x坐標)
+                Next_y = (canvasImg.height - lastY) * Zoom; //縮放後滑鼠位移後的位置(y坐標)
+            //let canvas_left = parseFloat($("#canvas").css("margin-left")); //canvas目前相對於div的位置(x坐標)
+            //let canvas_top = parseFloat($("#canvas").css("margin-top")); //canvas目前相對於div的位置(y坐標)
+            xleftView += pos_x - Next_x;
+            ytopView += pos_y - Next_y;
+            $("#canvas").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");
         }
 
         function handleMouseMove(event) {
@@ -207,7 +254,10 @@
                 x = ev.offsetX;
                 y = ev.offsetY;
             }
-            return { x: x, y: y };
+            return {
+                x: x,
+                y: y
+            };
             //注：如果使用此方法無效的話，需要給Canvas元素的position設為absolute。
         }
 
@@ -267,7 +317,8 @@
 
         function setSize() {
             //縮放canvas與背景圖大小
-            canvas.style.backgroundSize = (canvasImg.width * fitZoom / Zoom) + "px " + (canvasImg.height * fitZoom / Zoom) + "px";
+            canvas.style.backgroundSize = (canvasImg.width * fitZoom / Zoom) + "px " + (canvasImg.height * fitZoom /
+                Zoom) + "px";
             canvas.width = canvasImg.width * fitZoom * PIXEL_RATIO / Zoom;
             canvas.height = canvasImg.height * fitZoom * PIXEL_RATIO / Zoom;
             canvas.style.width = canvasImg.width * fitZoom / Zoom + 'px';
@@ -299,16 +350,20 @@
 </head>
 
 <body>
-    <nav id="nav">
-        <canvas id="canvas"></canvas>
-    </nav>
+    <div class="cvsBlock" id="cvsBlock">
+        <canvas id="canvas" height=200 width=300></canvas>
+    </div>
     <div>
         <input type="file" id="file" accept="image/*" onchange="loadFile(this)"><br><br>
         <input type="button" onclick="drawAlarmTags()" value="顯示Alarm座標"><br><br>
         <div style="float: right;">
             <span id="scale_visible" style="margin-right:30px;">Map Scale: initial</span>
-            X:<input type="text" name="x" id="x" value="" style="max-width: 50px;">
-            Y:<input type="text" name="y" id="y" value="" style="max-width: 50px;">
+            X:<input type="text" id="x" value="" style="max-width: 50px;">
+            Y:<input type="text" id="y" value="" style="max-width: 50px;">
+            deltaX:<input type="text" id="deltaX" value="" style="max-width: 50px;">
+            deltaY:<input type="text" id="deltaY" value="" style="max-width: 50px;">
+            scale:<input type="text" id="scale" value="" style="max-width: 50px;">
+            distance:<input type="text" id="distance" value="" style="max-width: 50px;">
         </div>
 
         <div class="dropdown">
@@ -336,6 +391,9 @@
                 <li><input type="button" id="Tag_Setting" value="Tag Setting"></li>
             </ul>
         </div>
+
+        <embed src="rect.svg" width="300" height="100" type="image/svg+xml"
+            pluginspage="http://www.adobe.com/svg/viewer/install/" />
     </div>
 </body>
 

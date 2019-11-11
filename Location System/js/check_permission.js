@@ -1,15 +1,15 @@
-var account = "";
-var permission = "0";
-var MinimumPermission = {
-    index: "0",
-    Member_Setting: "0",
-    Timeline: "0",
-    Map_Setting: "0",
-    Anchor_Setting: "0",
-    Alarm_Setting: "0",
-    Reference: "2",
-    Account_Management: "2"
-};
+var account = "",
+    permission = "0",
+    MinimumPermission = {
+        index: "0",
+        Member_Setting: "0",
+        Timeline: "0",
+        Map_Setting: "0",
+        Anchor_Setting: "0",
+        Alarm_Setting: "0",
+        Reference: "2",
+        Account_Management: "2"
+    };
 
 /**
  * When web page loading.
@@ -50,18 +50,17 @@ function getUser() {
     if (user_info) {
         permission = user_info.userType;
         var html = "<span class=\"i18n\" name=\"i_welcome\">" + $.i18n.prop('i_welcome') +
-            "</span> , <div class=\"dropdown dropdown-input\"><button type=\"button\"" +
-            " class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\">" +
-            "<span>" + user_info.cname + "</span> &nbsp;<span class=\"caret\"></span>" +
-            "</button><ul class=\"dropdown-menu\" role=\"menu\" id=\"user_btn\">";
+            "</span><div class=\"dropdown\"><label id=\"user_btn\" class=\"btn-user\">" +
+            user_info.cname + " <span class=\"caret\" style=\"color:white;\"></span></label>" +
+            "<div class=\"dropdown-content\">";
         if (user_info.userType == "2") {
-            html += "<li><a href=\"../Account_Management.html\" class=\"i18n\"" +
+            html += "<a href=\"../Account_Management.html\" class=\"i18n\"" +
                 " name=\"account_managementPage\">" + $.i18n.prop('account_managementPage') +
-                "</a></li>";
+                "</a>";
         }
         document.getElementById("login_user").innerHTML = html +
-            "<li><a href=\"javascript: resetLogin();\" class=\"i18n\" name=\"i_logout\">" +
-            $.i18n.prop('i_logout') + "</a></li></ul></div>";
+            "<a href=\"javascript: resetLogin();\" class=\"i18n\" name=\"i_logout\">" +
+            $.i18n.prop('i_logout') + "</a></div></div>";
     } else {
         document.getElementById("login_user").innerHTML = "<a href=\"../Login.html\" " +
             "style=\"margin:0px 20px 0px 5px;\"><span class=\"i18n\" name=\"i_login\">" +
@@ -81,27 +80,24 @@ function getToken() {
 }
 
 function resetLogin() {
-    var xmlHttp = createJsonXmlHttp('user');
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            if (revObj && revObj.Value[0].success > 0) {
-                alert($.i18n.prop('i_logoutSuccess'));
-            }
-            /*else {
-                alert($.i18n.prop('i_loginTimeout'));
-                //alert($.i18n.prop('i_logoutFailed'));
-            }*/
-            setCookie("login_user", null);
-            location.reload();
-        }
-    };
-    xmlHttp.send(JSON.stringify({
+    var json_request = JSON.stringify({
         "Command_Name": ["logout"],
         "Value": [{
             "api_token": getToken()
         }]
-    }));
+    });
+    var jxh = createJsonXmlHttp("user");
+    jxh.onreadystatechange = function () {
+        if (jxh.readyState == 4 || jxh.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (revObj && revObj.Value[0].success > 0) {
+                alert($.i18n.prop('i_logoutSuccess'));
+            }
+            setCookie("login_user", null);
+            location.reload();
+        }
+    };
+    jxh.send(json_request);
 }
 
 function getPermission() {
@@ -164,52 +160,48 @@ function setNavBar(parent_page, child_page) {
 function Navbar() {
     var lock_stste = getCookie('lock_state') || "unlocked";
     var ParentPageArray = Object.keys(MinimumPermission);
-    var count_parents = 0;
-    var parent_order = -1;
-    var child_order = -1;
     var navbarHtml = "<aside class=\"menu\"><div class=\"menu-left" + (lock_stste == "locked" ? " locked" : "") + "\">" +
         "<nav class=\"sidebar\"><ul class=\"nav\">";
     this.setFirstFloor = function (parent_page) {
-        ParentPageArray.forEach(function (PageName, i) {
+        ParentPageArray.forEach(page_name => {
             var permission_num = typeof (parseInt(permission, 10)) === 'number' ? parseInt(permission, 10) : 0;
             //沒有設定權限等同訪客帳號
-            if (permission_num >= parseInt(MinimumPermission[PageName], 10)) {
-                if (PageName == parent_page)
-                    parent_order = i;
-                switch (PageName) {
+            if (permission_num >= parseInt(MinimumPermission[page_name], 10)) {
+                const selected_li = "<li class=\"active\"><a href=\"#\">";
+                switch (page_name) {
                     case "index":
-                        count_parents++;
-                        navbarHtml += "<li><a href=\"../index.html\"><i class=\"fas fa-satellite-dish\"></i>" +
+                        navbarHtml += (page_name == parent_page ? selected_li : "<li><a href=\"../index.html\">") +
+                            "<i class=\"fas fa-satellite-dish\"></i>" +
                             "<span>" + $.i18n.prop('homePage') + "</span></a></li>";
                         break;
                     case "Member_Setting":
-                        count_parents++;
-                        navbarHtml += "<li><a href=\"../Member_Setting.html\"><i class=\"fas fa-user-cog\"></i>" +
+                        navbarHtml += (page_name == parent_page ? selected_li : "<li><a href=\"../Member_Setting.html\">") +
+                            "<i class=\"fas fa-user-cog\"></i>" +
                             "<span>" + $.i18n.prop('member_settingPage') + "</span></a></li>";
                         break;
                     case "Timeline":
-                        count_parents++;
-                        navbarHtml += "<li><a href=\"../Timeline.html\"><i class=\"fas fa-route\"></i>" +
+                        navbarHtml += (page_name == parent_page ? selected_li : "<li><a href=\"../Timeline.html\">") +
+                            "<i class=\"fas fa-route\"></i>" +
                             "<span>" + $.i18n.prop('timelinePage') + "</span></a></li>";
                         break;
                     case "Map_Setting":
-                        count_parents++;
-                        navbarHtml += "<li><a href=\"../Map_Setting.html\"><i class=\"fas fa-map\"></i>" +
+                        navbarHtml += (page_name == parent_page ? selected_li : "<li><a href=\"../Map_Setting.html\">") +
+                            "<i class=\"fas fa-map\"></i>" +
                             "<span>" + $.i18n.prop('map_settingPage') + "</span></a></li>";
                         break;
                     case "Anchor_Setting":
-                        count_parents++;
-                        navbarHtml += "<li><a href=\"../Anchor_Setting.html\"><i class=\"fas fa-anchor\"></i>" +
+                        navbarHtml += (page_name == parent_page ? selected_li : "<li><a href=\"../Anchor_Setting.html\">") +
+                            "<i class=\"fas fa-anchor\"></i>" +
                             "<span>" + $.i18n.prop('anchor_settingPage') + "</span></a></li>";
                         break;
                     case "Alarm_Setting":
-                        count_parents++;
-                        navbarHtml += "<li><a href=\"../Alarm_Setting.html\"><i class=\"fas fa-bell\" style=\"padding-left:2px;\"></i>" +
+                        navbarHtml += (page_name == parent_page ? selected_li : "<li><a href=\"../Alarm_Setting.html\">") +
+                            "<i class=\"fas fa-bell\" style=\"padding-left:2px;\"></i>" +
                             "<span>" + $.i18n.prop('alarm_settingPage') + "</span></a></li>";
                         break;
                     case "Reference":
-                        count_parents++;
-                        navbarHtml += "<li><a href=\"../Reference.html\"><i class=\"fas fa-cogs\"></i>" +
+                        navbarHtml += (page_name == parent_page ? selected_li : "<li><a href=\"../Reference.html\">") +
+                            "<i class=\"fas fa-cogs\"></i>" +
                             "<span>" + $.i18n.prop('advance_settingPage') + "</span></a></li>";
                         break;
                     default:
@@ -219,6 +211,7 @@ function Navbar() {
         });
     };
     this.setSecondFloor = function (parent_page, child_page) {
+        const selected_li = "<li class=\"setting-type active\"><a href=\"#\">";
         if (parent_page == "index") {
             navbarHtml += "<hr><li class=\"alarmlist\"><a href=\"javascript: alarmSidebarMove();\">" +
                 "<i class=\"fas fa-exclamation-circle\" id=\"alarmSideBar_icon\"></i>" +
@@ -227,59 +220,67 @@ function Navbar() {
                 "<i class=\"fas fa-map-marker-alt\" style=\"padding-left:2px;\"></i>" +
                 "<span>" + $.i18n.prop('i_tagList') + "</span></a></li>";
         } else if (parent_page == "Member_Setting") {
-            navbarHtml += "<hr><li class=\"setting-type\"><a href=\"../Member_Setting.html\"><i class=\"fas fa-users\"></i>" +
-                "<span>" + $.i18n.prop('i_memberSetting') + "</span></a></li>" +
-                "<li class=\"setting-type\"><a href=\"../Dept_Setting.html\"><i class=\"fas fa-sitemap\"></i>" +
-                "<span>" + $.i18n.prop('i_deptSetting') + "</span></a></li>" +
-                "<li class=\"setting-type\"><a href=\"../Job_Title_Setting.html\"><i class=\"fas fa-id-card\"></i>" +
-                "<span>" + $.i18n.prop('i_titleSetting') + "</span></a></li>" +
-                "<li class=\"setting-type\"><a href=\"../User_Type_Setting.html\"><i class=\"fas fa-user-tag\"></i>" +
-                "<span>" + $.i18n.prop('i_usertypeSetting') + "</span></a></li>" +
-                "<li class=\"setting-type\"><a href=\"../Preview_Color_Setting.html\">" +
-                "<i class=\"fas fa-map-marker-alt\" style=\"padding-left:2px;\"></i>" +
-                "<span>" + $.i18n.prop('i_previewColorSetting') + "</span></a></li>";
-            switch (child_page) {
-                case "Member_Setting":
-                    child_order = count_parents;
-                    break;
-                case "Dept_Setting":
-                    child_order = count_parents + 1;
-                    break;
-                case "Job_Title_Setting":
-                    child_order = count_parents + 2;
-                    break;
-                case "User_Type_Setting":
-                    child_order = count_parents + 3;
-                    break;
-                case "Preview_Color_Setting":
-                    child_order = count_parents + 4;
-                    break;
-                default:
-                    break;
-            }
+            navbarHtml += "<hr>";
+            const ChildPageArray = ["Member_Setting", "Dept_Setting", "Job_Title_Setting", "User_Type_Setting", "Preview_Color_Setting"];
+            ChildPageArray.forEach(page_name => {
+                switch (page_name) {
+                    case "Member_Setting":
+                        navbarHtml += (page_name == child_page ?
+                                selected_li : "<li class=\"setting-type\"><a href=\"../Member_Setting.html\">") +
+                            "<i class=\"fas fa-users\"></i><span>" + $.i18n.prop('i_memberSetting') + "</span></a></li>";
+                        break;
+                    case "Dept_Setting":
+                        navbarHtml += (page_name == child_page ?
+                                selected_li : "<li class=\"setting-type\"><a href=\"../Dept_Setting.html\">") +
+                            "<i class=\"fas fa-sitemap\"></i><span>" + $.i18n.prop('i_deptSetting') + "</span></a></li>";
+                        break;
+                    case "Job_Title_Setting":
+                        navbarHtml += (page_name == child_page ?
+                                selected_li : "<li class=\"setting-type\"><a href=\"../Job_Title_Setting.html\">") +
+                            "<i class=\"fas fa-id-card\"></i><span>" + $.i18n.prop('i_titleSetting') + "</span></a></li>";
+                        break;
+                    case "User_Type_Setting":
+                        navbarHtml += (page_name == child_page ?
+                                selected_li : "<li class=\"setting-type\"><a href=\"../User_Type_Setting.html\">") +
+                            "<i class=\"fas fa-user-tag\"></i><span>" + $.i18n.prop('i_usertypeSetting') + "</span></a></li>";
+                        break;
+                    case "Preview_Color_Setting":
+                        navbarHtml += (page_name == child_page ?
+                                selected_li : "<li class=\"setting-type\"><a href=\"../Preview_Color_Setting.html\">") +
+                            "<i class=\"fas fa-map-marker-alt\" style=\"padding-left:2px;\"></i>" +
+                            "<span>" + $.i18n.prop('i_previewColorSetting') + "</span></a></li>";
+                        break;
+                    default:
+                        break;
+                }
+            });
         } else if (parent_page == "Reference") {
-            navbarHtml += "<hr><li class=\"setting-type\"><a href=\"../Reference.html\">" +
-                "<i class=\"fas fa-satellite-dish\"></i><span>" + $.i18n.prop('i_reference') + "</span></a></li>" +
-                "<li class=\"setting-type\"><a href=\"../Advance_cmd.html\">" +
-                "<i class=\"fas fa-code\"></i><span>" + $.i18n.prop('i_advance_cmd') + "</span></a></li>" +
-                "<li class=\"setting-type\"><a href=\"../Update.html\">" +
-                "<i class=\"fas fa-download\"></i><span>" + $.i18n.prop('i_update') + "</span></a></li>" +
-                "<li class=\"start\"><a href=\"javascript: StartClick();\" id=\"btn_start\">" +
+            navbarHtml += "<hr>";
+            const ChildPageArray = ["Reference", "Advance_cmd", "Update"];
+            ChildPageArray.forEach(page_name => {
+                switch (page_name) {
+                    case "Reference":
+                        navbarHtml += (page_name == child_page ?
+                                selected_li : "<li class=\"setting-type\"><a href=\"../Reference.html\">") +
+                            "<i class=\"fas fa-satellite-dish\"></i><span>" + $.i18n.prop('i_reference') + "</span></a></li>";
+                        break;
+                    case "Advance_cmd":
+                        navbarHtml += (page_name == child_page ?
+                                selected_li : "<li class=\"setting-type\"><a href=\"../Advance_cmd.html\">") +
+                            "<i class=\"fas fa-code\"></i><span>" + $.i18n.prop('i_advance_cmd') + "</span></a></li>";
+                        break;
+                    case "Update":
+                        navbarHtml += (page_name == child_page ?
+                                selected_li : "<li class=\"setting-type\"><a href=\"../Update.html\">") +
+                            "<i class=\"fas fa-download\"></i><span>" + $.i18n.prop('i_update') + "</span></a></li>";
+                        break;
+                    default:
+                        break;
+                }
+            });
+            navbarHtml += "<li class=\"start\"><a href=\"javascript: StartClick();\" id=\"btn_start\">" +
                 "<i class=\"fas fa-play\" style=\"padding-left:2px;\"></i>" +
                 "<span>" + $.i18n.prop('i_start') + "</span></a></li>";
-            switch (child_page) {
-                case "Reference":
-                    child_order = count_parents;
-                    break;
-                case "Advance_cmd":
-                    child_order = count_parents + 1;
-                    break;
-                case "Update":
-                    child_order = count_parents + 2;
-                    break;
-                default:
-                    break;
-            }
         }
     };
     this.loadNavbar = function () {
@@ -289,22 +290,20 @@ function Navbar() {
         else
             navbarHtml += "<i class=\"fas fa-lock\"></i><span>" + $.i18n.prop('i_unlock') + "</span>";
         navbarHtml += "</a></li></ul></nav></div></aside>";
-        $("#NavbarHtml").html(navbarHtml);
-        if (parent_order > -1)
-            $("#NavbarHtml ul.nav li").eq(parent_order).addClass("active").children("a").prop("href", "#");
-        if (child_order > -1)
-            $("#NavbarHtml ul.nav li").eq(child_order).addClass("active").children("a").prop("href", "#");
+        document.getElementById("icon_navbar").innerHTML = navbarHtml;
     };
 }
 
 function lockLeftMemu() {
-    if ($(".menu-left").hasClass("locked")) { //is locked
-        $(".menu-left").removeClass("locked");
-        $(".lock a").html("<i class=\"fas fa-lock-open\"></i><span>" + $.i18n.prop('i_lock') + "</span></a>");
+    let menu_left = document.getElementsByClassName("menu-left")[0];
+    let lock = document.querySelector("li.lock");
+    if (menu_left.classList.contains("locked")) {
+        menu_left.classList.remove("locked");
+        lock.firstChild.innerHTML = "<i class=\"fas fa-lock-open\"></i><span>" + $.i18n.prop('i_lock') + "</span></a>";
         setCookie('lock_state', "unlocked");
     } else {
-        $(".menu-left").addClass("locked");
-        $(".lock a").html("<i class=\"fas fa-lock\"></i><span>" + $.i18n.prop('i_unlock') + "</span></a>");
+        menu_left.classList.add("locked");
+        lock.firstChild.innerHTML = "<i class=\"fas fa-lock\"></i><span>" + $.i18n.prop('i_unlock') + "</span></a>"
         setCookie('lock_state', "locked");
     }
 }

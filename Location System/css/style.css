@@ -1,61 +1,174 @@
+body {
+    /*background: linear-gradient(180deg, #0077F7 0%, #08132E 100%);
+    background: -moz-linear-gradient(180deg, #0077F7 0%, #08132E 100%);
+    background: -webkit-linear-gradient(180deg, #0077F7 0%, #08132E 100%);
+    background: -o-linear-gradient(180deg, #0077F7 0%, #08132E 100%);*/
+    background: #132742;
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    color: white;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+.container select,
+.container select option,
+.container option label,
+.container option span,
+.container input[type=text],
+.container input[type=date],
+.container input[type=time],
+.container input[type=search] {
+    background: #132742;
+    border: 1px solid lightgray;
+}
+
+.top_nav {
+    padding-top: 5px;
+    /*border: 1px solid #0055ff;*/
+    background: #000c2570;
+    /*background: linear-gradient(270deg, rgba(0, 227, 255, 1)0%, rgba(47, 149, 255, 1)65%);
+    background: -moz-linear-gradient(270deg, rgba(0, 227, 255, 1)0%, rgba(47, 149, 255, 1)65%);
+    background: -webkit-linear-gradient(270deg, rgba(0, 227, 255, 1)0%, rgba(47, 149, 255, 1)65%);
+    background: -o-linear-gradient(270deg, rgba(0, 227, 255, 1)0%, rgba(47, 149, 255, 1)65%);*/
+}
+
+.select-lang {
+    margin-top: 5px;
+    margin-right: 10px;
+    background: #082041;
+    color: white;
+}
+
+img.logo {
+    max-height: 30px;
+    max-width: 30px;
+    margin: auto;
+    background: transparent !important;
+}
+
+.btn-user {
+    cursor: pointer;
+    background: transparent;
+    color: rgb(0, 119, 255) !important;
+    font-size: 16px !important;
+    margin-left: 5px !important;
+    padding: 0px !important;
+}
+
+.btn-user:hover {
+    background: transparent !important;
+    color: rgb(90, 158, 236) !important;
+}
+
+/* 修改滾動條樣式 */
+/* this targets the default scrollbar (compulsory) */
+::-webkit-scrollbar {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+/*the new scrollbar will have a flat appearance with the set background color*/
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+/* this will style the thumb, ignoring the track */
+::-webkit-scrollbar-thumb {
+    background-color: lightgray;
+    border: 1px solid gray;
+}
+
+/* if both the vertical and the horizontal bars appear, then perhaps the right bottom corner also needs to be styled */
+::-webkit-scrollbar-corner {
+    background-color: gray;
+}
+
+canvas {
+    position: relative;
+}
+
+.cvsBlock {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    background: transparent;
+    overflow: hidden;
+    position: relative;
+    /*border-radius: 25px;*/
+    border: 1px rgb(47, 95, 201) solid;
+    /*#0055ff*/
+}
+
 @media only screen and (min-width: 769px) {
-    .container {
-        width: 1400px;
-        height: 700px;
-    }
 
-
+    /*桌上型電腦*/
     .cvsBlock {
-        -webkit-flex: 1;
-        -ms-flex: 1;
-        flex: 1;
-        background: #ccc;
-        max-height: 80%;
-        height: 680px;
         width: 100%;
-        overflow: hidden;
-        /*border-radius: 25px;*/
-        /*border: 1px black solid;*/
+        height: 650px;
     }
 }
 
 @media only screen and (min-width: 321px) and (max-width: 768px) {
-    .container {
-        width: 375px;
-        height: 100%;
-    }
 
-
+    /*平板*/
     .cvsBlock {
-        -webkit-flex: 1;
-        -ms-flex: 1;
-        flex: 1;
-        background: #ccc;
-        max-height: 70%;
-        height: 100%;
         width: 100%;
-        overflow: hidden;
-        /*border-radius: 25px;*/
-        /*border: 1px black solid;*/
+        height: 400px;
     }
 }
 
 @media only screen and (min-width: 0px) and (max-width: 320px) {
-    .container {
-        width: 300px;
-        height: 100%;
-    }
 
+    /*手機*/
     .cvsBlock {
-        -webkit-flex: 1;
-        -ms-flex: 1;
-        flex: 1;
-        background: #ccc;
-        max-height: 80%;
-        height: 300px;
         width: 100%;
-        overflow: hidden;
-        /*border-radius: 25px;*/
-        /*border: 1px black solid;*/
+        height: 500px;
     }
+}
+
+/*DropDownList*/
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
 }

@@ -15,8 +15,16 @@ th,
 td {
     padding: 4px;
     text-align: left;
-    border: 1px solid #808080;
+    border: 1px solid rgb(47, 95, 201);
+    /*#808080;*/
 }
+
+/* 自訂thead(表格的開頭)文字大小 */
+thead th {
+    text-align: left;
+    font-size: 12px;
+}
+
 
 /*tr:hover {
     background-color: #f5f5f5;
@@ -41,7 +49,7 @@ fieldset {
     margin-top: 25px;
 }
 
-.tool-bar{
+.tool-bar {
     float: right;
 }
 
@@ -76,7 +84,6 @@ fieldset {
     margin-right: 10px;
 }
 
-
 canvas:hover {
     cursor: pointer;
 }
@@ -103,10 +110,6 @@ canvas:active {
 .btn-group button {
     height: 30px;
     font-size: 12px;
-}
-
-.selected {
-    background-color: rgb(30, 88, 141);
 }
 
 .dropdown {
@@ -176,17 +179,6 @@ canvas:active {
     margin-top: -1px;
 }
 
-.nav-tabs .tab_map_btn {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
-}
-
 input[type="file"] {
     position: absolute;
     width: 1px;
@@ -231,7 +223,7 @@ input[type="file"] {
 
 .btn-set {
     cursor: pointer;
-    background: white !important;
+    background: transparent !important;
     color: rgb(0, 119, 255) !important;
     font-size: 18px !important;
     margin-left: 5px !important;
@@ -239,6 +231,7 @@ input[type="file"] {
 }
 
 .btn-set:hover {
+    background: transparent !important;
     color: rgb(90, 158, 236) !important;
 }
 
@@ -255,14 +248,38 @@ input[type="file"] {
 
 .btn-delete {
     cursor: pointer;
-    color: rgb(255, 38, 38);
+    color: rgb(255, 0, 0);
     font-size: 20px;
     margin: 0px 5px 0px 5px;
 }
 
 .btn-delete:hover {
-    color: rgb(255, 113, 113);
+    color: rgb(255, 81, 81);
 }
+
+.btn-map-tab {
+    border-color: rgb(47, 95, 201);
+    background-color: transparent;
+    color: white;
+}
+
+.btn-map-tab:hover {
+    border-color: rgb(47, 95, 201);
+    background-color: transparent;
+    color: white;
+}
+
+/*.btn-map-tab:focus,
+.btn-map-tab:active {
+    outline: none;
+}*/
+
+.btn-map-tab.selected,
+.btn-map-tab.selected:hover {
+    background-color: rgb(47, 95, 201);
+    color: white;
+}
+
 
 /**
  *  Dialog內的tr被選取時變色 
@@ -271,18 +288,10 @@ input[type="file"] {
     background-color: rgb(187, 234, 250);
 }
 
-/**
- *  自訂thead(表格的開頭)文字大小
- */
-thead th {
-    text-decoration: none;
-    text-align: left;
-    font-size: 12px;
-}
-
 .coordinate {
-    background-color: white;
-    max-width: 100px;
+    background-color: transparent;
+    color: white;
+    max-width: 80px;
     border: none;
 }
 

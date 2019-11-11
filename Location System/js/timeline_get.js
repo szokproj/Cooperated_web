@@ -141,18 +141,18 @@ $(function () {
             $("#target_alarm_handle").hide();
             $("#target_tag").show();
             $("#alarmBlock").hide();
-            $("#cvsBlock").show();
+            $("#timelineBlock").show();
         } else if ($(this).val() == "Group") {
             $("#target_tag").hide();
             $("#target_alarm_handle").hide();
             $("#target_group").show();
             $("#alarmBlock").hide();
-            $("#cvsBlock").show();
+            $("#timelineBlock").show();
         } else {
             $("#target_tag").hide();
             $("#target_group").hide();
             $("#target_alarm_handle").show();
-            $("#cvsBlock").hide();
+            $("#timelineBlock").hide();
             $("#alarmBlock").show();
         }
     });
@@ -400,8 +400,10 @@ function handleMouseMove(event) { //滑鼠移動事件
 
 function drawTimeline() {
     if (!isContinue) {
-        if (!historyData["search_type"])
-            return alert($.i18n.prop('i_searchFirst'));
+        if (!historyData["search_type"]) {
+            alert($.i18n.prop('i_searchFirst'));
+            return;
+        }
         isContinue = true;
         document.getElementById("btn_stop").disabled = false;
         document.getElementById("btn_restore").disabled = false;
@@ -859,20 +861,22 @@ function getAlarmHandleByTime() {
                             var revInfo = revObj.Value[0].Values;
                             if (revObj.Value[0].success == 0 || !revInfo || revInfo.length == 0)
                                 return alert($.i18n.prop('i_searchNoData'));
-
+                            var type = $("#target_alarm_type").val();
                             $("#table_alarm_handle tbody").empty();
                             for (var i = 0; i < revInfo.length; i++) {
-                                var tag_id = revInfo[i].tagid;
-                                var number = tag_id in MemberList ? MemberList[tag_id].number : "";
-                                var name = tag_id in MemberList ? MemberList[tag_id].Name : "";
-                                $("#table_alarm_handle tbody").prepend("<tr><td>" + (revInfo.length - i) +
-                                    "</td><td>" + revInfo[i].alarmtype +
-                                    "</td><td>" + parseInt(tag_id.substring(8), 16) +
-                                    "</td><td>" + number +
-                                    "</td><td>" + name +
-                                    "</td><td>" + revInfo[i].alarmhelper +
-                                    "</td><td>" + revInfo[i].endtime +
-                                    "</td></tr>");
+                                if (revInfo[i].alarmtype == type) {
+                                    var tag_id = revInfo[i].tagid;
+                                    var number = tag_id in MemberList ? MemberList[tag_id].number : "";
+                                    var name = tag_id in MemberList ? MemberList[tag_id].Name : "";
+                                    $("#table_alarm_handle tbody").prepend("<tr><td>" + (revInfo.length - i) +
+                                        "</td><td>" + revInfo[i].alarmtype +
+                                        "</td><td>" + parseInt(tag_id.substring(8), 16) +
+                                        "</td><td>" + number +
+                                        "</td><td>" + name +
+                                        "</td><td>" + revInfo[i].alarmhelper +
+                                        "</td><td>" + revInfo[i].endtime +
+                                        "</td></tr>");
+                                }
                             }
 
                         }

@@ -280,7 +280,7 @@ function RF_setting_read(ip_address_array) {
                             "<td class=\"row_rf_smartpower\"><select name=\"conn_rf_smartpower\" id=\"conn_rf_smartpower_" + num + "\">" + makeOptions(RF_SMARTPOWER, info.rf_SMARTPOWER) + "</select></td>" +
                             "<td class=\"row_rf_ntm\"><select name=\"conn_rf_ntm\" id=\"conn_rf_ntm_" + num + "\">" + makeOptions(RF_NTM, info.rf_NTM_value) + "</select></td>" +
                             "<td class=\"row_rf_mult\"><select name=\"conn_rf_mult\" id=\"conn_rf_mult_" + num + "\">" + makeOptions(RF_MULT, info.rf_PMULT_value) + "</select></td>");
-                        $("#table_ip_address_info tbody tr:eq(" + num + ") td:gt(15)").css("background-color", "#c7d8e2");
+                        $("#table_ip_address_info tbody tr:eq(" + num + ") td:gt(15)").css("background-color", "#ffffcc");
 
                         setListenerOfSelect(num);
 

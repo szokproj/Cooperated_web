@@ -22,12 +22,12 @@ $(function () {
 
     resetPermissionTable();
     
-    var dialog, form,
+    let dialog, form,
         permission_name = $("#permission_name"),
         allFields = $([]).add(permission_name);
-    var SendResult = function () {
+    let SendResult = function () {
         allFields.removeClass("ui-state-error");
-        var valid = true && checkLength(permission_name, $.i18n.prop('i_alertError_10'), 1, 20);
+        let valid = true && checkLength(permission_name, $.i18n.prop('i_alertError_10'), 1, 20);
         if (valid) {
             dialog.dialog("close");
         }
@@ -57,19 +57,19 @@ $(function () {
     });*/
 
     //Dialog to edit the account.
-    var dialog2, form2,
+    let dialog2, form2,
         account = $("#edit_account"),
         allFields = $([]).add(account);
-    var SendResult2 = function () {
+    let SendResult2 = function () {
         allFields.removeClass("ui-state-error");
-        var valid = true && checkLength(account, $.i18n.prop('i_alertError_10'), 1, 20);
+        let valid = true && checkLength(account, $.i18n.prop('i_alertError_10'), 1, 20);
         if (valid) {
-            var is_active = "1";
+            let is_active = "1";
             document.getElementsByName("edit_is_active").forEach(element => {
                 if (element.checked)
                     is_active = element.value;
             });
-            var request2 = {
+            let request2 = {
                 "Command_Type": ["Write"],
                 "Command_Name": [CommandName_account],
                 "Value": [{
@@ -82,10 +82,10 @@ $(function () {
                 }],
                 "api_token": [token]
             };
-            var xmlHttp2 = createJsonXmlHttp("sql");
+            let xmlHttp2 = createJsonXmlHttp("sql");
             xmlHttp2.onreadystatechange = function () {
                 if (xmlHttp2.readyState == 4 || xmlHttp2.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
+                    let revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         dialog2.dialog("close");
                         inputUsersTable();
@@ -124,10 +124,10 @@ $(function () {
 });
 
 function inputPermissionTable() {
-    var page_permission = getPermission()
+    let page_permission = getPermission()
     $("#table_permission tbody").empty();
     page_permission.forEach(element => {
-        var level = element.permission;
+        let level = element.permission;
         if (level == "2")
             level = 'i_high';
         else if (level == "1")
@@ -142,21 +142,21 @@ function inputPermissionTable() {
 }
 
 function inputUsersTable() {
-    var request = {
+    let request = {
         "Command_Name": ["getuser"],
         "api_token": [token]
     };
-    var xmlHttp = createJsonXmlHttp("user");
+    let xmlHttp = createJsonXmlHttp("user");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
+            let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].accountNum > 0) {
-                var revInfo = revObj.Value[0].Values || [];
+                let revInfo = revObj.Value[0].Values || [];
                 $("#table_account tbody").empty();
                 userArray = [];
                 for (i = 0; i < revInfo.length; i++) {
                     userArray.push(revInfo[i]);
-                    var level = revInfo[i].userType;
+                    let level = revInfo[i].userType;
                     if (level == "2")
                         level = $.i18n.prop('i_high');
                     else if (level == "1")
@@ -179,15 +179,15 @@ function inputUsersTable() {
 }
 
 /*function showDialog_permission() {
-    var permission = this.cells[0].childNodes[0].textContent;
+    let permission = this.cells[0].childNodes[0].textContent;
     document.getElementById("permission_name").value = permission;
     $("#dialog_permission_setting").dialog("open");
 }*/
 
 function editAccountInfo() {
     CommandName_account = "EditAccount_Info";
-    var id = this.cells[0].childNodes[0].value;
-    var index = userArray.findIndex(function (user) {
+    let id = this.cells[0].childNodes[0].value;
+    let index = userArray.findIndex(function (user) {
         return user.id == id;
     });
     $("#edit_id").val(userArray[index].id);
@@ -214,7 +214,7 @@ function newAccountInfo() {
 }
 
 function deleteAccountInfo() {
-    var delete_arr = [];
+    let delete_arr = [];
     document.getElementsByName("chk_id").forEach(element => {
         if (element.checked) {
             delete_arr.push({
@@ -224,16 +224,16 @@ function deleteAccountInfo() {
     });
     if (delete_arr.length > 0) {
         if (confirm($.i18n.prop('i_permissionAlert_1'))) {
-            var request = {
+            let request = {
                 "Command_Type": ["Write"],
                 "Command_Name": ["DeleteAccount_by_id"],
                 "Value": delete_arr,
                 "api_token": [token]
             };
-            var xmlHttp = createJsonXmlHttp("sql");
+            let xmlHttp = createJsonXmlHttp("sql");
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
+                    let revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         inputUsersTable();
                     }
@@ -248,7 +248,7 @@ function deleteAccountInfo() {
 
 
 /*function changeCheck() {
-    var radio = document.getElementsByName(this.value);
+    let radio = document.getElementsByName(this.value);
     if (this.checked) {
         radio.forEach(element => {
             element.disabled = false;
@@ -263,9 +263,9 @@ function deleteAccountInfo() {
 }
 
 function resetPermissionTable() {
-    var checkBoxs = document.getElementsByName("chkbox_permission");
-    for (var i = 0; i < checkBoxs.length; i++) {
-        var radio = document.getElementsByName(checkBoxs[i].value);
+    let checkBoxs = document.getElementsByName("chkbox_permission");
+    for (let i = 0; i < checkBoxs.length; i++) {
+        let radio = document.getElementsByName(checkBoxs[i].value);
         checkBoxs[i].checked = false;
         radio.forEach(element => {
             element.disabled = true;

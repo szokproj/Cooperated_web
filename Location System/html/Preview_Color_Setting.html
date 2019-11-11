@@ -6,6 +6,7 @@
     <title class="i18n" name='i_pageTitle'>Location System</title>
     <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="../image/logo/favicon.ico" type="image/x-icon" />
     <!-- JQuery庫 -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
@@ -21,6 +22,7 @@
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
     <!--Edit css -->
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
     <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
     <link rel="stylesheet" type="text/css" href="../css/member_setting_style.css">
     <!--Edit js-->
@@ -32,19 +34,20 @@
 <body>
     <div class="container">
         <!--icon navbar-->
-        <div id="NavbarHtml"></div>
+        <div id="icon_navbar"></div>
 
         <!-- Web content -->
         <div class="row">
             <div class="col-lg-12">
                 <div style="float:right;">
-                    <label id="login_user"></label>
-                    <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
-                    <select id="language" style="margin-top:5px;">
+                    <img class="logo" src="../image/logo/icon.png">
+                    <label class="i18n" name="i_language"></label>
+                    <select id="language" class="select-lang">
                         <option value="en">English</option>
                         <option value="zh-TW">繁體中文</option>
                         <option value="zh-CN">简体中文</option>
                     </select>
+                    <label id="login_user"></label>
                 </div>
                 <label class="i18n" name="i_classification"></label> :
                 <select id="display_type_select">

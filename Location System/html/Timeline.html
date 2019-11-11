@@ -6,6 +6,7 @@
     <title class="i18n" name='i_pageTitle'>Location System</title>
     <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="../image/logo/favicon.ico" type="image/x-icon" />
     <!--JQuery-->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -20,6 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
     <!--Edit css-->
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
     <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
     <link rel="stylesheet" type="text/css" href="../css/timeline.css" />
     <!--Edit js-->
@@ -33,33 +35,46 @@
 <body>
     <div class="container">
         <!--icon navbar-->
-        <div id="NavbarHtml"></div>
+        <div id="icon_navbar"></div>
 
         <!--Web content-->
         <div class="row">
             <div class="col-lg-12">
                 <div style="float:right;">
-                    <label id="login_user"></label>
-                    <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
-                    <select id="language" style="margin-top:5px;">
+                    <img class="logo" src="../image/logo/icon.png">
+                    <label class="i18n" name="i_language"></label>
+                    <select id="language" class="select-lang">
                         <option value="en">English</option>
                         <option value="zh-TW">繁體中文</option>
                         <option value="zh-CN">简体中文</option>
                     </select>
+                    <label id="login_user"></label>
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-lg-12" style="display: inline-flex;">
-                <div id="cvsBlock">
-                    <canvas id="canvas" style="height:1px; width:1px;">
-                        <span class="i18n" name="i_no_canvas"></span>
-                    </canvas>
+            <div class="col-lg-9 col-sm-8">
+                <div id="timelineBlock">
+                    <div id="cvsBlock">
+                        <canvas id="canvas" style="height:1px; width:1px;">
+                            <span class="i18n" name="i_no_canvas"></span>
+                        </canvas>
+                    </div>
+                    <div id="positionInfo">
+                        <span class="i18n" name="i_map" style="margin-left:5px;"></span> : <label id="position"
+                            style="margin-right:20px;"></label>
+                        <span class="i18n" name="i_posX"></span> : <label id="draw_x"
+                            style="margin-right:20px;"></label>
+                        <span class="i18n" name="i_posY"></span> : <label id="draw_y"
+                            style="margin-right:20px;"></label>
+                        <span class="i18n" name="i_time"></span> : <label id="draw_time"
+                            style="margin-right:20px;"></label>
+                    </div>
                 </div>
 
                 <div id="alarmBlock" style="display:none;">
-                    <table id="table_alarm_handle">
+                    <table id="table_alarm_handle" class="border-block">
                         <thead>
                             <tr>
                                 <th class="i18n" name="i_item"></th>
@@ -74,10 +89,11 @@
                         <tbody></tbody>
                     </table>
                 </div>
-
+            </div>
+            <div class="col-lg-3 col-sm-4">
                 <div class="sidebar_right">
                     <div class="panel-group" id="accordion">
-                        <div class="panel panel-default">
+                        <div class="panel panel-primary">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
                                     <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="i18n"
@@ -90,28 +106,28 @@
                                     <table class="noborder-block" style="margin-left:20px;">
                                         <tr>
                                             <td><span class="i18n" name="i_date"></span> : </td>
-                                            <td><input type="date" id="start_date" value="2019-08-28"></td>
+                                            <td><input type="date" id="start_date" value=""></td>
                                         </tr>
                                         <tr>
                                             <td><span class="i18n" name="i_time"></span> : </td>
-                                            <td><input type="time" id="start_time" step="01" value="10:00:00"></td>
+                                            <td><input type="time" id="start_time" step="01" value=""></td>
                                         </tr>
                                     </table><br>
                                     <label class="i18n" name="i_end"></label>
                                     <table class="noborder-block" style="margin-left:20px;">
                                         <tr>
                                             <td><span class="i18n" name="i_date"></span> : </td>
-                                            <td><input type="date" id="end_date" value="2019-08-28"></td>
+                                            <td><input type="date" id="end_date" value=""></td>
                                         </tr>
                                         <tr>
                                             <td><span class="i18n" name="i_time"></span> : </td>
-                                            <td><input type="time" id="end_time" step="01" value="10:30:00"></td>
+                                            <td><input type="time" id="end_time" step="01" value=""></td>
                                         </tr>
                                     </table>
                                 </div>
                             </div>
                         </div>
-                        <div class="panel panel-default">
+                        <div class="panel panel-primary">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
                                     <a data-toggle="collapse" data-parent="#accordion" href="#collapse3" class="i18n"
@@ -124,7 +140,7 @@
                                         <i class="fas fa-search" style='font-size:22px;'></i></label>
                                     <input id="btn_search" type="button" class="btn-hidden" onclick="search()" />
                                     <label class="sidebar_title"><span class="i18n" name="i_searchType"></span> :
-                                        <select id="target_type" style="color: rgb(85, 85, 85);">
+                                        <select id="target_type">
                                             <option value="Tag" class="i18n" name="i_tag"></option>
                                             <option value="Group" class="i18n" name="i_group"></option>
                                             <option value="AlarmHandle" class="i18n" name="i_alarmHandle"></option>
@@ -167,8 +183,8 @@
                                             id="target_group_id" style="width:100px;" /><br>
                                         <input type="checkbox" id="chk_is_overlap" style="margin-top:10px" />
                                         <label for="chk_is_overlap" class="i18n" name="i_overlap"></label>
-                                        <button id="btn_resst_locate_tag" class="btn btn-default i18n"
-                                            style="float:right; margin:5px 0px; padding:3px 5px;"
+                                        <button id="btn_resst_locate_tag" class="btn btn-primary i18n"
+                                            style="float:right; margin:7px 0px; padding:3px 5px;"
                                             name="i_notAssigned"></button>
                                         <table id="table_tag_list" style="max-height: 400px;">
                                             <thead>
@@ -198,7 +214,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="panel panel-default">
+                        <div class="panel panel-primary">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
                                     <a data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="i18n"
@@ -208,7 +224,7 @@
                             <div id="collapse2" class="panel-collapse collapse">
                                 <div class="panel-body">
                                     <label class="sidebar_title"><span class="i18n" name="i_map"></span> :
-                                        <select id="target_map" style="color: rgb(85, 85, 85);"></select></label>
+                                        <select id="target_map"></select></label>
                                     <div class="btn-group" style="float:right;">
                                         <button class="btn btn-default control_btn" id="btn_stop"
                                             onclick="stopTimeline()" disabled="true">
@@ -231,18 +247,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-lg-12">
-                <div style="background:wheat;">
-                    <span class="i18n" name="i_map" style="margin-left:5px;"></span> : <label id="position"
-                        style="margin-right:20px;"></label>
-                    <span class="i18n" name="i_posX"></span> : <label id="draw_x" style="margin-right:20px;"></label>
-                    <span class="i18n" name="i_posY"></span> : <label id="draw_y" style="margin-right:20px;"></label>
-                    <span class="i18n" name="i_time"></span> : <label id="draw_time" style="margin-right:20px;"></label>
                 </div>
             </div>
         </div>

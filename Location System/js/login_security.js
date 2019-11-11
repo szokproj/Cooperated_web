@@ -1,5 +1,5 @@
 $(function () {
-    var h = document.documentElement.clientHeight;
+    let h = document.documentElement.clientHeight;
     $(".container").css("height", h + "px");
 
     if (getCookie('user') && getCookie('pswd')) {
@@ -29,9 +29,9 @@ function delCookie(name) {
 }
 
 function verifyLogin() {
-    var account = $("#account");
-    var password = $("#password");
-    var valid = true;
+    let account = $("#account"),
+        password = $("#password"),
+        valid = true;
     account.removeClass("ui-state-error");
     password.removeClass("ui-state-error");
     valid = valid && checkLength(account, $.i18n.prop('i_loginError_1'), 1, 50);
@@ -41,13 +41,20 @@ function verifyLogin() {
             setCookie('user', account.val(), 7); //保存帐号到cookie，有效期7天
             setCookie('pswd', btoa(password.val()), 7); //保存密码(加密)到cookie，有效期7天
         }
-        var xmlHttp = createJsonXmlHttp('user');
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                var revObj = JSON.parse(this.responseText);
+        const json_request = JSON.stringify({
+            "Command_Name": ["login"],
+            "Value": [{
+                "code": account.val(),
+                "password": password.val()
+            }]
+        });
+        let jxh = createJsonXmlHttp("user");
+        jxh.onreadystatechange = function () {
+            if (jxh.readyState == 4 || jxh.readyState == "complete") {
+                let revObj = JSON.parse(this.responseText);
                 if (revObj && revObj.Value[0].success > 0) {
                     //Verification success
-                    var revInfo = revObj.Value[0].Values;
+                    let revInfo = revObj.Value[0].Values;
                     if (revInfo && revInfo[0].api_token) {
                         revInfo[0].api_token = btoa(revInfo[0].api_token);
                         Cookies.set("login_user", JSON.stringify(revInfo[0]));
@@ -55,7 +62,7 @@ function verifyLogin() {
                         history.back();
                     }
                 } else {
-                    var msg = revObj.Value[0].Values[0].msg;
+                    let msg = revObj.Value[0].Values[0].msg;
                     if (msg == "Account not find")
                         alert($.i18n.prop('i_accountNotFound'));
                     else if (msg == "password error")
@@ -65,12 +72,6 @@ function verifyLogin() {
                 }
             }
         };
-        xmlHttp.send(JSON.stringify({
-            "Command_Name": ["login"],
-            "Value": [{
-                "code": account.val(),
-                "password": password.val()
-            }]
-        }));
+        jxh.send(json_request);
     }
 }

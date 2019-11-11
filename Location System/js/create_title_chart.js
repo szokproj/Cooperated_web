@@ -328,27 +328,6 @@ $(function () {
     };
     xmlHttp.send(JSON.stringify(requestArray));
 
-    function colorToHex(color) {
-        color = typeof (color) != "string" ? color.toString() : color;
-        if (color.indexOf('#') == 0) {
-            return color;
-        } else {
-            var colorArr = color.substring(color.indexOf("(") + 1, color.length - 1).split(",");
-            var hexColor = "#";
-            for (i = 0; i < colorArr.length; i++) {
-                if (i == 3) {
-                    var persentHex = Number(Math.floor(colorArr[i] * 255)).toString(16);
-                    if (hexColor != "FF")
-                        hexColor += persentHex.length === 1 ? "0" + persentHex : persentHex;
-                } else {
-                    var hexStr = Number(colorArr[i]).toString(16);
-                    hexColor += hexStr.length === 1 ? "0" + hexStr : hexStr;
-                }
-            }
-            return hexColor.toUpperCase();
-        }
-    }
-
     function drawPosition(color, size) {
         var canvas = document.getElementById('canvas_dot');
         var ctx = canvas.getContext('2d');

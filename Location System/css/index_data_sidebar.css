@@ -11,10 +11,44 @@ aside button {
     outline: none;
 }
 
+.nav-tabs {
+    border-color: rgb(47, 95, 201);
+}
+
+.nav-tabs li a {
+    padding: 6px 10px;
+    background-color: transparent;
+    color: white;
+}
+
+.nav-tabs li:hover a {
+    border-color: rgb(47, 95, 201);
+    background-color: transparent;
+}
+
+.nav-tabs li.active a:hover,
+.nav-tabs li.active a:focus,
+.nav-tabs li.active a {
+    border-color: rgb(47, 95, 201);
+    background-color: rgb(47, 95, 201);
+    color: white;
+}
+
 .nav-tabs a,
 .tab-pane th,
 .tab-pane td {
     font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+.nav-tabs .tab_map_btn {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
 }
 
 .sidebar-table {
@@ -25,7 +59,13 @@ aside button {
 }
 
 .sidebar-table thead {
-    background-color: rgb(211, 211, 211);
+    /*background-color: rgb(211, 211, 211);*/
+    background-color: #082041;
+}
+
+.sidebar-table thead th {
+    color: white;
+    /*rgb(47, 95, 201)*/
 }
 
 .btn-focus {
@@ -46,7 +86,7 @@ aside button {
 }
 
 .page-main>aside {
-    background-color: #fff;
+    background-color: #132742;
     width: 340px;
     height: 100%;
     top: 0;
@@ -83,4 +123,9 @@ aside button {
 
 .clearfix:after {
     clear: both;
+}
+
+
+.alarm-table {
+    max-height: 650px;
 }

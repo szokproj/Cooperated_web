@@ -6,6 +6,7 @@
     <title class="i18n" name='i_pageTitle'>Location System</title>
     <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="../image/logo/favicon.ico" type="image/x-icon" />
     <!--BootStrap3-->
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
@@ -17,27 +18,34 @@
     <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'
         integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
     <!--Edit css-->
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
     <style>
         h4 {
             font-family: Sans-serif;
         }
 
         .container {
-            height: 600px;
+            height: 100%;
             width: 100%;
             /*background: lightblue;*/
+        }
+
+        .container input[type=text] {
+            background: #ffffff !important;
+            color: black;
+            border: 1px solid rgb(211, 211, 211);
         }
 
         .block {
             margin: auto;
             margin-top: 100px;
-            width: 35%;
+            width: 350px;
             height: 240px;
             background: lightgray;
             border-radius: 2px;
             /*box-shadow: inset 3px 3px 12px gray;
             padding: 3px;*/
-            box-shadow: 2px 2px 3px gray;
+            box-shadow: 2px 2px 3px #021835;
             padding: 5px;
 
         }
@@ -62,14 +70,14 @@
         <!-- Web content -->
         <div class="row">
             <div class="col-lg-12">
-                <div style="float:right;">
-                    <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
-                    <select id="language" style="margin-top:5px;">
-                        <option value="en">English</option>
-                        <option value="zh-TW">繁體中文</option>
-                        <option value="zh-CN">简体中文</option>
-                    </select>
-                </div>
+                <img class="logo" src="../image/logo/icon.png">
+                <label class="i18n" name="i_language" style="color:white;"></label>
+                <select id="language" class="select-lang" style="margin-top:5px;">
+                    <option value="en">English</option>
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="zh-CN">简体中文</option>
+                </select>
+                <label id="login_user"></label>
             </div>
         </div>
 
@@ -78,7 +86,7 @@
                 <div class="block">
                     <form>
                         <span style="text-align:center;">
-                            <h4 class="i18n" name="i_userLogin"></h4>
+                            <h4 class="i18n" name="i_userLogin" style="color: #132742;"></h4>
                         </span>
                         <div class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>

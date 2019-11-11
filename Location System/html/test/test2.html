@@ -2,55 +2,100 @@
 <html>
 
 <head>
-	<title></title>
+	<!-- Required meta tags -->
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-	<link rel="stylesheet" href="/resources/demos/style.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<link rel="stylesheet" href="style.css" />
-	<style>
-		.aa {
-			height: 100px;
-			width: 200px;
-			position: absolute;
-			background-color: green;
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+		integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+	<title>Hello, Vue.js!</title>
+	<style type="text/css">
+		body {
+			padding-top: 30px;
 		}
 	</style>
-	<script>
-		$(document).ready(function () {
-			$(".aa").mousedown(function (e) { //設置移動後的默認位置 
-				var endx = 0;
-				var endy = 0;
-				//獲取div的初始位置，要注意的是需要轉整型，因為獲取到值帶px 
-				var left = parseInt($(".aa").css("left"));
-				var top = parseInt($(".aa").css("top"));
-				//獲取滑鼠按下時的坐標，區別於下面的es.pageX,es.pageY 
-				var downx = e.pageX;
-				var downy = e.pageY;
-				//pageY的y要大寫，必須大寫！！
-				// 滑鼠按下時給div掛事件 
-				$(".aa").bind("mousemove", function (es) {
-					//es.pageX,es.pageY:獲取滑鼠移動後的坐標 
-					var endx = es.pageX - downx + left;
-					//計算div的最終位置 
-					var endy = es.pageY - downy + top;
-					//帶上單位 
-					$(".aa").css("left", endx + "px").css("top", endy + "px")
-				});
-			});
-
-			$(".aa").mouseup(function () {
-				//滑鼠彈起時給div取消事件 
-				$(".aa").unbind("mousemove");
-			});
-		});
-
-	</script>
 </head>
 
 <body>
-	<div class="aa"></div>
+	<div class="container" id="myApp">
+		<div class="row">
+			<div class="form-group col-12">
+				<button type="button" class="btn btn-primary" value="doThis1" v-on:click="doThis1">事件不傳參數</button>
+				<button type="button" class="btn btn-primary" value="doThis2"
+					v-on:click="doThis2($event)">事件只傳$event</button>
+				<button type="button" class="btn btn-info" value="doThis3"
+					v-on:click="doThis3('Hello Vue.js!!',$event)">事件傳遞參數和$event</button>
+				<button type="button" class="btn btn-info" value="doThis4"
+					v-on:click="doThis4('Hello Vue.js 2!!')">事件只傳遞參數</button>
+			</div> <!-- end .form-group-->
+			<div class="form-group col-12">
+				觸發事件target.value： {{showData}}
+			</div>
+			<div class="form-group col-12">
+				訊息： {{msg}}
+			</div>
+			<iframe src="rect.svg" width="300" height="100">
+			</iframe>
+		</div>
+		<!--end .row-->
+	</div>
+	<!--end .container-->
+
+
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+		integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous">
+	</script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+		integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous">
+	</script>
+	<!-- 引用Vue.js -->
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.js"></script>
+	<script type="text/javascript">
+		let app = new Vue({
+			el: '#myApp',
+			data: {
+				showData: "",
+				msg: ""
+			},
+			methods: { //methods是關鍵字，通常處理和用戶的互動事件
+				doThis1: function ($event) {
+					//事件監聽沒傳遞$event，但可透過注入方式取得
+					let vm = this;
+
+					vm.showData = $event.target.value;
+					vm.msg = "";
+				},
+				doThis2: function ($event) {
+					//一目瞭然的寫法
+					let vm = this;
+					vm.showData = $event.target.value;
+					vm.msg = "";
+				},
+				doThis3: function (msg, $event) {
+					//一目瞭解的寫法
+					let vm = this;
+					vm.showData = $event.target.value;
+					vm.msg = msg;
+				},
+				doThis4: function (msg, $event) {
+					//事件監聽當只有傳遞參數時..
+					let vm = this;
+
+					vm.showData = typeof ($event); //$event即使注入仍然抓不到
+
+					vm.msg = msg;
+				}
+
+			}
+
+
+
+		});
+	</script>
 </body>
 
 </html>

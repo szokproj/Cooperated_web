@@ -6,6 +6,7 @@
     <title class="i18n" name='i_pageTitle'></title>
     <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="../image/logo/favicon.ico" type="image/x-icon" />
     <!--Jquery-->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
@@ -32,6 +33,7 @@
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
     <!--Edit js-->
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script type="text/javascript" src="../js/import/hammer.min.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
     <script type="text/javascript" src="../js/sideBar.js"></script>
@@ -49,50 +51,69 @@
 <body>
     <div class="container">
         <!--icon navbar-->
-        <div id="NavbarHtml"></div>
+        <div id="icon_navbar"></div>
 
         <!--Web content-->
         <div class="row">
-            <div class="col-lg-12" style="background: #ffffff;">
-                <div id="content" style="margin-top:5px;">
-                    <!--Top-->
-                    <div style="float:right;">
-                        <label id="login_user"></label>
-                        <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
-                        <select id="language" style="margin-top:5px;">
-                            <option value="en">English</option>
-                            <option value="zh-TW">繁體中文</option>
-                            <option value="zh-CN">简体中文</option>
-                        </select>
+            <div class="col-lg-12 top_nav">
+                <!--Top-->
+                <img class="logo" src="../image/logo/icon.png">
 
-                        <div class="tool-bar">
-                            <div class="dropdown">
-                                <label id="btn_set" class="dropdown-toggle btn-set i18n-input" selectattr="title"
-                                    selectname="i_setting" data-toggle="dropdown"><i class="fas fa-cog"></i></label>
-                                <ul class="dropdown-menu" style="left:-120px;">
-                                    <li><input type="button" id="btn_adjust_focus" class="i18n-input" selectattr="value"
-                                            selectname="i_focusMode" /></li>
-                                    <li><input type="button" id="btn_display_size" class="i18n-input" selectattr="value"
-                                            selectname="i_displaySize" /></li>
-                                </ul>
-                            </div>
+                <label class="i18n" name="i_language"></label>
+                <select id="language" class="select-lang">
+                    <option value="en">English</option>
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="zh-CN">简体中文</option>
+                </select>
+                <label id="login_user"></label>
 
-                            <label for="btn_remove" id="label_remove" class="btn-delete i18n-input" selectattr="title"
-                                selectname="i_closeMap">
-                                <i class="fas fa-window-close" style='font-size:20px;'></i></label>
-                            <input id="btn_remove" type="button" class="btn-hidden" onclick="closeMapTag();" />
+                <div class="tool-bar" style="float:right;">
+                    <div class="dropdown">
+                        <label id="input_map" class="btn-set i18n-input" selectattr="title" selectname="i_input_map">
+                            <i class="far fa-image"></i></label>
+                        <div class="dropdown-content" style="left:-120px;" id="loadMapButtonGroup"></div>
+                    </div>
+
+                    <div class="dropdown">
+                        <label class="btn-set i18n-input" selectattr="title" selectname="i_setting">
+                            <i class="fas fa-cog"></i></label>
+                        <div class="dropdown-content" style="left:-120px;">
+                            <a id="btn_adjust_focus" class="i18n" name="i_focusMode"></a>
+                            <a id="btn_display_size" class="i18n" name="i_displaySize"></a>
                         </div>
                     </div>
 
-                    <!--Midden-->
-                    <div class="btn-group">
-                        <div class="dropdown dropdown-input" id="input_map">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                                <span class="i18n" name="i_input_map"></span>&nbsp;<i class="far fa-image"></i>&nbsp;
-                                <span class="caret"></span></button>
-                            <ul class="dropdown-menu" role="menu" id="loadMapButtonGroup"></ul>
-                        </div>
+                    <label for="btn_remove" id="label_remove" class="btn-delete i18n-input" selectattr="title"
+                        selectname="i_closeMap">
+                        <i class="fas fa-window-close" style='font-size:20px;'></i></label>
+                    <input id="btn_remove" type="button" class="btn-hidden" onclick="closeMapTag();" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <!--Left (Alarm) Sidebar-->
+                <div class="alarm-sideBar">
+                    <div class="sideBar-left-button">
+                        <button id="btn_sort_alarm" class="btn btn-default i18n-input" selectattr="title"
+                            selectname="i_lastestTop" onclick="sortAlarm();"><i class="fas fa-sort-amount-up"></i>
+                        </button>
+                        <!--<button class="btn btn-default i18n-input" selectattr="title" selectname="i_releasePosition"
+                            onclick="unlockFocusAlarm();" style="width:30px; padding:3px !important;">
+                            <img class="icon-image" src="../image/release_position.png">
+                        </button>-->
                     </div>
+                    <div class="sideBar-left">
+                        <div class="thumbnail_columns"></div>
+                    </div>
+                </div>
+
+
+                <!--Midden-->
+                <div id="content">
+                    <div class="btn-group" id="map_pages"></div>
+
                     <label for="btn_restore" id="label_restore" class="btn-icon i18n-input" selectattr="title"
                         selectname="i_restore_scale"><i class="fas fa-compress"></i></label>
                     <input id="btn_restore" type="button" class="btn-hidden" onclick="restoreCanvas();" />
@@ -100,42 +121,34 @@
                     <div class="cvsBlock" id="cvsBlock">
                         <div class="transition" id="transition"></div>
                         <!--<div id="loading">
-                            <div class="loader"></div>
-                        </div>-->
+                                    <div class="loader"></div>
+                                </div>-->
                         <canvas id="canvas" style="height:1px; width:1px;">
-                            <span class="i18n" name="i_no_canvas"></span>
+                            <label class="i18n" name="i_no_canvas"></label>
                         </canvas>
                     </div>
 
-                    <div style="text-align:right;">
-                        <span class="i18n" name="i_mapScale"></span> : <span id="scale_visible"
-                            style="margin-right:20px;"></span>
-                        <span class="i18n" name="i_posX"></span> : <input type="text" id="x" class="coordinate"
-                            disabled />
-                        <span class="i18n" name="i_posY"></span> : <input type="text" id="y" class="coordinate"
-                            disabled />
+                    <!--Test Mobile Touch
+                    deltaX:<input type="text" id="deltaX" value="" style="max-width: 50px;">
+                    deltaY:<input type="text" id="deltaY" value="" style="max-width: 50px;">
+                    scale:<input type="text" id="scale" value="" style="max-width: 50px;">
+                    distance:<input type="text" id="distance" value="" style="max-width: 50px;">
+                    centerX:<input type="text" id="centerX" value="" style="max-width: 50px;">
+                    centerY:<input type="text" id="centerY" value="" style="max-width: 50px;">
+                    -->
+                    <!-- <div id="hud"></div>-->
+                    <!--Test End-->
+
+                    <div style="float: right;">
+                        <div style="display: none;"><label class="i18n" name="i_mapScale"></label> : <label
+                                id="scale_visible" style="margin-right:20px;"></label></div>
+                        <label class="i18n" name="i_posX"></label> : <label type="text" id="x"
+                            class="coordinate"></label>
+                        <label class="i18n" name="i_posY" style="margin-left:10px;"></label> : <label type="text" id="y"
+                            class="coordinate"></label>
                     </div>
                 </div>
 
-                <!--Left (Alarm) Sidebar-->
-                <div class="sideBar">
-                    <!--<div class="sideBar-left-button">
-                        <label class="btn-alarm i18n-input" for="btn_unlock_alarm" selectattr="title"
-                            selectname="i_releasePosition"><i class="fas fa-unlock-alt drop-shadow"></i></label>
-                        <input type="button" id="btn_unlock_alarm" class="btn-hidden" onclick="unlockFocusAlarm();" />
-                    </div>-->
-                    <div class="sideBar-left-button">
-                        <button id="btn_sort_alarm" class="btn btn-default i18n-input" selectattr="title"
-                            selectname="i_lastestTop" onclick="sortAlarm();"><i class="fas fa-sort-amount-up"></i>
-                        </button>
-                        <!--<label class="btn-alarm i18n-input" for="btn_sort_alarm" id="label_sort_alarm"
-                            selectattr="title" selectname="i_sort"><i class="fas fa-sort-up"></i></label>
-                        <input type="button" id="btn_sort_alarm" class="btn-hidden" onclick="sortAlarm();" />-->
-                    </div>
-                    <div class="sideBar-left">
-                        <div class="thumbnail_columns"></div>
-                    </div>
-                </div>
 
                 <!--Right (Data) Sidebar-->
                 <div class="page-main" id="page_rightSide">
@@ -152,7 +165,7 @@
                                 </li>
                             </ul>
                             <div id="sidebarRightTabContent" class="tab-content">
-                                <div class="tab-pane fade in active" id="sidebar_right_member">
+                                <div class="tab-pane fade in active" id="sidebar_right_member" style="margin-top:10px;">
                                     <span class="i18n" name="i_search"></span>：<input type="search"
                                         id="table_filter_member" class="light-table-filter i18n-input"
                                         data-table="order-table" selectattr="placeholder" selectname="i_inputKeyword" />
@@ -196,19 +209,19 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="sidebar_right_search">
-                                    <label class="i18n" name="i_searchType"></label> :
+                                    <label class="i18n" name="i_searchType" style="margin-top:10px;"></label> :
                                     <select id="search_select_type">
                                         <option class="i18n" name="i_group" value="group" selected="selected"></option>
                                         <option class="i18n" name="i_userID" value="user_id"></option>
                                         <option class="i18n" name="i_number" value="number"></option>
                                     </select>
                                     <br>
-                                    <label class="i18n" name="i_inputData"></label> :
+                                    <label class="i18n" name="i_inputData" style="margin-top:10px;"></label> :
                                     <input type="text" id="search_input_target">
                                     <br><br>
                                     <div style="text-align: center;">
-                                        <input type="button" id="search_start" class="i18n-input" selectattr="value"
-                                            selectname="i_search">
+                                        <input type="button" id="search_start" class="btn btn-primary i18n-input"
+                                            selectattr="value" selectname="i_search">
                                     </div>
                                     <br><br>
                                     <div class="sidebar-table search-table" style="max-height: 500px;">
@@ -234,6 +247,7 @@
                     </aside>
                 </div>
             </div>
+
         </div>
     </div>
 

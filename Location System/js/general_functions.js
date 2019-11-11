@@ -38,19 +38,7 @@ function GetXmlHttpObject() {
 }
 
 function createJsonXmlHttp(url) {
-    var xmlHttp = null;
-    try { // Firefox, Opera 8.0+, Safari
-        xmlHttp = new XMLHttpRequest();
-    } catch (e) { //Internet Explorer
-        try {
-            xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
-            xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-    }
-    if (xmlHttp == null) {
-        return alert("Browser does not support HTTP Request");
-    }
+    var xmlHttp = GetXmlHttpObject();
     xmlHttp.open("POST", url, true);
     xmlHttp.setRequestHeader("Content-type", "application/json");
     return xmlHttp;
@@ -143,6 +131,27 @@ function selectColumn(id) {
     $("#" + id).toggleClass("changeBgColor");
 }
 
+function colorToHex(color) {
+    color = typeof (color) != "string" ? color.toString() : color;
+    if (color.indexOf('#') == 0) {
+        return color;
+    } else {
+        let colorArr = color.substring(color.indexOf("(") + 1, color.length - 1).split(","),
+            hexColor = "#";
+        for (let i = 0; i < colorArr.length; i++) {
+            if (i == 3) {
+                let persentHex = Number(Math.floor(colorArr[i] * 255)).toString(16);
+                if (hexColor != "FF")
+                    hexColor += persentHex.length === 1 ? "0" + persentHex : persentHex;
+            } else {
+                let hexStr = Number(colorArr[i]).toString(16);
+                hexColor += hexStr.length === 1 ? "0" + hexStr : hexStr;
+            }
+        }
+        return hexColor.toUpperCase();
+    }
+}
+
 /** 
  * 建立日期格式套用，參考網址:https://www.runoob.com/js/js-obj-date.html
  * alert(new Date().format("yyyy年MM月dd日"));
@@ -173,7 +182,7 @@ Date.prototype.format = function (fmt) {
 }
 
 function stopDLL(token) {
-    var xmlHttp = createJsonXmlHttp("test2");
+    let xmlHttp = createJsonXmlHttp("test2");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
@@ -192,7 +201,7 @@ function stopDLL(token) {
 }
 
 function startDLL(token) {
-    var xmlHttp = createJsonXmlHttp("test2");
+    let xmlHttp = createJsonXmlHttp("test2");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
@@ -209,3 +218,51 @@ function startDLL(token) {
         "api_token": [token]
     }));
 }
+
+
+/**
+ * 用Ajax + Json與後端傳送並接收資料
+ * success: 接收到回傳的內容
+ * error: 沒有收到回應或錯誤
+ =>
+    $.ajax({
+        url: '',
+        type: 'POST',
+        async: true,
+        contentType: 'application/json; charset=UTF-8',
+        dataType: 'json',
+        data: JSON.stringify({}),
+        success: function (revObj) {
+
+        },
+        error: function(xhr){
+            console.log("error");
+        }
+    });
+ **/
+
+/**
+ * //let xmlHttp = createJsonXmlHttp("");
+   const json_request = JSON.stringify({});
+   xmlHttp.open("POST", "", true);
+   xmlHttp.setRequestHeader("Content-type", "application/json");
+   xmlHttp.onreadystatechange = function () {
+       if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+           let revObj = JSON.parse(this.responseText);
+           
+       }
+   };
+   xmlHttp.send(json_request);
+ */
+
+ /*
+    const json_request = JSON.stringify({});
+    let jxh = createJsonXmlHttp("");
+    jxh.onreadystatechange = function () {
+        if (jxh.readyState == 4 || jxh.readyState == "complete") {
+            let revObj = JSON.parse(this.responseText);
+            
+        }
+    };
+    jxh.send(json_request);
+ */

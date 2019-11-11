@@ -730,7 +730,7 @@ function updateAlarmHandle() {
 
 function sortAlarm() {
     if ($("#btn_sort_alarm i").hasClass("fa-sort-amount-up"))
-        $("#btn_sort_alarm").prop('title', $.i18n.prop('i_OldestTop')).html("<i class=\"fas fa-sort-amount-down\"></i>");
+        $("#btn_sort_alarm").prop('title', $.i18n.prop('i_oldestTop')).html("<i class=\"fas fa-sort-amount-down\"></i>");
     else
         $("#btn_sort_alarm").prop('title', $.i18n.prop('i_lastestTop')).html("<i class=\"fas fa-sort-amount-up\"></i>");
     alarmFilterArr = [];

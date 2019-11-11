@@ -7,6 +7,7 @@
     <title class="i18n" name='i_pageTitle'>Location System</title>
     <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="../image/logo/favicon.ico" type="image/x-icon" />
     <!--BootStrap3-->
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
@@ -21,6 +22,7 @@
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
     <!--Edit css-->
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
     <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
     <style>
         .container {
@@ -55,9 +57,13 @@
             padding: 5px;
         }
 
-        thead th {
-            background-color: rgb(211, 211, 211);
+        .table thead tr {
+            border: 1px solid rgb(219, 219, 219);
+        }
 
+        .table th {
+            background-color: #082041;
+            /*gray;*/
             text-align: center;
         }
 
@@ -78,7 +84,7 @@
         }
 
         .table-line tbody tr:hover {
-            background-color: rgb(179, 215, 238);
+            background-color: rgb(0, 57, 95);
             cursor: pointer;
         }
 
@@ -146,25 +152,26 @@
 <body>
     <div class="container">
         <!--icon navbar-->
-        <div id="NavbarHtml"></div>
+        <div id="icon_navbar"></div>
 
         <div class="row">
             <div class="col-lg-12">
                 <div style="float:right;">
-                    <label id="login_user"></label>
-                    <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
-                    <select id="language" style="margin-top:5px;">
+                    <img class="logo" src="../image/logo/icon.png">
+                    <label class="i18n" name="i_language"></label>
+                    <select id="language" class="select-lang">
                         <option value="en">English</option>
                         <option value="zh-TW">繁體中文</option>
                         <option value="zh-CN">简体中文</option>
                     </select>
+                    <label id="login_user"></label>
                 </div>
             </div>
         </div>
 
         <!-- Web content -->
         <div class="row">
-            <div class="col-lg-8" style="background-color:white;">
+            <div class="col-lg-8">
                 <div style="float: right;">
                     <label for="btn_account_add" id="label_account_add" class="btn-add i18n-input" selectattr="title"
                         selectname="i_add"><i class="fas fa-plus-square" style='font-size:20px;'></i></label>
@@ -187,7 +194,7 @@
                 </table>
                 <br>
             </div>
-            <div class="col-lg-4" style="background-color:white;">
+            <div class="col-lg-4">
                 <table class="table" id="table_permission" style="margin-top:10px;">
                     <thead>
                         <tr>

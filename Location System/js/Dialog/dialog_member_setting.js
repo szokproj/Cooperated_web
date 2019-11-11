@@ -233,28 +233,6 @@ function selectTagColor() {
     }
 }
 
-
-function colorToHex(color) {
-    color = typeof (color) != "string" ? color.toString() : color;
-    if (color.indexOf('#') == 0) {
-        return color;
-    } else {
-        var colorArr = color.substring(color.indexOf("(") + 1, color.length - 1).split(",");
-        var hexColor = "#";
-        for (i = 0; i < colorArr.length; i++) {
-            if (i == 3) {
-                var persentHex = Number(Math.floor(colorArr[i] * 255)).toString(16);
-                if (hexColor != "FF")
-                    hexColor += persentHex.length === 1 ? "0" + persentHex : persentHex;
-            } else {
-                var hexStr = Number(colorArr[i]).toString(16);
-                hexColor += hexStr.length === 1 ? "0" + hexStr : hexStr;
-            }
-        }
-        return hexColor.toUpperCase();
-    }
-}
-
 function getBase64Ext(urldata) {
     urldata = typeof (urldata) == 'undefined' ? "" : urldata;
     var start = urldata.indexOf("/"),
@@ -291,10 +269,10 @@ function setCheckboxListeners() {
         tr.children('td:eq(0)').off('click').on('click', function () {
             if (!tr.find('td:eq(0) input').prop('checked')) {
                 tr.find('td:eq(0) input').prop('checked', true);
-                tr.children('td').css("background-color", "#e6f5ff");
+                tr.addClass("selected");
             } else {
                 tr.find('td:eq(0) input').prop('checked', false);
-                tr.children('td').css("background-color", "#ffffff");
+                tr.removeClass("selected");
             }
         });
     });
@@ -357,7 +335,7 @@ function sortTable(selector, targetType, compFunc) {
                 'padding-top': '5px'
             })
             .attr('title', 'Sort')
-            .append('&nbsp;<i class="fas fa-sort" style="color:#005acf;float:right;margin-top:2px;" aria-hidden="true"></i>');
+            .append('&nbsp;<i class="fas fa-sort" style="color:#66ccff;float:right;margin-top:2px;" aria-hidden="true"></i>');
     };
     selector = selector || mySelector;
     compFunc = compFunc || myCompFunc;

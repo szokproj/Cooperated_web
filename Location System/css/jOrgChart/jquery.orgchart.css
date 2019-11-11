@@ -166,7 +166,8 @@
     position: relative;
     margin: 0;
     padding: 3px;
-    border: 2px dashed transparent;
+    border: 1px solid transparent;
+    border-radius: 5px;
     text-align: center;
     width: 130px;
 }
@@ -187,14 +188,14 @@
 }
 
 .orgchart .node:hover {
-    background-color: rgba(238, 217, 54, 0.5);
+    background-color: rgba(255, 248, 198, 0.808);
     transition: .5s;
     cursor: default;
     z-index: 20;
 }
 
 .orgchart .node.focused {
-    background-color: rgba(238, 217, 54, 0.5);
+    background-color: rgba(255, 248, 198, 0.808);
 }
 
 .orgchart .ghost-node {

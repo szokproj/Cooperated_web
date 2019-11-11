@@ -13,8 +13,8 @@ $(function () {
 
     dialog = $("#adjust_focus_mode").dialog({
         autoOpen: false,
-        height: 500,
-        width: 400,
+        height: 350,
+        width: 350,
         modal: true,
         buttons: {
             "Confirm": function () {

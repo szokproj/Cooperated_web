@@ -4,6 +4,22 @@
     z-index: 1;
 }
 
+/*the new scrollbar will have a flat appearance with the set background color*/
+::-webkit-scrollbar-track {
+    background-color: lightgray;
+}
+
+/* this will style the thumb, ignoring the track */
+::-webkit-scrollbar-thumb {
+    background-color: rgb(0, 112, 177);
+    border: 1px solid white;
+}
+
+/* if both the vertical and the horizontal bars appear, then perhaps the right bottom corner also needs to be styled */
+::-webkit-scrollbar-corner {
+    background-color: gray;
+}
+
 .row {
     margin: 10px 0px 0px 30px;
 }
@@ -143,12 +159,12 @@ input[type="file"] {
 .pagination li a,
 .pagination li a:hover {
     font-weight: bold;
-    background-color: #7ab8ff;
+    background-color: rgb(1, 79, 131);
     color: rgb(37, 37, 37);
 }
 
 .page-btn {
-    background-color: #7ab8ff !important;
+    background-color: rgb(1, 79, 131) !important;
 }
 
 .page-btn:hover {
@@ -165,7 +181,7 @@ input[type="file"] {
     /*border: 1px solid rgb(44, 64, 80);*/
     cursor: pointer;
     background-color: rgb(104, 179, 123);
-    padding: 6px 12px 8px 12px;
+    padding: 5px 12px 7px 12px;
     border-radius: 3px;
     color: rgb(255, 255, 255);
     margin: 0px;
@@ -213,12 +229,12 @@ input[type="file"] {
 /* Member Setting Css */
 
 .table-line thead tr {
-    background: #7ab8ff;
+    background: rgb(1, 79, 131);
 }
 
 .table-line th,
 .table-line td {
-    border: 1px solid #808080;
+    border: 1px solid rgb(0, 65, 117);
     padding: 0px 8px 0px 8px;
     text-decoration: none;
     text-align: left;
@@ -230,8 +246,8 @@ input[type="file"] {
     width: 100%;
     overflow: auto;
     margin-right: 0px;
-    background-color: #eee;
-    border: 1px solid #b9b0b0;
+    background-color: transparent;
+    border: 1px solid rgb(0, 65, 117);
 }
 
 /*.member_list tbody tr:hover {
@@ -254,13 +270,16 @@ table.sticky-table {
     width: 150px;
 }
 
+.sticky-table td {
+    color: black;
+}
+
 .sticky-table th,
 .sticky-table td {
     padding: 1px 5px;
     text-align: center;
-    background: white;
-    /*#e6f5ff;*/
-    outline: 2px solid #b9b0b0;
+    background: #f2f2f2;
+    outline: 2px solid rgb(0, 65, 117);
     outline-offset: -1px;
 }
 
@@ -282,12 +301,14 @@ table.sticky-table {
     top: 0px;
     position: sticky;
     position: -webkit-sticky;
-    background: lightgray;
-    /*#97b8ce;*/
-    outline: 2px solid #b9b0b0;
+    background: rgb(0, 104, 173);
+    outline: 2px solid rgb(0, 65, 117);
     outline-offset: -1px;
 }
 
+tr.selected td {
+    background-color: #ffff99;
+}
 
 .sticky-table input[type=text] {
     width: 90%;
@@ -296,8 +317,4 @@ table.sticky-table {
 .sticky-table tbody img {
     width: 20px;
     height: 20px;
-}
-
-.sticky-table tr:hover {
-    background-color: #f5f5f5;
 }

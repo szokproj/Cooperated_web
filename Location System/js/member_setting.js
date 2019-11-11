@@ -132,10 +132,12 @@ $(function () {
         $("#selectAll").prop("checked", !state)
         if (!state) {
             $("input[name='chkbox_members']").prop("checked", true);
-            $("#table_member_setting tbody tr td").css("background-color", "#e6f5ff");
+            $("#table_member_setting tbody tr").addClass("selected");
+            //$("#table_member_setting tbody tr td").css("background-color", "#e6f5ff");
         } else {
             $("input[name='chkbox_members']").prop("checked", false);
-            $("#table_member_setting tbody tr td").css("background-color", "#ffffff");
+            $("#table_member_setting tbody tr").removeClass("selected");
+           // $("#table_member_setting tbody tr td").css("background-color", "#ffffff");
         }
     });
     $("#selectAll").on('click', function () {

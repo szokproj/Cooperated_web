@@ -61,7 +61,6 @@
 <script>
     var canvas = document.getElementById("kycanvas");//选取画布
     var context = canvas.getContext("2d");//创建context对象
-
     var offCanvas = document.getElementById("offCanvas");//选取画布
     var offContext = offCanvas.getContext("2d");//创建context对象
     var scale;
@@ -69,9 +68,9 @@
     var isMouseDown = false;
     window.onload = function () {
         canvas.width = 400;//画布宽
-        canvas.height = 400;	//画布高	
+        canvas.height = 400;//画布高	
         image.src = "images/im1.jpg";//图片地址
-        image.onload = function () { //图片加载完毕
+        image.onload = function () {//图片加载完毕
             offCanvas.width = image.width;
             offCanvas.height = image.height;
             scale = offCanvas.width / canvas.width;

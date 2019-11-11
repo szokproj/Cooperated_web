@@ -18,30 +18,16 @@
     background-color: #008800;
 }
 
-.sideBar {
+.alarm-sideBar {
+    background: #082041 !important;
     position: fixed;
     top: 0px;
     left: -300px;
-    width: 300px;
-}
-
-.sideBar .sideBar-left-button {
-    /*解除定位按鈕*/
-    height: 30px;
-}
-.sideBar-left-button button{
-    margin-left: 30px;
-    width: 280px;
+    width: 330px;
     height: 100%;
 }
 
-.sideBar-left-button i {
-    margin: auto;
-    color: black;
-}
-
-.sideBar .sideBar-left {
-    padding-top: 10px;
+.alarm-sideBar .sideBar-left {
     position: fixed;
     display: inline-block;
     overflow-x: hidden;
@@ -51,7 +37,28 @@
     height: 95%;
 }
 
-/*Alarm Dialog*/
+.sideBar-left-button {
+    display: block;
+    height: 40px;
+}
+
+.sideBar-left-button button {
+    height: 30px;
+    margin: 5px 5px 5px 30px;
+    width: 282px;
+    background: transparent;
+    color: white;
+}
+
+.sideBar-left-button button:hover,
+.sideBar-left-button button:focus {
+    background: transparent !important;
+}
+
+.sideBar-left-button i {
+    margin: auto;
+    color: white;
+}
 
 .thumbnail {
     display: block;
@@ -63,7 +70,10 @@
 }
 
 .thumbnail:hover {
-    border: 1px solid rgb(124, 124, 124);
+    box-shadow: 0px 0px 3px 2px rgb(105, 195, 255);
+    -webkit-transition: box-shadow .5s ease;
+    -o-transition: box-shadow .5s ease;
+    transition: box-shadow .5s ease;
     /*cursor: pointer;*/
 }
 

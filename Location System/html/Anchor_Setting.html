@@ -6,6 +6,7 @@
     <title class="i18n" name='i_pageTitle'>Location System</title>
     <meta id="i18n_pagename" content="common">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="../image/logo/favicon.ico" type="image/x-icon" />
     <!--BootStrap3-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -20,6 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
     <!--edit css-->
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
     <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
     <link rel="stylesheet" type="text/css" href="../css/device_setting_style.css" />
     <!--edit js-->
@@ -35,7 +37,7 @@
 <body>
     <div class="container">
         <!--icon navbar-->
-        <div id="NavbarHtml"></div>
+        <div id="icon_navbar"></div>
 
         <!-- Web content -->
         <div class="row">
@@ -45,37 +47,43 @@
                     <div id="select_interface_card" style="display: inline;"></div>
                     <label>, Local IP :&nbsp;</label><input type="text" id="local_ip" value="" readonly>
                 </span>
-                <span style="float:right;">
-                    <label id="login_user"></label>
-                    <label class="i18n" name="i_language" style="color:rgb(0, 0, 0);"></label>
-                    <select id="language" style="margin-top:5px;">
+                <div style="float:right;">
+                    <img class="logo" src="../image/logo/icon.png">
+                    <label class="i18n" name="i_language"></label>
+                    <select id="language" class="select-lang">
                         <option value="en">English</option>
                         <option value="zh-TW">繁體中文</option>
                         <option value="zh-CN">简体中文</option>
                     </select>
-                </span>
+                    <label id="login_user"></label>
+                </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-lg-12" style="background-color:white;">
+            <div class="col-lg-12">
                 <div class="mode_ethernet">
                     <div class="top">
-                        <button id="open_dialog_set">Set <i class='fas fa-cog'></i></button>&nbsp;
-                        <button id="btn_search" onclick="Search()">Search</button>&nbsp;
-                        <button id="btn_connect" onclick="Connect()">Connect</button>&nbsp;
-                        <button id="btn_submit" onclick="submitWriteRequest()">Submit</button>
-                        <span style="float:right;">
-                            <input type="checkbox" id="is_static_ip_connect" value="true" />
-                            <label>Static IP connect : </label>
-                            <input type="text" id="static_ip_1" value="192" maxlength="3" style="max-width: 40px;">
-                            <label>.</label>
-                            <input type="text" id="static_ip_2" value="168" maxlength="3" style="max-width: 40px;">
-                            <label>.</label>
-                            <input type="text" id="static_ip_3" value="1" maxlength="3" style="max-width: 40px;">
-                            <label>.</label>
-                            <input type="text" id="static_ip_4" value="3" maxlength="3" style="max-width: 40px;">
-                        </span>
+                        <button class="btn btn-primary" id="btn_search" onclick="Search()">Search</button>&nbsp;
+                        <button class="btn btn-primary" id="btn_connect" onclick="Connect()">Connect</button>&nbsp;
+                        <button class="btn btn-primary" id="btn_submit" onclick="submitWriteRequest()">Submit</button>
+                        <div style="float:right;">
+                            <span>
+                                <input type="checkbox" id="is_static_ip_connect" value="true" />
+                                <label>Static IP connect : </label>
+                                <input type="text" id="static_ip_1" value="192" maxlength="3" style="max-width: 40px;">
+                                <label>.</label>
+                                <input type="text" id="static_ip_2" value="168" maxlength="3" style="max-width: 40px;">
+                                <label>.</label>
+                                <input type="text" id="static_ip_3" value="1" maxlength="3" style="max-width: 40px;">
+                                <label>.</label>
+                                <input type="text" id="static_ip_4" value="3" maxlength="3" style="max-width: 40px;">
+                            </span>
+                            <label for="open_dialog_set" class="btn-set i18n-input" selectattr="title"
+                                selectname="i_set">
+                                <i class="fas fa-cog" style='font-size:20px;'></i></label>
+                            <input type="button" id="open_dialog_set" class="btn-hidden" />&nbsp;
+                        </div>
                     </div>
                     <div class="middle">
                         <table id="table_ip_address_info" class="sticky-table">

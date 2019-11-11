@@ -224,10 +224,10 @@ function setCheckboxListeners() {
             var state = tr.find('td:eq(0) input').prop('checked');
             tr.find('td:eq(0) input').prop('checked', !state);
             if (!state) {
-                tr.children('td').css("background-color", "#c7d8e2");
+                tr.children('td').css("background-color", "#ffffcc");
             } else {
                 tr.children('td:lt(4)').css("background-color", "#e6f5ff");
-                tr.children('td:gt(3)').css("background-color", "white");
+                tr.children('td:gt(3)').css("background-color", "#f2f2f2");
             }
         });
     });
@@ -236,10 +236,10 @@ function setCheckboxListeners() {
 function checked_trans() {
     for (k in $("input[name=checkbox_ipAddr]")) {
         if ($("input[name=checkbox_ipAddr]").eq(k).is(":checked")) {
-            $(".sticky-table tbody tr:eq(" + k + ") td").css("background-color", "#c7d8e2");
+            $(".sticky-table tbody tr:eq(" + k + ") td").css("background-color", "#ffffcc");
         } else {
             $(".sticky-table tbody tr:eq(" + k + ") td:lt(4)").css("background-color", "#e6f5ff");
-            $(".sticky-table tbody tr:eq(" + k + ") td:gt(3)").css("background-color", "white");
+            $(".sticky-table tbody tr:eq(" + k + ") td:gt(3)").css("background-color", "#f2f2f2");
         }
     }
 }
@@ -439,7 +439,7 @@ function inputDataToColumns(element) {
             "<td class=\"row_tcp_client_src_port\">" + element.TCP_Client_Src_Port + "</td>" +
             "<td class=\"row_tcp_client_des_port\">" + element.TCP_Client_Des_Port + "</td>" +
             "<td></td></tr>");
-        $("#table_ip_address_info tbody tr:eq(0) td:lt(16)").css("background-color", "#c7d8e2");
+        $("#table_ip_address_info tbody tr:eq(0) td:lt(16)").css("background-color", "#ffffcc");
     } else {
         var isChecked = "";
         if (element.Checked)
@@ -611,7 +611,7 @@ function sortTable(selector, targetType, compFunc) {
                 'cursor': 'pointer'
             })
             .attr('title', 'Sort')
-            .append('&nbsp;<i class="fas fa-sort" style="color:#2196F3" aria-hidden="true"></i>');
+            .append('&nbsp;<i class="fas fa-sort" style="color:#66ccff;float:right;margin-top:2px;" aria-hidden="true"></i>');
     };
     selector = selector || mySelector;
     compFunc = compFunc || myCompFunc;

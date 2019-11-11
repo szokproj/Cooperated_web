@@ -495,3 +495,34 @@ div.time-picker li.selected {
     background: #316AC5;
     color: #fff;
 }
+
+/*tab pages*/
+
+.nav-tabs {
+    border-color: #1a88ff;
+}
+
+.nav-tabs li a {
+    padding: 6px 10px;
+    background-color: transparent;
+    color: white;
+}
+
+.nav-tabs li:hover a {
+    border-color: #1a88ff;
+    background-color: transparent;
+}
+
+.nav-tabs li.active a:hover,
+.nav-tabs li.active a:focus,
+.nav-tabs li.active a {
+    border-color: #1a88ff;
+    background-color: #1a88ff;
+    color: white;
+}
+
+.nav-tabs a,
+.tab-pane th,
+.tab-pane td {
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
