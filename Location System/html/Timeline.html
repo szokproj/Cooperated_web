@@ -30,6 +30,10 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/timeline_get.js"></script>
     <script type="text/javascript" src="../js/timeline_draw.js"></script>
+    <!--Time picker-->
+    <link rel="stylesheet" href="../css/timepicker/bootstrap-material-datetimepicker.css" />
+    <script type="text/javascript" src="http://momentjs.com/downloads/moment-with-locales.js"></script>
+    <script type="text/javascript" src="../js/timepicker/bootstrap-material-datetimepicker.js"></script>
 </head>
 
 <body>
@@ -110,7 +114,7 @@
                                         </tr>
                                         <tr>
                                             <td><span class="i18n" name="i_time"></span> : </td>
-                                            <td><input type="time" id="start_time" step="01" value=""></td>
+                                            <td><input type="text" class="timepicker" id="start_time"></td>
                                         </tr>
                                     </table><br>
                                     <label class="i18n" name="i_end"></label>
@@ -121,7 +125,7 @@
                                         </tr>
                                         <tr>
                                             <td><span class="i18n" name="i_time"></span> : </td>
-                                            <td><input type="time" id="end_time" step="01" value=""></td>
+                                            <td><input type="text" class="timepicker" id="end_time"></td>
                                         </tr>
                                     </table>
                                 </div>
@@ -247,6 +251,36 @@
                             </div>
                         </div>
                     </div>
+
+                    <div id="member_info">
+                        <div class="thumbnail" id="member_thumb">
+                            <table>
+                                <tr>
+                                    <td><img id="thumb_img" src=""></td>
+                                    <td>
+                                        <label class="i18n" name="i_number"></label>: <span
+                                            id="thumb_number"></span><br>
+                                        <label class="i18n" name="i_name"></label>: <span class="i18n"
+                                            id="thumb_name"></span><br>
+                                        <label class="i18n" name="i_userID"></label>: <span class="i18n"
+                                            id="thumb_user_id"></span><br>
+                                        <label class="i18n" name="i_dept"></label>:
+                                        <span id="thumb_dept"></span><br>
+                                        <label class="i18n" name="i_date"></label>: <span class="i18n"
+                                            id="thumb_date"></span><br>
+                                        <label class="i18n" name="i_time"></label>:
+                                        <span id="thumb_time"></span><br>
+                                        <label class="i18n" name="i_position"></label>:
+                                        <span id="thumb_position"></span><br>
+                                        <div id="display_status" style="display: none;">
+                                            <label class="i18n" name="i_status">: <span id="thumb_status"></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -271,7 +305,7 @@
     </div>
 
     <div id="timeline_dialog" class="dialog" title="Timeline">
-        <span style="display: block;">
+        <span style="display:block;">
             <label class="i18n" name="i_tagID"></label> :
             <label id="timeline_dialog_tag_id"></label>
             <br>

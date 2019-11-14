@@ -89,7 +89,7 @@ function checkLength(o, n, min, max) {
             alert(n);
             return false;
         } else {
-            if (checkRegexp2(o, n, min, max)) {
+            if (checkRegexp2(o)) {
                 return true;
             } else {
                 o.addClass("ui-state-error");
@@ -105,7 +105,7 @@ function checkLength(o, n, min, max) {
 // 2019/05/03 Regular Expression.
 var regexp = /(=)|(<)|(>)|(')|(")|(--)|(\/)|(\+)|(;)|(\*)|(!)|({)|(})|(drop table)|(drop stored)|(alter table)|(alter stored)|(sp_)|(xp_)|(exec )|(execute )|(fetch)|(select)|(kill)|(selectsys)|(sysobjects)|(syscolumns)|(isnull)|(coalesce)|(dbo)|(tbl)|(usp)/;
 
-function checkRegexp2(o, n, min, max) { // Check sql injection or not.
+function checkRegexp2(o) { // Check sql injection or not.
     var OK = regexp.exec(o.val());
     if (OK) { // This is sql injection.
         o.addClass("ui-state-error");
@@ -124,6 +124,16 @@ function checkRegexp(o, regexp, n) {
         return false;
     } else {
         return true;
+    }
+}
+
+function TimeToArray(time_str) {
+    if (time_str.length > 0) {
+        var break_index = time_str.lastIndexOf(" ");
+        return {
+            date: time_str.substring(0, break_index),
+            time: time_str.substring(break_index + 1, time_str.length)
+        };
     }
 }
 
@@ -255,14 +265,14 @@ function startDLL(token) {
    xmlHttp.send(json_request);
  */
 
- /*
-    const json_request = JSON.stringify({});
-    let jxh = createJsonXmlHttp("");
-    jxh.onreadystatechange = function () {
-        if (jxh.readyState == 4 || jxh.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
-            
-        }
-    };
-    jxh.send(json_request);
- */
+/*
+   const json_request = JSON.stringify({});
+   let jxh = createJsonXmlHttp("");
+   jxh.onreadystatechange = function () {
+       if (jxh.readyState == 4 || jxh.readyState == "complete") {
+           let revObj = JSON.parse(this.responseText);
+           
+       }
+   };
+   jxh.send(json_request);
+*/

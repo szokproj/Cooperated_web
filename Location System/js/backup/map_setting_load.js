@@ -1,7 +1,5 @@
 var token = "";
 var mapArray = [];
-var thumb_width = 240;
-var thumb_height = 180;
 
 $(function () {
     var w = document.documentElement.clientWidth;
@@ -13,8 +11,6 @@ $(function () {
         window.location.href = '../index.html';
     }
     setNavBar("Map_Setting", "");
-    thumb_width = parseInt(document.getElementById("new_map_block").style.maxWidth, 10);
-    thumb_height = parseInt(document.getElementById("new_map_block").style.maxHeight, 10);
     loadMap();
 });
 
@@ -50,34 +46,25 @@ function setThumbnail(map_info) {
     img.src = "data:image/" + map_info.map_file_ext + ";base64," + map_info.map_file;
     img.onload = function () {
         var imgSize = img.width / img.height;
+        var thumb_width = 490;
+        var thumb_height = 200;
         var thumbSize = thumb_width / thumb_height;
-        var thumb_set = "thumb_set_" + map_info.map_id;
-        var thumb_delete = "thumb_del_" + map_info.map_id;
         if (imgSize > thumbSize) //原圖比例寬邊較長
             thumb_height = img.height * (thumb_width / img.width);
         else
             thumb_width = img.width * (thumb_height / img.height);
-        $("#maps_gallery").append("<div class='thumbnail'>" +
-            "<label for=\"" + thumb_delete + "\" title=\"" + $.i18n.prop('i_delete') + "\"" +
-            " class='btn-cancel i18n-input' selectattr='title' selectname=\"i_delete\">" +
-            "<i class='fas fa-window-close'></i></label>" +
-            "<input type='button' class='btn-hidden' id=\"" + thumb_delete + "\"" +
-            " onclick=\"deleteMap(\'" + map_info.map_id + "\')\" />" +
-            "<div class='image_block'>" +
+        $("#maps_gallery").append("<div class=\"thumbnail\">" +
+            "<div class=\"image_block\">" +
             "<img src=\"" + this.src + "\" width=\"" + thumb_width + "\" height=\"" + thumb_height + "\">" +
             "</div>" +
-            "<div class='caption'><table style='width:100%;'><thead><tr>" +
-            "<th style='text-align:center;'><label id=\"" + map + "\">" + map_info.map_name + "</label></th>" +
-            "<th>" +
-            /*"<button class='btn btn-default i18n' name='i_setting' style='float:right;'" +
-            " onclick=\"setMapById(\'" + map_info.map_id + "\')\">" +
-            $.i18n.prop('i_setting') + "</button>"+*/
-            "<label for=\"" + thumb_set + "\" title=\"" + $.i18n.prop('i_setting') + "\"" +
-            " class='btn-set i18n-input' selectattr='title' selectname=\"i_setting\"" +
-            " style='float:right;'><i class='fas fa-edit'></i></label>" +
-            "<input type='button' class='btn-hidden' id=\"" + thumb_set + "\"" +
-            " onclick=\"setMapById(\'" + map_info.map_id + "\')\" />" +
-            "</th>" +
+            "<div class=\"caption\"><table style='width:100%;'><thead><tr>" +
+            "<th style=\"width:30%;\"><label class=\"i18n\" name=\"i_mapName\">" +
+            $.i18n.prop('i_mapName') + "</label> : </th>" +
+            "<th style=\"width:70%;\"><label id=\"" + map + "\">" + map_info.map_name + "</label></th>" +
+            "<th><button class='btn btn-primary i18n' name=\"i_setting\" onclick=\"setMapById(\'" + map_info.map_id + "\')\">" +
+            $.i18n.prop('i_setting') + "</button></th>" +
+            "<th><button class='btn btn-primary i18n' name=\"i_delete\" onclick=\"deleteMap(\'" + map_info.map_id + "\')\">" +
+            $.i18n.prop('i_delete') + "</button></th>" +
             "</tr></thead></table></div>" +
             "</div>");
     }
@@ -102,7 +89,7 @@ function setMapById(id) { //點擊設定:開啟設定視窗
         $("#map_info_name").val(mapArray[index].map_name);
         $("#map_info_scale").val(scale);
         setMap(urlData, scale);
-        //$("#dialog_map_setting").dialog("open");
+        $("#dialog_map_setting").dialog("open");
     } else {
         return;
     }
@@ -117,7 +104,7 @@ function newMap() {
     $("#table_group_list tbody").empty();
     $("#table_anchor_group tbody").empty();
     resetCanvas_Anchor();
-    //$("#dialog_map_setting").dialog("open");
+    $("#dialog_map_setting").dialog("open");
 }
 
 function addMap() {
@@ -197,17 +184,42 @@ function deleteMap(id) {
                     var mapGroupHttp = createJsonXmlHttp("sql");
                     mapGroupHttp.onreadystatechange = function () {
                         if (mapGroupHttp.readyState == 4 || mapGroupHttp.readyState == "complete") {
-                            return true;
+                            var revObj2 = JSON.parse(this.responseText);
+                            if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0)
+                                return;
                         }
                     };
                     mapGroupHttp.send(deleteMap_GroupReq);
-                    newMap();
                     loadMap();
                 }
             }
         };
         mapHttp.send(JSON.stringify(deleteMapReq));
     }
+}
+
+function adjustImageSize(src) {
+    var img = new Image();
+    var thumb_width = parseFloat($("#new_map_block").css("max-width"));
+    var thumb_height = parseFloat($("#new_map_block").css("max-height"));
+    var width = thumb_width,
+        height = thumb_height;
+    img.src = src;
+    img.onload = function () {
+        var imgSize = img.width / img.height;
+        var thumbSize = thumb_width / thumb_height;
+        if (imgSize > thumbSize) { //原圖比例寬邊較長
+            width = thumb_width;
+            height = img.height * (thumb_width / img.width);
+        } else {
+            width = img.width * (thumb_height / img.height);
+            height = thumb_height;
+        }
+    }
+    return {
+        width: width,
+        height: height
+    };
 }
 
 function transBase64(file) {

@@ -90,10 +90,24 @@ h1 {
     overflow: hidden;
 }
 
+.dialog .table-line th,
+.dialog .table-line td {
+    border: 1px solid gray;
+    padding: 0px 8px 0px 8px;
+    text-decoration: none;
+    text-align: left;
+    font-size: 14px;
+}
+
+.dialog .table-line th {
+    background: lightgray;
+}
+
 /******************/
+
 .table-line th,
 .table-line td {
-    border: 1px solid #808080;
+    border: 1px solid rgb(0, 65, 117);
     padding: 0px 8px 0px 8px;
     text-decoration: none;
     text-align: left;
@@ -101,7 +115,7 @@ h1 {
 }
 
 .table-line th {
-    background: lightgray;
+    background: rgb(1, 79, 131);
 }
 
 .table-line input[type="text"] {
@@ -126,10 +140,10 @@ h1 {
     background-color: lightgray;
     border: 1px solid gray;
     border-radius: 3px;
-    width: 500px;
-    height: 260px;
+    width: 350px;
+    height: 230px;
     color: rgb(63, 62, 62);
-    font-size: 20px;
+    font-size: 18px;
     text-align: center;
     padding: 5px;
     margin: 10px;
@@ -138,41 +152,42 @@ h1 {
 
 #new_map_block {
     width: 100%;
-    height: 200px;
-    max-width: 490px;
-    max-height: 200px;
+    height: 180px;
+    max-width: 340px;
+    max-height: 180px;
     margin-bottom: 10px;
     background-color: rgb(167, 166, 166);
 }
 
 .thumbnail {
+    display: block;
     position: relative;
     float: left;
     margin: 10px;
-    width: 500px;
-    height: 260px;
-    max-width: 500px;
-    max-height: 280px;
-    background-color: rgb(106, 165, 199);
-    border: 1px solid rgb(73, 112, 134);
+    width: 350px;
+    height: 230px;
+    max-width: 350px;
+    max-height: 230px;
+    background-color: rgb(73, 147, 196);
+    border: 1px solid rgb(27, 151, 209);
 }
 
 .thumbnail .image_block {
-    width: 490px;
-    height: 200px;
-    max-width: 490px;
-    max-height: 200px;
+    width: 340px;
+    height: 180px;
+    max-width: 340px;
+    max-height: 180px;
     background-color: lightgray;
 }
 
 .image_block img {
-    max-width: 490px;
-    max-height: 200px;
+    max-width: 340px;
+    max-height: 180px;
 }
 
 .thumbnail label {
-    font-size: 18px;
-    font-weight: normal;
+    color: white;
+    font-size: 16px;
 }
 
 .btn-sidebar {
@@ -190,6 +205,24 @@ h1 {
 
 .btn-sidebar:hover {
     background-color: rgb(40, 108, 197);
+}
+
+.btn-cancel {
+    cursor: pointer;
+    float: right;
+    margin: 0px 1px 0px 0px;
+
+}
+
+.btn-cancel i {
+    font-size: 20px;
+    background: transparent;
+    color: rgb(255, 0, 0);
+    border-radius: 2px;
+}
+
+.btn-cancel:hover i {
+    color: rgb(255, 96, 96);
 }
 
 .btn-delete {
@@ -235,9 +268,20 @@ h1 {
     color: rgb(179, 226, 126);
 }
 
+.btn-set i {
+    cursor: pointer;
+    color: rgb(146, 224, 255);
+    font-size: 18px;
+    margin: 0px 5px 0px 5px;
+}
+
+.btn-set:hover i {
+    color: rgb(255, 255, 255);
+}
+
 .btn-edit {
     cursor: pointer;
-    color: rgb(101, 159, 185);
+    color: rgb(115, 211, 255);
     font-size: 18px;
     margin: 0px 5px 0px 5px;
 }
@@ -248,9 +292,9 @@ h1 {
 
 .sidebar-menu {
     height: 50px;
-    float: right;
+    float: left;
     margin-right: 10px;
-    position: absolute;
+    position: relative;
 }
 
 .sidebar-menu ul {
@@ -269,14 +313,14 @@ h1 {
 }
 
 .sidebar-menu li:before {
+    -webkit-transition: width 0.2s ease-in;
+    transition: width 0.2s ease-in;
     background-color: transparent;
     position: absolute;
     height: 100%;
+    z-index: -1;
     left: 0;
     top: 0;
-    -webkit-transition: width 0.2s ease-in;
-    transition: width 0.2s ease-in;
-    z-index: -1;
 }
 
 .btn-hidden {
@@ -298,29 +342,48 @@ canvas {
     display: inline-block;
 }
 
-.cvsBlock {
+#cvsBlock {
     -webkit-flex: 1;
     -ms-flex: 1;
     flex: 1;
-    background: #ccc;
-    height: 460px;
-    width: 600px;
+    background: transparent;
+    height: 400px;
+    width: 100%;
     overflow: auto;
-    border: 1px gray solid;
+    border: 1px solid rgb(0, 65, 117);
 }
 
 #dialog_map_setting {
     max-width: 1000px;
     max-height: 640px;
+}
 
+#anchor_group_chart {
+    max-height: 280px;
 }
 
 .block-list {
     overflow: auto;
     max-height: 414px;
-    max-width: 300px;
+    width: 100%;
+    margin: 0px 0px 0px 10px;
+    padding-right: 10px;
+}
+
+.anchor_list {
+    overflow: auto;
+    max-height: 330px;
     width: 300px;
     margin: 0px 0px 0px 10px;
+}
+
+.map_list {
+    display: inline-block;
+    max-height: 250px;
+    height: 250px;
+    width: 100%;
+    overflow: auto;
+    border: 2px solid rgb(0, 65, 117);
 }
 
 #myTab {
@@ -330,16 +393,12 @@ canvas {
 .tab-pane {
     overflow: auto;
     max-height: 340px;
-    max-width: 300px;
-    width: 300px;
+    width: 100%;
+    margin-right: 20px;
 }
 
 .coordinate {
     background-color: white;
     max-width: 100px;
     border: none;
-}
-
-.btn-no-change {
-    color: rgb(150, 148, 148);
 }

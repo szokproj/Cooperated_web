@@ -29,6 +29,7 @@ var timeDelay = {
 var group_color = "#ff9933";
 var timeslot_array = [];
 var locate_tag = "";
+var MemberData = {};
 
 $(function () {
     //Check this page's permission and load navbar
@@ -38,6 +39,13 @@ $(function () {
         window.location.href = '../index.html';
     }
     setNavBar("Timeline", "");
+
+    $('.timepicker').bootstrapMaterialDatePicker({
+        date: false,
+        clearButton: true,
+        lang: 'en',
+        format: 'HH:mm'
+    });
 
     $("#timeline_dialog").dialog({
         autoOpen: false
@@ -188,6 +196,7 @@ function setup() {
     canvas.addEventListener("mousewheel", handleMouseWheel, { //畫布縮放
         passive: true
     });
+    getMemberNumber();
     /**
      * 接收並載入Server的地圖資訊
      * 取出物件所有屬性的方法，參考網址: 
@@ -355,11 +364,23 @@ function handleMouseClick(event) {
                     ctx.closePath();
                     if (p && ctx.isPointInPath(p.x, p.y)) {
                         //如果傳入了事件坐標，就用isPointInPath判斷一下
-                        $("#timeline_dialog_tag_id").text(tag_id.value);
+                        var user_id = parseInt(tag_id.value, 16);
+                        var time_arr = TimeToArray(array[i].time);
+                        /*$("#timeline_dialog_tag_id").text(user_id);
                         $("#timeline_dialog_time").text(array[i].time);
                         $("#timeline_dialog_x").text(array[i].x);
                         $("#timeline_dialog_y").text(array[i].y);
-                        $("#timeline_dialog").dialog("open");
+                        $("#timeline_dialog").dialog("open");*/
+                        //member_info
+                        var member_info = MemberData[user_id];
+                        $("#thumb_user_id").text(user_id);
+                        $("#thumb_number").text(member_info.number);
+                        $("#thumb_name").text(member_info.name);
+                        $("#thumb_dept").text(member_info.dept);
+                        $("#thumb_date").text(time_arr.date);
+                        $("#thumb_time").text(time_arr.time);
+                        $("#thumb_position").text(array[i].map_name + " ( " + array[i].x + "," + array[i].y + " )");
+                        inputMemberPhoto(member_info.photo)
                     }
                 }
             });
@@ -377,11 +398,23 @@ function handleMouseClick(event) {
                     ctx.fill();
                     ctx.closePath();
                     if (p && ctx.isPointInPath(p.x, p.y)) {
-                        $("#timeline_dialog_tag_id").text(info.tag_id);
+                        var user_id = parseInt(info.tag_id, 16);
+                        var time_arr = TimeToArray(info.time);
+                        /*$("#timeline_dialog_tag_id").text(user_id);
                         $("#timeline_dialog_time").text(info.time);
                         $("#timeline_dialog_x").text(info.x);
                         $("#timeline_dialog_y").text(info.y);
-                        $("#timeline_dialog").dialog("open");
+                        $("#timeline_dialog").dialog("open");*/
+                        //member_info
+                        var member_info = MemberData[user_id];
+                        $("#thumb_user_id").text(user_id);
+                        $("#thumb_number").text(member_info.number);
+                        $("#thumb_name").text(member_info.name);
+                        $("#thumb_dept").text(member_info.dept);
+                        $("#thumb_date").text(time_arr.date);
+                        $("#thumb_time").text(time_arr.time);
+                        $("#thumb_position").text(info.map_name + " ( " + info.x + "," + info.y + " )");
+                        inputMemberPhoto(member_info.photo)
                     }
                 });
             }
@@ -396,6 +429,96 @@ function handleMouseMove(event) { //滑鼠移動事件
     var p = getPointOnCanvas(event.pageX, event.pageY);
     lastX = p.x;
     lastY = p.y;
+}
+
+function getMemberNumber() {
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetStaffs"],
+        "api_token": [token]
+    };
+    var xmlHttp = createJsonXmlHttp("sql"); //updateMemberList
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj2 = JSON.parse(this.responseText);
+            if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
+                var memberArray = revObj2.Value[0].Values.slice(0) || [];
+                for (var i = 0; i < memberArray.length; i++) {
+                    var user_id = parseInt(memberArray[i].tag_id.substring(8), 16);
+                    MemberData[user_id] = {
+                        tag_id: memberArray[i].tag_id,
+                        number: memberArray[i].number,
+                        name: memberArray[i].Name,
+                        dept: memberArray[i].department,
+                        photo: "",
+                        card_id: memberArray[i].card_id
+                    };
+                }
+            } else {
+                alert($.i18n.prop('i_alertError_1'));
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
+}
+
+function getMemberData(user_id) {
+    if (!MemberData[user_id]) {
+        MemberData[user_id] = { //新建一個空的成員資料到其中
+            tag_id: "",
+            number: "",
+            name: "",
+            dept: "",
+            photo: "",
+            card_id: ""
+        };
+        return;
+    }
+    var request = {
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetOneStaff"],
+        "Value": {
+            "number": MemberData[user_id].number
+        },
+        "api_token": [token]
+    };
+    var xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            var revObj = JSON.parse(this.responseText);
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                var revInfo = revObj.Value[0].Values[0];
+                if (revInfo.file_ext == "" || revInfo.photo == "")
+                    MemberData[user_id].photo = "";
+                else
+                    MemberData[user_id].photo = "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
+            }
+        }
+    };
+    xmlHttp.send(JSON.stringify(request));
+}
+
+function inputMemberPhoto(src) {
+    var thumb_width = parseInt($("#thumb_img").css('max-width'), 10);
+    var thumb_height = parseInt($("#thumb_img").css('max-height'), 10);
+    if (src.length > 0) {
+        var img = new Image();
+        img.src = src;
+        img.onload = function () {
+            var thumbSize = thumb_width / thumb_height;
+            var imgSize = img.width / img.height;
+            if (imgSize > thumbSize) { //原圖比例寬邊較長
+                $("#thumb_img").attr('src', src);
+                $("#thumb_img").width(thumb_width).height(img.height * (thumb_width / img.width));
+            } else {
+                $("#thumb_img").attr('src', src);
+                $("#thumb_img").width(img.width * (thumb_height / img.height)).height(thumb_height);
+            }
+        }
+    } else {
+        //$("#thumb_img").attr('src', '../image/no_image.png').width(thumb_width).height(thumb_height);
+        $("#thumb_img").attr('src', '').width(thumb_width).height(thumb_height);
+    }
 }
 
 function drawTimeline() {
@@ -622,6 +745,7 @@ function getTimelineByTags() {
         clearTimeout(timeDelay["search"][i]);
     timeDelay["search"] = [];
     document.getElementsByName("chk_target_id").forEach(function (tag_id, i) {
+        getMemberData(parseInt(tag_id.value, 16));
         interval_times++;
         timeDelay["search"].push(setTimeout(function () {
             sendRequest({
@@ -630,9 +754,9 @@ function getTimelineByTags() {
                 "Value": {
                     "tag_id": tag_id.value,
                     "start_date": $("#start_date").val(),
-                    "start_time": checkTimeLength($("#start_time").val()),
+                    "start_time": $("#start_time").val() + ":00",
                     "end_date": $("#end_date").val(),
-                    "end_time": checkTimeLength($("#end_time").val())
+                    "end_time": $("#end_time").val() + ":00"
                 },
                 "api_token": [token]
             });
@@ -757,8 +881,10 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
                             historyData[time] = [];
                         }
                         var index = tag_array.indexOf(revInfo[i].tag_id);
-                        if (index == -1)
+                        if (index == -1) {
                             tag_array.push(revInfo[i].tag_id);
+                            getMemberData(parseInt(revInfo[i].tag_id, 16));
+                        }
                         var repeat = historyData[time].findIndex(function (info) {
                             return info.tag_id == revInfo[i].tag_id;
                         });
@@ -864,7 +990,7 @@ function getAlarmHandleByTime() {
                             var type = $("#target_alarm_type").val();
                             $("#table_alarm_handle tbody").empty();
                             for (var i = 0; i < revInfo.length; i++) {
-                                if (revInfo[i].alarmtype == type) {
+                                if (type == "all" || revInfo[i].alarmtype == type) {
                                     var tag_id = revInfo[i].tagid;
                                     var number = tag_id in MemberList ? MemberList[tag_id].number : "";
                                     var name = tag_id in MemberList ? MemberList[tag_id].Name : "";
@@ -887,9 +1013,9 @@ function getAlarmHandleByTime() {
                     "Command_Name": ["gethandlerecordbytime"],
                     "Value": [{
                         "start_date": $("#start_date").val(),
-                        "start_time": checkTimeLength($("#start_time").val()),
+                        "start_time": $("#start_time").val() + ":00",
                         "end_date": $("#end_date").val(),
-                        "end_time": checkTimeLength($("#end_time").val())
+                        "end_time": $("#end_time").val() + ":00"
                     }],
                     "api_token": [token]
                 }));

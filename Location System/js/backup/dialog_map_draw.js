@@ -24,7 +24,7 @@ var pageTimer = {}; //定義計時器全域變數
 window.addEventListener("load", setupCanvas, false);
 
 function setupCanvas() {
-    cvsBlock = document.getElementById("cvsBlock");
+    cvsBlock = document.getElementById("mapBlock");
     canvas = document.getElementById("canvas_map");
     ctx = canvas.getContext("2d");
     PIXEL_RATIO = (function () {
@@ -55,6 +55,7 @@ function setMap(map_url, map_scale) { //接收Server發送的地圖資料並導�
     map_scale = typeof (map_scale) != 'undefined' && map_scale != "" ? map_scale : 1;
     serverImg.src = map_url;
     serverImg.onload = function () {
+        cvsBlock.style.background = "none";
         canvasImg.isPutImg = true;
         canvasImg.width = serverImg.width;
         canvasImg.height = serverImg.height;
@@ -67,8 +68,8 @@ function setMap(map_url, map_scale) { //接收Server發送的地圖資料並導�
         ctx.save(); //紀錄原比例
 
         var serImgSize = serverImg.width / serverImg.height;
-        var cvs_width = parseFloat(cvsBlock.clientWidth);
-        var cvs_height = parseFloat(cvsBlock.clientHeight);
+        var cvs_width = parseFloat($("#mapBlock").css("width"));
+        var cvs_height = parseFloat($("#mapBlock").css("height"));
         var cvsSize = cvs_width / cvs_height;
         if (serImgSize > cvsSize) { //原圖比例寬邊較長
             Zoom = cvs_width / serverImg.width;
@@ -83,6 +84,7 @@ function setMap(map_url, map_scale) { //接收Server發送的地圖資料並導�
 }
 
 function resetCanvas_Anchor() {
+    cvsBlock.style.background = '#ccc';
     canvasImg.isPutImg = false;
     canvasImg.width = 0;
     canvasImg.height = 0;
@@ -98,6 +100,7 @@ function resetCanvas_Anchor() {
 function loadImage(dataUrl) { //新增或更換地圖
     serverImg.src = dataUrl;
     serverImg.onload = function () {
+        cvsBlock.style.background = "none";
         canvasImg.isPutImg = true;
         canvasImg.width = serverImg.width;
         canvasImg.height = serverImg.height;
@@ -109,8 +112,8 @@ function loadImage(dataUrl) { //新增或更換地圖
         Zoom = 1.0;
         ctx.save(); //紀錄原比例
         var serImgSize = serverImg.width / serverImg.height;
-        var cvs_width = parseFloat(cvsBlock.clientWidth);
-        var cvs_height = parseFloat(cvsBlock.clientHeight);
+        var cvs_width = parseFloat($("#mapBlock").css("width"));
+        var cvs_height = parseFloat($("#mapBlock").css("height"));
         var cvsSize = cvs_width / cvs_height;
         if (serImgSize > cvsSize) { //原圖比例寬邊較長
             Zoom = cvs_width / serverImg.width;
@@ -160,8 +163,8 @@ function resizeCanvas() {
         document.getElementById("label_resize").title = $.i18n.prop('i_fit_window');
     } else { //依比例拉伸(Fit in Window)
         isFitWindow = true; //目前狀態:依比例拉伸(Fit in Window)
-        var cvsBlock_width = parseFloat(cvsBlock.clientWidth);
-        var cvsBlock_height = parseFloat(cvsBlock.clientHeight);
+        var cvsBlock_width = parseFloat($("#mapBlock").css("width"));
+        var cvsBlock_height = parseFloat($("#mapBlock").css("height"));
         if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
             Zoom = cvsBlock_width / serverImg.width;
         else

@@ -56,7 +56,6 @@ function verifyLogin() {
                     //Verification success
                     let revInfo = revObj.Value[0].Values;
                     if (revInfo && revInfo[0].api_token) {
-                        revInfo[0].api_token = btoa(revInfo[0].api_token);
                         Cookies.set("login_user", JSON.stringify(revInfo[0]));
                         alert($.i18n.prop('i_loginSuccess'));
                         history.back();

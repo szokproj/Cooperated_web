@@ -91,12 +91,13 @@
                         <div class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
                             <input type="text" id="account" class="form-control i18n-input" selectattr="placeholder"
-                                selectname="i_account">
+                                selectname="i_account" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" />
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
                             <input type="password" id="password" class="form-control i18n-input"
-                                selectattr="placeholder" selectname="i_password">
+                                selectattr="placeholder" selectname="i_password"
+                                onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" />
                         </div>
                         <hr>
                         <div style="margin-left:10px;">

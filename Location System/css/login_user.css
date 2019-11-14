@@ -25,3 +25,7 @@
     padding: 2px 8px !important;
     margin-left: 3px !important;
 }
+
+#login_user .dropdown-content {
+    left: -50px;
+}

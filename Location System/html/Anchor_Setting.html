@@ -28,10 +28,10 @@
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
-    <script type="text/javascript" src="../js/device_setting_load.js"></script>
-    <script type="text/javascript" src="../js/device_setting_request.js"></script>
     <!-- JQuery UI - Dialog -->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="../js/device_setting_load.js"></script>
+    <script type="text/javascript" src="../js/device_setting_request.js"></script>
 </head>
 
 <body>
@@ -58,6 +58,11 @@
                     <label id="login_user"></label>
                 </div>
             </div>
+        </div>
+
+        <div id="progress_block">
+            <apan><i class="fas fa-spinner fa-pulse"></i> 寫入中，進度 : </apan><br>
+            <span id="progress_bar"></span>
         </div>
 
         <div class="row">
@@ -132,19 +137,19 @@
     </div>
     <div class="hidden_dialog">
         <!--Modal-->
-        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        <!--<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <apan>寫入中，進度 : </apan>
                     <span id="progress_bar"></span>
-                    <!--<div class="modal-header">
+                    <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
                         </button>
-                    </div>-->
+                    </div>
                 </div>
             </div>
-        </div>
+        </div>-->
         <div id="dialog_set_table_display" class="dialog" title="Check the display field name">
             <form>
                 <fieldset style="text-align: left;">

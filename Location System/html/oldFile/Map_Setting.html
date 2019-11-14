@@ -62,36 +62,60 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-12">
-                <h4 style="margin:0px; padding:5px; background:rgb(0, 65, 117);">Map List</h4>
-                <div class="map_list">
-                    <div id="maps_gallery"></div>
-                    <label for="add_new_map" class="custom-file-download">
-                        <div id="new_map_block"></div>
-                        <span class="i18n" name="i_addMap"></span> <i class="far fa-images"></i>
-                    </label>
-                    <input id="add_new_map" type="button" class="btn-hidden" />
-                </div>
+            <div class="col-lg-12" style="display: inline-table;">
+                <div id="maps_gallery"></div>
+                <label for="add_new_map" class="custom-file-download">
+                    <div id="new_map_block"></div>
+                    <span class="i18n" name="i_addMap"></span> <i class="far fa-images"></i>
+                </label>
+                <input id="add_new_map" type="button" class="btn-hidden" />
             </div>
         </div>
+    </div>
 
-        <div class="row">
-            <div class="col-lg-6">
-                <div id="cvsBlock">
+    <!-- Hidden Dialog -->
+    <div class="hidden_dialog">
+        <!-- Following is a dialog to add group's main anchor -->
+        <div id="dialog_add_map" class="dialog" title="Add New Map">
+            <form>
+                <fieldset style="text-align: left;">
+                    <label class="i18n" name="i_mapName"></label> :
+                    <input type="text" id="add_map_name" value="" style="max-width:100px;">
+                    <br><br>
+                    <!--Load Map-->
+                    <span class="block-add-file">
+                        <label for="add_map_file" class="btn-add-file i18n-input" selectattr="title"
+                            selectname="i_inputNewMap">
+                            <span class="i18n" name="i_selectMapImage"></span> <i class="far fa-image"
+                                style='font-size:18px;'></i></label>
+                        <input id="add_map_file" type="file" accept="image/*" />
+                    </span>
+                    <br><br>
+                    <img id="add_map_image" src="" width="100%">
+                    <br><br>
+                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </fieldset>
+            </form>
+        </div>
+        <!-- Following is a dialog to set the selected map or add a new map -->
+        <div id="dialog_map_setting" class="dialog" title="Set Map & Anchors"
+            style="display: inline-block; overflow: hidden;">
+            <div style="height:490px; float:left;">
+                <div class="cvsBlock" id="mapBlock">
                     <canvas id="canvas_map" height="1" width="1">
                         <span class="i18n" name="i_no_canvas"></span>
                     </canvas>
                 </div>
-                <div style="height:25px; width: 100%;">
+                <div style="height:40px;">
                     <span style="float:left;">
                         <span class="i18n" name="i_posX"></span> : <label id="x" style="width:100px;"></label>
                         <span class="i18n" name="i_posY"></span> : <label id="y" style="width:100px;"></label>
                     </span>
                 </div>
             </div>
-
-            <div class="col-lg-6">
-                <div style="margin: 0px 0px 0px 10px;">
+            <div style="height:490px; float:left;">
+                <div style="margin: 0px 0px 40px 10px;">
                     <nav class="sidebar-menu">
                         <ul class="nav">
                             <!--Load Map-->
@@ -127,7 +151,8 @@
                         </ul>
                     </nav>
                 </div>
-                <div id="block_info" style="margin-left:10px; width:100%; float:left;">
+
+                <div id="block_info" style="margin-left:10px; padding:20px;">
                     <input type="hidden" id="map_info_id" />
                     <label class="i18n" name="i_mapName"></label> :&nbsp;
                     <input type="text" id="map_info_name" style="width:120px;" />
@@ -135,11 +160,11 @@
                     <label class="i18n" name="i_mapScale"></label> :&nbsp;&nbsp;&nbsp;1 :
                     <input type="text" id="map_info_scale" style="width:100px;" />
                     <br><br>
-                    <input type="button" id="btn_submit_map_info" class="btn btn-primary" value="確認變更地圖資訊(包含圖片)"
+                    <input type="button" id="btn_submit_map_info" class="btn-no-change" value="確認變更地圖資訊(包含圖片)"
                         disabled />
                 </div>
                 <div id="block_anchor_list">
-                    <div style="margin-left:6px; width:100%; float:left;">
+                    <span style="margin: 0px 0px 0px 10px">
                         <label for="btn_add_anchor_list" id="label_add_anchor_list" class="btn-add i18n-input"
                             selectattr="title" selectname="i_addAnchorGroup">
                             <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
@@ -148,8 +173,8 @@
                             selectattr="title" selectname="i_deleteAnchorGroup"><i class="fas fa-minus-square"
                                 style='font-size:20px;'></i></label>
                         <input id="btn_delete_anchor_list" type="button" class="btn-hidden" />
-                    </div>
-                    <div class="anchor_list">
+                    </span>
+                    <div class="block-list">
                         <table id="table_main_anchor_list" class="table-line">
                             <thead>
                                 <tr>
@@ -172,7 +197,7 @@
                     </div>
                 </div>
                 <div id="block_group_list">
-                    <span style="margin-left:6px; width:100%; float:left;">
+                    <span style="margin: 0px 0px 0px 10px">
                         <label for="btn_add_group" id="label_add_group" class="btn-add i18n-input" selectattr="title"
                             selectname="i_addGroup">
                             <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
@@ -204,7 +229,7 @@
                     </div>
                 </div>
                 <div id="block_anchor_group">
-                    <span style="margin-left:6px; width:100%; float:left;">
+                    <span style="margin: 0px 0px 0px 10px">
                         <label for="btn_add_anchor_group" id="label_add_anchor_group" class="btn-add i18n-input"
                             selectattr="title" selectname="i_addAnchorGroup">
                             <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
@@ -219,7 +244,7 @@
                             <i class="fas fa-map-marked-alt" style='font-size:20px;'></i></label>
                         <input id="btn_pos_anchor_group" type="button" class="btn-hidden" />
                     </span>
-                    <div style="margin: 0px 0px 0px 10px;">
+                    <div style="margin: 0px 0px 0px 10px; max-width: 300px;">
                         <ul id="myTab" class="nav nav-tabs">
                             <li class="active">
                                 <a href="#anchor_group_list" data-toggle="tab">List</a>
@@ -250,38 +275,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Hidden Dialog -->
-    <div class="hidden_dialog">
-        <!-- Following is a dialog to add group's main anchor -->
-        <div id="dialog_add_map" class="dialog" title="Add New Map">
-            <form>
-                <fieldset style="text-align: left;">
-                    <label class="i18n" name="i_mapName"></label> :
-                    <input type="text" id="add_map_name" value="" style="max-width:100px;">
-                    <br><br>
-                    <!--Load Map-->
-                    <span class="block-add-file">
-                        <label for="add_map_file" class="btn-add-file i18n-input" selectattr="title"
-                            selectname="i_inputNewMap">
-                            <span class="i18n" name="i_selectMapImage"></span> <i class="far fa-image"
-                                style='font-size:18px;'></i></label>
-                        <input id="add_map_file" type="file" accept="image/*" />
-                    </span>
-                    <br><br>
-                    <img id="add_map_image" src="" width="100%">
-                    <br><br>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
-        <!-- Following is a dialog to set the selected map or add a new map -->
-        <div id="dialog_map_setting" class="dialog" title="Set Map & Anchors"
-            style="display: inline-block; overflow: hidden;">
-
         </div>
         <!-- Following is a dialog to add a new anchor -->
         <div id="dialog_add_new_anchor" class="dialog" title="Add Anchor">

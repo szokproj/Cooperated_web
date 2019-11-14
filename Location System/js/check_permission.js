@@ -71,9 +71,8 @@ function getUser() {
 
 function getToken() {
     var user_info = getUser();
-    if (user_info) {
-        var atob_token = atob(user_info.api_token);
-        return atob_token ? atob_token : "";
+    if (user_info && user_info.api_token) {
+        return user_info.api_token;
     } else {
         return "";
     }

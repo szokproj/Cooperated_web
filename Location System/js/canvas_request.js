@@ -81,6 +81,7 @@ $(function () {
         backdrop: false,
         show: false
     });
+    $("#search_start").on("click", search);
     setup();
 });
 
@@ -459,7 +460,18 @@ function getMemberData() {
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 let revInfo = revObj.Value[0].Values || [];
                 revInfo.forEach(element => {
-                    MemberList[element.tag_id] = element;
+                    let user_id = parseInt(element.tag_id.substring(8), 16);
+                    MemberList[user_id] = {
+                        tag_id: element.tag_id,
+                        card_id: element.card_id,
+                        number: element.number,
+                        name: element.Name,
+                        dept: element.department,
+                        job_title: element.jobTitle,
+                        type: element.type,
+                        color: element.color,
+                        alarm_group_id: element.alarm_group_id
+                    };
                 });
             }
         }
@@ -600,7 +612,7 @@ function handleMouseClick(event) { //滑鼠點擊事件
                 setAlarmDialog({
                     id: v.id,
                     number: v.id in MemberList ? MemberList[v.id].number : "",
-                    name: v.id in MemberList ? MemberList[v.id].Name : "",
+                    name: v.id in MemberList ? MemberList[v.id].name : "",
                     status: v.status,
                     alarm_time: v.alarm_time
                 });
@@ -636,7 +648,7 @@ function handleMobileTouch(event) { //手指觸碰事件
                     setAlarmDialog({
                         id: v.id,
                         number: v.id in MemberList ? MemberList[v.id].number : "",
-                        name: v.id in MemberList ? MemberList[v.id].Name : "",
+                        name: v.id in MemberList ? MemberList[v.id].name : "",
                         status: v.status,
                         alarm_time: v.alarm_time
                     });
@@ -737,7 +749,7 @@ function updateAlarmHandle() {
                 for (let i = 0; i < revInfo.length; i++) {
                     let tag_id = revInfo[i].tagid,
                         number = tag_id in MemberList ? MemberList[tag_id].number : "",
-                        name = tag_id in MemberList ? MemberList[tag_id].Name : "";
+                        name = tag_id in MemberList ? MemberList[tag_id].name : "";
                     html = "<tr><td>" + (revInfo.length - i) +
                         "</td><td>" + revInfo[i].alarmtype +
                         "</td><td>" + parseInt(tag_id.substring(8), 16) +
@@ -779,7 +791,7 @@ function updateAlarmList() {
                     if (ALARM_TYPE.indexOf(element.tag_alarm_type) > -1) {
                         let tag_id = element.tag_id,
                             number = tag_id in MemberList ? MemberList[tag_id].number : "",
-                            name = tag_id in MemberList ? MemberList[tag_id].Name : "";
+                            name = tag_id in MemberList ? MemberList[tag_id].name : "";
                         alarmFilterArr.push({ //添加元素到陣列的開頭
                             id: tag_id,
                             number: number,
@@ -837,7 +849,7 @@ function updateTagList() {
                 tagArray = {};
                 revInfo.forEach(element => {
                     let number = element.tag_id in MemberList ? MemberList[element.tag_id].number : "",
-                        name = element.tag_id in MemberList ? MemberList[element.tag_id].Name : "",
+                        name = element.tag_id in MemberList ? MemberList[element.tag_id].name : "",
                         color = element.tag_id in MemberList ? MemberList[element.tag_id].color : "";
                     //update tag array
                     if (element.tag_id == locating_id) {
@@ -1229,4 +1241,74 @@ function clamp(value, min, max) {
 
 function clampScale(newScale) {
     return clamp(newScale, minScale, maxScale);
+}
+
+function search() {
+    let html = "";
+    let key = $("#search_select_type").val();
+    let value = $("#search_input_target").val();
+    if (key == "map") {
+        let index = mapArray.findIndex(function (info) {
+            return info.map_name == value || info.map_id == value;
+        });
+        if (index > -1) {
+            let group_arr = [];
+            for (let i in groupfindMap) {
+                if (groupfindMap[i] == mapArray[index].map_id)
+                    group_arr.push(groupfindMap[i]);
+            }
+            for (let j in tagArray) {
+                let v = tagArray[j];
+                group_arr.forEach(group_id => {
+                    if (v.group_id == group_id) {
+                        let user_id = parseInt(v.tag_id.substring(8), 16);
+                        let member_data = MemberList[user_id] ? MemberList[user_id] : {
+                            dept: "",
+                            job_title: "",
+                            type: ""
+                        };
+                        html += "<tr>" +
+                            "<td>" + user_id + "</td>" +
+                            "<td>" + v.number + "</td>" +
+                            "<td>" + v.name + "</td>" +
+                            "<td>" + member_data.dept + "</td>" +
+                            "<td>" + member_data.job_title + "</td>" +
+                            "<td>" + member_data.type + "</td>" +
+                            //"<td>" + member_data.alarm_group_id + "</td>" +
+                            "<td><button class=\"btn btn-default\"" +
+                            " onclick=\"locateTag(\'" + v.tag_id + "\')\">" +
+                            "<img class=\"icon-image\" src=\"../image/target.png\">" +
+                            "</button></td></tr>";
+                    }
+                });
+            }
+        }
+        return;
+    } else {
+        let memberArray = [];
+        for (let each in MemberList) {
+            if (key == "user_id") {
+                if (each == value)
+                    memberArray.push(element);
+            } else if (MemberList[key]) {
+                if (MemberList[key] == value)
+                    memberArray.push(element);
+            }
+        }
+        memberArray.forEach(element => {
+            html += "<tr>" +
+                "<td>" + parseInt(element.tag_id.substring(8), 16) + "</td>" +
+                "<td>" + element.number + "</td>" +
+                "<td>" + element.name + "</td>" +
+                "<td>" + element.dept + "</td>" +
+                "<td>" + element.job_title + "</td>" +
+                "<td>" + element.type + "</td>" +
+                //"<td>" + memberArray[i].alarm_group_id + "</td>" +
+                "<td><button class=\"btn btn-default\"" +
+                " onclick=\"locateTag(\'" + element.tag_id + "\')\">" +
+                "<img class=\"icon-image\" src=\"../image/target.png\">" +
+                "</button></td></tr>";
+        });
+    }
+    document.getElementById("table_sidebar_search").children[1].innerHTML = html;
 }

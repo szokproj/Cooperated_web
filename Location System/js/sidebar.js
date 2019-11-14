@@ -89,8 +89,7 @@ function inputAlarmData(element, i) {
             status = "";
     }
 
-    html = "<div class=\"thumbnail\" id=\"" + thumb_id + "\"" +
-        "style=\"background:" + color + "\">" +
+    html = "<div class=\"thumbnail\" id=\"" + thumb_id + "\" style=\"background:" + color + "\">" +
         "<div class=\"thumb-count\"><label id=\"count_" + tagid_alarm + "\">" + element.count + "</label></div>" +
         "<table><tr><td>" +
         "<img id=\"" + thumb_img + "\" class=\"member_photo\" src=\"\">" +
@@ -215,14 +214,4 @@ function setTagDialog(Obj) {
     });
     $("#alarm_dialog").dialog("close");
     $("#member_dialog").dialog("open");
-}
-
-function TimeToArray(time_str) {
-    if (time_str.length > 0) {
-        var break_index = time_str.lastIndexOf(" ");
-        return {
-            date: time_str.substring(0, break_index),
-            time: time_str.substring(break_index + 1, time_str.length)
-        };
-    }
 }

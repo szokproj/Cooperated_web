@@ -100,11 +100,3 @@ function getPointOnCanvas(x, y) { //獲取滑鼠在Canvas物件上座標
         y: pos_y
     }
 }
-
-function checkTimeLength(time) {
-    if (time.length < 6)
-        time += ":00";
-    else
-        time = time;
-    return time;
-}

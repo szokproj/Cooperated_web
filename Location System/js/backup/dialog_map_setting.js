@@ -12,7 +12,7 @@ $(function () {
         valid = valid && checkImageSize(file);
         if (valid) {
             transBase64(file);
-            $("#btn_submit_map_info").prop('disabled', false);
+            $("#btn_submit_map_info").prop('disabled', false).removeClass('btn-no-change');
         }
     });
     $("#menu_resize").on("click", resizeCanvas);
@@ -79,7 +79,7 @@ $(function () {
                     var revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         loadMap(); //reload
-                        $("#btn_submit_map_info").prop('disabled', true);
+                        $("#btn_submit_map_info").prop('disabled', true).addClass('btn-no-change');
                         alert($.i18n.prop('i_mapAlert_5'));
                     }
                 }
@@ -99,15 +99,15 @@ $(function () {
             hiddenBlock();
             $("#block_info").show();
             $("#label_map_info").css('background-color', 'rgb(40, 108, 197)');
-            $("#btn_submit_map_info").prop('disabled', true);
+            $("#btn_submit_map_info").prop('disabled', true).addClass('btn-no-change');
             allFields.removeClass("ui-state-error");
         }
     });
     mapinfo_name.on("change", function () {
-        $("#btn_submit_map_info").prop('disabled', false);
+        $("#btn_submit_map_info").prop('disabled', false).removeClass('btn-no-change');
     });
     mapinfo_scale.on("change", function () {
-        $("#btn_submit_map_info").prop('disabled', false);
+        $("#btn_submit_map_info").prop('disabled', false).removeClass('btn-no-change');
     });
     $("#btn_submit_map_info").on('click', function () {
         if (confirm($.i18n.prop('i_mapAlert_4')) == true)

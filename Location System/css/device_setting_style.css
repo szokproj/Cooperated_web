@@ -35,23 +35,6 @@ input[type='checkbox'] {
     cursor: pointer;
 }
 
-
-/*the new scrollbar will have a flat appearance with the set background color*/
-::-webkit-scrollbar-track {
-    background-color: lightgray;
-}
-
-/* this will style the thumb, ignoring the track */
-::-webkit-scrollbar-thumb {
-    background-color: rgb(0, 112, 177);
-    border: 1px solid white;
-}
-
-/* if both the vertical and the horizontal bars appear, then perhaps the right bottom corner also needs to be styled */
-::-webkit-scrollbar-corner {
-    background-color: gray;
-}
-
 .container select,
 .container select option,
 .container option label,
@@ -74,16 +57,19 @@ table.sticky-table {
 }
 
 .sticky-table th {
+    padding: 5px;
+    text-align: center;
+    outline: 2px solid rgb(0, 65, 117);
+    outline-offset: -1px;
     width: 150px;
 }
 
-.sticky-table th,
 .sticky-table td {
     padding: 5px;
     text-align: center;
-    background: #f2f2f2;
     outline: 2px solid rgb(0, 65, 117);
     outline-offset: -1px;
+    background: #f2f2f2;
 }
 
 .sticky-table td:nth-child(1),
@@ -178,6 +164,10 @@ table.sticky-table {
     height: 20px;
 }
 
+.sticky-table tr.selected td {
+    background-color: #ffffcc;
+}
+
 /*====================*/
 
 .top {
@@ -258,4 +248,18 @@ table.noborder-block {
 .btn-set:hover {
     background: transparent !important;
     color: rgb(90, 158, 236) !important;
+}
+
+/*test*/
+#progress_block {
+    top: 0px;
+    margin: auto;
+    border: 2px solid gray;
+    border-radius: 5px;
+    background: white;
+    color: black;
+    position: absolute;
+    left: 45%;
+    padding: 10px;
+    display: none;
 }

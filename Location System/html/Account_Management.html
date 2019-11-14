@@ -216,7 +216,7 @@
                     <input type="hidden" id="edit_id" value="" />
                     <tr>
                         <td><span class="i18n" name="i_account"></span> : </td>
-                        <td><input type="text" id="edit_account" /></td>
+                        <td><input type="text" id="edit_account" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" /></td>
                     </tr>
                     <tr>
                         <td><span class="i18n" name="i_name"></span> : </td>
@@ -224,7 +224,7 @@
                     </tr>
                     <tr>
                         <td><span class="i18n" name="i_password"></span> : </td>
-                        <td><input type="text" id="edit_password" /></td>
+                        <td><input type="text" id="edit_password" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" /></td>
                     </tr>
                     <tr>
                         <td><span class="i18n" name="i_status"></span> : </td>

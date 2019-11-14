@@ -223,24 +223,20 @@ function setCheckboxListeners() {
         tr.children('td:eq(0)').off('click').on('click', function () {
             var state = tr.find('td:eq(0) input').prop('checked');
             tr.find('td:eq(0) input').prop('checked', !state);
-            if (!state) {
-                tr.children('td').css("background-color", "#ffffcc");
-            } else {
-                tr.children('td:lt(4)').css("background-color", "#e6f5ff");
-                tr.children('td:gt(3)').css("background-color", "#f2f2f2");
-            }
+            if (!state)
+                tr.addClass("selected");
+            else
+                tr.removeClass("selected");
         });
     });
 }
 
 function checked_trans() {
     for (k in $("input[name=checkbox_ipAddr]")) {
-        if ($("input[name=checkbox_ipAddr]").eq(k).is(":checked")) {
-            $(".sticky-table tbody tr:eq(" + k + ") td").css("background-color", "#ffffcc");
-        } else {
-            $(".sticky-table tbody tr:eq(" + k + ") td:lt(4)").css("background-color", "#e6f5ff");
-            $(".sticky-table tbody tr:eq(" + k + ") td:gt(3)").css("background-color", "#f2f2f2");
-        }
+        if ($("input[name=checkbox_ipAddr]").eq(k).is(":checked"))
+            $(".sticky-table tbody tr:eq(" + k + ")").addClass("selected");
+        else
+            $(".sticky-table tbody tr:eq(" + k + ")").removeClass("selected");
     }
 }
 
@@ -420,32 +416,33 @@ function setListenerOfSetAllRow() {
 }
 
 function inputDataToColumns(element) {
+    var ip = element.IP_address;
     if (element.Status == 1) {
-        $("#table_ip_address_info tbody").prepend("<tr><td>" +
-            "<input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" + element.IP_address + "\" checked/>" +
+        $("#table_ip_address_info tbody").prepend("<tr class='selected'>" +
+            "<td><input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" + ip + "\" checked/>" +
             " <label>" + (i + 1) + "</label></td>" +
             "<td><input type='hidden' name=\"conn_status\" value=\"1\" />" + GREEN_LIGHT + "</td>" +
-            "<td><input type='text' name=\"conn_anchor_id\" value=\"" + element.Anchor_ID + "\" /></td>" +
+            "<td><input type='text' name=\"conn_anchor_id\" id=\"conn_anchor_id_" + ip + "\" value=\"" + element.Anchor_ID + "\" /></td>" +
             "<td name=\"conn_mac_addr\">" + element.MAC_address + "</td>" +
-            "<td class=\"row_ip_mode\"><select name=\"conn_ip_mode\">" + makeOptions(IP_MODE, "DHCP") + "</select></td>" +
-            "<td class=\"row_ip_addr\"><input type='text' name=\"conn_ip_addr\" value=\"" + element.IP_address + "\" /></td>" +
-            "<td class=\"row_gateway_addr\"><input type='text' name=\"conn_gateway_addr\" value=\"" + element.Gateway_address + "\" /></td>" +
-            "<td class=\"row_mask_addr\"><input type='text' name=\"conn_mask_addr\" value=\"" + element.Mask_address + "\" /></td>" +
-            "<td class=\"row_client_ip_addr\"><input type='text' name=\"conn_client_ip_addr\" value=\"" + element.Client_ip_addr + "\" /></td>" +
-            "<td class=\"row_machine_number\"><input type='text' name=\"conn_machine_number\" value=\"" + element.Machine_Number + "\" /></td>" +
+            "<td class=\"row_ip_mode\"><select name=\"conn_ip_mode\" id=\"conn_ip_mode_" + ip + "\">" + makeOptions(IP_MODE, "DHCP") + "</select></td>" +
+            "<td class=\"row_ip_addr\"><input type='text' name=\"conn_ip_addr\" id=\"conn_ip_addr_" + ip + "\" value=\"" + element.IP_address + "\" /></td>" +
+            "<td class=\"row_gateway_addr\"><input type='text' name=\"conn_gateway_addr\" id=\"conn_gateway_addr_" + ip + "\" value=\"" + element.Gateway_address + "\" /></td>" +
+            "<td class=\"row_mask_addr\"><input type='text' name=\"conn_mask_addr\" id=\"conn_mask_addr_" + ip + "\" value=\"" + element.Mask_address + "\" /></td>" +
+            "<td class=\"row_client_ip_addr\"><input type='text' name=\"conn_client_ip_addr\" id=\"conn_client_ip_addr_" + ip + "\" value=\"" + element.Client_ip_addr + "\" /></td>" +
+            "<td class=\"row_machine_number\"><input type='text' name=\"conn_machine_number\" id=\"conn_machine_number_" + ip + "\" value=\"" + element.Machine_Number + "\" /></td>" +
             "<td class=\"row_model\">" + element.Model + "</td>" +
             "<td class=\"row_tcp_server_port\">" + element.TCP_Serve_Port + "</td>" +
             "<td class=\"row_udp_server_port\">" + element.UDP_Serve_Port + "</td>" +
             "<td class=\"row_tcp_client_src_port\">" + element.TCP_Client_Src_Port + "</td>" +
             "<td class=\"row_tcp_client_des_port\">" + element.TCP_Client_Des_Port + "</td>" +
             "<td></td></tr>");
-        $("#table_ip_address_info tbody tr:eq(0) td:lt(16)").css("background-color", "#ffffcc");
+        //$("#table_ip_address_info tbody tr:eq(0) td:lt(16)").css("background-color", "#ffffcc");
     } else {
         var isChecked = "";
         if (element.Checked)
             isChecked = "checked";
         $("#table_ip_address_info tbody").append("<tr><td>" +
-            "<input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" + element.IP_address + "\" " +
+            "<input type=\"checkbox\" name=\"checkbox_ipAddr\" value=\"" + ip + "\" " +
             isChecked + "/> <label>" + (i + 1) + "</label></td>" +
             "</td><td><input type='hidden' name=\"conn_status\" value=\"0\" />" + RED_LIGHT +
             "</td><td>" + element.Anchor_ID +

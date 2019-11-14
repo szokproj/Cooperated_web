@@ -64,29 +64,6 @@ img.logo {
     color: rgb(90, 158, 236) !important;
 }
 
-/* 修改滾動條樣式 */
-/* this targets the default scrollbar (compulsory) */
-::-webkit-scrollbar {
-    width: 12px !important;
-    height: 12px !important;
-}
-
-/*the new scrollbar will have a flat appearance with the set background color*/
-::-webkit-scrollbar-track {
-    background-color: transparent;
-}
-
-/* this will style the thumb, ignoring the track */
-::-webkit-scrollbar-thumb {
-    background-color: lightgray;
-    border: 1px solid gray;
-}
-
-/* if both the vertical and the horizontal bars appear, then perhaps the right bottom corner also needs to be styled */
-::-webkit-scrollbar-corner {
-    background-color: gray;
-}
-
 canvas {
     position: relative;
 }
@@ -171,4 +148,53 @@ canvas {
 
 .dropdown:hover .dropbtn {
     background-color: #3e8e41;
+}
+
+/*
+ * Copyright (c) 2006 Sam Collett (http://www.texotela.co.uk)
+ * Licensed under the MIT License:
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+
+/*
+ * A time picker for jQuery
+ * Based on original timePicker by Sam Collet (http://www.texotela.co.uk)
+ * @name     timePicker
+ * @version  0.1 
+ * @author   Anders Fajerson (http://perifer.se)
+ * @example  $("#mytime").timePicker();
+ * @example  $("#mytime").timePicker({step:30, startTime:"15:00", endTime:"18:00"}); 
+ */
+
+ div.time-picker {
+    position: absolute;
+    height: 200px;
+    width: 60px;
+    /* needed for IE */
+    overflow: auto;
+    background: #fff;
+    border: 1px solid #000;
+    z-index: 99;
+    margin-top: 1.1em;
+}
+
+div.time-picker-12hours {
+    width: 90px;
+    /* needed for IE */
+}
+
+div.time-picker ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+div.time-picker li {
+    padding: 1px;
+    cursor: pointer;
+}
+
+div.time-picker li.selected {
+    background: #316AC5;
+    color: #fff;
 }
