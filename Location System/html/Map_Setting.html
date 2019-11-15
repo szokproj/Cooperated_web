@@ -63,7 +63,7 @@
 
         <div class="row">
             <div class="col-lg-12">
-                <h4 style="margin:0px; padding:5px; background:rgb(0, 65, 117);">Map List</h4>
+                <h5 style="text-align: center; margin:0px; padding:5px; background:rgb(0, 65, 117);">Map List</h5>
                 <div class="map_list">
                     <div id="maps_gallery"></div>
                     <label for="add_new_map" class="custom-file-download">
@@ -77,6 +77,8 @@
 
         <div class="row">
             <div class="col-lg-6">
+                <h5 style="text-align: center; margin:0px; padding:5px; background:rgb(0, 65, 117);">Map Setting
+                </h5>
                 <div id="cvsBlock">
                     <canvas id="canvas_map" height="1" width="1">
                         <span class="i18n" name="i_no_canvas"></span>
@@ -91,43 +93,41 @@
             </div>
 
             <div class="col-lg-6">
-                <div style="margin: 0px 0px 0px 10px;">
-                    <nav class="sidebar-menu">
-                        <ul class="nav">
-                            <!--Load Map-->
-                            <li><label for="menu_load_map" class="btn-sidebar i18n-input" selectattr="title"
-                                    selectname="i_input_map">
-                                    <i class="far fa-image" style='font-size:20px;'></i></label>
-                                <input id="menu_load_map" type="file" accept="image/*" /></li>
-                            <!--Restore Size-->
-                            <li><label for="menu_resize" id="label_resize" class="btn-sidebar i18n-input"
-                                    selectattr="title" selectname="i_restore_scale">
-                                    <i class="fas fa-expand" style='font-size:20px;'></i></label>
-                                <input id="menu_resize" type="button" class="btn-hidden" /></li>
-                            <!--Map Info-->
-                            <li><label for="menu_map_info" id="label_map_info" class="btn-sidebar i18n-input"
-                                    selectattr="title" selectname="i_mapInfo">
-                                    <i class="fas fa-info-circle" style='font-size:20px;'></i></label>
-                                <input id="menu_map_info" type="button" class="btn-hidden" /></li>
-                            <!--Anchor List-->
-                            <li><label for="menu_anchor_list" id="label_anchor_list" class="btn-sidebar i18n-input"
-                                    selectattr="title" selectname="i_anchorList">
-                                    <i class="fas fa-map-pin" style='font-size:20px;'></i></label>
-                                <input id="menu_anchor_list" type="button" class="btn-hidden" /></li>
-                            <!--Group List-->
-                            <li><label for="menu_group_list" id="label_group_list" class="btn-sidebar i18n-input"
-                                    selectattr="title" selectname="i_groupList">
-                                    <i class="fas fa-draw-polygon" style='font-size:20px;'></i></label>
-                                <input id="menu_group_list" type="button" class="btn-hidden" /></li>
-                            <!--Anchor Group-->
-                            <li><label for="menu_anchor_group" id="label_anchor_group" class="btn-sidebar i18n-input"
-                                    selectattr="title" selectname="i_anchorGroup">
-                                    <i class="far fa-object-ungroup" style='font-size:20px;'></i></label>
-                                <input id="menu_anchor_group" type="button" class="btn-hidden" /></li>
-                        </ul>
-                    </nav>
-                </div>
-                <div id="block_info" style="margin-left:10px; width:100%; float:left;">
+                <nav class="sidebar-menu">
+                    <ul class="nav">
+                        <!--Load Map-->
+                        <li><label for="menu_load_map" class="btn-sidebar i18n-input" selectattr="title"
+                                selectname="i_input_map">
+                                <i class="far fa-image" style='font-size:20px;'></i></label>
+                            <input id="menu_load_map" type="file" accept="image/*" /></li>
+                        <!--Restore Size-->
+                        <li><label for="menu_resize" id="label_resize" class="btn-sidebar i18n-input" selectattr="title"
+                                selectname="i_restore_scale">
+                                <i class="fas fa-expand" style='font-size:20px;'></i></label>
+                            <input id="menu_resize" type="button" class="btn-hidden" /></li>
+                        <!--Map Info-->
+                        <li><label for="menu_map_info" id="label_map_info" class="btn-sidebar i18n-input"
+                                selectattr="title" selectname="i_mapInfo">
+                                <i class="fas fa-info-circle" style='font-size:20px;'></i></label>
+                            <input id="menu_map_info" type="button" class="btn-hidden" /></li>
+                        <!--Anchor List-->
+                        <li><label for="menu_anchor_list" id="label_anchor_list" class="btn-sidebar i18n-input"
+                                selectattr="title" selectname="i_anchorList">
+                                <i class="fas fa-map-pin" style='font-size:20px;'></i></label>
+                            <input id="menu_anchor_list" type="button" class="btn-hidden" /></li>
+                        <!--Group List-->
+                        <li><label for="menu_group_list" id="label_group_list" class="btn-sidebar i18n-input"
+                                selectattr="title" selectname="i_groupList">
+                                <i class="fas fa-draw-polygon" style='font-size:20px;'></i></label>
+                            <input id="menu_group_list" type="button" class="btn-hidden" /></li>
+                        <!--Anchor Group-->
+                        <li><label for="menu_anchor_group" id="label_anchor_group" class="btn-sidebar i18n-input"
+                                selectattr="title" selectname="i_anchorGroup">
+                                <i class="far fa-object-ungroup" style='font-size:20px;'></i></label>
+                            <input id="menu_anchor_group" type="button" class="btn-hidden" /></li>
+                    </ul>
+                </nav>
+                <div id="block_info" style="width:100%; float:left;">
                     <input type="hidden" id="map_info_id" />
                     <label class="i18n" name="i_mapName"></label> :&nbsp;
                     <input type="text" id="map_info_name" style="width:120px;" />
@@ -139,7 +139,7 @@
                         disabled />
                 </div>
                 <div id="block_anchor_list">
-                    <div style="margin-left:6px; width:100%; float:left;">
+                    <div style="width:100%; float:left; margin:0px;">
                         <label for="btn_add_anchor_list" id="label_add_anchor_list" class="btn-add i18n-input"
                             selectattr="title" selectname="i_addAnchorGroup">
                             <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
@@ -172,7 +172,7 @@
                     </div>
                 </div>
                 <div id="block_group_list">
-                    <span style="margin-left:6px; width:100%; float:left;">
+                    <span style="width:100%; float:left;">
                         <label for="btn_add_group" id="label_add_group" class="btn-add i18n-input" selectattr="title"
                             selectname="i_addGroup">
                             <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
@@ -204,7 +204,7 @@
                     </div>
                 </div>
                 <div id="block_anchor_group">
-                    <span style="margin-left:6px; width:100%; float:left;">
+                    <span style="width:100%; float:left;">
                         <label for="btn_add_anchor_group" id="label_add_anchor_group" class="btn-add i18n-input"
                             selectattr="title" selectname="i_addAnchorGroup">
                             <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
@@ -219,7 +219,7 @@
                             <i class="fas fa-map-marked-alt" style='font-size:20px;'></i></label>
                         <input id="btn_pos_anchor_group" type="button" class="btn-hidden" />
                     </span>
-                    <div style="margin: 0px 0px 0px 10px;">
+                    <div>
                         <ul id="myTab" class="nav nav-tabs">
                             <li class="active">
                                 <a href="#anchor_group_list" data-toggle="tab">List</a>

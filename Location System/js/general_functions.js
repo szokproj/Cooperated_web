@@ -252,7 +252,7 @@ function startDLL(token) {
  **/
 
 /**
- * //let xmlHttp = createJsonXmlHttp("");
+ * //let xmlHttp = GetXmlHttpObject();
    const json_request = JSON.stringify({});
    xmlHttp.open("POST", "", true);
    xmlHttp.setRequestHeader("Content-type", "application/json");
