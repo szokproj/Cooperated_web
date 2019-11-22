@@ -29,6 +29,7 @@
     <script type="text/javascript">
         var isStart = false;
         var token = "";
+        var file_data = "";
         $(function () {
             token = getToken();
             /*
@@ -41,39 +42,93 @@
             setNavBar("Reference", "Update");
 
             var value = 0;
-            var time = 50;
-            //进度条复位函数
+            var time = 100;
+            var st = 0;
+
             function reset() {
-                value = 0
+                clearTimeout(st);
+                value = 0;
                 $("#prog").removeClass("progress-bar-info").css("width", "0%");
-                //setTimeout(increment,5000);
             }
 
             function increment() {
-                value += 1;
-                $("#prog").css("width", value + "%").text(value + "%");
-                if (value >= 0 && value < 100) {
+                value++;
+                if (value > 0 && value < 100) {
+                    $("#prog").css("width", value + "%").text(value + "%");
                     $("#prog").addClass("progress-bar-info");
+                    st = setTimeout(increment, time);
                 } else if (value == 100) {
-                    return;
-                } else {
-                    setTimeout(reset);
+                    $("#prog").css("width", value + "%").text(value + "%");
+                    $("#start").prop("disabled", false);
                 }
-                st = setTimeout(increment, time);
+                return;
+
+                //接收更新進度
+                var requestArray = {
+                    "Command_Type": ["Write"],
+                    "Command_Name": [""],
+                    "api_token": [token]
+                };
+                var xmlHttp = createJsonXmlHttp("sql");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        var revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                            var progress = parseInt(revObj.Value[0].Values, 10);
+                            if (progress > 0 && progress < 100) {
+                                $("#prog").css("width", progress + "%").text(progress + "%");
+                                $("#prog").addClass("progress-bar-info");
+                                st = setTimeout(increment, time);
+                            } else if (progress == 100) {
+                                $("#prog").css("width", progress + "%").text(progress + "%");
+                                $("#start").prop("disabled", false);
+                                alert("Update Success!")
+                            }
+                        }
+                    }
+                };
+                xmlHttp.send(JSON.stringify(requestArray));
             }
 
-            //进度条停止与重新开始
             $("#start").click(function () {
-                if ("start" == $("#start").val()) {
-                    $("#start").val("clean");
+                if ($("#start").val() == "start") { //傳輸bin檔到Server
+                    $("#start").val("clean").text("Reset Progress Bar").prop("disabled", true);
+
                     increment();
-                } else if ("clean" == $("#start").val()) {
-                    $("#start").val("start");
+                    return;
+
+                    if (file_data == "") {
+                        alert("請先載入更新檔");
+                    } else {
+                        var requestArray = {
+                            "Command_Type": ["Write"],
+                            "Command_Name": [""],
+                            "Value": file_data,
+                            "api_token": [token]
+                        };
+                        var xmlHttp = createJsonXmlHttp("sql");
+                        xmlHttp.onreadystatechange = function () {
+                            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                                var revObj = JSON.parse(this.responseText);
+                                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                                    //當Server回傳接收成功後
+                                    //持續向Server傳送取得更新進度的要求
+                                    //var revInfo = revObj.Value[0].Values ? revObj.Value[0].Values : [];
+                                    increment();
+                                } else {
+                                    alert("傳送更新檔失敗，請稍候再試一次!");
+                                }
+                            }
+                        };
+                        xmlHttp.send(JSON.stringify(requestArray));
+                    }
+
+                } else if ($("#start").val() == "clean") {
+                    $("#start").val("start").text("Update Firmware");
                     clearTimeout(st);
                     setTimeout(reset);
                 }
             });
-            //进度条暂停与继续
             $("#stop").click(function () {
                 if ("pause" == $("#stop").val()) {
                     //$("#prog").stop();
@@ -85,6 +140,32 @@
                 }
             });
         });
+
+        function handleFiles(files) {
+            $("#start").prop("disabled", true);
+            $("#stop").prop("disabled", true);
+            var file = files[0];
+            var fileExt = (file.name.substring(file.name.lastIndexOf('.'))).toLowerCase();
+            if (fileExt == ".bin") {
+                var src = document.getElementById('file_upload').value;
+                document.getElementById('update_file').value = src;
+                if (window.File && window.FileReader && window.FileList && window.Blob) {
+                    var fr = new FileReader();
+                    fr.onloadend = function (e) {
+                        file_data = e.target.result;
+                        console.log("file data => " + file_data);
+                        $("#start").prop("disabled", false);
+                        $("#stop").prop("disabled", false);
+                    };
+                    fr.readAsBinaryString(file);
+                } else {
+                    alert('The File APIs are not fully supported in this browser.');
+                }
+            } else {
+                document.getElementById('file_form').reset();
+                alert("The uploading file's ext should be .bin!");
+            }
+        }
 
         function StartClick() {
             var delaytime = 100;
@@ -112,12 +193,6 @@
                 }
             };
             xmlHttp.send(JSON.stringify(requestArray));
-        }
-
-        function handleFiles(files) {
-            var file = files[0];
-            var src = document.getElementById('file-upload').value;
-            document.getElementById('update_file').value = src;
         }
     </script>
 </head>
@@ -147,13 +222,13 @@
             <div class="col-lg-12">
                 <div class="center">
                     <h4>Update File : </h4><br>
-                    <input type="text" id="update_file" style="width: 100%;"><br><br>
-                    <div style="text-align: right;">
-                        <label for="file-upload" class="custom-file-upload">
+                    <input type="text" id="update_file" style="width: 100%;" readonly><br><br>
+                    <form id="file_form" style="text-align: right;">
+                        <label for="file_upload" class="custom-file-upload">
                             <i class="fa fa-cloud-upload"></i> ← Select Firmware
                         </label><br><br>
-                        <input id="file-upload" type="file" accept=".bin" onchange="handleFiles(this.files)" />
-                    </div>
+                        <input id="file_upload" type="file" accept=".bin" onchange="handleFiles(this.files)" />
+                    </form>
                     <h4>Update Progress : </h4><br>
                     <div class="progress">
                         <div class="progress progress-striped active">
@@ -165,8 +240,8 @@
                     </div><br><br>
                     <div class="form-group">
                         <div class="col-sm-offset-4 col-sm-6">
-                            <button id="stop" class="btn btn-primary" value="pause">Stop Update</button>
-                            <button id="start" class="btn btn-primary" value="start">Update Firmware</button>
+                            <button id="stop" class="btn btn-primary" value="pause" disabled>Stop Update</button>
+                            <button id="start" class="btn btn-primary" value="start" disabled>Update Firmware</button>
                         </div>
                     </div>
                 </div>

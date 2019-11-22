@@ -262,7 +262,8 @@ input[type="file"] {
     cursor: pointer;
     color: rgb(0, 119, 255);
     font-size: 18px;
-    margin-left: 5px;
+    margin-left: 10px;
+    float: right;
 }
 
 .btn-icon:hover {
@@ -313,7 +314,6 @@ input[type="file"] {
 
 .coordinate {
     background-color: transparent;
-    color: white;
     max-width: 80px;
     border: none;
 }

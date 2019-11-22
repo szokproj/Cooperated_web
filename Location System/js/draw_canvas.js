@@ -214,7 +214,7 @@ function drawAlarmFocusFrame(dctx, x, y, size, zoom) {
         (3 * radius + 10) * zoom);
 }
 
-function Fence(dctx) {
+function Fence(dctx, scale) {
     var fence_dot_array = [];
     this.setFenceDot = function (fence_name, x, y) {
         fence_dot_array.push({
@@ -225,7 +225,7 @@ function Fence(dctx) {
     };
     this.drawFence = function () {
         var len = fence_dot_array.length;
-        var displace = 5 / canvasImg.scale;
+        var displace = 5 / scale;
         dctx.beginPath();
         fence_dot_array.forEach(function (v, i, arr) {
             dctx.lineTo(v.x + displace, v.y + displace);
@@ -238,7 +238,7 @@ function Fence(dctx) {
         dctx.fill();
         //在圍籬中間畫出群組名稱
         dctx.fillStyle = "blue";
-        dctx.font = 60 / canvasImg.scale + 'px serif';
+        dctx.font = 60 / scale + 'px serif';
         var arr = fence_dot_array;
         var displace_x = (arr[2].x - arr[0].x) / 2;
         var displace_y = (arr[2].y - arr[0].y) / 2;

@@ -234,11 +234,6 @@ input[type="file"] {
     border: 1px solid rgb(0, 65, 117);
 }
 
-/*.member_list tbody tr:hover {
-    background-color: #ffff66;
-}*/
-
-
 /**
  * sticky-table
 **/
@@ -291,7 +286,7 @@ table.sticky-table {
 }
 
 tr.selected td {
-    background-color: #ffff99;
+    background-color: #ffffba;
 }
 
 .sticky-table input[type=text] {

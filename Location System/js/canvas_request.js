@@ -21,6 +21,10 @@ var token = "",
     isFocus = false,
     locating_id = "",
     // Data parameters
+    xmlHttp = {
+        getTag: GetXmlHttpObject(),
+        getAlarm: GetXmlHttpObject()
+    },
     Map_id = "",
     mapArray = [],
     groupfindMap = {},
@@ -35,7 +39,10 @@ var token = "",
         lock_window: false,
         fit_window: true,
         display_fence: true,
-        display_no_position: true
+        display_no_position: true,
+        display_alarm_low_power: true,
+        display_alarm_active: true,
+        display_alarm_still: true
     },
     dot_size = {
         anchor: 10,
@@ -766,11 +773,6 @@ function updateAlarmHandle() {
     jxh.send(json_request);
 }
 
-var xmlHttp = {
-    getTag: GetXmlHttpObject(),
-    getAlarm: GetXmlHttpObject()
-};
-
 function updateAlarmList() {
     const json_request = JSON.stringify({
         "Command_Type": ["Read"],
@@ -792,6 +794,12 @@ function updateAlarmList() {
                         let tag_id = element.tag_id,
                             number = tag_id in MemberList ? MemberList[tag_id].number : "",
                             name = tag_id in MemberList ? MemberList[tag_id].name : "";
+                        if (element.tag_alarm_type == "low_power" && !display_setting.display_alarm_low_power)
+                            return;
+                        if (element.tag_alarm_type == "active" && !display_setting.display_alarm_active)
+                            return;
+                        if (element.tag_alarm_type == "still" && !display_setting.display_alarm_still)
+                            return;
                         alarmFilterArr.push({ //添加元素到陣列的開頭
                             id: tag_id,
                             number: number,
@@ -1097,7 +1105,7 @@ function Stop() {
 
 function drawFences() {
     fenceArray.forEach(fence_info => {
-        let fence = new Fence(ctx),
+        let fence = new Fence(ctx, canvasImg.scale),
             count = 0;
         fenceDotArray.forEach(dot_info => {
             if (dot_info.fence_id == fence_info.fence_id) {
@@ -1207,8 +1215,6 @@ function setMobileEvents() {
         ytopView = panPos.canvasTop + ev.deltaY;
         canvas.style.marginLeft = xleftView + "px";
         canvas.style.marginTop = ytopView + "px";
-        document.getElementById("centerX").value = ev.center.x;
-        document.getElementById("centerY").value = ev.center.y;
     });
     hammer_pinch.on('pinchstart pinchmove', ev => {
         let BCR = canvas.getBoundingClientRect(),
@@ -1255,13 +1261,13 @@ function search() {
             let group_arr = [];
             for (let i in groupfindMap) {
                 if (groupfindMap[i] == mapArray[index].map_id)
-                    group_arr.push(groupfindMap[i]);
+                    group_arr.push(i);
             }
             for (let j in tagArray) {
                 let v = tagArray[j];
                 group_arr.forEach(group_id => {
                     if (v.group_id == group_id) {
-                        let user_id = parseInt(v.tag_id.substring(8), 16);
+                        let user_id = parseInt(v.id.substring(8), 16);
                         let member_data = MemberList[user_id] ? MemberList[user_id] : {
                             dept: "",
                             job_title: "",
@@ -1276,14 +1282,13 @@ function search() {
                             "<td>" + member_data.type + "</td>" +
                             //"<td>" + member_data.alarm_group_id + "</td>" +
                             "<td><button class=\"btn btn-default\"" +
-                            " onclick=\"locateTag(\'" + v.tag_id + "\')\">" +
+                            " onclick=\"locateTag(\'" + v.id + "\')\">" +
                             "<img class=\"icon-image\" src=\"../image/target.png\">" +
                             "</button></td></tr>";
                     }
                 });
             }
         }
-        return;
     } else {
         let memberArray = [];
         for (let each in MemberList) {

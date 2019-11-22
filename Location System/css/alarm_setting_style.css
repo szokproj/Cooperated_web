@@ -151,6 +151,11 @@ h3 {
     margin-left: 20px;
 }
 
+.switch-img {
+    height: 24px;
+    width: 24px;
+}
+
 /* 自訂radiobox跟checkbox的樣式 */
 
 
@@ -317,7 +322,7 @@ input[type=radio]:not(old).beauty:checked+label {
 
 /* Dialog內的tr被選取時變色 */
 .changeBgColor {
-    background-color: rgb(148, 212, 255);
+    background-color: rgba(0, 200, 250, 0.384);
 }
 
 #table_time_setting input[type=text],

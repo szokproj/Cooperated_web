@@ -27,7 +27,10 @@
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
     <script type="text/javascript">
+        'use strict';
         var isStart = false;
+        var command_map = {};
+        var command_name = "";
         var token = "";
         $(function () {
             token = getToken();
@@ -40,8 +43,94 @@
             }
             setNavBar("Reference", "Advance_cmd");
 
-            //loadCmdList();
+            $("#cmd_read").on("change", function () {
+                if (command_name != "")
+                    $("#send_cmd").val(command_map[command_name].Read);
+            });
+
+            $("#cmd_write").on("change", function () {
+                if (command_name != "")
+                    $("#send_cmd").val(command_map[command_name].Write);
+            });
+
+            //Load Command List
+            $.getJSON("../json/advance_cmd.json", function (result) {
+                if (result && result["Cmd Name"]) {
+                    command_map = result["Cmd Name"];
+                    $("#table_advance_cmd tbody").empty();
+                    var item = 0;
+                    for (var i in command_map) {
+                        item++;
+                        $("#table_advance_cmd tbody").append("<tr>" +
+                            "<td>" + item + "</td>" +
+                            "<td>" + i + "</td>" +
+                            "<td>" + command_map[i].Description + "</td></tr>"
+                        );
+                    }
+                    $("#table_advance_cmd tbody tr").each(function (i) {
+                        $(this).on("click", function () {
+                            $("#table_advance_cmd tbody tr").removeClass("checked");
+                            $(this).addClass("checked");
+                            command_name = Object.keys(command_map)[i];
+                            switch (command_name) {
+                                case "Read Version":
+                                    $("#cmd_read").prop({
+                                        "disabled": false,
+                                        "checked": true
+                                    });
+                                    $("#cmd_write").prop("disabled", true);
+                                    $("#send_cmd").val(command_map[command_name]
+                                        .Read);
+                                    break;
+                                case "Reset Chip":
+                                    $("#cmd_write").prop({
+                                        "disabled": false,
+                                        "checked": true
+                                    });
+                                    $("#cmd_read").prop("disabled", true);
+                                    $("#send_cmd").val(command_map[command_name]
+                                        .Write);
+                                    break;
+                                default:
+                                    $("#cmd_write").prop("disabled", false);
+                                    $("#cmd_read").prop("disabled", false);
+                                    if ($("[name='cmd_type']:checked").val() == "read")
+                                        $("#send_cmd").val(command_map[command_name]
+                                            .Read);
+                                    else
+                                        $("#send_cmd").val(command_map[command_name]
+                                            .Write);
+                                    break;
+                            }
+                        });
+                    });
+                } else {
+                    alert("載入指令列表失敗");
+                }
+            });
         });
+
+        function submitCommand() {
+            return alert("submit : " + $("#send_cmd").val());
+            var xmlHttp = createJsonXmlHttp('sql');
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    var revObj = JSON.parse(this.responseText);
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        var revInfo = revObj.Value[0];
+                        $("#receive_cmd").val("");
+                    } else {
+                        alert("送出指令失敗");
+                    }
+                }
+            };
+            xmlHttp.send(JSON.stringify({
+                "Command_Type": ["Write"],
+                "Command_Name": ["sendCommand"],
+                "Value": $("#send_cmd").val(),
+                "api_token": [token]
+            }));
+        }
 
         function StartClick() {
             var delaytime = 100;
@@ -70,31 +159,6 @@
             };
             xmlHttp.send(JSON.stringify(requestArray));
         }
-
-        function loadCmdList() {
-            var xmlHttp = createJsonXmlHttp('sql');
-            xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
-                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                        for (i = 0; i < revObj.Value[0].Values.length; i++) {
-                            $("#table_advance_cmd tbody").append("<tr>" +
-                                "<td>" + (i + 1) + "</td>" +
-                                "<td></td>" +
-                                "<td></td></tr>"
-                            );
-                        }
-                    } else {
-                        alert("載入指令列表失敗");
-                    }
-                }
-            };
-            xmlHttp.send(JSON.stringify({
-                "Command_Type": ["Read"],
-                "Command_Name": ["getCommandList"],
-                "api_token": [token]
-            }));
-        }
     </script>
 </head>
 
@@ -121,7 +185,7 @@
 
         <div class="row">
             <div class="col-lg-8">
-                <div style="overflow:auto; margin:5px; max-height:600px;">
+                <div class="table_block">
                     <table id="table_advance_cmd" class="table-line">
                         <thead>
                             <tr>
@@ -138,18 +202,20 @@
                 <div style="text-align: center;">
                     <form>
                         <br><br><br>
-                        <h4 style="display:inline;">OUT:&nbsp;&nbsp;</h4>
-                        <input type="text" id="write_cmd" style="max-width: 300px"><br>
+                        <h5 style="display:inline;">OUT:&nbsp;&nbsp;</h5>
+                        <input type="text" id="send_cmd" style="width: 250px"><br>
                         <br><br><br>
-                        <h4 style="display:inline;">IN:&nbsp;&nbsp;</h4>
-                        <input type="text" id="read_cmd" style="max-width: 300px"><br>
+                        <h5 style="display:inline;">IN:&nbsp;&nbsp;</h5>
+                        <input type="text" id="receive_cmd" style="width: 250px"><br>
                         <br><br><br>
                         <div class="rectangle">
-                            <input type="radio" id="active_cmd" value="read">Read
-                            <input type="radio" id="active_cmd" value="write" style="margin-left: 30px">Write
+                            <input type="radio" name="cmd_type" id="cmd_read" value="read" checked>
+                            <label for="cmd_read">Read</label>
+                            <input type="radio" name="cmd_type" id="cmd_write" value="write" style="margin-left: 30px">
+                            <label for="cmd_write">Write</label>
                         </div>
                         <br><br><br>
-                        <button type="button" class="btn btn-default" onclick="alert('Sending...')">Send</button>
+                        <button type="button" class="btn btn-default" onclick="submitCommand()">Send</button>
                     </form>
                 </div>
             </div>

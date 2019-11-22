@@ -1,0 +1,134 @@
+{
+    "Cmd Name": {
+        "IP Address": {
+            "Description": "Setting/Read IP Address(Anchor Only、Read/Write)",
+            "Read": "F8FA000000040100",
+            "Write": "F8FA000100080101C0A8018E"
+        },
+        "Gateway Address": {
+            "Description": "Setting/Read Device Gateway Address(Anchor Only、Read/Write)",
+            "Read": "F8FA000000040200",
+            "Write": "F8FA000200080201C0A801FE"
+        },
+        "MaskSubnet Address": {
+            "Description": "Setting/Read Device MaskSubnet Address(Anchor Only、Read/Write)",
+            "Read": "F8FA000000040300",
+            "Write": "F8FA000300080301FFFF0000"
+        },
+        "Device TCP Server IP Port": {
+            "Description": "Setting/Read Device TCP Server IP Port(Anchor Only、Read/Write)",
+            "Read": "F8FA000000040400",
+            "Write": "F8FA0003000604010050"
+        },
+        "Machine Number": {
+            "Description": "Setting/Read Machine Number(Anchor Only、Read/Write)",
+            "Read": "F8FA000000040600",
+            "Write": "F8FA0000000C060130302D30302D3030"
+        },
+        "Device Client Destination IP Address": {
+            "Description": "Setting/Read Device Client Destination IP Address(Anchor Only、Read/Write)",
+            "Read": "F8FA000000040700",
+            "Write": "F8FA000400080701C0A80182"
+        },
+        "Device TCP Client Source Port": {
+            "Description": "Setting/Read Device TCP Client Source Port(Anchor Only、Read/Write)",
+            "Read": "F8FA000000040800",
+            "Write": "F8FA000300060801C358"
+        },
+        "Device TCP Client Destination Port": {
+            "Description": "Setting/Read Device TCP Client Destination Port(Anchor Only、Read/Write)",
+            "Read": "F8FA000000040900",
+            "Write": "F8FA0003000609011151"
+        },
+        "TCP Server Send Timeout": {
+            "Description": "Setting/Read TCP Server Send Timeout(Anchor Only、Read/Write)",
+            "Read": "F8FA000000040D0",
+            "Write": "F8FA000300060D0100C8"
+        },
+        "TCP Server Receive Timeout": {
+            "Description": "Setting/Read TCP Server Receive Timeout(Anchor Only、Read/Write)",
+            "Read": "F8FA000000040E00",
+            "Write": "F8FA000300060D0100C8"
+        },
+        "UDP Server Send Timeout": {
+            "Description": "Setting/Read UDP Server Send Timeout(Anchor Only、Read/Write)",
+            "Read": "F8FA000000040F00",
+            "Write": "F8FA000300060F0100C8"
+        },
+        "UDP Server Receive Timeout": {
+            "Description": "Setting/Read UDP Server Receive Timeout(Anchor Only、Read/Write)",
+            "Read": "F8FA000000041000",
+            "Write": "F8FA00030006100100C8"
+        },
+        "TCP Client Send Timeout": {
+            "Description": "Setting/Read TCP Client Send Timeout(Anchor Only、Read/Write)",
+            "Read": "F8FA000000041100",
+            "Write": "F8FA00030006110107D0"
+        },
+        "TCP Client Receive Timeout": {
+            "Description": "Setting/Read TCP Client Receive Timeout(Anchor Only、Read/Write)",
+            "Read": "F8FA000000041200",
+            "Write": "F8FA00030006120107D0"
+        },
+        "Read Version": {
+            "Description": "Read Module Model、Hardware、Software Version(Read Only)",
+            "Read": "F8FA000000041D00",
+            "Write": null
+        },
+        "Reset Chip": {
+            "Description": "Restart Device(Write Only)",
+            "Read": null,
+            "Write": "F8FA000300041F01"
+        },
+        "Send Time Cycle": {
+            "Description": "Setting/Read Send Time Cycle(Tag、Main Anchor Only、Read/Write)",
+            "Read": "F8FA000000042E00",
+            "Write": "F8FA000300072E010003E8"
+        },
+        "Anchor ID": {
+            "Description": "Setting/Read ID(Anchor Only、Read/Write)",
+            "Read": "F8FA000000043500",
+            "Write": "F8FA000300063501FFFF"
+        },
+        "Tag ID": {
+            "Description": "Setting/Read ID(Tag Only、Read/Write)",
+            "Read": "F8FA000000043500",
+            "Write": "F8FA00030008350100000000"
+        },
+        "LowPower Led Display": {
+            "Description": "Setting/Read LowPower Led Display(Tag Only、Read/Write)",
+            "Read": "F8FA000000044300",
+            "Write": "F8FA00030005430101"
+        },
+        "Help Count": {
+            "Description": "Setting/Read Help Count(Tag Only)",
+            "Read": "F8FA000000044500",
+            "Write": "F8FA00030005450105"
+        },
+        "DHCP Enabled": {
+            "Description": "Setting/Read DHCP Enabled(Anchor & Main Anchor Only、Read/Write)",
+            "Read": "F8FA000000044600",
+            "Write": "F8FA00030005460101"
+        },
+        "High Acceleration Alarm Enabled": {
+            "Description": "Setting/Read High Acceleration Alarm Enabled(Tag Only)",
+            "Read": "F8FA000000044700",
+            "Write": "F8FA00030005470101"
+        },
+        "High Acceleration Threshold": {
+            "Description": "Setting/Read High Acceleration Threshold(Tag Only)",
+            "Read": "F8FA000000044800",
+            "Write": "F8FA0003000648010064"
+        },
+        "Low Acceleration Alarm Enabled": {
+            "Description": "Setting/Read Low Acceleration Alarm Enabled(Tag Only)",
+            "Read": "F8FA000000044900",
+            "Write": "F8FA00030005490101"
+        },
+        "Low Acceleration Threshold": {
+            "Description": "Setting/Read Low Acceleration Threshold(Tag Only)",
+            "Read": "F8FA000000044A00",
+            "Write": "F8FA000300064A010064"
+        }
+    }
+}

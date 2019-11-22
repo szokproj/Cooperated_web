@@ -188,9 +188,7 @@
                             <thead>
                                 <th class="i18n" name="i_item"></th>
                                 <th class="i18n" name="i_groupName" style="min-width:80px;"></th>
-                                <th class="i18n" name="i_electronicFence" style="min-width:100px;"></th>
-                                <th class="i18n" name="i_stayAlarm" style="min-width:100px;"></th>
-                                <th class="i18n" name="i_hiddenAlarm" style="min-width:100px;"></th>
+                                <th class="i18n" name="i_alarmGroup" style="min-width:150px;"></th>
                                 <th class="i18n" name="i_matchTime" style="min-width:100px;"></th>
                                 <th class="i18n" name="i_edit" style="min-width:50px;"></th>
                             </thead>
@@ -364,27 +362,47 @@
                     <table style="border:none; min-width:300px;">
                         <tr>
                             <td><input id="add_alarm_mode_0" type="checkbox" class='beauty' name="add_alarm_mode"
-                                    value="1"><label for="add_alarm_mode_0" class="i18n"
-                                    name="i_electronicFence"></label><span class="i18n" name="i_fenceAG_info">
-                                </span> <select id="add_alarm_mode_0_fagID"></select><br><span class="i18n"
-                                    name="i_wait_time" style="margin-left:28px;"></span> : <input type="text"
-                                    id="add_alarm_mode_0_time" name="add_alarm_mode_time"
-                                    style="width:90px; margin-top:5px;" /><span class="i18n" name="i_hour"></span>
-                                <input type="hidden" id="add_alarm_mode_0_id" />
+                                    value="1">
+                                <label for="add_alarm_mode_0" class="i18n" name="i_lowPowerAlarm"></label>
                             </td>
                         </tr>
                         <tr>
                             <td><input id="add_alarm_mode_1" type="checkbox" class='beauty' name="add_alarm_mode"
-                                    value="2"><label for="add_alarm_mode_1" class="i18n"
-                                    name="i_stayAlarm_time"></label> <input type="text" id="add_alarm_mode_1_time"
+                                    value="2"><label for="add_alarm_mode_1" class="i18n" name="i_helpAlarm"></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input id="add_alarm_mode_2" type="checkbox" class='beauty' name="add_alarm_mode"
+                                    value="3"><label for="add_alarm_mode_2" class="i18n" name="i_activeAlarm"></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input id="add_alarm_mode_3" type="checkbox" class='beauty' name="add_alarm_mode"
+                                    value="4"><label for="add_alarm_mode_3" class="i18n" name="i_stillAlarm"></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input id="add_alarm_mode_4" type="checkbox" class='beauty' name="add_alarm_mode"
+                                    value="5"><label for="add_alarm_mode_4" class="i18n"
+                                    name="i_electronicFence"></label><span class="i18n" name="i_fenceAG_info">
+                                </span> <select id="add_alarm_mode_4_fagID"></select><br><span class="i18n"
+                                    name="i_wait_time" style="margin-left:28px;"></span> : <input type="text"
+                                    id="add_alarm_mode_4_time" style="width:90px; margin-top:5px;" />
+                                <span class="i18n" name="i_hour"></span><input type="hidden" id="add_alarm_mode_4_id" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input id="add_alarm_mode_5" type="checkbox" class='beauty' name="add_alarm_mode"
+                                    value="6"><label for="add_alarm_mode_5" class="i18n"
+                                    name="i_stayAlarm_time"></label> <input type="text" id="add_alarm_mode_5_time"
                                     name="add_alarm_mode_time" style="max-width:90px"> <span class="i18n"
                                     name="i_second"></span>
                             </td>
                         </tr>
                         <tr>
-                            <td><input id="add_alarm_mode_2" type="checkbox" class='beauty' name="add_alarm_mode"
-                                    value="3"><label for="add_alarm_mode_2" class="i18n"
-                                    name="i_hiddenAlarm_time"></label> <input type="text" id="add_alarm_mode_2_time"
+                            <td><input id="add_alarm_mode_6" type="checkbox" class='beauty' name="add_alarm_mode"
+                                    value="7"><label for="add_alarm_mode_6" class="i18n"
+                                    name="i_hiddenAlarm_time"></label> <input type="text" id="add_alarm_mode_6_time"
                                     name="add_alarm_mode_time" style="max-width:90px"> <span class="i18n"
                                     name="i_second"></span>
                             </td>

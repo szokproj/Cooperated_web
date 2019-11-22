@@ -173,7 +173,7 @@ $(function () {
 
 function updateFenceAG_List(array) {
     $("#table_fence_alarm_group tbody").empty();
-    $("#add_alarm_mode_4_fagID").empty();
+    $("#add_alarm_mode_0_fagID").empty();
     for (i = 0; i < array.length; i++) {
         var tr_id = "fenceAG_" + i;
         $("#table_fence_alarm_group tbody").append("<tr id=\"" + tr_id + "\"><td>" +
@@ -188,7 +188,7 @@ function updateFenceAG_List(array) {
             "</td></tr>");
 
         //Update the alarm group setting dropdownlist
-        $("#add_alarm_mode_4_fagID").append("<option value=\"" + array[i] + "\">" + array[i] + "</option>");
+        $("#add_alarm_mode_0_fagID").append("<option value=\"" + array[i] + "\">" + array[i] + "</option>");
     }
 }
 
