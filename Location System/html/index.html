@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
     <!--Edit css-->
-    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../css/test.css" />
     <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
     <link rel="stylesheet" type="text/css" href="../css/index_style.css" />
     <link rel="stylesheet" type="text/css" href="../css/index_data_sidebar.css" />
@@ -38,13 +38,15 @@
     <script type="text/javascript" src="../js/check_permission.js"></script>
     <script type="text/javascript" src="../js/sidebar.js"></script>
     <script type="text/javascript" src="../js/draw_canvas.js"></script>
-    <script type="text/javascript" src="../js/canvas_request.js"></script>
+    <script type="text/javascript" src="../js/rtls_get_data.js"></script>
+    <script type="text/javascript" src="../js/rtls_set_canvas.js"></script>
     <script type="text/javascript" src="../js/table_filter.js"></script>
     <!--JQuery UI - Dialog-->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_alarm_set.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_display_size.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_display_setting.js"></script>
+    <script type="text/javascript" src="../js/Dialog/dialog_separate_canvas.js"></script>
 </head>
 
 <body>
@@ -68,24 +70,14 @@
 
                 <div class="tool-bar" style="float:right;">
                     <div class="dropdown">
-                        <label id="input_map" class="btn-set i18n-input" selectattr="title" selectname="i_input_map">
-                            <i class="far fa-image"></i></label>
-                        <div class="dropdown-content" style="left:-120px;" id="loadMapButtonGroup"></div>
-                    </div>
-
-                    <div class="dropdown">
                         <label class="btn-set i18n-input" selectattr="title" selectname="i_setting">
                             <i class="fas fa-cog"></i></label>
-                        <div class="dropdown-content" style="left:-120px;">
+                        <div class="dropdown-content" style="left:-130px;">
                             <a id="btn_adjust_focus" class="i18n" name="i_adjustDisplay"></a>
                             <a id="btn_display_size" class="i18n" name="i_adjustIconSize"></a>
+                            <a id="btn_separate_canvas" class="i18n" name="i_multiWindowMode"></a>
                         </div>
                     </div>
-
-                    <label for="btn_remove" id="label_remove" class="btn-delete i18n-input" selectattr="title"
-                        selectname="i_closeMap">
-                        <i class="fas fa-window-close" style='font-size:20px;'></i></label>
-                    <input id="btn_remove" type="button" class="btn-hidden" onclick="closeMapTag();" />
                 </div>
             </div>
         </div>
@@ -99,44 +91,17 @@
                             selectname="i_lastestTop" onclick="sortAlarm();"><i class="fas fa-sort-amount-up"></i>
                         </button>
                         <!--<button class="btn btn-default i18n-input" selectattr="title" selectname="i_releasePosition"
-                            onclick="unlockFocusAlarm();" style="width:30px; padding:3px !important;">
-                            <img class="icon-image" src="../image/release_position.png">
-                        </button>-->
+                                onclick="unlockFocusAlarm();" style="width:30px; padding:3px !important;">
+                                <img class="icon-image" src="../image/release_position.png">
+                            </button>-->
                     </div>
                     <div class="sideBar-left">
                         <div class="thumbnail_columns"></div>
                     </div>
                 </div>
 
-
                 <!--Midden-->
-                <div id="content">
-                    <div class="btn-group" id="map_pages"></div>
-
-                    <label for="btn_restore" id="label_restore" class="btn-icon i18n-input" selectattr="title"
-                        selectname="i_restore_scale"><i class="fas fa-compress"></i></label>
-                    <input id="btn_restore" type="button" class="btn-hidden" onclick="restoreCanvas();" />
-
-                    <div class="cvsBlock" id="cvsBlock">
-                        <div class="transition" id="transition"></div>
-                        <!--<div id="loading">
-                                    <div class="loader"></div>
-                                </div>-->
-                        <canvas id="canvas" style="height:1px; width:1px;">
-                            <label class="i18n" name="i_no_canvas"></label>
-                        </canvas>
-                    </div>
-
-                    <div style="float: right;">
-                        <div style="display: none;"><label class="i18n" name="i_mapScale"></label> : <label
-                                id="scale_visible" style="margin-right:20px;"></label></div>
-                        <label class="i18n" name="i_posX"></label> : <label type="text" id="x"
-                            class="coordinate"></label>
-                        <label class="i18n" name="i_posY" style="margin-left:10px;"></label> : <label type="text" id="y"
-                            class="coordinate"></label>
-                    </div>
-                </div>
-
+                <div id="content"></div>
 
                 <!--Right (Data) Sidebar-->
                 <div class="page-main" id="page_rightSide">
@@ -396,7 +361,42 @@
             <br>
             <canvas id="canvas_display_size"></canvas>
         </div>
+
+        <!--The dialog of select the multi-window mode-->
+        <div id="separate_canvas_dialog" class="dialog" title="Select the multi-window mode">
+            <label class="i18n" name="i_multiWindowMode"></label> : <select id="select_canvas_mode">
+                <option value="1">Mode 1</option>
+                <option value="2_v">Mode 2</option>
+                <option value="2_h">Mode 3</option>
+                <option value="4">Mode 4</option>
+                <option value="6">Mode 5</option>
+            </select>
+            <br>
+            <table class="noborder-block canvas-modes">
+                <tr>
+                    <td><label>Mode 1</label></td>
+                    <td><img src="../image/blocks_one.png" /></td>
+                </tr>
+                <tr>
+                    <td><label>Mode 2</label></td>
+                    <td><img src="../image/blocks_two_v.png" /></td>
+                </tr>
+                <tr>
+                    <td><label>Mode 3</label></td>
+                    <td><img src="../image/blocks_two_h.png" /></td>
+                </tr>
+                <tr>
+                    <td><label>Mode 4</label></td>
+                    <td><img src="../image/blocks_four.png" /></td>
+                </tr>
+                <tr>
+                    <td><label>Mode 5</label></td>
+                    <td><img src="../image/blocks_six.png" /></td>
+                </tr>
+            </table>
+        </div>
     </div>
+
     <!--i18n translation-->
     <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
     <script type="text/javascript" src="../js/i18n/language.js"></script>

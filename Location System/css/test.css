@@ -66,7 +66,6 @@ img.logo {
 
 .content-blocks {
     float: left;
-    width: 50%;
     border: 1px rgb(47, 95, 201) solid;
 }
 
@@ -74,10 +73,11 @@ img.logo {
     -webkit-flex: 1;
     -ms-flex: 1;
     flex: 1;
-    background: lightgray;
+    background: rgb(185, 185, 185);
     overflow: hidden;
     position: relative;
     border: none;
+    width: 100%;
 }
 
 .canvas-control-bar {
@@ -85,25 +85,31 @@ img.logo {
     float: left;
     background: lightgray;
     width: 100%;
+    height: 20px;
+    max-height: 20px;
     color: black;
 }
 
 .canvas-visible-map-name {
     color: rgb(0, 63, 238);
-    margin-right: 10px;
+    margin-right: 10px !important;
 }
 
 .canvas-control-bar label {
-    margin-bottom: 0px;
+    margin: 0px;
 }
 
 canvas {
     position: relative;
 }
 
-@media only screen and (min-width: 769px) {
+.canvas-modes img {
+    height: 100px;
+}
 
-    /*桌上型電腦*/
+/*@media only screen and (min-width: 769px) {
+
+    桌上型電腦
     .cvsBlock {
         width: 100%;
         height: 330px;
@@ -112,7 +118,7 @@ canvas {
 
 @media only screen and (min-width: 321px) and (max-width: 768px) {
 
-    /*平板*/
+    平板
     .cvsBlock {
         width: 100%;
         height: 250px;
@@ -121,12 +127,12 @@ canvas {
 
 @media only screen and (min-width: 0px) and (max-width: 320px) {
 
-    /*手機*/
+    手機
     .cvsBlock {
         width: 100%;
         height: 500px;
     }
-}
+}*/
 
 /*DropDownList*/
 .dropbtn {

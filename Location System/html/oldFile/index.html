@@ -77,8 +77,8 @@
                         <label class="btn-set i18n-input" selectattr="title" selectname="i_setting">
                             <i class="fas fa-cog"></i></label>
                         <div class="dropdown-content" style="left:-120px;">
-                            <a id="btn_adjust_focus" class="i18n" name="i_focusMode"></a>
-                            <a id="btn_display_size" class="i18n" name="i_displaySize"></a>
+                            <a id="btn_adjust_focus" class="i18n" name="i_adjustDisplay"></a>
+                            <a id="btn_display_size" class="i18n" name="i_adjustIconSize"></a>
                         </div>
                     </div>
 
@@ -126,17 +126,6 @@
                             <label class="i18n" name="i_no_canvas"></label>
                         </canvas>
                     </div>
-
-                    <!--Test Mobile Touch
-                    deltaX:<input type="text" id="deltaX" value="" style="max-width: 50px;">
-                    deltaY:<input type="text" id="deltaY" value="" style="max-width: 50px;">
-                    scale:<input type="text" id="scale" value="" style="max-width: 50px;">
-                    distance:<input type="text" id="distance" value="" style="max-width: 50px;">
-                    centerX:<input type="text" id="centerX" value="" style="max-width: 50px;">
-                    centerY:<input type="text" id="centerY" value="" style="max-width: 50px;">
-                    -->
-                    <!-- <div id="hud"></div>-->
-                    <!--Test End-->
 
                     <div style="float: right;">
                         <div style="display: none;"><label class="i18n" name="i_mapScale"></label> : <label
@@ -210,7 +199,7 @@
                                 <div class="tab-pane fade" id="sidebar_right_search">
                                     <label class="i18n" name="i_searchType" style="margin-top:10px;"></label> :
                                     <select id="search_select_type">
-                                        <option class="i18n" name="i_group" value="map" selected="selected"></option>
+                                        <option class="i18n" name="i_map" value="map" selected="selected"></option>
                                         <option class="i18n" name="i_userID" value="user_id"></option>
                                         <option class="i18n" name="i_number" value="number"></option>
                                     </select>
@@ -246,7 +235,6 @@
                     </aside>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -362,8 +350,34 @@
                         </div>
                     </td>
                 </tr>
+                <tr>
+                    <td><label class="i18n" name="i_displayLowPowerAlarm"></label></td>
+                    <td>
+                        <div class="wrapper">
+                            <input type="checkbox" id="chk_alarm_low_power">
+                            <label for="chk_alarm_low_power"><span></span></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="i18n" name="i_displayActiveAlarm"></label></td>
+                    <td>
+                        <div class="wrapper">
+                            <input type="checkbox" id="chk_alarm_active">
+                            <label for="chk_alarm_active"><span></span></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="i18n" name="i_displayStillAlarm"></label></td>
+                    <td>
+                        <div class="wrapper">
+                            <input type="checkbox" id="chk_alarm_still">
+                            <label for="chk_alarm_still"><span></span></label>
+                        </div>
+                    </td>
+                </tr>
             </table>
-            <br>
         </div>
 
         <!--The dialog of controling display dot size-->

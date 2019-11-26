@@ -248,8 +248,6 @@ input[type="file"] {
     cursor: pointer;
     background: transparent !important;
     color: rgb(0, 119, 255) !important;
-    font-size: 18px !important;
-    margin-left: 5px !important;
     padding: 0px !important;
 }
 
@@ -258,27 +256,35 @@ input[type="file"] {
     color: rgb(90, 158, 236) !important;
 }
 
+.btn-set i {
+    font-size: 18px !important;
+}
+
 .btn-icon {
     cursor: pointer;
     color: rgb(0, 119, 255);
-    font-size: 18px;
-    margin-left: 10px;
-    float: right;
+    margin-right: 5px;
 }
 
 .btn-icon:hover {
     color: rgb(90, 158, 236);
 }
 
+.btn-icon i {
+    font-size: 16px !important;
+}
+
 .btn-delete {
     cursor: pointer;
-    color: rgb(255, 0, 0);
-    font-size: 20px;
-    margin: 0px 5px 0px 5px;
+    color: rgb(0, 0, 0);
 }
 
 .btn-delete:hover {
-    color: rgb(255, 81, 81);
+    color: rgb(70, 70, 70);
+}
+
+.btn-delete i {
+    font-size: 18px !important;
 }
 
 .btn-map-tab {

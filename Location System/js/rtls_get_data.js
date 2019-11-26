@@ -65,17 +65,14 @@ $(function () {
         show: false
     });
     $("#search_start").on("click", search);
-
     setup();
-
-
 });
 
 function setup() {
-    canvasArray = [];
-    for (let i = 0; i < 4; i++) {
-        canvasArray.push(new myCanvas(i + 1))
-    }
+    dot_size = getSizeFromCookie();
+    display_setting = getFocusSetFromCookie();
+    let separate_canvas = Cookies.get("separate_canvas");
+    canvasMode(separate_canvas);
     if (token != "") {
         getMemberData();
         getMapGroup();
@@ -85,15 +82,48 @@ function setup() {
     }
 }
 
+function setSizeToCookie(Size) {
+    Cookies.set("anchor_size", Size.anchor);
+    Cookies.set("tag_size", Size.tag);
+    Cookies.set("alarm_size", Size.alarm);
+    dot_size = getSizeFromCookie();
+}
+
+function setFocusSetToCookie(Setting) {
+    Cookies.set("display_setting", JSON.stringify(Setting));
+    display_setting = getFocusSetFromCookie();
+}
+
 function selectMap(number, map_id) {
     let index = number == 0 ? number : number - 1;
     canvasArray[index].inputMap(map_id);
 }
 
-function loadMapToCanvas() { //載入MapCookies
-    let mapid_arr = Object.keys(MapList);
+function changeMapToCookie(index, map_id) {
+    let cookie = Cookies.get("recent_map"),
+        currentMaps = typeof (cookie) === 'undefined' ? [] : JSON.parse(cookie);
+    if (typeof (currentMaps) !== 'object') {
+        Cookies.set("recent_map", JSON.stringify([]));
+    }
+    if (index > -1)
+        currentMaps.splice(index, 1, map_id);
+    //移除此Canvas index的Map_id，再填空字串進去
+    Cookies.set("recent_map", JSON.stringify(currentMaps));
+    //將陣列轉換成Json字串存進cookie中
+}
+
+function loadMapToCanvas() {
+    let cookie = Cookies.get("recent_map"), //載入MapCookies
+        recentMaps = typeof (cookie) === 'undefined' ? [] : JSON.parse(cookie);
+    if (typeof (recentMaps) !== 'object') {
+        Cookies.set("recent_map", JSON.stringify([]));
+    }
+    //按照以建立的Canvas數量，依序載入地圖設定
     canvasArray.forEach(function (canvas, i) {
-        canvas.inputMap(mapid_arr[i]);
+        if (recentMaps[i])
+            canvas.inputMap(recentMaps[i]);
+        else
+            canvas.inputMap("");
     });
     Start();
 }
@@ -117,6 +147,24 @@ function Start() {
     pageTimer["timer2"] = setInterval(function () {
         updateAlarmHandle();
     }, 1000);
+}
+
+function Stop() {
+    for (let each in pageTimer) {
+        clearInterval(pageTimer[each]);
+    }
+}
+
+function setSizeToCookie(Size) {
+    Cookies.set("anchor_size", Size.anchor);
+    Cookies.set("tag_size", Size.tag);
+    Cookies.set("alarm_size", Size.alarm);
+    dot_size = getSizeFromCookie();
+}
+
+function setFocusSetToCookie(Setting) {
+    Cookies.set("display_setting", JSON.stringify(Setting));
+    display_setting = getFocusSetFromCookie();
 }
 
 function getMaps() {
@@ -440,6 +488,18 @@ function updateTagList() {
     xmlHttp["getTag"].send(json_request);
 }
 
+function sortAlarm() {
+    let btn = document.getElementById("btn_sort_alarm");
+    if (btn.children[0].classList.contains("fa-sort-amount-up")) {
+        btn.title = $.i18n.prop('i_oldestTop');
+        btn.innerHTML = "<i class=\"fas fa-sort-amount-down\"></i>";
+    } else {
+        btn.title = $.i18n.prop('i_lastestTop');
+        btn.innerHTML = "<i class=\"fas fa-sort-amount-up\"></i>";
+    }
+    alarmFilterArr = [];
+}
+
 function changeFocusAlarm(tag_id, alarm_type) { //改變鎖定定位的Alarm目標
     let index = alarmFilterArr.findIndex(function (info) { //抓取指定AlarmTag的位置
         return info.id == tag_id && info.alarm_type == alarm_type;
@@ -490,20 +550,22 @@ function unlockFocusAlarm() { //解除定位
     });
 }
 
+function checkMapIsUsed(map_id) {
+    let check = canvasArray.findIndex(function (canvas) {
+        return canvas.Map_id() == map_id;
+    });
+    if (check == -1) {
+        canvasArray[0].inputMap(map_id);
+    }
+}
+
 function locateTag(tag_id) {
     if (tag_id in tagArray) {
+        isFocus = true;
         locating_id = tag_id;
-        let locate_map = groupfindMap[tagArray[tag_id].group_id];
-        let check = canvasArray.findIndex(function (canvas) {
-            return canvas.Map_id() == locate_map;
-        });
-        if (check == -1) {
-            isFocus = false;
-            showMyModel();
-        } else { //在同一張地圖內，所以不用切換地圖
-            isFocus = true;
-        }
+        checkMapIsUsed(groupfindMap[tagArray[tag_id].group_id]);
     } else {
+        isFocus = false;
         showMyModel();
     }
 }
