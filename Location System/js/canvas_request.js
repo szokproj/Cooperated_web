@@ -56,6 +56,10 @@ var token = "",
         canvasTop: 0,
         downX: 0,
         downY: 0
+    },
+    panPos = {
+        canvasLeft: 0,
+        canvasTop: 0
     };
 
 $(function () {
@@ -1257,11 +1261,6 @@ function search() {
     }
     document.getElementById("table_sidebar_search").children[1].innerHTML = html;
 }
-
-var panPos = {
-    canvasLeft: 0,
-    canvasTop: 0
-};
 
 function setMobileEvents() {
     const hammer_pan = new Hammer(canvas); //Canvas位移

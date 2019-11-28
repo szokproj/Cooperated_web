@@ -48,6 +48,10 @@ function RTLS_Canvas(number) {
             downX: 0,
             downY: 0
         },
+        panPos = {
+            canvasLeft: 0,
+            canvasTop: 0
+        },
         adjust = {
             setCanvas: function (img_src, width, height) {
                 canvas.style.backgroundImage = "url(" + img_src + ")";
@@ -128,7 +132,7 @@ function RTLS_Canvas(number) {
             },
             resetCanvas_Anchor: function () {
                 cvsBlock.style.background = 'rgb(185, 185, 185)';
-                canvasImg.isPutImg = false;
+                canvasImg.isLoad = false;
                 canvasImg.width = 0;
                 canvasImg.height = 0;
                 canvasImg.scale = 1;
@@ -166,8 +170,8 @@ function RTLS_Canvas(number) {
                             let anchorList = revObj.Value[0].Values,
                                 x, y;
                             for (let i in anchorList) {
-                                x = anchorList[i].set_x / canvasImg.scale;
-                                y = canvasImg.height - anchorList[i].set_y / canvasImg.scale; //因為Server回傳的座標為左下原點
+                                x = parseFloat(anchorList[i].set_x);
+                                y = canvasImg.height - parseFloat(anchorList[i].set_y); //因為Server回傳的座標為左下原點
                                 anchorArray.push({
                                     id: anchorList[i].anchor_id,
                                     type: "",
@@ -197,8 +201,8 @@ function RTLS_Canvas(number) {
                             let anchorList = revObj.Value[0].Values,
                                 x, y;
                             for (let i in anchorList) {
-                                x = anchorList[i].set_x / canvasImg.scale;
-                                y = canvasImg.height - anchorList[i].set_y / canvasImg.scale;
+                                x = parseFloat(anchorList[i].set_x);
+                                y = canvasImg.height - parseFloat(anchorList[i].set_y);
                                 anchorArray.push({
                                     id: anchorList[i].main_anchor_id,
                                     type: "main",
@@ -276,8 +280,8 @@ function RTLS_Canvas(number) {
                 coordinate.x.innerText = lastX < 0 ? 0 : (lastX).toFixed(2);
                 coordinate.y.innerText = lastY < 0 ? 0 : (lastY).toFixed(2);
                 return {
-                    x: pos_x,
-                    y: pos_y
+                    x: lastX,
+                    y: lastY
                 }
             }
         },
@@ -292,15 +296,15 @@ function RTLS_Canvas(number) {
         },
         createFences = function () {
             for (let i in fenceList) {
-                let fence = new Fence(ctx, canvasImg.scale),
+                let fence = new Fence(ctx, 1 / Zoom),
                     fence_name = fenceList[i].name,
                     count = 0;
                 fenceList[i].dots.forEach(dot_info => {
                     count++;
                     fence.setFenceDot(
                         fence_name,
-                        dot_info.point_x / canvasImg.scale,
-                        canvasImg.height - dot_info.point_y / canvasImg.scale
+                        parseFloat(dot_info.point_x),
+                        canvasImg.height - parseFloat(dot_info.point_y)
                     );
                 });
                 if (count > 0)
@@ -319,21 +323,19 @@ function RTLS_Canvas(number) {
             for (let tag_id in tagArray) {
                 let v = tagArray[tag_id];
                 if (groupfindMap[v.group_id] == Map_id)
-                    drawTags(ctx, v.id, v.x / canvasImg.scale, canvasImg.height - v.y / canvasImg.scale,
-                        v.color, dot_size.tag, 1 / Zoom);
+                    drawTags(ctx, v.id, v.x, canvasImg.height - v.y, v.color, dot_size.tag, 1 / Zoom);
             }
             alarmArray.forEach(function (v) {
                 if (groupfindMap[v.group_id] == Map_id)
-                    drawAlarmTags(ctx, v.id, v.x / canvasImg.scale, canvasImg.height - v.y / canvasImg.scale,
-                        v.status, dot_size.alarm, 1 / Zoom);
+                    drawAlarmTags(ctx, v.id, v.x, canvasImg.height - v.y, v.status, dot_size.alarm, 1 / Zoom);
             });
             //Focus the position of this locating tag.
             if (isFocus) {
                 if (locating_id in tagArray) {
                     let target = tagArray[locating_id],
                         target_map = target.group_id in groupfindMap ? groupfindMap[target.group_id] : "",
-                        x = target.x / canvasImg.scale,
-                        y = canvasImg.height - target.y / canvasImg.scale;
+                        x = target.x,
+                        y = canvasImg.height - target.y;
                     if (target_map == Map_id) {
                         adjust.focusCenter(x, y);
                         if (target.type == "alarm")
@@ -377,10 +379,34 @@ function RTLS_Canvas(number) {
                 canvas.style.marginLeft = xleftView + "px";
                 canvas.style.marginTop = ytopView + "px";
             },
+            handleCanvasDown: function (e) {
+                if (display_setting.lock_window && isFocus)
+                    return;
+                e.preventDefault();
+                mouse.canvasLeft = parseInt(canvas.style.marginLeft);
+                mouse.canvasTop = parseInt(canvas.style.marginTop);
+                //e.pageX, e.pageY:獲取滑鼠按下時的坐標
+                mouse.downX = e.pageX;
+                mouse.downY = e.pageY;
+                canvas.addEventListener("mousemove", event.handleCanvasMove);
+                //滑鼠按下時=>div綁定事件
+                canvas.addEventListener("mouseup", function () {
+                    //滑鼠彈起時=>div取消事件 
+                    canvas.removeEventListener("mousemove", event.handleCanvasMove);
+                });
+            },
+            handleCanvasMove: function (e) {
+                //e.pageX, e.pageY:獲取滑鼠移動後的坐標 
+                xleftView = e.pageX - mouse.downX + mouse.canvasLeft;
+                ytopView = e.pageY - mouse.downY + mouse.canvasTop;
+                //計算div的最終位置,加上單位
+                canvas.style.marginLeft = xleftView + "px";
+                canvas.style.marginTop = ytopView + "px";
+            },
             handleMouseClick: function (e) { //滑鼠點擊事件
                 let p = {
-                    x: lastX * canvasImg.scale,
-                    y: lastY * canvasImg.scale
+                    x: lastX,
+                    y: lastY
                 };
                 for (let tag_id in tagArray) {
                     let v = tagArray[tag_id];
@@ -408,30 +434,88 @@ function RTLS_Canvas(number) {
                     }
                 });
             },
-            handleCanvasDown: function (e) {
-                if (display_setting.lock_window && isFocus)
-                    return;
-                e.preventDefault();
-                mouse.canvasLeft = parseInt(canvas.style.marginLeft);
-                mouse.canvasTop = parseInt(canvas.style.marginTop);
-                //e.pageX, e.pageY:獲取滑鼠按下時的坐標
-                mouse.downX = e.pageX;
-                mouse.downY = e.pageY;
-                canvas.addEventListener("mousemove", event.handleCanvasMove);
-                canvas.addEventListener("mouseup", function () {
-                    //滑鼠彈起時=>div取消事件 
-                    canvas.removeEventListener("mousemove", event.handleCanvasMove);
-                });
-            },
-            handleCanvasMove: function (e) {
-                //滑鼠按下時=>div綁定事件
-                //e.pageX, e.pageY:獲取滑鼠移動後的坐標 
-                xleftView = e.pageX - mouse.downX + mouse.canvasLeft;
-                ytopView = e.pageY - mouse.downY + mouse.canvasTop;
-                //計算div的最終位置,加上單位
+            handleMobileTouch: function (e) { //手指觸碰事件
+                if (canvasImg.isLoad) {
+                    let x = e.changedTouches[0].pageX,
+                        y = e.changedTouches[0].pageY,
+                        p = get.pointOnCanvas(x, y);
+                    for (let each in tagArray) {
+                        let v = tagArray[each];
+                        if (v.type == "normal" && groupfindMap[v.group_id] == Map_id) {
+                            let radius = dot_size.tag / Zoom,
+                                distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y - radius * 2), 2));
+                            if (distance <= radius) {
+                                document.getElementById("member_dialog_tag_id").innerText = parseInt(v.id.substring(8), 16);
+                                document.getElementById("member_dialog_number").innerText = v.number;
+                                document.getElementById("member_dialog_name").innerText = v.name;
+                                setMemberPhoto("member_dialog_image", "member_dialog_number", v.number);
+                                $("#member_dialog").dialog("open");
+                            }
+                        }
+                    }
+                    alarmArray.forEach(function (v) {
+                        if (groupfindMap[v.group_id] == Map_id) {
+                            let radius = dot_size.alarm / Zoom,
+                                distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y - radius * 2), 2));
+                            if (distance <= radius) {
+                                setAlarmDialog({
+                                    id: v.id,
+                                    number: v.id in MemberList ? MemberList[v.id].number : "",
+                                    name: v.id in MemberList ? MemberList[v.id].name : "",
+                                    status: v.status,
+                                    alarm_time: v.alarm_time
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        },
+        setMobileEvents = function () {
+            const hammer_pan = new Hammer(canvas); //Canvas位移
+            const hammer_pinch = new Hammer(canvas); //Canvas縮放
+            hammer_pan.get('pan').set({
+                direction: Hammer.DIRECTION_ALL
+            });
+            hammer_pinch.get('pinch').set({
+                enable: true
+            });
+            hammer_pan.on('panstart', ev => {
+                panPos.canvasLeft = parseInt(canvas.style.marginLeft);
+                panPos.canvasTop = parseInt(canvas.style.marginTop);
+            });
+            hammer_pan.on('panmove', ev => {
+                xleftView = panPos.canvasLeft + ev.deltaX;
+                ytopView = panPos.canvasTop + ev.deltaY;
                 canvas.style.marginLeft = xleftView + "px";
                 canvas.style.marginTop = ytopView + "px";
-            }
+            });
+            hammer_pinch.on('pinchstart pinchmove', ev => {
+                let BCR = canvas.getBoundingClientRect(),
+                    pos_x = ev.center.x - BCR.left,
+                    pos_y = ev.center.y - BCR.top,
+                    scale = 1;
+                if (ev.scale < 1) {
+                    if (Zoom >= 0.1)
+                        scale = 0.95;
+                } else if (ev.scale > 1) {
+                    if (Zoom <= 1.5)
+                        scale = 1.05;
+                }
+                Zoom *= scale; //縮放比例
+                if (display_setting.lock_window && isFocus)
+                    return;
+                draw();
+                let Next_x = pos_x * scale, //縮放後的位置(x坐標)
+                    Next_y = pos_y * scale; //縮放後的位置(y坐標)
+                xleftView += pos_x - Next_x;
+                ytopView += pos_y - Next_y;
+                canvas.style.marginLeft = xleftView + "px";
+                canvas.style.marginTop = ytopView + "px";
+            });
+            canvas.addEventListener("touchstart", event.handleMobileTouch, { //手指點擊畫布中座標，跳出tag的訊息框
+                passive: true
+            });
         };
 
     closeMap.addEventListener("click", adjust.resetCanvas_Anchor, false);
@@ -443,9 +527,7 @@ function RTLS_Canvas(number) {
     canvas.addEventListener("mousewheel", event.handleMouseWheel, { //畫布縮放
         passive: true
     });
-    /*canvas.addEventListener("touchstart", handleMobileTouch, { //手指點擊畫布中座標，跳出tag的訊息框
-        passive: true
-    });*/
+    setMobileEvents(); //Hammer.js
 
     this.Map_id = function () {
         return Map_id;
@@ -529,7 +611,7 @@ function canvasMode(blocks) {
             break;
         case "6":
             number = 6;
-            content.innerHTML += createCanvasHtml(1, "66.6%", Math.ceil((h - 80) * 2 / 3 + 21) + "px");
+            content.innerHTML += createCanvasHtml(1, "66.6%", (h - 80) * 2 / 3 + 22 + "px");
             //page_height-(bar_height(20)*3 + space(20)) = h - 80
             for (let i = 2; i < 7; i++)
                 content.innerHTML += createCanvasHtml(i, "33.3%", (h - 80) * 1 / 3 + "px");

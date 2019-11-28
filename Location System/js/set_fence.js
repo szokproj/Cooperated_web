@@ -416,8 +416,8 @@ function drawAnchor_Group() {
                     x: element.set_x,
                     y: element.set_y
                 };
-                var x = element.set_x / canvasImg.scale;
-                var y = canvasImg.height - element.set_y / canvasImg.scale
+                var x = parseFloat(element.set_x);
+                var y = canvasImg.height - parseFloat(element.set_y)
                 group.setAnchor(element.anchor_id, x, y);
                 if (addFenceDotArray.length >= 3)
                     containDots += checkInside(point, addFenceDotArray) == true ? 1 : 0;
@@ -451,8 +451,8 @@ function drawFences() {
             if (dot_info.fence_id == fence_info.fence_id) {
                 fence.setFenceDot(
                     fence_info.fence_name,
-                    dot_info.point_x / canvasImg.scale,
-                    canvasImg.height - dot_info.point_y / canvasImg.scale
+                    parseFloat(dot_info.point_x) ,
+                    canvasImg.height - parseFloat(dot_info.point_y)
                 );
                 count++;
             }
@@ -466,8 +466,8 @@ function drawSettingFence() {
     var s_fence = new SettingFence();
     addFenceDotArray.forEach(dot_info => {
         s_fence.setFenceDot(
-            dot_info.x / canvasImg.scale,
-            canvasImg.height - dot_info.y / canvasImg.scale
+            parseFloat(dot_info.x),
+            canvasImg.height - parseFloat(dot_info.y)
         );
         var point = {
             x: dot_info.x,
@@ -561,7 +561,7 @@ function Fence() {
         var canvas = document.getElementById("canvas_map");
         var ctx = canvas.getContext("2d");
         var len = fence_dot_array.length;
-        var displace = 5 / canvasImg.scale;
+        var displace = 5 / Zoom;
         ctx.beginPath();
         fence_dot_array.forEach(function (v, i, arr) {
             ctx.lineTo(v.x + displace, v.y + displace);
@@ -574,7 +574,7 @@ function Fence() {
         ctx.fill();
         //在圍籬中間畫出群組名稱
         ctx.fillStyle = "blue";
-        ctx.font = 60 / canvasImg.scale + 'px serif';
+        ctx.font = 26 / Zoom + 'px serif';
         var arr = fence_dot_array;
         var displace_x = (arr[2].x - arr[0].x) / 2;
         var displace_y = (arr[2].y - arr[0].y) / 2;

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title class="i18n" name='i_pageTitle'>Location System</title>
+    <meta id="i18n_pagename" content="common">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="../image/logo/favicon.ico" type="image/x-icon" />
+    <!--BootStrap3-->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!--JQuery庫-->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <!-- Icon Navbar-->
+    <link rel="stylesheet" type="text/css" href="../css/icon_navbar/animate.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/icon_navbar/menu2.css" />
+    <!--編寫css-->
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
+    <link rel="stylesheet" type="text/css" href="../css/report_setting.css" />
+    <script type="text/javascript" src="../js/general_functions.js"></script>
+    <script type="text/javascript" src="../js/check_permission.js"></script>
+    <script type="text/javascript">
+        'use strict';
+        var token = "";
+        $(function () {
+            token = getToken();
+            /*
+             * Check this page's permission and load navbar
+             */
+            if (!getPermissionOfPage("Reference")) {
+                alert("Permission denied!");
+                window.location.href = '../index.html';
+            }
+            setNavBar("Reference", "Advance_cmd");
+
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <!--icon navbar-->
+        <div id="icon_navbar"></div>
+
+        <!-- Web Content -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div style="float:right;">
+                    <img class="logo" src="../image/logo/icon.png">
+                    <label class="i18n" name="i_language"></label>
+                    <select id="language" class="select-lang">
+                        <option value="en">English</option>
+                        <option value="zh-TW">繁體中文</option>
+                        <option value="zh-CN">简体中文</option>
+                    </select>
+                    <label id="login_user"></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <ul id="sidebarRightTab" class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#daily_report" data-toggle="tab" class="i18n" name="i_dailyReport"></a>
+                    </li>
+                    <li><a href="#weekly_report" data-toggle="tab" class="i18n" name="i_weeklyReport"></a>
+                    </li>
+                    <li><a href="#monthly_report" data-toggle="tab" class="i18n" name="i_monthlyReport"></a>
+                    </li>
+                </ul>
+                <div id="sidebarRightTabContent" class="tab-content">
+                    <div class="tab-pane fade in active" id="daily_report">
+                        <div class="search_result"></div>
+                        <div class="search_bar"></div>
+                    </div>
+                    <div class="tab-pane fade in active" id="weekly_report">
+                        <div class="search_result"></div>
+                        <div class="search_bar"></div>
+                    </div>
+                    <div class="tab-pane fade in active" id="monthly_report">
+                        <div class="search_result"></div>
+                        <div class="search_bar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- i18n -->
+    <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
+    <script type="text/javascript" src="../js/i18n/language.js"></script>
+</body>
+
+</html>

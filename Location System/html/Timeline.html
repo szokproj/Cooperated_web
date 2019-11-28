@@ -58,44 +58,8 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-9 col-sm-8">
-                <div id="timelineBlock">
-                    <div id="cvsBlock">
-                        <canvas id="canvas" style="height:1px; width:1px;">
-                            <span class="i18n" name="i_no_canvas"></span>
-                        </canvas>
-                    </div>
-                    <div id="positionInfo">
-                        <span class="i18n" name="i_map" style="margin-left:5px;"></span> : <label id="position"
-                            style="margin-right:20px;"></label>
-                        <span class="i18n" name="i_posX"></span> : <label id="draw_x"
-                            style="margin-right:20px;"></label>
-                        <span class="i18n" name="i_posY"></span> : <label id="draw_y"
-                            style="margin-right:20px;"></label>
-                        <span class="i18n" name="i_time"></span> : <label id="draw_time"
-                            style="margin-right:20px;"></label>
-                    </div>
-                </div>
-
-                <div id="alarmBlock" style="display:none;">
-                    <table id="table_alarm_handle" class="border-block">
-                        <thead>
-                            <tr>
-                                <th class="i18n" name="i_item"></th>
-                                <th class="i18n" name="i_alarmStatus"></th>
-                                <th class="i18n" name="i_userID" style="min-width:70px;"></th>
-                                <th class="i18n" name="i_number" style="width:70px;"></th>
-                                <th class="i18n" name="i_name" style="width:70px;"></th>
-                                <th class="i18n" name="i_executor"></th>
-                                <th class="i18n" name="i_time" style="width:160px;"></th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="col-lg-3 col-sm-4">
-                <div class="sidebar_right">
+            <div class="col-lg-3">
+                <div class="sidebar_left">
                     <div class="panel-group" id="accordion">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
@@ -194,7 +158,7 @@
                                             <thead>
                                                 <tr>
                                                     <th class="i18n" name="i_id"></th>
-                                                    <th class="i18n" name="i_assign" style="min-width:30px;"></th>
+                                                    <th class="i18n" name="i_assign" style="max-width:30px;"></th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -252,6 +216,49 @@
                         </div>
                     </div>
 
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div id="timelineBlock">
+                    <div id="cvsBlock">
+                        <canvas id="canvas" style="height:1px; width:1px;">
+                            <span class="i18n" name="i_no_canvas"></span>
+                        </canvas>
+                    </div>
+                    <div id="positionInfo">
+                        <span class="i18n" name="i_posX" style="margin-left:20px;">
+                        </span> : <label id="draw_x"></label>
+                        <span class="i18n" name="i_posY" style="margin-left:20px;">
+                        </span> : <label id="draw_y"></label>
+                    </div>
+                </div>
+
+                <div id="alarmBlock" style="display:none;">
+                    <table id="table_alarm_handle" class="border-block">
+                        <thead>
+                            <tr>
+                                <th class="i18n" name="i_item"></th>
+                                <th class="i18n" name="i_alarmStatus"></th>
+                                <th class="i18n" name="i_userID" style="min-width:70px;"></th>
+                                <th class="i18n" name="i_number" style="width:70px;"></th>
+                                <th class="i18n" name="i_name" style="width:70px;"></th>
+                                <th class="i18n" name="i_executor"></th>
+                                <th class="i18n" name="i_time" style="width:160px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="sidebar_right">
+                    <div id="statistics_info">
+                        <label>地圖名稱</label>: <label id="current_map"></label><br>
+                        <label>時間</label>: <label id="current_time"></label><br>
+                        <label>區域人數</label>: <label id="current_tags_amount"></label><br>
+                        <label>群組人數</label>: <label id="group_amount"></label>
+                    </div>
+                    <br>
                     <div id="member_info">
                         <div class="thumbnail" id="member_thumb">
                             <table>

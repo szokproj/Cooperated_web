@@ -6,6 +6,11 @@ body {
     background: #132742;
 }
 
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
 .container {
     width: 100%;
     height: 100%;
@@ -24,6 +29,10 @@ body {
 .container input[type=search] {
     background: #132742;
     border: 1px solid lightgray;
+}
+
+.row {
+    margin-left: 40px;
 }
 
 .top_nav {
@@ -64,48 +73,76 @@ img.logo {
     color: rgb(90, 158, 236) !important;
 }
 
-canvas {
-    position: relative;
+.content-blocks {
+    float: left;
+    /*border:5px rgb(119, 119, 119) solid;*/
+    padding: 1px;
 }
 
 .cvsBlock {
     -webkit-flex: 1;
     -ms-flex: 1;
     flex: 1;
-    background: transparent;
+    background: rgb(185, 185, 185);
     overflow: hidden;
     position: relative;
-    /*border-radius: 25px;*/
-    border: 1px rgb(47, 95, 201) solid;
-    /*#0055ff*/
+    border: none;
+    width: 100%;
 }
 
-@media only screen and (min-width: 769px) {
+.canvas-control-bar {
+    padding: 0px 5px 0px 5px;
+    float: left;
+    background: lightgray;
+    width: 100%;
+    height: 20px;
+    max-height: 20px;
+    color: black;
+}
 
-    /*桌上型電腦*/
+.canvas-visible-map-name {
+    color: rgb(0, 63, 238);
+    margin-right: 10px !important;
+}
+
+.canvas-control-bar label {
+    margin: 0px;
+}
+
+canvas {
+    position: relative;
+}
+
+.canvas-modes img {
+    height: 100px;
+}
+
+/*@media only screen and (min-width: 769px) {
+
+    桌上型電腦
     .cvsBlock {
         width: 100%;
-        height: 650px;
+        height: 330px;
     }
 }
 
 @media only screen and (min-width: 321px) and (max-width: 768px) {
 
-    /*平板*/
+    平板
     .cvsBlock {
         width: 100%;
-        height: 400px;
+        height: 250px;
     }
 }
 
 @media only screen and (min-width: 0px) and (max-width: 320px) {
 
-    /*手機*/
+    手機
     .cvsBlock {
         width: 100%;
         height: 500px;
     }
-}
+}*/
 
 /*DropDownList*/
 .dropbtn {
@@ -129,6 +166,7 @@ canvas {
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1;
+    margin-top: -3px;
 }
 
 .dropdown-content a {
@@ -166,7 +204,7 @@ canvas {
  * @example  $("#mytime").timePicker({step:30, startTime:"15:00", endTime:"18:00"}); 
  */
 
- div.time-picker {
+div.time-picker {
     position: absolute;
     height: 200px;
     width: 60px;

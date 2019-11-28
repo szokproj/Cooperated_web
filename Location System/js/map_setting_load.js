@@ -4,8 +4,6 @@ var thumb_width = 240;
 var thumb_height = 180;
 
 $(function () {
-    var w = document.documentElement.clientWidth;
-    console.log("monitor_width : " + w);
     //Check this page's permission and load navbar
     token = getToken();
     if (!getPermissionOfPage("Map_Setting")) {

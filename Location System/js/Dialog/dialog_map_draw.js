@@ -344,8 +344,8 @@ function inputAnchorArray(anchor_info) {
     anchorArray.push({
         id: anchor_info.id,
         type: anchor_info.type,
-        x: anchor_info.x / canvasImg.scale,
-        y: canvasImg.height - anchor_info.y / canvasImg.scale, //因為Server回傳的座標為左下原點
+        x: parseFloat(anchor_info.x),
+        y: canvasImg.height - parseFloat(anchor_info.y), //因為Server回傳的座標為左下原點
         group_id: anchor_info.group_id //只有副基站需要用group_id
     });
     draw();

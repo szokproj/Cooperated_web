@@ -471,7 +471,7 @@ function inputAlarmGroupTable() {
                 alarmSettingArr = revObj.Value[0].Values ? revObj.Value[0].Values.slice(0) : [];
                 //send request to get all data of fence_alarm_group
                 var fagRequest = {
-                    "Command_Type": ["Write"],
+                    "Command_Type": ["Read"],
                     "Command_Name": ["GetFence_Alarm_Group_info_ALL"],
                     "api_token": [token]
                 };
@@ -500,7 +500,7 @@ function inputAlarmGroupTable() {
                                                 ag_info.elements[j]["fenceAG_id"] = fag_info.fenceAG_id || "";
                                                 ag_info.elements[j]["overtime_hour"] = fag_info.overtime_hour || "";
                                                 modeCheckHtml += "<td>" + state +
-                                                    (fag_info.fenceAG_id != "" ? " fence alarm group : " + fag_info.fenceAG_id + " / time : " +
+                                                    (fag_info.fenceAG_id != "" ? " fence alarm group : " + fag_info.fenceAG_id + " , time : " +
                                                         (fag_info.overtime_hour != "" ? fag_info.overtime_hour + " " + $.i18n.prop('i_hour') : "") :
                                                         "") + "</td>";
                                             } else {

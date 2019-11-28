@@ -53,7 +53,14 @@ $(function () {
     $(".alarm-table").css("max-height", h + "px");
     $(".search-table").css("max-height", h + "px");*/
     //預設彈跳視窗載入後隱藏
-
+    document.getElementById("member_dialog_btn_unlock").onclick = function () {
+        unlockFocusAlarm();
+        $("#member_dialog").dialog("close");
+    };
+    document.getElementById("alarm_dialog_btn_unlock").onclick = function () {
+        unlockFocusAlarm();
+        $("#alarm_dialog").dialog("close");
+    };
     $("#member_dialog").dialog({
         autoOpen: false
     });
@@ -417,8 +424,8 @@ function updateTagList() {
                     if (element.tag_id == locating_id) {
                         focus_data = {
                             id: element.tag_id,
-                            x: element.tag_x,
-                            y: element.tag_y,
+                            x: parseFloat(element.tag_x),
+                            y: parseFloat(element.tag_y),
                             system_time: element.tag_time,
                             color: color,
                             number: number,
@@ -429,8 +436,8 @@ function updateTagList() {
                     } else {
                         tagArray[element.tag_id] = {
                             id: element.tag_id,
-                            x: element.tag_x,
-                            y: element.tag_y,
+                            x: parseFloat(element.tag_x),
+                            y: parseFloat(element.tag_y),
                             group_id: element.group_id,
                             system_time: element.tag_time,
                             color: color,
@@ -565,7 +572,6 @@ function locateTag(tag_id) {
         locating_id = tag_id;
         checkMapIsUsed(groupfindMap[tagArray[tag_id].group_id]);
     } else {
-        isFocus = false;
         showMyModel();
     }
 }
@@ -590,39 +596,38 @@ function search() {
     let key = $("#search_select_type").val();
     let value = $("#search_input_target").val();
     if (key == "map") {
-        let index = mapArray.findIndex(function (info) {
-            return info.map_name == value || info.map_id == value;
-        });
-        if (index > -1) {
-            let group_arr = [];
-            for (let i in groupfindMap) {
-                if (groupfindMap[i] == mapArray[index].map_id)
-                    group_arr.push(i);
-            }
-            for (let j in tagArray) {
-                let v = tagArray[j];
-                group_arr.forEach(group_id => {
-                    if (v.group_id == group_id) {
-                        let user_id = parseInt(v.id.substring(8), 16);
-                        let member_data = MemberList[user_id] ? MemberList[user_id] : {
-                            dept: "",
-                            job_title: "",
-                            type: ""
-                        };
-                        html += "<tr>" +
-                            "<td>" + user_id + "</td>" +
-                            "<td>" + v.number + "</td>" +
-                            "<td>" + v.name + "</td>" +
-                            "<td>" + member_data.dept + "</td>" +
-                            "<td>" + member_data.job_title + "</td>" +
-                            "<td>" + member_data.type + "</td>" +
-                            //"<td>" + member_data.alarm_group_id + "</td>" +
-                            "<td><button class=\"btn btn-default\"" +
-                            " onclick=\"locateTag(\'" + v.id + "\')\">" +
-                            "<img class=\"icon-image\" src=\"../image/target.png\">" +
-                            "</button></td></tr>";
-                    }
-                });
+        for (let map_id in MapList) {
+            if (map_id == value || MapList[map_id].name == value) {
+                let group_arr = [];
+                for (let i in groupfindMap) {
+                    if (groupfindMap[i] == map_id)
+                        group_arr.push(i);
+                }
+                for (let j in tagArray) {
+                    let v = tagArray[j];
+                    group_arr.forEach(group_id => {
+                        if (v.group_id == group_id) {
+                            let user_id = parseInt(v.id.substring(8), 16);
+                            let member_data = MemberList[user_id] ? MemberList[user_id] : {
+                                dept: "",
+                                job_title: "",
+                                type: ""
+                            };
+                            html += "<tr>" +
+                                "<td>" + user_id + "</td>" +
+                                "<td>" + v.number + "</td>" +
+                                "<td>" + v.name + "</td>" +
+                                "<td>" + member_data.dept + "</td>" +
+                                "<td>" + member_data.job_title + "</td>" +
+                                "<td>" + member_data.type + "</td>" +
+                                //"<td>" + member_data.alarm_group_id + "</td>" +
+                                "<td><button class=\"btn btn-default\"" +
+                                " onclick=\"locateTag(\'" + v.id + "\')\">" +
+                                "<img class=\"icon-image\" src=\"../image/target.png\">" +
+                                "</button></td></tr>";
+                        }
+                    });
+                }
             }
         }
     } else {

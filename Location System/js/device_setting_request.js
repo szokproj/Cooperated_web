@@ -146,11 +146,11 @@ function Connect() {
         xmlHttp.setRequestHeader("Content-type", "application/json");
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                $("#table_ip_address_info tbody").empty();
                 if (!this.responseText) { //No Response
                     alert($.i18n.prop('i_deviceAlert_2'));
                     return;
                 }
+                $("#table_ip_address_info tbody").empty();
                 var revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj)) {
                     var connectedInfo = revObj.Value[0];

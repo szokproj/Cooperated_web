@@ -67,7 +67,7 @@ $(function () {
                     $("#table_target tbody").append("<tr><td><input type=\"checkbox\" name=\"chk_target_id\"" +
                         " value=\"" + fullOf4Byte(target_id.val()) + "\"/> " + target_id.val() + "</td>" +
                         "<td><input type=\"color\" name=\"input_target_color\" value=\"" + targrt_color.val() + "\" /></td>" +
-                        "<td><button class=\"btn btn-default btn-focus\" onclick=\"locateTag(\'" + target_id.val() +
+                        "<td><button class=\"btn btn-default btn-focus\" onclick=\"locateTag(\'" + fullOf4Byte(target_id.val()) +
                         "\')\"><img class=\"icon-image\" src=\"../image/target.png\"></button></td></tr>");
                     dialog.dialog("close");
                 }
@@ -487,11 +487,13 @@ function getMemberData(user_id) {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                var revInfo = revObj.Value[0].Values[0];
-                if (revInfo.file_ext == "" || revInfo.photo == "")
-                    MemberData[user_id].photo = "";
-                else
-                    MemberData[user_id].photo = "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
+                if ("Values" in revObj.Value[0]) {
+                    var revInfo = revObj.Value[0].Values[0];
+                    if (revInfo.file_ext == "" || revInfo.photo == "")
+                        MemberData[user_id].photo = "";
+                    else
+                        MemberData[user_id].photo = "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
+                }
             }
         }
     };
@@ -575,6 +577,7 @@ function stopTimeline() {
 function drawNextTimeByTag() {
     if (!isContinue)
         return false;
+    var count = 0;
     var locate_map = document.getElementById("target_map").value;
     if (times == 0) {
         document.getElementsByName("chk_target_id").forEach(function (tag_id, i) {
@@ -583,12 +586,14 @@ function drawNextTimeByTag() {
             if (!array) return alert($.i18n.prop('i_targetTagChange'));
             if (array[0] && array[0].map_id == locate_map) {
                 drawTag(ctx, array[0].time, array[0].x, canvasImg.height - array[0].y, color);
-                document.getElementById("position").innerText = array[0].map_name;
-                document.getElementById("draw_time").innerText = array[0].time;
+                document.getElementById("current_map").innerText = array[0].map_name;
+                document.getElementById("current_time").innerText = array[0].time;
                 document.getElementById("draw_x").innerText = array[0].x;
                 document.getElementById("draw_y").innerText = array[0].y;
             }
+            count++;
         });
+        document.getElementById("current_tags_amount").innerText = count;
         times++;
     } else if (times < max_times) {
         reDrawTag(ctx);
@@ -600,12 +605,14 @@ function drawNextTimeByTag() {
                 drawArrow(ctx, array[times - 1].x, canvasImg.height - array[times - 1].y,
                     array[times].x, canvasImg.height - array[times].y, 30, 8, 2, "#000000");
                 drawTag(ctx, array[times].time, array[times].x, canvasImg.height - array[times].y, "#000000");
-                document.getElementById("position").innerText = array[times].map_name;
-                document.getElementById("draw_time").innerText = array[times].time;
+                document.getElementById("current_map").innerText = array[times].map_name;
+                document.getElementById("current_time").innerText = array[times].time;
                 document.getElementById("draw_x").innerText = array[times].x;
                 document.getElementById("draw_y").innerText = array[times].y;
             }
+            count++;
         });
+        document.getElementById("current_tags_amount").innerText = count;
         times++;
     } else {
         if (confirm($.i18n.prop('i_endOfPlay'))) {
@@ -634,14 +641,17 @@ function drawNextTimeByGroup() {
         if (!document.getElementById("chk_is_overlap").checked)
             setSize();
         if (locate_tag == "") {
+            let count = 0;
             historyData[timeslot_array[times]].forEach(info => {
                 drawTag(ctx, info.time, info.x, canvasImg.height - info.y, group_color);
+                count++;
             });
+            document.getElementById("current_tags_amount").innerText = count;
         } else {
             reDrawTag(ctx);
         }
-        document.getElementById("position").innerText = historyData[timeslot_array[times]][0].map_name;
-        document.getElementById("draw_time").innerText = timeslot_array[times];
+        document.getElementById("current_map").innerText = historyData[timeslot_array[times]][0].map_name;
+        document.getElementById("current_time").innerText = timeslot_array[times];
         times++;
     }
 }
@@ -674,10 +684,13 @@ function reDrawTag(dctx) {
         case "Group":
             var locate_arr = [];
             var start = 0;
+            var count = 0;
             if (!document.getElementById("chk_is_overlap").checked && times > 0)
                 start = times - 1;
             for (i = start; i < times; i++) {
                 historyData[timeslot_array[i]].forEach(info => {
+                    if (i == times - 1)
+                        count++;
                     if (info.tag_id == locate_tag)
                         locate_arr.push(info);
                     else
@@ -687,6 +700,7 @@ function reDrawTag(dctx) {
             locate_arr.forEach(info => {
                 drawTag(ctx, info.time, info.x, canvasImg.height - info.y, "#9c00f7");
             });
+            document.getElementById("current_tags_amount").innerText = count;
             break;
         default:
             break;
@@ -768,6 +782,12 @@ function getTimelineByTags() {
         var xmlHttp = createJsonXmlHttp("sql");
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                if (!this.responseText) {
+                    $('#myModal').modal('hide');
+                    clearTimeout(timeDelay["model"]);
+                    alert("搜尋失敗，請稍候再試一次!");
+                    return;
+                }
                 var revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                     var revInfo = revObj.Value[0].Values || [];
@@ -867,6 +887,12 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
         var xmlHttp = createJsonXmlHttp("sql");
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                if (!this.responseText) {
+                    $('#myModal').modal('hide');
+                    clearTimeout(timeDelay["model"]);
+                    alert("搜尋失敗，請稍候再試一次!");
+                    return;
+                }
                 var revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                     var revInfo = revObj.Value[0].Values || [];
@@ -883,7 +909,7 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
                         var index = tag_array.indexOf(revInfo[i].tag_id);
                         if (index == -1) {
                             tag_array.push(revInfo[i].tag_id);
-                            getMemberData(parseInt(revInfo[i].tag_id, 16));
+                            //getMemberData(parseInt(revInfo[i].tag_id.substring(8), 16));
                         }
                         var repeat = historyData[time].findIndex(function (info) {
                             return info.tag_id == revInfo[i].tag_id;
@@ -923,10 +949,11 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
                         $("#table_tag_list tbody").empty();
                         tag_array.forEach(tag_id => {
                             $("#table_tag_list tbody").append(
-                                "<tr><td><label name=\"tag_list_id\">" + tag_id + "</label></td>" +
+                                "<tr><td><label name=\"tag_list_id\">" + parseInt(tag_id.substring(8), 16) + "</label></td>" +
                                 "<td><button class=\"btn btn-default btn-focus\" onclick=\"changeLocateTag(\'" + tag_id +
                                 "\')\"><img class=\"icon-image\" src=\"../image/target.png\"></button></td></tr>"
                             );
+                            getMemberData(parseInt(tag_id.substring(8), 16));
                         });
                         completeSearch();
                     }
@@ -1004,7 +1031,6 @@ function getAlarmHandleByTime() {
                                         "</td></tr>");
                                 }
                             }
-
                         }
                     }
                 };
