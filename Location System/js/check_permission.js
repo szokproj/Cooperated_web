@@ -27,14 +27,14 @@ function checkTokenAlive(token, response) {
     } else {
         if (response.msg == "Without token access") {
             //login overtime
-            alert("帳號閒置過久，此次登入失效，請重新登入");
+            //alert("帳號閒置過久，此次登入失效，請重新登入");
             //window.location.href = '../Login.html';
             setCookie("login_user", null);
             location.reload();
         } else if (response.msg == "Account is not exist") {
             //other user use the account login successfully
             if (token != "") {
-                alert("此帳號已在別處登入，此次登入失效，請重新登入");
+                //alert("此帳號已在別處登入，此次登入失效，請重新登入");
                 //window.location.href = '../Login.html';
                 setCookie("login_user", null);
                 location.reload();
