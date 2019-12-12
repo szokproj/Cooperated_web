@@ -26,22 +26,10 @@
     <link rel="stylesheet" type="text/css" href="../css/report_setting.css" />
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
-    <script type="text/javascript">
-        'use strict';
-        var token = "";
-        $(function () {
-            token = getToken();
-            /*
-             * Check this page's permission and load navbar
-             */
-            if (!getPermissionOfPage("Reference")) {
-                alert("Permission denied!");
-                window.location.href = '../index.html';
-            }
-            setNavBar("Reference", "Advance_cmd");
-
-        });
-    </script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="../js/report.js"></script>
+    <!--JQuery UI - Dialog-->
+    <script type="text/javascript" src="../js/Dialog/dialog_search_member.js"></script>
 </head>
 
 <body>
@@ -65,34 +53,297 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-12">
-                <ul id="sidebarRightTab" class="nav nav-tabs">
-                    <li class="active">
-                        <a href="#daily_report" data-toggle="tab" class="i18n" name="i_dailyReport"></a>
-                    </li>
-                    <li><a href="#weekly_report" data-toggle="tab" class="i18n" name="i_weeklyReport"></a>
-                    </li>
-                    <li><a href="#monthly_report" data-toggle="tab" class="i18n" name="i_monthlyReport"></a>
-                    </li>
-                </ul>
-                <div id="sidebarRightTabContent" class="tab-content">
-                    <div class="tab-pane fade in active" id="daily_report">
-                        <div class="search_result">
 
+        <!--<ul id="sidebarRightTab" class="nav nav-tabs">
+            <li class="active">
+                <a href="#daily_report" data-toggle="tab" class="i18n" name="i_dailyReport"></a>
+            </li>
+            <li><a href="#weekly_report" data-toggle="tab" class="i18n" name="i_weeklyReport"></a>
+            </li>
+            <li><a href="#monthly_report" data-toggle="tab" class="i18n" name="i_monthlyReport"></a>
+            </li>
+        </ul>
+        <div id="sidebarRightTabContent" class="tab-content">
+            <div class="tab-pane fade in active" id="daily_report">-->
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="report-page" id="report_page_timeline">
+                    <table>
+                        <tr>
+                            <td><label>日期 : <span id="report_date"></span></label></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h3 style="margin: auto;">個人一日軌跡</h3>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <table class="table-line" id="report_person_timeline">
+                        <tr>
+                            <td class="i18n" name="i_number"></td>
+                            <td><label id="report_person_number"></label></td>
+                            <td class="i18n" name="i_userID"></td>
+                            <td><label id="report_person_user_id"></label></td>
+                            <td class="i18n" name="i_name"></td>
+                            <td><label id="report_person_Name"></label></td>
+                            <td class="i18n" name="i_dept"></td>
+                            <td><label id="report_person_department"></label></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <div style="overflow: auto; max-height: 1130px;">
+                        <table class="table-line" id="table_person_timeline">
+                            <thead>
+                                <tr>
+                                    <th>項目</th>
+                                    <th>時間</th>
+                                    <th>地點</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="report-page" id="report_page_member" style="display: none;">
+                    <label>日期 : <span id="report_attend_date"></span></label>
+                    <table>
+                        <tr>
+                            <td>
+                                <h3 id="report_attend_title" style="margin: auto;">人員出勤表</h3>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <div style="overflow: auto; max-height: 1200px;">
+                        <table class="table-line" id="table_member_attendance">
+                            <thead>
+                                <tr>
+                                    <th class="i18n" name="i_item"></th>
+                                    <th class="i18n" name="i_number"></th>
+                                    <th class="i18n" name="i_userID"></th>
+                                    <th class="i18n" name="i_dept"></th>
+                                    <th class="i18n" name="i_name"></th>
+                                    <th>上班時間</th>
+                                    <th>下班時間</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="search_bar">
+                    <label for="btn_set_display_rows" class="btn-add" title="Add Members" style="float: right;">
+                        <i class="fas fa-cog" style='font-size:20px;'></i></label>
+                    <input id="btn_set_display_rows" type="button" class="btn-hidden" />
+                    <label>報表類型 :</label>
+                    <select id="select_report_type">
+                        <option value="daily_report">日報表</option>
+                        <option value="weekly_report">週報表</option>
+                        <option value="monthly_report">月報表</option>
+                    </select>
+                    <br><br>
+                    <label>報表名稱 :</label>
+                    <select id="select_report_name">
+                        <option value="person_timeline">個人一日軌跡</option>
+                        <option value="member_attendance">人員出勤表</option>
+                        <option value="all_member_attend">全部人員出勤表</option>
+                    </select>
+                    <br><br>
+                    <div id="report_time">
+                        <label>選擇日期 :</label> <input type="date" id="date_one_day" value="" />
+                    </div>
+                    <br>
+                    <label>選擇人員 : 總共 <span id="count_sel_members">0</span> 人</label>
+                    <span style="float: right;">
+                        <label for="btn_add_members" class="btn-add" title="Add Members">
+                            <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
+                        <input id="btn_add_members" type="button" class="btn-hidden" />
+                        <label for="btn_delete_members" class="btn-delete" title="Delete Members">
+                            <i class="fas fa-minus-square" style='font-size:20px;'></i></label>
+                        <input id="btn_delete_members" type="button" class="btn-hidden" />
+                    </span>
+                    <br>
+                    <div class="member-list">
+                        <table class="member-table" id="table_members">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="chk_all_member" /> 項目</th>
+                                    <th>工號</th>
+                                    <th>姓名</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <br><br>
+                    <div style="width: 100%; text-align: center;">
+                        <button class="btn btn-default" id="btn_create_report" style="margin:auto;">建立報表</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--</div>
+            <div class="tab-pane fade" id="weekly_report">
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div class="report-page">
+                            <table class="table-line">
+                                <thead>
+                                    <tr>
+                                        <th>項目</th>
+                                        <th>工號</th>
+                                        <th>標籤編號</th>
+                                        <th>姓名</th>
+                                        <th>部門</th>
+                                        <th>上班時間</th>
+                                        <th>下班時間</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
+                    </div>
+                    <div class="col-lg-3">
                         <div class="search_bar">
-                            <label></label>
+                            <label>報表類型 : </label>
+                            <select>
+                                <option>人員出勤表</option>
+                                <option>全部人員出勤表</option>
+                            </select>
+                            <br>
+                            <label>選擇人員 : </label>
+                            <div class="member-list">
+                                <table class="member-table">
+                                    <thead>
+                                        <tr>
+                                            <th>項目</th>
+                                            <th>工號</th>
+                                            <th>姓名</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade in active" id="weekly_report">
-                        <div class="search_result"></div>
-                        <div class="search_bar"></div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="monthly_report">
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div class="report-page">
+                            <table class="table-line">
+                                <thead>
+                                    <tr>
+                                        <th>項目</th>
+                                        <th>工號</th>
+                                        <th>標籤編號</th>
+                                        <th>姓名</th>
+                                        <th>上班時間</th>
+                                        <th>下班時間</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="tab-pane fade in active" id="monthly_report">
-                        <div class="search_result"></div>
-                        <div class="search_bar"></div>
+                    <div class="col-lg-3">
+                        <div class="search_bar">
+                            <label>報表類型 : </label>
+                            <select>
+                                <option>人員出勤表</option>
+                                <option>全部人員出勤表</option>
+                            </select>
+                            <br>
+                            <label>選擇人員 : </label>
+                            <div class="member-list">
+                                <table class="member-table">
+                                    <thead>
+                                        <tr>
+                                            <th>項目</th>
+                                            <th>工號</th>
+                                            <th>姓名</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    -->
+    </div>
+
+
+    <!--Hidden Dialog-->
+    <div class="hidden_dialog">
+        <div class="progress" id="progress_block">
+            <label>
+                <i class="fas fa-spinner fa-pulse"></i> 寫入中，進度 : <span id="progress_bar"></span>
+            </label>
+            <!--<label id="wait_time"></label>-->
+        </div>
+        <!--The dialog of search specific members-->
+        <div id="search_member_dialog" class="dialog" title="Search and Select the member">
+            <label>輸入搜尋條件</label> : <br>
+            <table class="table-noborder">
+                <tr>
+                    <td>部門 : <select id="search_dept">
+                            <option value="">All</option>
+                        </select></td>
+                    <td>工號 : <input type="text" id="search_number" /></td>
+                </tr>
+                <tr>
+                    <td>標籤編號 : <input type="text" id="search_tag_id" /></td>
+
+                    <td>姓名 : <input type="text" id="search_name" /></td>
+
+                </tr>
+            </table>
+            <label for="btn_reset_member" class="btn-add" title="Reset">
+                <i class="btn_reset_member" style='font-size:20px;'></i></label>
+            <input id="btn_reset_member" type="button" class="btn-hidden" />
+            <label for="btn_search_member" class="btn-search" title="Search">
+                <i class="fas fa-search" style='font-size:20px;'></i></label>
+            <input id="btn_search_member" type="button" class="btn-hidden" />
+            <br>
+            <hr>
+            <div style="max-height: 230px; overflow: auto;">
+                <table id="search_member_list" class="table-line">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="chk_all_search_member" /> 項目</th>
+                            <th>工號</th>
+                            <th>標籤編號</th>
+                            <th>姓名</th>
+                            <th>部門</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <!--The dialog of select the rows to display -->
+        <div id="dialog_display_rows" class="dialog" title="Select the rows to display">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="#timeline_page" data-toggle="tab">個人一日軌跡</a>
+                </li>
+                <li><a href="#attendance_page" data-toggle="tab">(全部)人員出勤表</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade in active" id="timeline_page">
+                    <table id="table_person_data" class="table-noborder"></table>
+                </div>
+                <div class="tab-pane fade" id="attendance_page">
+                    <table id="table_display_rows" class="table-noborder"></table>
                 </div>
             </div>
         </div>

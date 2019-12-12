@@ -47,6 +47,13 @@ button {
     font-weight: bold !important;
 }
 
+select,
+select option,
+input[type="text"] {
+    background: white !important;
+    color: black !important;
+}
+
 input[type="file"] {
     position: absolute;
     width: 1px;
@@ -58,15 +65,6 @@ input[type="file"] {
     border: 0;
 }
 
-.custom-file-selected {
-    display: inline-block;
-    cursor: pointer;
-    color: #dddddd;
-    text-decoration: none;
-    font-family: Sans-serif;
-    padding: 10px 15px 10px 50px;
-}
-
 .custom-file-upload {
     display: inline-block;
     cursor: pointer;
@@ -76,6 +74,7 @@ input[type="file"] {
     padding: 10px 15px;
     border: 2px solid lightgray;
     border-radius: 4px;
+    box-shadow: 4px 4px 3px rgba(0, 0, 0, 0.7);
     background: gray;
 }
 
@@ -95,4 +94,110 @@ input[type="file"] {
 
 .menu-left ul .start:hover a {
     background: rgb(4, 143, 124)
+}
+
+.btn-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    background: transparent;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.label-refresh {
+    color: rgb(0, 153, 255);
+}
+
+.label-check {
+    color: #33cc33;
+}
+
+.label-delete {
+    color: black;
+}
+
+.label-update {
+    color: gray;
+}
+
+.label-search {
+    color: rgb(255, 174, 0);
+}
+
+.btn-label {
+    cursor: pointer;
+    background: transparent;
+    margin: 5px 5px 0px 5px;
+}
+
+.btn-label:hover {
+    color: rgba(255, 255, 255, 0.753);
+    -webkit-filter: drop-shadow(0px 0px 5px rgba(251, 255, 0, 0.911));
+    filter: drop-shadow(0px 0px 5px rgba(251, 255, 0, 0.849));
+}
+
+.btn-label i {
+    font-size: 20px;
+}
+
+/*.btn-label:active{
+    color: white;
+}*/
+
+.network-bar {
+    margin-left: 10px;
+    border: 2px solid lightgray;
+    background: lightgray;
+    color: black;
+    padding: 5px 10px;
+}
+
+#block_files_list {
+    margin-left: 10px;
+    border: 2px solid lightgray;
+    background: white;
+    height: 350px;
+    color: black;
+}
+
+#block_files_list label {
+    color: black;
+}
+
+.file-img-name {
+    position: relative;
+    display: inline-block;
+    width: auto;
+    height: auto;
+    padding: 10px;
+    margin: 8px;
+    background: transparent;
+}
+
+.onselected {
+    border-radius: 4px;
+    background: rgb(208, 230, 236);
+}
+
+.file-img-name img {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 5px;
+}
+
+.file-img-name label {
+    margin: auto;
+    cursor: pointer;
+    border: 1px solid lightgray;
+    padding: 0px 5px;
+    width: auto;
+    height: auto;
+}
+
+.cmd-send-bar td {
+    padding: 15px 5px;
 }

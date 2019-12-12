@@ -24,177 +24,11 @@
     <link rel="stylesheet" type="text/css" href="../css/style.css" />
     <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
     <link rel="stylesheet" type="text/css" href="../css/advance_setting.css" />
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
-    <script type="text/javascript">
-        var isStart = false;
-        var token = "";
-        var file_data = "";
-        $(function () {
-            token = getToken();
-            /*
-             * Check this page's permission and load navbar
-             */
-            if (!getPermissionOfPage("Reference")) {
-                alert("Permission denied!");
-                window.location.href = '../index.html';
-            }
-            setNavBar("Reference", "Update");
-
-            var value = 0;
-            var time = 100;
-            var st = 0;
-
-            function reset() {
-                clearTimeout(st);
-                value = 0;
-                $("#prog").removeClass("progress-bar-info").css("width", "0%");
-            }
-
-            function increment() {
-                value++;
-                if (value > 0 && value < 100) {
-                    $("#prog").css("width", value + "%").text(value + "%");
-                    $("#prog").addClass("progress-bar-info");
-                    st = setTimeout(increment, time);
-                } else if (value == 100) {
-                    $("#prog").css("width", value + "%").text(value + "%");
-                    $("#start").prop("disabled", false);
-                }
-                return;
-
-                //接收更新進度
-                var requestArray = {
-                    "Command_Type": ["Write"],
-                    "Command_Name": [""],
-                    "api_token": [token]
-                };
-                var xmlHttp = createJsonXmlHttp("sql");
-                xmlHttp.onreadystatechange = function () {
-                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                            var progress = parseInt(revObj.Value[0].Values, 10);
-                            if (progress > 0 && progress < 100) {
-                                $("#prog").css("width", progress + "%").text(progress + "%");
-                                $("#prog").addClass("progress-bar-info");
-                                st = setTimeout(increment, time);
-                            } else if (progress == 100) {
-                                $("#prog").css("width", progress + "%").text(progress + "%");
-                                $("#start").prop("disabled", false);
-                                alert("Update Success!")
-                            }
-                        }
-                    }
-                };
-                xmlHttp.send(JSON.stringify(requestArray));
-            }
-
-            $("#start").click(function () {
-                if ($("#start").val() == "start") { //傳輸bin檔到Server
-                    $("#start").val("clean").text("Reset Progress Bar").prop("disabled", true);
-
-                    increment();
-                    return;
-
-                    if (file_data == "") {
-                        alert("請先載入更新檔");
-                    } else {
-                        var requestArray = {
-                            "Command_Type": ["Write"],
-                            "Command_Name": [""],
-                            "Value": file_data,
-                            "api_token": [token]
-                        };
-                        var xmlHttp = createJsonXmlHttp("sql");
-                        xmlHttp.onreadystatechange = function () {
-                            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                                var revObj = JSON.parse(this.responseText);
-                                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                                    //當Server回傳接收成功後
-                                    //持續向Server傳送取得更新進度的要求
-                                    //var revInfo = revObj.Value[0].Values ? revObj.Value[0].Values : [];
-                                    increment();
-                                } else {
-                                    alert("傳送更新檔失敗，請稍候再試一次!");
-                                }
-                            }
-                        };
-                        xmlHttp.send(JSON.stringify(requestArray));
-                    }
-
-                } else if ($("#start").val() == "clean") {
-                    $("#start").val("start").text("Update Firmware");
-                    clearTimeout(st);
-                    setTimeout(reset);
-                }
-            });
-            $("#stop").click(function () {
-                if ("pause" == $("#stop").val()) {
-                    //$("#prog").stop();
-                    clearTimeout(st);
-                    $("#stop").val("goon").text("Continue Update");
-                } else if ("goon" == $("#stop").val()) {
-                    increment();
-                    $("#stop").val("pause").text("Stop Update");
-                }
-            });
-        });
-
-        function handleFiles(files) {
-            $("#start").prop("disabled", true);
-            $("#stop").prop("disabled", true);
-            var file = files[0];
-            var fileExt = (file.name.substring(file.name.lastIndexOf('.'))).toLowerCase();
-            if (fileExt == ".bin") {
-                var src = document.getElementById('file_upload').value;
-                document.getElementById('update_file').value = src;
-                if (window.File && window.FileReader && window.FileList && window.Blob) {
-                    var fr = new FileReader();
-                    fr.onloadend = function (e) {
-                        file_data = e.target.result;
-                        console.log("file data => " + file_data);
-                        $("#start").prop("disabled", false);
-                        $("#stop").prop("disabled", false);
-                    };
-                    fr.readAsBinaryString(file);
-                } else {
-                    alert('The File APIs are not fully supported in this browser.');
-                }
-            } else {
-                document.getElementById('file_form').reset();
-                alert("The uploading file's ext should be .bin!");
-            }
-        }
-
-        function StartClick() {
-            var delaytime = 100;
-            var requestArray = {
-                "Command_Type": ["Write"],
-                "Command_Name": ["Launch"],
-                "api_token": [token]
-            };
-            if (!isStart) {
-                isStart = true;
-                requestArray.Value = "Start";
-                document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-pause\">" +
-                    "</i><span>" + $.i18n.prop('i_stop') + "</span>";
-            } else {
-                isStart = false;
-                requestArray.Value = "Stop";
-                document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\">" +
-                    "</i><span>" + $.i18n.prop('i_start') + "</span>";
-            }
-            var xmlHttp = createJsonXmlHttp("test2");
-            xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
-                    var pass = checkTokenAlive(token, revObj);
-                }
-            };
-            xmlHttp.send(JSON.stringify(requestArray));
-        }
-    </script>
+    <script type="text/javascript" src="../js/advance_common.js"></script>
+    <script type="text/javascript" src="../js/advance_update.js"></script>
 </head>
 
 <body>
@@ -221,15 +55,15 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="center">
-                    <h4>Update File : </h4><br>
+                    <h4>Update File : </h4>
                     <input type="text" id="update_file" style="width: 100%;" readonly><br><br>
                     <form id="file_form" style="text-align: right;">
                         <label for="file_upload" class="custom-file-upload">
                             <i class="fa fa-cloud-upload"></i> ← Select Firmware
-                        </label><br><br>
+                        </label><br>
                         <input id="file_upload" type="file" accept=".bin" onchange="handleFiles(this.files)" />
                     </form>
-                    <h4>Update Progress : </h4><br>
+                    <h4>Update Progress : </h4>
                     <div class="progress">
                         <div class="progress progress-striped active">
                             <div id="prog" class="progress-bar" role="progressbar" aria-valuenow="" aria-valuemin="0"
@@ -237,15 +71,72 @@
                                 <span id="proglabel"></span>
                             </div>
                         </div>
-                    </div><br><br>
-                    <div class="form-group">
-                        <div class="col-sm-offset-4 col-sm-6">
-                            <button id="stop" class="btn btn-primary" value="pause" disabled>Stop Update</button>
-                            <button id="start" class="btn btn-primary" value="start" disabled>Update Firmware</button>
-                        </div>
+                    </div>
+                    <br>
+                    <div style="text-align: center;">
+                        <button class="btn btn-primary" id="btn_reset">Reset</button>
+
+                        <button class="btn btn-primary" id="btn_upload" style="margin-left: 10px;">Upload
+                            Firmware</button>
+
+                        <!--<label for="btn_reset" class="btn-reset" title="Reset Progress">
+                            <i class="fas fa-undo-alt"></i></label>
+                        <input id="btn_reset" type="button" class="btn-hidden" />
+
+                        <label for="btn_upload" class="btn-upload" title="Upload Firmware">
+                            <i class="fas fa-upload"></i></label>
+                        <input id="btn_upload" type="button" class="btn-hidden" />-->
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="row">
+            <br>
+            <div class="col-lg-12">
+                <div class="network-bar">
+                    <label>Network interface card :&nbsp;</label><select id="interface_card"></select> ,&nbsp;
+                    <label>Local IP :&nbsp;</label><input type="text" id="local_ip" value="" readonly>
+
+                    <label for="search_devices" class="btn-label label-search" title="Search Devices">
+                        <i class="fas fa-search"></i></label>
+                    <input id="search_devices" type="button" onclick="searchDevices()" class="btn-hidden" />
+
+                    <label style="margin: 0px 5px 0px 20px;">Device IP :&nbsp;<select
+                            id="sel_device_ip"></select></label>
+
+                    <label for="btn_update" class="btn-label label-update" title="Update Firmware">
+                        <i class="fas fa-upload"></i></label>
+                    <input id="btn_update" type="button" class="btn-hidden" />
+                    <!--buttons to use files-->
+                    <span style="float: right;">
+                        <label for="btn_check_fm" class="btn-label label-check" title="Check Firmware">
+                            <i class="fas fa-check"></i></label>
+                        <input id="btn_check_fm" type="button" class="btn-hidden" />
+
+                        <label for="btn_delete" class="btn-label label-delete" title="Delete Firmware">
+                            <i class="fas fa-trash-alt"></i></label>
+                        <input id="btn_delete" type="button" class="btn-hidden" />
+
+                        <label for="btn_refresh" class="btn-label label-refresh" title="Refresh the folder">
+                            <i class="fas fa-sync-alt"></i></label>
+                        <input id="btn_refresh" type="button" class="btn-hidden" />
+                    </span>
+                </div>
+                <div id="block_files_list"></div>
+            </div>
+            <!--<div class="col-lg-3">
+                <label>Network interface card :&nbsp;</label><select id="interface_card"></select>
+                <br><br>
+                <label>Local IP :&nbsp;</label><input type="text" id="local_ip" value="" readonly>
+                <br><br>
+                <button class="btn btn-primary" id="search_devices" style="float: right;"
+                    onclick="searchDevices()">Search Devices</button>
+                <br><br>
+                <label>Device IP :&nbsp;<select id="sel_device_ip"></select></label>
+                <br><br>
+                <button id="btn_update" class="btn btn-primary">Update Firmware</button>
+            </div>-->
         </div>
     </div>
     <!-- i18n -->

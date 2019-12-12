@@ -1,11 +1,175 @@
+/*.nav-tabs {
+    margin-left: 50px;
+}*/
+
 .tab-content {
-    margin-top: 10px;
+    margin: 0px 0px 0px 10px;
 }
 
-.search_result {
-    width: 80%;
+label {
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+th,
+td {
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+input[type='month'] {
+    background: transparent;
+}
+
+.report-page {
+    width: 910px;
+    height: auto;
+    min-height: 1300px;
+    margin: 10px 10px 20px 10px;
+    padding: 20px;
+    border: 1px solid black;
+    /*border-radius: 5px;*/
+    background-color: rgb(240, 240, 240);
+    text-align: center;
+    box-shadow: 10px 10px 6px rgb(0, 0, 0);
+}
+
+.report-page h3 {
+    color: black;
+    margin: auto;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+.report-page label {
+    float: left;
+    color: black;
+}
+
+.report-page input {
+    background: rgb(255, 255, 255) !important;
+}
+
+.table-line th {
+    border: 1px solid rgb(0, 105, 175);
+    background: rgb(0, 104, 173);
+    color: white;
+    text-align: center;
+}
+
+#search_member_list th:nth-child(1),
+#table_members th:nth-child(1) {
+    padding: 2px 5px;
+    text-align: left;
+}
+
+.nav-tabs a {
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+.nav-tabs li.active a {
+    color: rgb(0, 104, 173) !important;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+.table-line td {
+    border: 1px solid rgb(0, 105, 175);
+    background: #f2f2f2;
+    color: black;
+    padding: 2px 5px;
+}
+
+tr.selected td {
+    background-color: #7ccfff;
 }
 
 .search_bar {
-    width: 20%;
+    margin-top: 10px;
+    border: 1px solid rgb(0, 97, 161);
+    padding: 20px;
+    /*box-shadow:1px 1px 3px 2px #000000 inset;
+    background: #111e31;*/
+}
+
+.btn {
+    padding: 3px 8px;
+    margin: 5px;
+}
+
+.btn-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.btn-delete {
+    cursor: pointer;
+    color: rgb(255, 38, 38);
+    font-size: 20px;
+    margin: 0px 5px 0px 5px;
+}
+
+.btn-delete:hover {
+    color: rgb(255, 113, 113);
+}
+
+.btn-add {
+    cursor: pointer;
+    color: rgb(0, 119, 255);
+    font-size: 20px;
+    margin: 0px 5px 0px 5px;
+}
+
+.btn-add:hover {
+    color: rgb(90, 158, 236);
+}
+
+.btn-search {
+    float: right;
+    cursor: pointer;
+    background: transparent !important;
+    color: #fc8e10;
+    font-size: 20px;
+}
+
+.btn-search:hover {
+    color: #ffdaaf;
+}
+
+input[type="text"] {
+    width: 160px;
+}
+
+.table-noborder td {
+    padding: 3px 4px;
+    min-width: 80px;
+}
+
+.member-list {
+    max-height: 300px;
+    width: 100%;
+    overflow: auto;
+}
+
+.member-table th,
+.member-table td {
+    border: 1px solid rgb(0, 97, 161);
+    padding: 2px 5px;
+}
+
+.progress {
+    top: 10px;
+    left: 45%;
+    position: absolute;
+    margin: auto;
+    width: auto;
+    height: auto;
+    display: none;
+    padding: 8px 12px;
+    border: 1px solid #3372b7;
+    border-radius: 5px;
+    background: rgba(255, 255, 255);
+    color: black;
 }

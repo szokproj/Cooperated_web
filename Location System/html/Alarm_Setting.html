@@ -63,123 +63,12 @@
         </div>
 
         <ul class="nav nav-tabs">
-            <!--<li><a data-toggle="tab" href="#tab_start_setting" class="i18n" name="i_displaySetting"></a></li>-->
             <li class="active">
                 <a data-toggle="tab" href="#tab_alarm_setting" class="i18n" name="i_alarm"></a></li>
             <li><a data-toggle="tab" href="#tab_time_setting" class="i18n" name="i_timeSlot"></a></li>
             <li><a data-toggle="tab" href="#tab_fence_setting" class="i18n" name="i_electronicFence"></a></li>
         </ul>
         <div class="tab-content">
-            <!--<div id="tab_start_setting" class="tab-pane fade">
-                <div class="row">
-                    <div class="col-lg-3"></div>
-                    <div class="col-lg-6" style="background-color:white;">
-                        <h3 class="i18n" name="i_displayAlarm"></h3>
-                        <table id="table_alarm_setting" class="table-line table-noline-inner">
-                            <thead>
-                                <tr>
-                                    <th class="i18n" name="i_alarmName"></th>
-                                    <th class="i18n" name="i_startSwitch"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><label class="i18n" name="i_lowPowerAlarm"> : </label></td>
-                                    <td><input id="off_alarm_low" type="radio" class='beauty' name="alarm_low_power"
-                                            value="0">
-                                        <label for="off_alarm_low">off</label>
-                                        <input id="on_alarm_low" type="radio" class='beauty' name="alarm_low_power"
-                                            value="1" checked="checked">
-                                        <label for="on_alarm_low">on</label></td>
-                                </tr>
-                                <tr>
-                                    <td><label class="i18n" name="i_helpAlarm"> : </label></td>
-                                    <td><input id="off_alarm_help" type="radio" class='beauty' name="alarm_help"
-                                            value="0">
-                                        <label for="off_alarm_help">off</label>
-                                        <input id="on_alarm_help" type="radio" class='beauty' name="alarm_help"
-                                            value="1" checked="checked">
-                                        <label for="on_alarm_help">on</label></td>
-                                </tr>
-                                <tr>
-                                    <td><label class="i18n" name="i_activeAlarm"> : </label></td>
-                                    <td><input id="off_alarm_active" type="radio" class='beauty' name="alarm_active"
-                                            value="0">
-                                        <label for="off_alarm_active">off</label>
-                                        <input id="on_alarm_active" type="radio" class='beauty' name="alarm_active"
-                                            value="1" checked="checked">
-                                        <label for="on_alarm_active">on</label></td>
-                                </tr>
-                                <tr>
-                                    <td><label class="i18n" name="i_stillAlarm"> : </label></td>
-                                    <td><input id="off_alarm_still" type="radio" class='beauty' name="alarm_still"
-                                            value="0">
-                                        <label for="off_alarm_still">off</label>
-                                        <input id="on_alarm_still" type="radio" class='beauty' name="alarm_still"
-                                            value="1" checked="checked">
-                                        <label for="on_alarm_still">on</label></td>
-                                </tr>
-                                <tr>
-                                    <td><label class="i18n" name="i_electronicFence"> : </label></td>
-                                    <td><input id="off_alarm_fence" type="radio" class='beauty' name="alarm_fence"
-                                            value="0">
-                                        <label for="off_alarm_fence">off</label>
-                                        <input id="on_alarm_fence" type="radio" class='beauty' name="alarm_fence"
-                                            value="1" checked="checked">
-                                        <label for="on_alarm_fence">on</label></td>
-                                </tr>
-                                <tr>
-                                    <td><label class="i18n" name="i_stayAlarm"> : </label></td>
-                                    <td><input id="off_alarm_stay" type="radio" class='beauty' name="alarm_stay"
-                                            value="0">
-                                        <label for="off_alarm_stay">off</label>
-                                        <input id="on_alarm_stay" type="radio" class='beauty' name="alarm_stay"
-                                            value="1" checked="checked">
-                                        <label for="on_alarm_stay">on</label></td>
-                                </tr>
-                                <tr>
-                                    <td><label class="i18n" name="i_hiddenAlarm"> : </label></td>
-                                    <td><input id="off_alarm_hidden" type="radio" class='beauty' name="alarm_hidden"
-                                            value="0">
-                                        <label for="off_alarm_hidden">off</label>
-                                        <input id="on_alarm_hidden" type="radio" class='beauty' name="alarm_hidden"
-                                            value="1" checked="checked">
-                                        <label for="on_alarm_hidden">on</label></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div style="text-align:center;">
-                            <br><input type="button" id="btn_submit_alarm_setting" class="btn btn-primary i18n-input" 
-                            selectattr="title" selectname="i_submit"/>
-                        </div>
-                        
-                        <h3>警報觸發</h3>
-                        <table id="table_alarm_release">
-                            <tr>
-                                <td><label>手動解除警報:</label></td>
-                                <td><input id="off_manual_release" type="radio" class='beauty' name="manual_release" value="0">
-                                    <label for="off_manual_release">off</label>
-                                    <input id="on_manual_release" type="radio" class='beauty' name="manual_release" value="1"
-                                        checked="checked">
-                                    <label for="on_manual_release">on</label></td>
-                            </tr>
-                        <tr>
-                            <td><label>警報時段:</label></td>
-                            <td><input id="duration" type="text" value=""></td>
-                        </tr>
-                        <tr>
-                            <td><label>警報聲:</label></td>
-                            <td><select id="siren">
-                                    <option value=""></option>
-                                </select>
-                            </td>
-                        </tr>
-                        </table>
-                        
-                    </div>
-                    <div class="col-lg-3"></div>
-                </div>
-            </div>-->
             <div id="tab_alarm_setting" class="tab-pane fade in active">
                 <div class="row">
                     <div class="col-lg-12">

@@ -237,15 +237,17 @@ table.noborder-block {
 }
 
 /*test*/
-#progress_block {
-    top: 0px;
-    margin: auto;
-    border: 2px solid gray;
-    border-radius: 5px;
-    background: white;
-    color: black;
-    position: absolute;
+.progress {
+    top: 10px;
     left: 45%;
-    padding: 16px;
+    position: absolute;
+    margin: auto;
+    width: auto;
+    height: auto;
     display: none;
+    padding: 8px 12px;
+    border: 1px solid #3372b7;
+    border-radius: 5px;
+    background: rgba(255, 255, 255);
+    color: black;
 }

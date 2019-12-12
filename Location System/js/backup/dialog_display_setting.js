@@ -1,4 +1,4 @@
-$(function () {
+function setDisplayDialog() {
     var dialog;
 
     function sendResult() {
@@ -40,7 +40,7 @@ $(function () {
         $("#chk_alarm_still").prop("checked", Setting.display_alarm_still);
         dialog.dialog("open");
     });
-});
+}
 
 function getFocusSetFromCookie() {
     var cookie = Cookies.get("display_setting");

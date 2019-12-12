@@ -31,7 +31,7 @@ var token = "",
     RedBling = true,
     pageTimer = {},
     canvasArray = [], //input myCanvas
-    frames = 10;
+    frames = 6;
 
 var isFocus = false;
 var locating_id = "";
@@ -147,7 +147,7 @@ function draw() {
 }
 
 function Start() {
-    let delaytime = 200; //設定計時器
+    let delaytime = 100; //設定計時器
     clearInterval(pageTimer["timer1"]);
     pageTimer["timer1"] = setInterval(function () {
         updateAlarmList();
@@ -159,13 +159,6 @@ function Start() {
     pageTimer["timer2"] = setInterval(function () {
         updateAlarmHandle();
     }, 1000);
-
-    if (pageTimer["timer3"]) {
-        pageTimer["timer3"].forEach(timeout => {
-            clearTimeout(timeout);
-        });
-    }
-    pageTimer["timer3"] = [];
 }
 
 function Stop() {
@@ -413,34 +406,34 @@ function updateAlarmList() {
 
 function inputTagPoints(old_point, new_point) {
     let point_array = [];
-    //old_point = temp_arr[element.tag_id].point[frames-1];
+    //old_point = temp_arr[element.tag_id].point[6];
     //new_point = element;
-    if (!old_point || old_point.group_id != new_point.group_id) {
-        for (let i = 0; i < frames; i++) {
+    if (!old_point) {
+        for (let i = 0; i < frames + 1; i++) {
             point_array.push({
                 x: parseFloat(new_point.tag_x),
                 y: parseFloat(new_point.tag_y),
                 group_id: new_point.group_id
             });
         }
-        /*} else if (old_point.group_id != new_point.group_id) {
-            for (let i = 0; i < frames; i++) {
-                point_array.push(old_point);
-            }
-            point_array.push({
-                x: parseFloat(new_point.tag_x),
-                y: parseFloat(new_point.tag_y),
-                group_id: new_point.group_id
-            });*/
+    } else if (old_point.group_id != new_point.group_id) {
+        for (let i = 0; i < frames; i++) {
+            point_array.push(old_point);
+        }
+        point_array.push({
+            x: parseFloat(new_point.tag_x),
+            y: parseFloat(new_point.tag_y),
+            group_id: new_point.group_id
+        });
     } else {
         let frame_move = {
-            x: (new_point.tag_x - old_point.x) / (frames),
-            y: (new_point.tag_y - old_point.y) / (frames)
+            x: (new_point.tag_x - old_point.x) / frames,
+            y: (new_point.tag_y - old_point.y) / frames
         };
-        for (let i = 0; i < frames; i++) {
+        for (let i = 0; i < frames + 1; i++) {
             point_array.push({
-                x: old_point.x + frame_move.x * (i + 1),
-                y: old_point.y + frame_move.y * (i + 1),
+                x: old_point.x + frame_move.x * i,
+                y: old_point.y + frame_move.y * i,
                 group_id: new_point.group_id
             });
         }
@@ -469,7 +462,7 @@ function updateTagList() {
                     let number = element.tag_id in MemberList ? MemberList[element.tag_id].number : "",
                         name = element.tag_id in MemberList ? MemberList[element.tag_id].name : "",
                         color = element.tag_id in MemberList ? MemberList[element.tag_id].color : "",
-                        old_point = temp_arr[element.tag_id] ? temp_arr[element.tag_id].point[frames - 1] : null,
+                        old_point = temp_arr[element.tag_id] ? temp_arr[element.tag_id].point[frames] : null,
                         point_array = inputTagPoints(old_point, element);
                     //update tag array
                     if (element.tag_id == locating_id) {
@@ -620,7 +613,7 @@ function locateTag(tag_id) {
     if (tag_id in tagArray) {
         isFocus = true;
         locating_id = tag_id;
-        checkMapIsUsed(groupfindMap[tagArray[tag_id].point[frames - 1].group_id]);
+        checkMapIsUsed(groupfindMap[tagArray[tag_id].point[frames].group_id]);
     } else {
         showMyModel();
     }
@@ -656,7 +649,7 @@ function search() {
                 for (let j in tagArray) {
                     let v = tagArray[j];
                     group_arr.forEach(group_id => {
-                        if (v.point[frames - 1].group_id == group_id) {
+                        if (v.point[frames].group_id == group_id) {
                             let user_id = parseInt(v.id.substring(8), 16),
                                 member_data = MemberList[user_id] || {
                                     dept: "",

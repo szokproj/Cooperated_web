@@ -314,52 +314,39 @@ function RTLS_Canvas(number) {
         draw = function () {
             if (Map_id == "") //reset canvas map
                 return;
-
-            pageTimer["timer3"].forEach(timeout => {
-                clearTimeout(timeout);
+            adjust.setSize();
+            if (display_setting.display_fence)
+                createFences();
+            anchorArray.forEach(function (v) {
+                drawAnchor(ctx, v.id, v.type, v.x, v.y, dot_size.anchor, 1 / Zoom);
             });
-            pageTimer["timer3"] = [];
-
-            for (let t = 0; t < frames; t++) {
-                pageTimer["timer3"].push(
-                    setTimeout(function () {
-                        adjust.setSize();
-                        if (display_setting.display_fence)
-                            createFences();
-                        anchorArray.forEach(function (v) {
-                            drawAnchor(ctx, v.id, v.type, v.x, v.y, dot_size.anchor, 1 / Zoom);
-                        });
-                        for (let tag_id in tagArray) {
-                            let v = tagArray[tag_id];
-                            if (groupfindMap[v.point[t].group_id] == Map_id)
-                                drawTags(ctx, v.id, v.point[t].x, canvasImg.height - v.point[t].y, v.color, dot_size.tag, 1 / Zoom);
-                        }
-                        alarmArray.forEach(function (v) {
-                            if (groupfindMap[v.point[t].group_id] == Map_id)
-                                drawAlarmTags(ctx, v.id, v.point[t].x, canvasImg.height - v.point[t].y, v.status, dot_size.alarm, 1 / Zoom);
-                        });
-                        //Focus the position of this locating tag.
-                        if (isFocus) {
-                            if (locating_id in tagArray) {
-                                let target = tagArray[locating_id],
-                                    target_map = groupfindMap[target.point[t].group_id] || "",
-                                    x = target.point[t].x,
-                                    y = canvasImg.height - target.point[t].y;
-                                if (target_map == Map_id) {
-                                    adjust.focusCenter(x, y);
-                                    if (target.type == "alarm")
-                                        drawAlarmFocusFrame(ctx, x, y, dot_size.alarm, 1 / Zoom);
-                                    else
-                                        drawFocusFrame(ctx, x, y, dot_size.tag, 1 / Zoom);
-                                    //drawFocusMark(ctx, x, y, 1 / Zoom);
-                                } else if (number == 1) { //canvas1 = Main Canvas
-                                    checkMapIsUsed(target_map);
-                                }
-                            }
-                        }
-                        //console.log("draw time : " + new Date().getTime());
-                    }, 20 * (t + 1))
-                );
+            for (let tag_id in tagArray) {
+                let v = tagArray[tag_id];
+                if (groupfindMap[v.group_id] == Map_id)
+                    drawTags(ctx, v.id, v.x, canvasImg.height - v.y, v.color, dot_size.tag, 1 / Zoom);
+            }
+            alarmArray.forEach(function (v) {
+                if (groupfindMap[v.group_id] == Map_id)
+                    drawAlarmTags(ctx, v.id, v.x, canvasImg.height - v.y, v.status, dot_size.alarm, 1 / Zoom);
+            });
+            //Focus the position of this locating tag.
+            if (isFocus) {
+                if (locating_id in tagArray) {
+                    let target = tagArray[locating_id],
+                        target_map = target.group_id in groupfindMap ? groupfindMap[target.group_id] : "",
+                        x = target.x,
+                        y = canvasImg.height - target.y;
+                    if (target_map == Map_id) {
+                        adjust.focusCenter(x, y);
+                        if (target.type == "alarm")
+                            drawAlarmFocusFrame(ctx, x, y, dot_size.alarm, 1 / Zoom);
+                        else
+                            drawFocusFrame(ctx, x, y, dot_size.tag, 1 / Zoom);
+                        //drawFocusMark(ctx, x, y, 1 / Zoom);
+                    } else if (number == 1) { //canvas1 = Main Canvas
+                        checkMapIsUsed(target_map);
+                    }
+                }
             }
         },
         event = {

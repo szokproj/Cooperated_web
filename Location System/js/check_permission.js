@@ -7,6 +7,7 @@ var account = "",
         Map_Setting: "0",
         Anchor_Setting: "0",
         Alarm_Setting: "0",
+        Report: "0",
         Reference: "2",
         Account_Management: "2"
     };
@@ -197,6 +198,11 @@ function Navbar() {
                         navbarHtml += (page_name == parent_page ? selected_li : "<li><a href=\"../Alarm_Setting.html\">") +
                             "<i class=\"fas fa-bell\" style=\"padding-left:2px;\"></i>" +
                             "<span>" + $.i18n.prop('alarm_settingPage') + "</span></a></li>";
+                        break;
+                    case "Report":
+                        navbarHtml += (page_name == parent_page ? selected_li : "<li><a href=\"../Report.html\">") +
+                            "<i class=\"far fa-file-alt\" style=\"padding-left:3px;\"></i>" +
+                            "<span>" + $.i18n.prop('report') + "</span></a></li>";
                         break;
                     case "Reference":
                         navbarHtml += (page_name == parent_page ? selected_li : "<li><a href=\"../Reference.html\">") +

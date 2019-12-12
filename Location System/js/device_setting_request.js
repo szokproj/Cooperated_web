@@ -30,7 +30,7 @@ function Load() {
             if (checkTokenAlive(token, revObj)) {
                 var revInfo = revObj.Value[0];
                 document.getElementById("local_ip").value = revInfo[0].ip;
-                var html = "<select id=\"interface_card\">";
+                var html = "";
                 for (i = 0; i < revInfo.length; i++) {
                     if (revInfo[i].ip == cookie) {
                         html += "<option value=\"" + revInfo[i].ip + "\" selected>" + revInfo[i].net_interface_id +
@@ -40,8 +40,7 @@ function Load() {
                         html += "<option value=\"" + revInfo[i].ip + "\">" + revInfo[i].net_interface_id + "</option>";
                     }
                 }
-                html += "</select>";
-                document.getElementById("select_interface_card").innerHTML = html;
+                document.getElementById("interface_card").innerHTML = html;
                 $(function () {
                     $("#interface_card").change(function () {
                         $("#local_ip").val($(this).children('option:selected').val());

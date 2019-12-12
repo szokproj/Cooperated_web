@@ -1,4 +1,4 @@
-$(function () {
+function setSizeDialog() {
     var dialog,
         slider_anchor = document.getElementById("slider_anchor_size"),
         slider_tag = document.getElementById("slider_tag_size"),
@@ -78,7 +78,7 @@ $(function () {
                 break;
         }
     }
-});
+}
 
 
 function getSizeFromCookie() {

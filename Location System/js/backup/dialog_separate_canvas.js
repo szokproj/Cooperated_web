@@ -1,4 +1,4 @@
-$(function () {
+function setSeparateDialog() {
     var dialog;
 
     dialog = $("#separate_canvas_dialog").dialog({
@@ -32,4 +32,4 @@ $(function () {
         $("#select_canvas_mode").val(mode);
         dialog.dialog("open");
     });
-});
+}
