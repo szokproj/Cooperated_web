@@ -168,7 +168,7 @@ function reset() {
 function updateFileToDevice() {
     let ip_addr = $("#sel_device_ip").val();
     if (!ip_addr || ip_addr == "") {
-        alert("請選擇裝置IP address!");
+        alert("請選擇裝置的IP address!");
         return;
     } else if (fileName == "") {
         alert("請先點選下方資料夾內的更新檔!");
@@ -188,10 +188,12 @@ function updateFileToDevice() {
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 let revObj = JSON.parse(this.responseText);
-                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                    alert("Updated the firmware successfully.");
-                } else {
-                    alert("Failed to update firmware!");
+                if (checkTokenAlive(token, revObj) && revObj.Value[0]) {
+                    if (revObj.Value[0].success > 0) {
+                        alert("Updated the firmware successfully.");
+                    } else {
+                        alert("Failed to update firmware!");
+                    }
                 }
             }
         };
@@ -242,9 +244,9 @@ function checkFileByName() {
             let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 if (revObj.Value[0].Status == "FW check OK")
-                    alert("檔案確認正常");
+                    alert("檔案格式正確");
                 else
-                    alert("檔案受損");
+                    alert("檔案格式錯誤");
             } else {
                 alert(revObj.Value[0].Status);
             }

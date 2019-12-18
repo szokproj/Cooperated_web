@@ -314,15 +314,13 @@ function completeSearch() {
     $('#progress_block').hide();
     clearTimeout(timeDelay["progress"]);
     alert($.i18n.prop('i_searchOver'));
-    /*if (Object.keys(historyData).length <= 1)
-        alert($.i18n.prop('i_searchNoData'));*/
 }
 
 function getAttendanceList() {
     let interval_times = 0,
         count_times = 0,
         historyData = {},
-        search_tags = {},
+        tagid_number = {},
         date = document.getElementById("date_one_day").value,
         date_arr = date.split("-"),
         members_length = sel_members_number.length,
@@ -342,11 +340,11 @@ function getAttendanceList() {
     $("#table_member_attendance tbody").empty();
 
     sel_members_number.forEach(function (number, i) {
-        let member_data = memberList[number];
-        //getMemberData(parseInt(tag_id.value, 16));
-        search_tags[member_data.tag_id.substring(8)] = number;
+        let member_data = memberList[number],
+            tag_id = member_data.tag_id.substring(8);
+        tagid_number[tag_id] = number;
         timeDelay["search"].push(setTimeout(function () {
-            historyData[member_data.tag_id.substring(8)] = {
+            historyData[tag_id] = {
                 first: null,
                 last: null
             };
@@ -354,7 +352,7 @@ function getAttendanceList() {
                 "Command_Type": ["Read"],
                 "Command_Name": ["GetLocus_combine_hour"],
                 "Value": {
-                    "tag_id": member_data.tag_id.substring(8),
+                    "tag_id": tag_id,
                     "start_date": date,
                     "start_time": "00:00:00",
                     "end_date": date,
@@ -362,9 +360,9 @@ function getAttendanceList() {
                 },
                 "api_token": [token]
             });
-        }, 200 * i));
+        }), 200 * i);
     });
-    //inputWaitTime(interval_times);
+
 
     function sendRequest(request) {
         let xmlHttp = createJsonXmlHttp("sql");
@@ -373,7 +371,7 @@ function getAttendanceList() {
                 if (!this.responseText) {
                     $('#progress_block').hide();
                     clearTimeout(timeDelay["progress"]);
-                    //alert("搜尋失敗，請稍候再試一次!");
+                    alert("搜尋失敗，請稍候再試一次!");
                     return;
                 }
                 let revObj = JSON.parse(this.responseText);
@@ -407,7 +405,7 @@ function getAttendanceList() {
                             });
                         }, 100));
                     } else {
-                        let member_info = memberList[search_tags[tag_id]],
+                        let member_info = memberList[tagid_number[tag_id]],
                             attend_from = historyData[tag_id].first,
                             attend_end = historyData[tag_id].last,
                             tr_context = "";

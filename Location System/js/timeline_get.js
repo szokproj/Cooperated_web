@@ -713,8 +713,18 @@ function search() {
         return getAlarmHandleByTime();
     }
     stopTimeline();
-    var datetime_start = Date.parse($("#start_date").val() + " " + $("#start_time").val());
-    var datetime_end = Date.parse($("#end_date").val() + " " + $("#end_time").val());
+
+    if ($("#start_date").val() == "")
+        return alert("請選擇開始日期!");
+    else if ($("#start_time").val() == "")
+        return alert("請選擇開始時間!");
+    else if ($("#end_date").val() == "")
+        return alert("請選擇結束日期!");
+    else if ($("#end_time").val() == "")
+        return alert("請選擇結束時間!");
+
+    let datetime_start = Date.parse($("#start_date").val() + " " + $("#start_time").val()),
+        datetime_end = Date.parse($("#end_date").val() + " " + $("#end_time").val());
     if (datetime_end - datetime_start < 60000) {
         return alert($.i18n.prop('i_alertTimeTooShort'));
     } else if (datetime_end - datetime_start > 86400000 * 7) { //86400000 = 一天的毫秒數
@@ -853,8 +863,12 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
                 var index = revInfo.findIndex(function (info) {
                     return info.group_id == group_id;
                 });
-                if (!mapCollection[revInfo[index].map_id])
+                if (index == -1) {
+                    $('#myModal').modal('hide');
+                    clearTimeout(timeDelay["model"]);
+                    alert("此群組不存在，請輸入其他群組編號再查詢!");
                     return false;
+                }
                 group_map.id = revInfo[index].map_id;
                 group_map.name = mapCollection[revInfo[index].map_id].map_name;
                 var start_datetime = new Date(datetime_start)
