@@ -27,6 +27,7 @@ function RTLS_Canvas(number) {
         anchorArray = [],
         fenceList = {},
         isFitWindow = true,
+        times = 0,
         // View parameters
         lastX = 0, //滑鼠最後位置的X座標
         lastY = 0, //滑鼠最後位置的Y座標
@@ -315,51 +316,53 @@ function RTLS_Canvas(number) {
             if (Map_id == "") //reset canvas map
                 return;
 
-            pageTimer["timer3"].forEach(timeout => {
+            pageTimer["draw_frame"]["canvas" + number].forEach(timeout => {
                 clearTimeout(timeout);
             });
-            pageTimer["timer3"] = [];
+            pageTimer["draw_frame"]["canvas" + number] = [];
 
             for (let t = 0; t < frames; t++) {
-                pageTimer["timer3"].push(
+                pageTimer["draw_frame"]["canvas" + number].push(
                     setTimeout(function () {
-                        adjust.setSize();
-                        if (display_setting.display_fence)
-                            createFences();
-                        anchorArray.forEach(function (v) {
-                            drawAnchor(ctx, v.id, v.type, v.x, v.y, dot_size.anchor, 1 / Zoom);
-                        });
-                        for (let tag_id in tagArray) {
-                            let v = tagArray[tag_id];
-                            if (groupfindMap[v.point[t].group_id] == Map_id)
-                                drawTags(ctx, v.id, v.point[t].x, canvasImg.height - v.point[t].y, v.color, dot_size.tag, 1 / Zoom);
-                        }
-                        alarmArray.forEach(function (v) {
-                            if (groupfindMap[v.point[t].group_id] == Map_id)
-                                drawAlarmTags(ctx, v.id, v.point[t].x, canvasImg.height - v.point[t].y, v.status, dot_size.alarm, 1 / Zoom);
-                        });
-                        //Focus the position of this locating tag.
-                        if (isFocus) {
-                            if (locating_id in tagArray) {
-                                let target = tagArray[locating_id],
-                                    target_map = groupfindMap[target.point[t].group_id] || "",
-                                    x = target.point[t].x,
-                                    y = canvasImg.height - target.point[t].y;
-                                if (target_map == Map_id) {
-                                    adjust.focusCenter(x, y);
-                                    if (target.type == "alarm")
-                                        drawAlarmFocusFrame(ctx, x, y, dot_size.alarm, 1 / Zoom);
-                                    else
-                                        drawFocusFrame(ctx, x, y, dot_size.tag, 1 / Zoom);
-                                    //drawFocusMark(ctx, x, y, 1 / Zoom);
-                                } else if (number == 1) { //canvas1 = Main Canvas
-                                    checkMapIsUsed(target_map);
-                                }
-                            }
-                        }
-                        //console.log("draw time : " + new Date().getTime());
-                    }, 20 * (t + 1))
+                        drawFrame(t);
+                    }, 33 * t) // sendtime / frames = 33
                 );
+            }
+        },
+        drawFrame = function (i) {
+            times = i;
+            //console.log("draw time[" + i + "] : " + new Date().getTime());
+            adjust.setSize();
+            if (display_setting.display_fence)
+                createFences();
+            anchorArray.forEach(function (v) {
+                drawAnchor(ctx, v.id, v.type, v.x, v.y, dot_size.anchor, 1 / Zoom);
+            });
+            for (let tag_id in tagArray) {
+                let v = tagArray[tag_id];
+                if (groupfindMap[v.point[i].group_id] == Map_id)
+                    drawTags(ctx, v.id, v.point[i].x, canvasImg.height - v.point[i].y, v.color, dot_size.tag, 1 / Zoom);
+            }
+            alarmArray.forEach(function (v) {
+                if (groupfindMap[v.point[i].group_id] == Map_id)
+                    drawAlarmTags(ctx, v.id, v.point[i].x, canvasImg.height - v.point[i].y, v.status, dot_size.alarm, 1 / Zoom);
+            });
+            //Focus the position of this locating tag.
+            if (isFocus && locating_id in tagArray) {
+                let target = tagArray[locating_id],
+                    target_map = groupfindMap[target.point[i].group_id] || "",
+                    x = target.point[i].x,
+                    y = canvasImg.height - target.point[i].y;
+                if (target_map == Map_id) {
+                    adjust.focusCenter(x, y);
+                    if (target.type == "alarm")
+                        drawAlarmFocusFrame(ctx, x, y, dot_size.alarm, 1 / Zoom);
+                    else
+                        drawFocusFrame(ctx, x, y, dot_size.tag, 1 / Zoom);
+                    //drawFocusMark(ctx, x, y, 1 / Zoom);
+                } else if (number == 1) { //canvas1 = Main Canvas
+                    checkMapIsUsed(target_map);
+                }
             }
         },
         event = {
@@ -422,19 +425,21 @@ function RTLS_Canvas(number) {
                     y: lastY
                 };
                 for (let tag_id in tagArray) {
-                    let v = tagArray[tag_id];
-                    if (v.type == "normal" && groupfindMap[v.group_id] == Map_id) {
+                    let v = tagArray[tag_id],
+                        point = v.point[times];
+                    if (v.type == "normal" && groupfindMap[point.group_id] == Map_id) {
                         let radius = dot_size.tag / Zoom,
-                            distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y - radius * 2), 2));
+                            distance = Math.sqrt(Math.pow(point.x - p.x, 2) + Math.pow(point.y - (p.y - radius * 2), 2));
                         if (distance <= radius) {
                             setTagDialog(v);
                         }
                     }
                 }
                 alarmArray.forEach(function (v) {
-                    if (groupfindMap[v.group_id] == Map_id) {
+                    let point = v.point[times];
+                    if (groupfindMap[point.group_id] == Map_id) {
                         let radius = dot_size.alarm / Zoom,
-                            distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y - radius * 2), 2));
+                            distance = Math.sqrt(Math.pow(point.x - p.x, 2) + Math.pow(point.y - (p.y - radius * 2), 2));
                         if (distance <= radius) {
                             setAlarmDialog({
                                 id: v.id,
@@ -453,10 +458,11 @@ function RTLS_Canvas(number) {
                         y = e.changedTouches[0].pageY,
                         p = get.pointOnCanvas(x, y);
                     for (let each in tagArray) {
-                        let v = tagArray[each];
-                        if (v.type == "normal" && groupfindMap[v.group_id] == Map_id) {
+                        let v = tagArray[each],
+                            point = v.point[times];
+                        if (v.type == "normal" && groupfindMap[point.group_id] == Map_id) {
                             let radius = dot_size.tag / Zoom,
-                                distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y - radius * 2), 2));
+                                distance = Math.sqrt(Math.pow(point.x - p.x, 2) + Math.pow(point.y - (p.y - radius * 2), 2));
                             if (distance <= radius) {
                                 document.getElementById("member_dialog_tag_id").innerText = parseInt(v.id.substring(8), 16);
                                 document.getElementById("member_dialog_number").innerText = v.number;
@@ -467,9 +473,10 @@ function RTLS_Canvas(number) {
                         }
                     }
                     alarmArray.forEach(function (v) {
-                        if (groupfindMap[v.group_id] == Map_id) {
+                        let point = v.point[times];
+                        if (groupfindMap[point.group_id] == Map_id) {
                             let radius = dot_size.alarm / Zoom,
-                                distance = Math.sqrt(Math.pow(v.x - p.x, 2) + Math.pow(v.y - (p.y - radius * 2), 2));
+                                distance = Math.sqrt(Math.pow(point.x - p.x, 2) + Math.pow(point.y - (p.y - radius * 2), 2));
                             if (distance <= radius) {
                                 setAlarmDialog({
                                     id: v.id,
@@ -566,7 +573,7 @@ function RTLS_Canvas(number) {
             visibleMapName.innerText = "[" + MapList[map_id].name + "]";
             adjust.setCanvas(this.src, serverImg.width, serverImg.height);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+            pageTimer["draw_frame"]["canvas" + number] = []; //smooth display
             xleftView = 0;
             ytopView = 0;
             Zoom = 1.0;
@@ -634,6 +641,7 @@ function canvasMode(blocks) {
             content.innerHTML += createCanvasHtml(1, "100%", h - 100 + "px");
             break;
     }
+    pageTimer["draw_frame"] = {};
     canvasArray = [];
     for (let j = 0; j < number; j++)
         canvasArray.push(new RTLS_Canvas(j + 1));

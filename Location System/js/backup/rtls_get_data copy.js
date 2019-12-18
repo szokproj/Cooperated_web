@@ -7,7 +7,7 @@ var token = "",
     groupfindMap = {},
     MemberList = {},
     tagArray = {},
-    tagList = {},
+    tagArrTemp = {},
     alarmArray = [],
     alarmFilterArr = [],
     xmlHttp = {
@@ -31,10 +31,10 @@ var token = "",
     RedBling = true,
     pageTimer = {},
     canvasArray = [], //input myCanvas
-    frames = 6;
-
-var isFocus = false;
-var locating_id = "";
+    frames = 6,
+    isDraw = false,
+    isFocus = false,
+    locating_id = "";
 
 $(function () {
     //Check this page's permission and load navbar
@@ -147,16 +147,32 @@ function draw() {
 }
 
 function Start() {
-    let delaytime = 100; //設定計時器
+    //設定計時器
     clearInterval(pageTimer["timer1"]);
+    //clearInterval(pageTimer["timer2"]);
+    clearInterval(pageTimer["timer3"]);
+
     pageTimer["timer1"] = setInterval(function () {
         updateAlarmList();
         updateTagList();
         //draw();
-    }, delaytime);
+        //tagArray = {};
+        //tagArray = tagArrTemp;
+        //console.log("update tag array : " + new Date().getTime());
+    }, 200);
 
-    clearInterval(pageTimer["timer2"]);
-    pageTimer["timer2"] = setInterval(function () {
+    if (pageTimer["draw_frame"]) {
+        pageTimer["draw_frame"].forEach(timeout => {
+            clearTimeout(timeout);
+        });
+    }
+    pageTimer["draw_frame"] = [];
+
+    /*pageTimer["timer2"] = setInterval(function () {
+        draw();
+    }, 200);*/
+
+    pageTimer["timer3"] = setInterval(function () {
         updateAlarmHandle();
     }, 1000);
 }
@@ -406,36 +422,44 @@ function updateAlarmList() {
 
 function inputTagPoints(old_point, new_point) {
     let point_array = [];
-    //old_point = temp_arr[element.tag_id].point[6];
+    //old_point = temp_arr[element.tag_id].point[frames-1];
     //new_point = element;
-    if (!old_point) {
-        for (let i = 0; i < frames + 1; i++) {
+    if (!old_point || old_point.group_id != new_point.group_id) {
+        for (let i = 0; i < frames; i++) {
             point_array.push({
                 x: parseFloat(new_point.tag_x),
                 y: parseFloat(new_point.tag_y),
                 group_id: new_point.group_id
             });
         }
-    } else if (old_point.group_id != new_point.group_id) {
-        for (let i = 0; i < frames; i++) {
-            point_array.push(old_point);
-        }
-        point_array.push({
-            x: parseFloat(new_point.tag_x),
-            y: parseFloat(new_point.tag_y),
-            group_id: new_point.group_id
-        });
+        /*} else if (old_point.group_id != new_point.group_id) {
+            for (let i = 0; i < frames; i++) {
+                point_array.push(old_point);
+            }
+            point_array.push({
+                x: parseFloat(new_point.tag_x),
+                y: parseFloat(new_point.tag_y),
+                group_id: new_point.group_id
+            });*/
     } else {
         let frame_move = {
             x: (new_point.tag_x - old_point.x) / frames,
             y: (new_point.tag_y - old_point.y) / frames
         };
-        for (let i = 0; i < frames + 1; i++) {
-            point_array.push({
-                x: old_point.x + frame_move.x * i,
-                y: old_point.y + frame_move.y * i,
-                group_id: new_point.group_id
-            });
+        for (let i = 0; i < frames; i++) {
+            if (i == frames - 1) {
+                point_array.push({
+                    x: parseFloat(new_point.tag_x),
+                    y: parseFloat(new_point.tag_y),
+                    group_id: new_point.group_id
+                });
+            } else {
+                point_array.push({
+                    x: old_point.x + frame_move.x * (i + 1),
+                    y: old_point.y + frame_move.y * (i + 1),
+                    group_id: new_point.group_id
+                });
+            }
         }
     }
     return point_array;
@@ -453,8 +477,10 @@ function updateTagList() {
         if (xmlHttp["getTag"].readyState == 4 || xmlHttp["getTag"].readyState == "complete") {
             let revObj = JSON.parse(this.responseText);
             if (!checkTokenAlive(token, revObj)) {
+                console.log("get datas : " + new Date().getTime());
                 let revInfo = revObj, //.Value[0];
-                    temp_arr = tagArray, //=oldArray
+                    //tagArray = oldArray
+                    temp = tagArray,
                     update = 0,
                     focus_data = null;
                 tagArray = {};
@@ -462,7 +488,7 @@ function updateTagList() {
                     let number = element.tag_id in MemberList ? MemberList[element.tag_id].number : "",
                         name = element.tag_id in MemberList ? MemberList[element.tag_id].name : "",
                         color = element.tag_id in MemberList ? MemberList[element.tag_id].color : "",
-                        old_point = temp_arr[element.tag_id] ? temp_arr[element.tag_id].point[frames] : null,
+                        old_point = temp[element.tag_id] ? temp[element.tag_id].point[frames - 1] : null,
                         point_array = inputTagPoints(old_point, element);
                     //update tag array
                     if (element.tag_id == locating_id) {
@@ -488,7 +514,7 @@ function updateTagList() {
                     }
                     element["number"] = number;
                     element["name"] = name;
-                    update += temp_arr[element.tag_id] ? 0 : 1;
+                    update += temp[element.tag_id] ? 0 : 1;
                 });
                 if (focus_data)
                     tagArray[locating_id] = focus_data;
@@ -536,6 +562,7 @@ function updateTagList() {
         }
     };
     xmlHttp["getTag"].send(json_request);
+    console.log("send request : " + new Date().getTime());
 }
 
 function sortAlarm() {
@@ -613,7 +640,7 @@ function locateTag(tag_id) {
     if (tag_id in tagArray) {
         isFocus = true;
         locating_id = tag_id;
-        checkMapIsUsed(groupfindMap[tagArray[tag_id].point[frames].group_id]);
+        checkMapIsUsed(groupfindMap[tagArray[tag_id].point[frames - 1].group_id]);
     } else {
         showMyModel();
     }
@@ -649,7 +676,7 @@ function search() {
                 for (let j in tagArray) {
                     let v = tagArray[j];
                     group_arr.forEach(group_id => {
-                        if (v.point[frames].group_id == group_id) {
+                        if (v.point[frames - 1].group_id == group_id) {
                             let user_id = parseInt(v.id.substring(8), 16),
                                 member_data = MemberList[user_id] || {
                                     dept: "",

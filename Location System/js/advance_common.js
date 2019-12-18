@@ -1,4 +1,5 @@
 'use strict';
+
 function searchNetworkCards() {
     let xmlHttp = createJsonXmlHttp("Command");
     xmlHttp.onreadystatechange = function () {
@@ -49,16 +50,18 @@ function searchDevices() {
                 let revInfo = revObj.Value ? revObj.Value[0] : [];
                 $("#sel_device_ip").empty();
                 ipPortList = {};
-                revInfo.sort(function (a, b) {
-                    let a_str = a.IP_address.substring(a.IP_address.lastIndexOf(".") + 1),
-                        b_str = b.IP_address.substring(b.IP_address.lastIndexOf(".") + 1);
-                    return a_str - b_str;
-                });
-                revInfo.forEach(element => {
-                    ipPortList[element.IP_address] = element.TCP_Serve_Port;
-                    $("#sel_device_ip").append("<option value=\"" + element.IP_address + "\">" +
-                        element.IP_address + "</option>")
-                });
+                if (revInfo && revInfo.length > 0) {
+                    revInfo.sort(function (a, b) {
+                        let a_str = a.IP_address.substring(a.IP_address.lastIndexOf(".") + 1),
+                            b_str = b.IP_address.substring(b.IP_address.lastIndexOf(".") + 1);
+                        return a_str - b_str;
+                    });
+                    revInfo.forEach(element => {
+                        ipPortList[element.IP_address] = element.TCP_Serve_Port;
+                        $("#sel_device_ip").append("<option value=\"" + element.IP_address + "\">" +
+                            element.IP_address + "</option>")
+                    });
+                }
             }
         }
     }

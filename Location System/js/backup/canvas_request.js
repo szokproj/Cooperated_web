@@ -21,6 +21,10 @@ var token = "",
     isFocus = false,
     locating_id = "",
     // Data parameters
+    xmlHttp = {
+        getTag: GetXmlHttpObject(),
+        getAlarm: GetXmlHttpObject()
+    },
     Map_id = "",
     mapArray = [],
     groupfindMap = {},
@@ -52,6 +56,10 @@ var token = "",
         canvasTop: 0,
         downX: 0,
         downY: 0
+    },
+    panPos = {
+        canvasLeft: 0,
+        canvasTop: 0
     };
 
 $(function () {
@@ -769,11 +777,6 @@ function updateAlarmHandle() {
     jxh.send(json_request);
 }
 
-var xmlHttp = {
-    getTag: GetXmlHttpObject(),
-    getAlarm: GetXmlHttpObject()
-};
-
 function updateAlarmList() {
     const json_request = JSON.stringify({
         "Command_Type": ["Read"],
@@ -1190,66 +1193,6 @@ function showMyModel() {
     }
 }
 
-
-var panPos = {
-    canvasLeft: 0,
-    canvasTop: 0
-};
-
-function setMobileEvents() {
-    const hammer_pan = new Hammer(canvas); //Canvas位移
-    const hammer_pinch = new Hammer(canvas); //Canvas縮放
-
-    hammer_pan.get('pan').set({
-        direction: Hammer.DIRECTION_ALL
-    });
-    hammer_pinch.get('pinch').set({
-        enable: true
-    });
-
-    hammer_pan.on('panstart', ev => {
-        panPos.canvasLeft = parseInt(canvas.style.marginLeft);
-        panPos.canvasTop = parseInt(canvas.style.marginTop);
-    });
-    hammer_pan.on('panmove', ev => {
-        xleftView = panPos.canvasLeft + ev.deltaX;
-        ytopView = panPos.canvasTop + ev.deltaY;
-        canvas.style.marginLeft = xleftView + "px";
-        canvas.style.marginTop = ytopView + "px";
-    });
-    hammer_pinch.on('pinchstart pinchmove', ev => {
-        let BCR = canvas.getBoundingClientRect(),
-            pos_x = ev.center.x - BCR.left,
-            pos_y = ev.center.y - BCR.top,
-            scale = 1;
-        if (ev.scale < 1) {
-            if (Zoom >= 0.1)
-                scale = 0.95;
-        } else if (ev.scale > 1) {
-            if (Zoom <= 1.5)
-                scale = 1.05;
-        }
-        Zoom *= scale; //縮放比例
-        if (display_setting.lock_window && isFocus)
-            return;
-        draw();
-        let Next_x = pos_x * scale, //縮放後的位置(x坐標)
-            Next_y = pos_y * scale; //縮放後的位置(y坐標)
-        xleftView += pos_x - Next_x;
-        ytopView += pos_y - Next_y;
-        canvas.style.marginLeft = xleftView + "px";
-        canvas.style.marginTop = ytopView + "px";
-    });
-}
-
-function clamp(value, min, max) {
-    return Math.min(Math.max(min, value), max);
-}
-
-function clampScale(newScale) {
-    return clamp(newScale, minScale, maxScale);
-}
-
 function search() {
     let html = "";
     let key = $("#search_select_type").val();
@@ -1317,4 +1260,50 @@ function search() {
         });
     }
     document.getElementById("table_sidebar_search").children[1].innerHTML = html;
+}
+
+function setMobileEvents() {
+    const hammer_pan = new Hammer(canvas); //Canvas位移
+    const hammer_pinch = new Hammer(canvas); //Canvas縮放
+
+    hammer_pan.get('pan').set({
+        direction: Hammer.DIRECTION_ALL
+    });
+    hammer_pinch.get('pinch').set({
+        enable: true
+    });
+
+    hammer_pan.on('panstart', ev => {
+        panPos.canvasLeft = parseInt(canvas.style.marginLeft);
+        panPos.canvasTop = parseInt(canvas.style.marginTop);
+    });
+    hammer_pan.on('panmove', ev => {
+        xleftView = panPos.canvasLeft + ev.deltaX;
+        ytopView = panPos.canvasTop + ev.deltaY;
+        canvas.style.marginLeft = xleftView + "px";
+        canvas.style.marginTop = ytopView + "px";
+    });
+    hammer_pinch.on('pinchstart pinchmove', ev => {
+        let BCR = canvas.getBoundingClientRect(),
+            pos_x = ev.center.x - BCR.left,
+            pos_y = ev.center.y - BCR.top,
+            scale = 1;
+        if (ev.scale < 1) {
+            if (Zoom >= 0.1)
+                scale = 0.95;
+        } else if (ev.scale > 1) {
+            if (Zoom <= 1.5)
+                scale = 1.05;
+        }
+        Zoom *= scale; //縮放比例
+        if (display_setting.lock_window && isFocus)
+            return;
+        draw();
+        let Next_x = pos_x * scale, //縮放後的位置(x坐標)
+            Next_y = pos_y * scale; //縮放後的位置(y坐標)
+        xleftView += pos_x - Next_x;
+        ytopView += pos_y - Next_y;
+        canvas.style.marginLeft = xleftView + "px";
+        canvas.style.marginTop = ytopView + "px";
+    });
 }

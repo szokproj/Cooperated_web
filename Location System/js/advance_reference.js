@@ -18,7 +18,7 @@ $(function () {
     loadAnchorList();
 
     $("#select_source_type").on('change', function () {
-        if ($(this).val() == "Tag") {
+        if ($(this).val() == "tag") {
             $("#select_source_id").hide();
             $("#input_source_id").show();
         } else {
@@ -66,7 +66,7 @@ function startRefence() {
         source_id: $("#select_source_id").val(),
         anchor_id: $("#select_anchor_id").val()
     }
-    if ($("#select_source_type").val() == "Tag")
+    if (condition.source_type == "Tag")
         condition.source_id = $("#input_source_id").val();
     //parseInt($("#input_source_id").val(), 10).toString(16).toUpperCase();
     if (isStartRef) {
@@ -97,6 +97,7 @@ function startRefence() {
             "Command_Type": ["Read"],
             "Command_Name": ["startreference"],
             "Value": {
+                "tagflag": condition.source_type,
                 "sourceid": condition.source_id,
                 "targetid": condition.anchor_id
             },

@@ -7,9 +7,9 @@ var token = "",
     groupfindMap = {},
     MemberList = {},
     tagArray = {},
-    tagList = {},
     alarmArray = [],
     alarmFilterArr = [],
+    canvasArray = [], //input myCanvas
     xmlHttp = {
         getTag: GetXmlHttpObject(),
         getAlarm: GetXmlHttpObject()
@@ -26,15 +26,21 @@ var token = "",
         display_no_position: true,
         display_alarm_low_power: true,
         display_alarm_active: true,
-        display_alarm_still: true
+        display_alarm_still: true,
+        smooth_display: false,
+        smooth_launch_time: 1000
+    },
+    frames = 30,
+    pageTimer = {
+        model: null,
+        bling: null,
+        timer1: null,
+        draw_frame: {},
     },
     RedBling = true,
-    pageTimer = {},
-    canvasArray = [], //input myCanvas
-    frames = 10;
+    isFocus = false,
+    locating_id = "";
 
-var isFocus = false;
-var locating_id = "";
 
 $(function () {
     //Check this page's permission and load navbar
@@ -147,30 +153,32 @@ function draw() {
 }
 
 function Start() {
-    let delaytime = 200; //設定計時器
-    clearInterval(pageTimer["timer1"]);
+    //設定計時器
+    let send_time = 200; //millisecond
+    frames = 1; //幀數
+    if (display_setting.smooth_display) {
+        send_time = display_setting.smooth_launch_time;
+        frames = Math.floor(send_time / 33); //Drawing one frame took 33ms.
+    }
     pageTimer["timer1"] = setInterval(function () {
         updateAlarmList();
         updateTagList();
-        //draw();
-    }, delaytime);
-
-    clearInterval(pageTimer["timer2"]);
-    pageTimer["timer2"] = setInterval(function () {
-        updateAlarmHandle();
-    }, 1000);
-
-    if (pageTimer["timer3"]) {
-        pageTimer["timer3"].forEach(timeout => {
-            clearTimeout(timeout);
-        });
-    }
-    pageTimer["timer3"] = [];
+    }, send_time);
+    updateAlarmHandle();
 }
 
 function Stop() {
     for (let each in pageTimer) {
-        clearInterval(pageTimer[each]);
+        if (each == "draw_frame") {
+            for (let canvas in pageTimer[each]) {
+                pageTimer[each][canvas].forEach(timeout => {
+                    clearTimeout(timeout);
+                });
+                pageTimer[each][canvas] = [];
+            }
+        } else {
+            clearInterval(pageTimer[each]);
+        }
     }
 }
 
@@ -314,24 +322,22 @@ function changeAlarmLight() {
 function updateAlarmHandle() {
     const json_request = JSON.stringify({
         "Command_Type": ["Read"],
-        "Command_Name": ["gethandlerecordall"],
+        "Command_Name": ["gethandlerecord50"],
         "api_token": [token]
     });
     let jxh = createJsonXmlHttp("alarmhandle");
     jxh.onreadystatechange = function () {
         if (jxh.readyState == 4 || jxh.readyState == "complete") {
             let revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0]) {
-                let length = revObj.Value[0].Values.length || 0,
-                    revInfo = length > 0 ? revObj.Value[0].Values.slice(length - 100) : [];
-                if (revObj.Value[0].success == 0)
-                    return;
-                let html = "";
+            if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                let revInfo = "Values" in revObj.Value[0] ? revObj.Value[0].Values : [],
+                    len = revInfo.length,
+                    html = "";
                 for (let i = 0; i < revInfo.length; i++) {
                     let tag_id = revInfo[i].tagid,
                         number = tag_id in MemberList ? MemberList[tag_id].number : "",
                         name = tag_id in MemberList ? MemberList[tag_id].name : "";
-                    html = "<tr><td>" + (revInfo.length - i) +
+                    html = "<tr><td>" + (len - i) +
                         "</td><td>" + revInfo[i].alarmtype +
                         "</td><td>" + parseInt(tag_id.substring(8), 16) +
                         "</td><td>" + number +
@@ -413,8 +419,9 @@ function updateAlarmList() {
 
 function inputTagPoints(old_point, new_point) {
     let point_array = [];
-    //old_point = temp_arr[element.tag_id].point[frames-1];
-    //new_point = element;
+    /* Note:
+        old_point = temp_arr[element.tag_id].point[frames-1];
+        new_point = element;*/
     if (!old_point || old_point.group_id != new_point.group_id) {
         for (let i = 0; i < frames; i++) {
             point_array.push({
@@ -423,26 +430,25 @@ function inputTagPoints(old_point, new_point) {
                 group_id: new_point.group_id
             });
         }
-        /*} else if (old_point.group_id != new_point.group_id) {
-            for (let i = 0; i < frames; i++) {
-                point_array.push(old_point);
-            }
-            point_array.push({
-                x: parseFloat(new_point.tag_x),
-                y: parseFloat(new_point.tag_y),
-                group_id: new_point.group_id
-            });*/
     } else {
         let frame_move = {
-            x: (new_point.tag_x - old_point.x) / (frames),
-            y: (new_point.tag_y - old_point.y) / (frames)
+            x: (new_point.tag_x - old_point.x) / frames,
+            y: (new_point.tag_y - old_point.y) / frames
         };
         for (let i = 0; i < frames; i++) {
-            point_array.push({
-                x: old_point.x + frame_move.x * (i + 1),
-                y: old_point.y + frame_move.y * (i + 1),
-                group_id: new_point.group_id
-            });
+            if (i == frames - 1) {
+                point_array.push({
+                    x: parseFloat(new_point.tag_x),
+                    y: parseFloat(new_point.tag_y),
+                    group_id: new_point.group_id
+                });
+            } else {
+                point_array.push({
+                    x: old_point.x + frame_move.x * (i + 1),
+                    y: old_point.y + frame_move.y * (i + 1),
+                    group_id: new_point.group_id
+                });
+            }
         }
     }
     return point_array;
@@ -460,17 +466,18 @@ function updateTagList() {
         if (xmlHttp["getTag"].readyState == 4 || xmlHttp["getTag"].readyState == "complete") {
             let revObj = JSON.parse(this.responseText);
             if (!checkTokenAlive(token, revObj)) {
-                let revInfo = revObj, //.Value[0];
-                    temp_arr = tagArray, //=oldArray
+                //console.log("get datas : " + new Date().getTime());
+                let revInfo = revObj,
+                    tagArrTemp = {},
                     update = 0,
                     focus_data = null;
-                tagArray = {};
+
                 revInfo.forEach(element => { //=new Tag datas
                     let number = element.tag_id in MemberList ? MemberList[element.tag_id].number : "",
                         name = element.tag_id in MemberList ? MemberList[element.tag_id].name : "",
                         color = element.tag_id in MemberList ? MemberList[element.tag_id].color : "",
-                        old_point = temp_arr[element.tag_id] ? temp_arr[element.tag_id].point[frames - 1] : null,
-                        point_array = inputTagPoints(old_point, element);
+                        old_point = tagArray[element.tag_id] ? tagArray[element.tag_id].point[frames - 1] : null,
+                        point_array = inputTagPoints(old_point, element); //tagArray = oldArray
                     //update tag array
                     if (element.tag_id == locating_id) {
                         focus_data = {
@@ -483,7 +490,7 @@ function updateTagList() {
                             type: "normal",
                         };
                     } else {
-                        tagArray[element.tag_id] = {
+                        tagArrTemp[element.tag_id] = {
                             id: element.tag_id,
                             point: point_array,
                             system_time: element.tag_time,
@@ -495,10 +502,10 @@ function updateTagList() {
                     }
                     element["number"] = number;
                     element["name"] = name;
-                    update += temp_arr[element.tag_id] ? 0 : 1;
+                    update += tagArray[element.tag_id] ? 0 : 1;
                 });
                 if (focus_data)
-                    tagArray[locating_id] = focus_data;
+                    tagArrTemp[locating_id] = focus_data;
                 if (update > 0) {
                     let html = "";
                     //update member list
@@ -521,15 +528,14 @@ function updateTagList() {
                 }
                 tableFilter("table_filter_member", "table_rightbar_member_list");
 
+                tagArray = tagArrTemp;
+                tagArrTemp = {};
                 //定時比對tagArray更新alarmArray
                 alarmArray = []; //每次更新都必須重置alarmArray
                 alarmFilterArr.forEach(element => {
                     if (element.id in tagArray) {
                         alarmArray.push({ //依序將Tag資料放入AlarmArray中
                             id: element.id,
-                            /*x: tagArray[element.id].x,
-                            y: tagArray[element.id].y,
-                            group_id: tagArray[element.id].group_id,*/
                             point: tagArray[element.id].point,
                             status: element.alarm_type,
                             alarm_time: element.alarm_time
@@ -538,11 +544,13 @@ function updateTagList() {
                     }
                 });
 
+                //console.log("update tag array : " + new Date().getTime());
                 draw();
             }
         }
     };
     xmlHttp["getTag"].send(json_request);
+    //console.log("send request : " + new Date().getTime());
 }
 
 function sortAlarm() {
@@ -592,6 +600,7 @@ function releaseFocusAlarm(tag_id, alarm_type) { //解除指定的alarm
                     if (revInfo.success == 1) {
                         if (document.getElementById("alarm_dialog_id").innerText == parseInt(tag_id.substring(8), 16))
                             $("#alarm_dialog").dialog("close");
+                        updateAlarmHandle();
                     }
                 }
             }

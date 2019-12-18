@@ -214,28 +214,28 @@ function getPersonTimeline(number) {
         if (RowsList[title]["timeline"] == true)
             $("#report_person_" + title).text(person[title]);
     }
-
-    for (let i in timeDelay["search"])
-        clearTimeout(timeDelay["search"][i]);
+    if (timeDelay["search"]) {
+        timeDelay["search"].forEach(timeout => {
+            clearTimeout(timeout);
+        });
+    }
     timeDelay["search"] = [];
     showSearching();
 
     document.getElementById("report_date").innerText = date_arr[0] + "年" + date_arr[1] + "月" + date_arr[2] + "日";
     $("#table_person_timeline tbody").empty();
-    timeDelay["search"].push(setTimeout(function () {
-        sendRequest({
-            "Command_Type": ["Read"],
-            "Command_Name": ["GetLocus_combine_hour"],
-            "Value": {
-                "tag_id": person.tag_id,
-                "start_date": date,
-                "start_time": "00:00:00",
-                "end_date": date,
-                "end_time": "23:59:59"
-            },
-            "api_token": [token]
-        });
-    }, 100));
+    sendRequest({
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetLocus_combine_hour"],
+        "Value": {
+            "tag_id": person.tag_id.substring(8),
+            "start_date": date,
+            "start_time": "00:00:00",
+            "end_date": date,
+            "end_time": "23:59:59"
+        },
+        "api_token": [token]
+    });
 
     function sendRequest(request) {
         let xmlHttp = createJsonXmlHttp("sql");
@@ -250,10 +250,6 @@ function getPersonTimeline(number) {
                 let revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                     let revInfo = revObj.Value[0].Values || [];
-                    if (request.Value.tag_id != person.tag_id) {
-                        alert("search error! already interrupt!");
-                    }
-
                     let record_sec = "";
                     revInfo.forEach(timeline => {
                         let sec = parseInt(timeline.time.split(" ")[1].split(":")[2], 10);
@@ -274,18 +270,20 @@ function getPersonTimeline(number) {
                         //以1小時為基準，分批接受並傳送要求
                         count_times++;
                         $("#progress_bar").text(Math.round(count_times / 24 * 100) + " %");
-                        sendRequest({
-                            "Command_Type": ["Read"],
-                            "Command_Name": ["GetLocus_combine_hour"],
-                            "Value": {
-                                "tag_id": revObj.Value[0].tag_id,
-                                "start_date": revObj.Value[0].start_date,
-                                "start_time": revObj.Value[0].start_time,
-                                "end_date": revObj.Value[0].end_date,
-                                "end_time": revObj.Value[0].end_time
-                            },
-                            "api_token": [token]
-                        });
+                        timeDelay["search"].push(setTimeout(function () {
+                            sendRequest({
+                                "Command_Type": ["Read"],
+                                "Command_Name": ["GetLocus_combine_hour"],
+                                "Value": {
+                                    "tag_id": revObj.Value[0].tag_id,
+                                    "start_date": revObj.Value[0].start_date,
+                                    "start_time": revObj.Value[0].start_time,
+                                    "end_date": revObj.Value[0].end_date,
+                                    "end_time": revObj.Value[0].end_time
+                                },
+                                "api_token": [token]
+                            });
+                        }, 100));
                     } else {
                         count_times++;
                         $("#progress_bar").text(Math.round(count_times / 24 * 100) + " %");
@@ -328,12 +326,16 @@ function getAttendanceList() {
         date = document.getElementById("date_one_day").value,
         date_arr = date.split("-"),
         members_length = sel_members_number.length,
-        packge_percent = 100 / members_length / 24;
+        packge_percent = 100 / members_length / 24,
+        alreadyFailed = false;
 
     document.getElementById("report_attend_date").innerText = date_arr[0] + "年" + date_arr[1] + "月" + date_arr[2] + "日";
 
-    for (let i in timeDelay["search"])
-        clearTimeout(timeDelay["search"][i]);
+    if (timeDelay["search"]) {
+        timeDelay["search"].forEach(timeout => {
+            clearTimeout(timeout);
+        });
+    }
     timeDelay["search"] = [];
     showSearching();
 
@@ -342,9 +344,9 @@ function getAttendanceList() {
     sel_members_number.forEach(function (number, i) {
         let member_data = memberList[number];
         //getMemberData(parseInt(tag_id.value, 16));
-        search_tags[member_data.tag_id] = number;
+        search_tags[member_data.tag_id.substring(8)] = number;
         timeDelay["search"].push(setTimeout(function () {
-            historyData[member_data.tag_id] = {
+            historyData[member_data.tag_id.substring(8)] = {
                 first: null,
                 last: null
             };
@@ -352,7 +354,7 @@ function getAttendanceList() {
                 "Command_Type": ["Read"],
                 "Command_Name": ["GetLocus_combine_hour"],
                 "Value": {
-                    "tag_id": member_data.tag_id,
+                    "tag_id": member_data.tag_id.substring(8),
                     "start_date": date,
                     "start_time": "00:00:00",
                     "end_date": date,
@@ -360,7 +362,7 @@ function getAttendanceList() {
                 },
                 "api_token": [token]
             });
-        }, 500 * i));
+        }, 200 * i));
     });
     //inputWaitTime(interval_times);
 
@@ -371,26 +373,14 @@ function getAttendanceList() {
                 if (!this.responseText) {
                     $('#progress_block').hide();
                     clearTimeout(timeDelay["progress"]);
-                    alert("搜尋失敗，請稍候再試一次!");
+                    //alert("搜尋失敗，請稍候再試一次!");
                     return;
                 }
                 let revObj = JSON.parse(this.responseText);
-                if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     let revInfo = revObj.Value[0].Values || [],
                         tag_id = revObj.Value[0].tag_id;
                     revInfo.forEach(timeline => {
-                        /*if (revInfo[i].map_id in mapCollection) {
-                            let mapInfo = mapCollection[revInfo[i].map_id];
-                            if (!historyData[tag_id])
-                                historyData[tag_id] = [];
-                            historyData[tag_id].push({
-                                map_id: mapInfo.map_id,
-                                map_name: mapInfo.map_name,
-                                x: parseInt(revInfo[i].coordinate_x, 10),
-                                y: parseInt(revInfo[i].coordinate_y, 10),
-                                time: revInfo[i].time
-                            });
-                        }*/
                         if (!historyData[tag_id].first) {
                             historyData[tag_id].first = timeline;
                         } else {
@@ -402,18 +392,20 @@ function getAttendanceList() {
 
                     if (revObj.Value[0].Status == "1") {
                         //以1小時為基準，分批接受並傳送要求
-                        sendRequest({
-                            "Command_Type": ["Read"],
-                            "Command_Name": ["GetLocus_combine_hour"],
-                            "Value": {
-                                "tag_id": revObj.Value[0].tag_id,
-                                "start_date": revObj.Value[0].start_date,
-                                "start_time": revObj.Value[0].start_time,
-                                "end_date": revObj.Value[0].end_date,
-                                "end_time": revObj.Value[0].end_time
-                            },
-                            "api_token": [token]
-                        });
+                        timeDelay["search"].push(setTimeout(function () {
+                            sendRequest({
+                                "Command_Type": ["Read"],
+                                "Command_Name": ["GetLocus_combine_hour"],
+                                "Value": {
+                                    "tag_id": tag_id,
+                                    "start_date": revObj.Value[0].start_date,
+                                    "start_time": revObj.Value[0].start_time,
+                                    "end_date": revObj.Value[0].end_date,
+                                    "end_time": revObj.Value[0].end_time
+                                },
+                                "api_token": [token]
+                            });
+                        }, 100));
                     } else {
                         let member_info = memberList[search_tags[tag_id]],
                             attend_from = historyData[tag_id].first,
@@ -425,9 +417,6 @@ function getAttendanceList() {
                             if (RowsList[title]["attendance"] == true)
                                 tr_context += "<td>" + member_info[title] + "</td>";
                         }
-                        /*"<td>" + member_info.number + "</td>" +
-                            "<td>" + member_info.user_id + "</td>" +
-                            "<td>" + member_info.Name + "</td>" +*/
                         tr_context += "<td>" + (attend_from ? attend_from.time.split(" ")[1] : "缺席") + "</td>" +
                             "<td>" + (attend_end ? attend_end.time.split(" ")[1] : "缺席") + "</td></tr>";
 

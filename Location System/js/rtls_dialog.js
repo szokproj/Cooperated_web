@@ -3,6 +3,7 @@ var setDialog = {
         var dialog;
 
         function sendResult() {
+            Stop();
             setFocusSetToCookie({
                 lock_window: $("#chk_lock_window").prop("checked").toString(),
                 fit_window: $("#chk_fit_window").prop("checked").toString(),
@@ -10,15 +11,18 @@ var setDialog = {
                 display_no_position: $("#chk_display_no_position").prop("checked").toString(),
                 display_alarm_low_power: $("#chk_alarm_low_power").prop("checked").toString(),
                 display_alarm_active: $("#chk_alarm_active").prop("checked").toString(),
-                display_alarm_still: $("#chk_alarm_still").prop("checked").toString()
+                display_alarm_still: $("#chk_alarm_still").prop("checked").toString(),
+                smooth_display: $("#chk_smooth_display").prop("checked").toString(),
+                smooth_launch_time: $("#slider_launch_time").val()
             });
+            Start();
             dialog.dialog("close");
         }
 
         dialog = $("#adjust_focus_mode").dialog({
             autoOpen: false,
-            height: 420,
-            width: 350,
+            height: 500,
+            width: 400,
             modal: true,
             buttons: {
                 "Confirm": function () {
@@ -39,8 +43,15 @@ var setDialog = {
             $("#chk_alarm_low_power").prop("checked", Setting.display_alarm_low_power);
             $("#chk_alarm_active").prop("checked", Setting.display_alarm_active);
             $("#chk_alarm_still").prop("checked", Setting.display_alarm_still);
+            $("#chk_smooth_display").prop("checked", Setting.smooth_display);
+            $("#slider_launch_time").val(Setting.smooth_launch_time); //= send time
+            $("#smooth_launch_time").text(Setting.smooth_launch_time);
             dialog.dialog("open");
         });
+
+        document.getElementById("slider_launch_time").oninput = function () {
+            document.getElementById("smooth_launch_time").innerText = this.value;
+        }
     },
     displaySize: function () {
         var dialog,
@@ -81,24 +92,24 @@ var setDialog = {
             slider_tag.value = Size.tag;
             slider_alarm.value = Size.alarm;
 
-            size_anchor.innerHTML = Size.anchor;
-            size_tag.innerHTML = Size.tag;
-            size_alarm.innerHTML = Size.alarm;
+            size_anchor.innerText = Size.anchor;
+            size_tag.innerText = Size.tag;
+            size_alarm.innerText = Size.alarm;
             dialog.dialog("open");
         });
 
         slider_anchor.oninput = function () {
-            size_anchor.innerHTML = this.value;
+            size_anchor.innerText = this.value;
             drawDot("Anchor", this.value);
         }
 
         slider_tag.oninput = function () {
-            size_tag.innerHTML = this.value;
+            size_tag.innerText = this.value;
             drawDot("Tag", this.value);
         }
 
         slider_alarm.oninput = function () {
-            size_alarm.innerHTML = this.value;
+            size_alarm.innerText = this.value;
             drawDot("Alarm", this.value);
         }
 
@@ -171,7 +182,9 @@ function getFocusSetFromCookie() {
             display_no_position: setting.display_no_position == "true" ? true : false,
             display_alarm_low_power: setting.display_alarm_low_power == "true" ? true : false,
             display_alarm_active: setting.display_alarm_active == "true" ? true : false,
-            display_alarm_still: setting.display_alarm_still == "true" ? true : false
+            display_alarm_still: setting.display_alarm_still == "true" ? true : false,
+            smooth_display: setting.smooth_display == "true" ? true : false,
+            smooth_launch_time: parseInt(setting.smooth_launch_time, 10)
         };
     } else {
         return { //預設值
@@ -181,7 +194,9 @@ function getFocusSetFromCookie() {
             display_no_position: true,
             display_alarm_low_power: true,
             display_alarm_active: true,
-            display_alarm_still: true
+            display_alarm_still: true,
+            smooth_display: false,
+            smooth_launch_time: 1000
         };
     }
 }

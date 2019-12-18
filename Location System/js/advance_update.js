@@ -6,6 +6,7 @@ var fileName = "";
 var fileArray = [];
 var st = 0;
 var time = 100;
+var ipPortList = {};
 
 $(function () {
     token = getToken();
@@ -167,35 +168,35 @@ function reset() {
 function updateFileToDevice() {
     let ip_addr = $("#sel_device_ip").val();
     if (!ip_addr || ip_addr == "") {
-        alert("Please select the IP address of device.");
+        alert("請選擇裝置IP address!");
         return;
     } else if (fileName == "") {
-        alert("Please select the file to update firmware in the following folder.");
+        alert("請先點選下方資料夾內的更新檔!");
         return;
     }
-    alert("Update [" + fileName + "] to the device of IP address: " + $("#sel_device_ip").val());
-    return; //The command's test hasn't been completed...
-    let requestArray = {
-            "Command_Type": ["Read"],
-            "Command_Name": ["update_data"],
-            "Value": {
-                "File_Name": [fileName],
-                "IP_address": [ip_addr]
+    if (confirm("確定將檔名為 [" + fileName + "] 更新到裝置 IP address : " + $("#sel_device_ip").val() + "的韌體?(建議先確認更新檔是否符合規定)")) {
+        let requestArray = {
+                "Command_Type": ["Read"],
+                "Command_Name": ["update_data"],
+                "Value": {
+                    "File_Name": [fileName],
+                    "IP_address": [ip_addr]
+                },
+                "api_token": [token]
             },
-            "api_token": [token]
-        },
-        xmlHttp = createJsonXmlHttp("test2");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                alert("Updated the firmware successfully.");
-            } else {
-                alert("Failed to update firmware!");
+            xmlHttp = createJsonXmlHttp("test2");
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                let revObj = JSON.parse(this.responseText);
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                    alert("Updated the firmware successfully.");
+                } else {
+                    alert("Failed to update firmware!");
+                }
             }
-        }
-    };
-    xmlHttp.send(JSON.stringify(requestArray));
+        };
+        xmlHttp.send(JSON.stringify(requestArray));
+    }
 }
 
 function deleteFileByName() {
