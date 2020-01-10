@@ -1,88 +1,88 @@
 /**
  * FAG = FenceAlarmGroup 圍籬警戒群組
- */
+ **/
 
 function importFenceAlarmGroup() {
-    let dialog, form;
-    let sendFAG_Set = function () {
-        $("#add_FAG_id").removeClass("ui-state-error");
-        let valid = true && checkLength($("#add_FAG_id"), $.i18n.prop('i_alarmAlert_39'), 1, 20),
-            fence_ids = document.getElementsByName("included_fences")
-        if (fence_ids.length == 0)
-            return alert($.i18n.prop('i_alarmAlert_40'));
-        if (valid) {
-            let fenceAG_arr = [];
-            fence_ids.forEach(element => {
-                fenceAG_arr.push({
-                    "fence_id": element.value,
-                    "fence_alarm_gid": $("#add_FAG_id").val()
-                })
-            });
-            if (operating == "Add") {
-                let addXmlHttp = createJsonXmlHttp("sql");
-                addXmlHttp.onreadystatechange = function () {
-                    if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                        let revObj = JSON.parse(this.responseText);
-                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                            if (!revObj.Value[0].Value) return;
-                            let key = Object.keys(revObj.Value[0].Value);
-                            updateFenceAG_List(key);
-                            alert($.i18n.prop('i_alarmAlert_41'));
-                        } else {
-                            alert($.i18n.prop('i_alarmAlert_42'));
-                        }
-                    }
-                };
-                addXmlHttp.send(JSON.stringify({
-                    "Command_Type": ["Write"],
-                    "Command_Name": ["AddFenceAlarmGroup"],
-                    "Value": fenceAG_arr,
-                    "api_token": [token]
-                }));
-            } else if (operating == "Edit") {
-                let deleteXmlHttp = createJsonXmlHttp("sql");
-                deleteXmlHttp.onreadystatechange = function () {
-                    if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
-                        let revObj = JSON.parse(this.responseText);
-                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                            let addXmlHttp = createJsonXmlHttp("sql");
-                            addXmlHttp.onreadystatechange = function () {
-                                if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                                    let revObj2 = JSON.parse(this.responseText);
-                                    if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
-                                        if (!revObj2.Value[0].Value) return;
-                                        let key = Object.keys(revObj2.Value[0].Value);
-                                        updateFenceAG_List(key);
-                                        alert($.i18n.prop('i_alarmAlert_43'));
-                                    } else {
-                                        alert($.i18n.prop('i_alarmAlert_44'));
-                                    }
-                                }
-                            };
-                            addXmlHttp.send(JSON.stringify({
-                                "Command_Type": ["Write"],
-                                "Command_Name": ["AddFenceAlarmGroup"],
-                                "Value": fenceAG_arr,
-                                "api_token": [token]
-                            }));
-                        }
-                    }
-                };
-                deleteXmlHttp.send(JSON.stringify({
-                    "Command_Type": ["Write"],
-                    "Command_Name": ["DeleteFence_Alarm_Group"],
-                    "Value": [{
+    let dialog, form,
+        sendFAG_Set = function () {
+            $("#add_FAG_id").removeClass("ui-state-error");
+            let valid = true && checkLength($("#add_FAG_id"), $.i18n.prop('i_alarmAlert_39'), 1, 20),
+                fence_ids = document.getElementsByName("included_fences")
+            if (fence_ids.length == 0)
+                return alert($.i18n.prop('i_alarmAlert_40'));
+            if (valid) {
+                let fenceAG_arr = [];
+                fence_ids.forEach(element => {
+                    fenceAG_arr.push({
+                        "fence_id": element.value,
                         "fence_alarm_gid": $("#add_FAG_id").val()
-                    }],
-                    "api_token": [token]
-                }));
-            } else {
-                alert($.i18n.prop('i_alertError_9'));
+                    })
+                });
+                if (submit_type["fence_alarm_group"] == "Add") {
+                    let addXmlHttp = createJsonXmlHttp("sql");
+                    addXmlHttp.onreadystatechange = function () {
+                        if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
+                            let revObj = JSON.parse(this.responseText);
+                            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                                if (!revObj.Value[0].Value) return;
+                                let key = Object.keys(revObj.Value[0].Value);
+                                updateFenceAG_List(key);
+                                alert($.i18n.prop('i_alarmAlert_41'));
+                            } else {
+                                alert($.i18n.prop('i_alarmAlert_42'));
+                            }
+                        }
+                    };
+                    addXmlHttp.send(JSON.stringify({
+                        "Command_Type": ["Write"],
+                        "Command_Name": ["AddFenceAlarmGroup"],
+                        "Value": fenceAG_arr,
+                        "api_token": [token]
+                    }));
+                } else if (submit_type["fence_alarm_group"] == "Edit") {
+                    let deleteXmlHttp = createJsonXmlHttp("sql");
+                    deleteXmlHttp.onreadystatechange = function () {
+                        if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
+                            let revObj = JSON.parse(this.responseText);
+                            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                                let addXmlHttp = createJsonXmlHttp("sql");
+                                addXmlHttp.onreadystatechange = function () {
+                                    if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
+                                        let revObj2 = JSON.parse(this.responseText);
+                                        if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
+                                            if (!revObj2.Value[0].Value) return;
+                                            let key = Object.keys(revObj2.Value[0].Value);
+                                            updateFenceAG_List(key);
+                                            alert($.i18n.prop('i_alarmAlert_43'));
+                                        } else {
+                                            alert($.i18n.prop('i_alarmAlert_44'));
+                                        }
+                                    }
+                                };
+                                addXmlHttp.send(JSON.stringify({
+                                    "Command_Type": ["Write"],
+                                    "Command_Name": ["AddFenceAlarmGroup"],
+                                    "Value": fenceAG_arr,
+                                    "api_token": [token]
+                                }));
+                            }
+                        }
+                    };
+                    deleteXmlHttp.send(JSON.stringify({
+                        "Command_Type": ["Write"],
+                        "Command_Name": ["DeleteFence_Alarm_Group"],
+                        "Value": [{
+                            "fence_alarm_gid": $("#add_FAG_id").val()
+                        }],
+                        "api_token": [token]
+                    }));
+                } else {
+                    alert($.i18n.prop('i_alertError_9'));
+                }
+                dialog.dialog("close");
             }
-            dialog.dialog("close");
-        }
-        return valid;
-    };
+            return valid;
+        };
 
     dialog = $("#dialog_fence_alarm_group").dialog({
         autoOpen: false,
@@ -112,8 +112,7 @@ function importFenceAlarmGroup() {
     $("#btn_fence_list_add").on('click', addFenceToFAG);
     $("#btn_fence_list_delete").on('click', removeFenceFormFAG);
     $("#btn_fenceAG_add").on('click', function () {
-        operating = "Add";
-        //getFences();
+        submit_type["fence_alarm_group"] = "Add";
         $("#add_FAG_id").val("").prop('disabled', false);
         for (i = 0; i < fenceArray.length; i++) {
             let tr_id = "remaining_fences_" + fenceArray[i].fence_id;
@@ -130,8 +129,8 @@ function importFenceAlarmGroup() {
     });
     $("#btn_fenceAG_delete").on('click', function () {
         if (confirm($.i18n.prop('i_alarmAlert_47'))) {
-            var fenceAGs = document.getElementsByName("chk_fenceAG");
-            var delete_arr = [];
+            let fenceAGs = document.getElementsByName("chk_fenceAG"),
+                delete_arr = [];
             for (i = 0; i < fenceAGs.length; i++) {
                 if (fenceAGs[i].checked) {
                     delete_arr.push({
@@ -139,13 +138,13 @@ function importFenceAlarmGroup() {
                     });
                 }
             }
-            var deleteXmlHttp = createJsonXmlHttp("sql");
+            let deleteXmlHttp = createJsonXmlHttp("sql");
             deleteXmlHttp.onreadystatechange = function () {
                 if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
+                    let revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         if (!revObj.Value[0].Value) return;
-                        var key = Object.keys(revObj.Value[0].Value);
+                        let key = Object.keys(revObj.Value[0].Value);
                         updateFenceAG_List(key);
                         alert($.i18n.prop('i_alarmAlert_45'));
                     } else {
@@ -170,7 +169,7 @@ function updateFenceAG_List(array) {
     $("#table_fence_alarm_group tbody").empty();
     $("#add_alarm_mode_0_fagID").empty();
     for (i = 0; i < array.length; i++) {
-        var tr_id = "fenceAG_" + i;
+        let tr_id = "fenceAG_" + i;
         $("#table_fence_alarm_group tbody").append("<tr id=\"" + tr_id + "\"><td>" +
             "<input type=\"checkbox\" name=\"chk_fenceAG\" value=\"" + array[i] + "\"" +
             " onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (i + 1) + "</td>" +
@@ -188,13 +187,13 @@ function updateFenceAG_List(array) {
 }
 
 function getFenceAlarmGroup() {
-    var xmlHttp = createJsonXmlHttp("sql");
+    let xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
+            let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 if (revObj.Value[0].Value) {
-                    var key = Object.keys(revObj.Value[0].Value);
+                    let key = Object.keys(revObj.Value[0].Value);
                     updateFenceAG_List(key);
                 }
             } else {
@@ -210,21 +209,20 @@ function getFenceAlarmGroup() {
 }
 
 function editFenceAlarmGroup(fence_alarm_gid) {
-    //getFences();
-    operating = "Edit";
-    var xmlHttp = createJsonXmlHttp("sql");
+    submit_type["fence_alarm_group"] = "Edit";
+    let xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
+            let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                var revInfo = revObj.Value[0].Values.slice(0) || [];
+                let revInfo = revObj.Value[0].Values.slice(0) || [];
                 $("#add_FAG_id").val(fence_alarm_gid).prop('disabled', true);
                 fenceArray.forEach(function (element, index) {
-                    var included = revInfo.findIndex(Values => {
+                    let included = revInfo.findIndex(Values => {
                         return Values.fence_id == element.fence_id;
                     });
                     if (included > -1) {
-                        var tr_id = "included_fences_" + element.fence_id;
+                        let tr_id = "included_fences_" + element.fence_id;
                         $("#table_included_fences tbody").append("<tr id=\"" + tr_id + "\"" +
                             " onclick=\"beCheckedColumn(\'" + tr_id + "\')\">" +
                             "<td><input type=\"checkbox\" class=\"chk-hidden\"" +
@@ -233,7 +231,7 @@ function editFenceAlarmGroup(fence_alarm_gid) {
                             "<td>" + element.fence_id + "</td>" +
                             "<td>" + element.fence_name + "</td></tr>");
                     } else {
-                        var tr_id = "remaining_fences_" + element.fence_id;
+                        let tr_id = "remaining_fences_" + element.fence_id;
                         $("#table_remaining_fences tbody").append("<tr id=\"" + tr_id + "\"" +
                             " onclick=\"beCheckedColumn(\'" + tr_id + "\')\">" +
                             "<td><input type=\"checkbox\" class=\"chk-hidden\"" +
@@ -263,10 +261,10 @@ function editFenceAlarmGroup(fence_alarm_gid) {
 
 
 function getFences() {
-    var xmlHttp = createJsonXmlHttp("sql");
+    let xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
+            let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 fenceArray = revObj.Value[0].Values.slice(0) || [];
             } else {
@@ -282,13 +280,13 @@ function getFences() {
 }
 
 function addFenceToFAG() {
-    var delete_arr = [];
+    let delete_arr = [];
     document.getElementsByName("remaining_fences").forEach(function (element) {
         if (element.checked) {
-            var index = fenceArray.findIndex(function (info) {
-                return info.fence_id == element.value;
-            });
-            var tr_id = "included_fences_" + element.value;
+            let index = fenceArray.findIndex(function (info) {
+                    return info.fence_id == element.value;
+                }),
+                tr_id = "included_fences_" + element.value;
             $("#table_included_fences tbody").append("<tr id=\"" + tr_id + "\"" +
                 " onclick=\"beCheckedColumn(\'" + tr_id + "\')\">" +
                 "<td><input type=\"checkbox\" class=\"chk-hidden\" name=\"included_fences\"" +
@@ -306,13 +304,13 @@ function addFenceToFAG() {
 }
 
 function removeFenceFormFAG() {
-    var delete_arr = [];
+    let delete_arr = [];
     document.getElementsByName("included_fences").forEach(function (element) {
         if (element.checked) {
-            var index = fenceArray.findIndex(function (info) {
-                return info.fence_id == element.value;
-            });
-            var tr_id = "remaining_fences_" + element.value;
+            let index = fenceArray.findIndex(function (info) {
+                    return info.fence_id == element.value;
+                }),
+                tr_id = "remaining_fences_" + element.value;
             $("#table_remaining_fences tbody").append("<tr id=\"" + tr_id + "\"" +
                 " onclick=\"beCheckedColumn(\'" + tr_id + "\')\">" +
                 "<td><input type=\"checkbox\" class=\"chk-hidden\" name=\"remaining_fences\"" +
@@ -336,7 +334,7 @@ function resetListNumber(item_name) {
 }
 
 function beCheckedColumn(id) {
-    var state = $("#" + id).find("td:eq(0) input").prop("checked");
+    let state = $("#" + id).find("td:eq(0) input").prop("checked");
     $("#" + id).toggleClass("changeBgColor")
         .find("td:eq(0) input").prop("checked", !state);
 }

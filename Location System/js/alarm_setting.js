@@ -1,10 +1,4 @@
-const switch_on = "<img class='switch-img' src=\"../image/success.png\"/>",
-    switch_off = "<img class='switch-img' src=\"../image/error.png\"/>";
-
-let TimeGroupArr = [],
-    count_alarm_group = 0,
-    alarmSettingArr = [],
-    alarmModeArray = [{
+const alarmModeArray = [{
             id: "Fence",
             name: 'i_electronicFence'
         },
@@ -17,11 +11,18 @@ let TimeGroupArr = [],
             name: 'i_hiddenAlarm'
         }
     ],
+    switch_on = "<img class='switch-img' src=\"../image/success.png\"/>",
+    switch_off = "<img class='switch-img' src=\"../image/error.png\"/>";
+
+let TimeGroupArr = [],
+    count_alarm_group = 0,
+    alarmSettingArr = [],
     submit_type = {
         alarm: "",
         time_group: "",
         time_slot: "",
-        fence: ""
+        fence: "",
+        fence_alarm_group: ""
     },
     token = "";
 
@@ -55,14 +56,12 @@ $(function () {
         stay_time = $("#add_alarm_mode_1_time"),
         hidden_time = $("#add_alarm_mode_2_time"),
         time_group = $("#add_alarm_time_group"),
-        allFields = $([]).add(name).add(fenceAG_id).add(fenceAG_time)
-        .add(stay_time).add(hidden_time).add(time_group),
+        allFields = $([]).add(name).add(fenceAG_id).add(fenceAG_time).add(stay_time).add(hidden_time).add(time_group),
         modes = $("input[name=add_alarm_mode]"), //不用把add_modes放進allFields
 
         SendResult = function () {
-
-            allFields.removeClass("ui-state-error");
             let valid = true;
+            allFields.removeClass("ui-state-error");
             valid = valid && checkLength(name, $.i18n.prop('i_alarmAlert_4'), 1, 100);
             if ($("#add_alarm_mode_0").prop("checked")) {
                 valid = valid && checkLength(fenceAG_id, $.i18n.prop('i_alarmAlert_49'), 1, 100);
@@ -73,7 +72,6 @@ $(function () {
             if ($("#add_alarm_mode_2").prop("checked"))
                 valid = valid && checkLength(hidden_time, $.i18n.prop('i_alarmAlert_4'), 1, 100);
             valid = valid && checkLength(time_group, $.i18n.prop('i_alarmAlert_4'), 1, 100);
-
             if (valid) {
                 if (submit_type["alarm"] == "Add") {
                     let request_addGroupID = JSON.stringify({
@@ -199,9 +197,8 @@ $(function () {
                     };
                     addIdXmlHttp.send(request_EditInfo);
                 }
-                return valid;
-            };
-        }
+            }
+        };
 
     dialog = $("#dialog_add_alarm_group").dialog({
         autoOpen: false,
@@ -231,7 +228,7 @@ $(function () {
     $("#btn_add_alarm_group").button().on("click", function () {
         $("#add_alarm_time_group").empty();
         $("#add_alarm_time_group").append(
-            createTimeGroupOptions(TimeGroupArr, TimeGroupArr[0].time_group_id)
+            createOptions_name(TimeGroupArr, TimeGroupArr[0].time_group_id)
         );
         $("#add_alarm_mode_0_fagID option").eq(0).prop("selected", true);
         $("input[name=add_alarm_mode]").val("");
@@ -419,39 +416,6 @@ function editAlarmGroupInfo_fence(id) {
     editXmlHttp.send(JSON.stringify(request));
 }
 
-/*function inputAlarmSetting() {
-    let request = {
-        "Command_Type": ["Read"],
-        "Command_Name": ["time_group_id"],
-        "api_token": [token]
-    };
-    let xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value.success > 0) {
-                let revList = revObj.Value[0].Values;
-                let alarm_arr = ["low_power", "help", "active", "still", "stay", "hidden"];
-                alarm_arr.forEach(element => {
-                    if (revList[element + "_alarm"].on == 1)
-                        $("#on_alarm_" + element).prop('checked', true);
-                    else
-                        $("#off_alarm_" + element).prop('checked', true);
-                });
-                if (revList["electronic_fence"].on == 1)
-                    $("#on_alarm_fence").prop('checked', true);
-                else
-                    $("#off_alarm_fence").prop('checked', true);
-                $("#stay_alarm_time").val(revList["stay_alarm"].time);
-                $("#hidden_alarm_time").val(revList["hidden_alarm"].time);
-            } else {
-                alert("讀取TimeGroupList失敗，請再試一次!");
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify(request));
-}*/
-
 function removeMapGroup() {
     let checkboxs = document.getElementsByName("chkbox_map_group"),
         arr = [];
@@ -549,19 +513,6 @@ function inputAlarmGroupTable() {
     alarmXmlHttp.send(JSON.stringify(alarmRequest));
 }
 
-function createTimeGroupOptions(array, select_id) {
-    let options = "";
-    array.forEach(element => {
-        if (element.time_group_id == select_id) {
-            options += "<option value=\"" + element.time_group_id + "\" selected=\"selected\">" +
-                element.time_group_name + "</option>";
-        } else {
-            options += "<option value=\"" + element.time_group_id + "\">" + element.time_group_name + "</option>";
-        }
-    });
-    return options;
-}
-
 function createOptions_name(array, select_id) {
     let options = "";
     array.forEach(element => {
@@ -599,7 +550,7 @@ function editAlarmGroup(id) {
         $("input[name=add_alarm_mode]").eq(j).prop("checked", isCheck).val(groupElement[j].alarm_iid);
     }
     $("#add_alarm_time_group").html(
-        createTimeGroupOptions(TimeGroupArr, alarmSettingArr[index].time_group_id)
+        createOptions_name(TimeGroupArr, alarmSettingArr[index].time_group_id)
     );
     $("#add_alarm_time_group").val(alarmSettingArr[index].time_group_id);
     submit_type["alarm"] = "Edit";
