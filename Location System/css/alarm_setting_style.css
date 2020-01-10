@@ -1,10 +1,7 @@
 .nav-tabs {
-    margin: 10px 0px 0px 50px;
+    margin-top: 10px;
 }
 
-table {
-    border: 1px solid rgb(0, 105, 175);
-}
 
 th,
 td {
@@ -56,14 +53,15 @@ input[type="file"] {
 }
 
 .table-line th {
-    border: 1px solid rgb(0, 105, 175);
-    background: rgb(1, 79, 131);
+    border: 1px solid rgb(82, 82, 82);
+    background: rgb(112, 112, 112);
     color: white;
     text-align: center;
 }
 
 .table-line td {
-    border: 1px solid rgb(0, 105, 175);
+    border: 1px solid rgb(82, 82, 82);
+    background-color: white;
 }
 
 #table_week_schedule th:first-child,
@@ -127,7 +125,7 @@ input[type="file"] {
 }
 
 h3 {
-    color: rgb(0, 105, 175);
+    color: rgb(37, 37, 37);
 }
 
 .btn {
@@ -175,7 +173,7 @@ input[type=radio]:not(old).beauty:checked+label {
 }
 
 .btn-group button {
-    color: #00a5c2;
+    color: #000000;
     /*!important;*/
     height: 32px;
     font-size: 12px;
@@ -184,7 +182,7 @@ input[type=radio]:not(old).beauty:checked+label {
 .btn-group button:hover,
 .btn-group button:focus,
 .btn-group button:active {
-    color: #007286;
+    color: #000000;
 }
 
 .selected {
@@ -241,24 +239,24 @@ input[type=radio]:not(old).beauty:checked+label {
 
 .btn-delete {
     cursor: pointer;
-    color: rgb(255, 38, 38);
+    color: rgb(255, 0, 0);
     font-size: 20px;
     margin: 0px 5px 0px 5px;
 }
 
 .btn-delete:hover {
-    color: rgb(255, 113, 113);
+    color: rgb(255, 81, 81);
 }
 
 .btn-add {
     cursor: pointer;
-    color: rgb(0, 119, 255);
+    color: rgb(0, 98, 209);
     font-size: 20px;
     margin: 0px 5px 0px 5px;
 }
 
 .btn-add:hover {
-    color: rgb(90, 158, 236);
+    color: rgb(51, 146, 255);
 }
 
 .btn-add-pos {
@@ -320,20 +318,19 @@ input[type=radio]:not(old).beauty:checked+label {
     -webkit-flex: 1;
     -ms-flex: 1;
     flex: 1;
-    background: #ccc;
+    background: transparent;
     display: block;
     height: 612px;
     width: 100%;
     overflow: auto;
-    border: 1px gray solid;
+    border: 1px rgb(70, 70, 70) solid;
 }
 
 .block-list {
     overflow: auto;
-    max-height: 490px;
-    height: 490px;
     width: 100%;
-    border: 1px solid rgb(175, 175, 175);
+    height: auto;
+    border: 1px solid rgb(70, 70, 70);
 }
 
 .block-list-helf {
@@ -376,54 +373,70 @@ input[type=radio]:not(old).beauty:checked+label {
     border: none;
 }
 
-.btn-sidebar {
-    width: 40px;
-    height: 36px;
-    background-color: rgb(57, 143, 255);
-    color: white;
-    text-align: center;
-    /*border-radius: 5px;*/
-    padding-top: 1px;
-    cursor: pointer;
-    font-weight: bold;
-    font-family: 'Microsoft JhengHei', 'sans-serif';
-}
-
-.btn-sidebar:hover {
-    background-color: rgb(40, 108, 197);
-}
-
 .sidebar-menu {
-    height: 50px;
-    float: right;
-    margin-right: 10px;
-    position: absolute;
+    margin: 5px 0px;
+    position: relative;
+    display: block;
 }
 
-.sidebar-menu ul {
+.sidebar-menu .nav {
     list-style-type: none;
-    /*overflow: hidden;*/
 }
 
-.sidebar-menu li {
+.sidebar-menu .nav-li {
     line-height: 38px;
-    float: left;
     width: 40px;
     height: 38px;
     position: relative;
-    background-color: rgb(57, 143, 255);
-    border: 1px dashed rgb(25, 66, 121);
+    float: left;
+    background-color: rgb(104, 104, 104);
+    border: 1px solid rgb(163, 163, 163);
 }
 
-.sidebar-menu li:before {
-    background-color: transparent;
-    position: absolute;
-    height: 100%;
-    left: 0;
-    top: 0;
+.sidebar-menu .nav-li:before {
     -webkit-transition: width 0.2s ease-in;
     transition: width 0.2s ease-in;
+    background-color: #00000000;
+    position: relative;
+    height: 100%;
     z-index: -1;
+    left: 0;
+    top: 0;
+}
+
+.btn-sidebar {
+    width: 40px;
+    height: 36px;
+    color: white;
+    cursor: pointer;
+    padding-top: 1px;
+    text-align: center;
+    font-weight: normal;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+.btn-sidebar i {
+    font-size: 20px;
+}
+
+.btn-sidebar.opened {
+    background-color: rgb(255, 96, 22);
+    color: rgb(0, 0, 0);
+}
+
+.btn-sidebar:hover {
+    color: rgb(0, 0, 0);
+}
+
+.dropdown-menu li input {
+    width: 100%;
+    height: auto;
+    border: none;
+    background-color: white;
+}
+
+.dropdown-menu li input:hover {
+    background-color: lightgray;
 }
 
 #table_remaining_fences tbody tr:hover,
@@ -435,33 +448,6 @@ input[type=radio]:not(old).beauty:checked+label {
     display: none;
 }
 
-/*tab pages*/
-
-.nav-tabs {
-    border-color: #1a88ff;
-}
-
-.nav-tabs li a {
-    padding: 6px 10px;
-    background-color: transparent;
-    color: white;
-}
-
-.nav-tabs li:hover a {
-    border-color: #1a88ff;
-    background-color: transparent;
-}
-
-.nav-tabs li.active a:hover,
-.nav-tabs li.active a:focus,
-.nav-tabs li.active a {
-    border-color: #1a88ff;
-    background-color: #1a88ff;
-    color: white;
-}
-
-.nav-tabs a,
-.tab-pane th,
-.tab-pane td {
-    font-family: 'Microsoft JhengHei', 'sans-serif';
+.table-line td:last-child {
+    text-align: center;
 }

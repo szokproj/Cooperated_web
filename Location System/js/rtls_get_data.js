@@ -32,18 +32,26 @@ var token = "",
     },
     frames = 30,
     pageTimer = {
-        model: null,
-        bling: null,
+        dialog: null,
         timer1: null,
         draw_frame: {},
     },
+    blingTimer = null,
     RedBling = true,
     isFocus = false,
     locating_id = "";
 
 
 $(function () {
+    //https://www.minwt.com/webdesign-dev/js/16298.html
+    let h = document.documentElement.clientHeight,
+        w = document.documentElement.clientWidth;
+    $(".container").css("height", h - 10 + "px");
+    /*$(".member-table").css("max-height", h + "px");
+    $(".alarm-table").css("max-height", h + "px");
+    $(".search-table").css("max-height", h + "px");*/
     //Check this page's permission and load navbar
+
     let userInfo = getUser();
     token = getToken();
     userName = userInfo ? userInfo.cname : "";
@@ -53,13 +61,6 @@ $(function () {
     }
     setNavBar("index", "");
 
-    //https://www.minwt.com/webdesign-dev/js/16298.html
-    /*let h = document.documentElement.clientHeight * 0.9,
-     w = document.documentElement.clientWidth;
-    $(".cvsBlock").css("height", h + "px");
-    $(".member-table").css("max-height", h + "px");
-    $(".alarm-table").css("max-height", h + "px");
-    $(".search-table").css("max-height", h + "px");*/
     //預設彈跳視窗載入後隱藏
     document.getElementById("member_dialog_btn_unlock").onclick = function () {
         unlockFocusAlarm();
@@ -95,8 +96,7 @@ function setup() {
         getMemberData();
         getMapGroup();
         getMaps();
-        clearInterval(pageTimer["bling"]);
-        pageTimer["bling"] = setInterval('changeAlarmLight()', 1000);
+        blingTimer = setInterval('changeAlarmLight()', 1000);
     }
 }
 
@@ -131,6 +131,7 @@ function changeMapToCookie(index, map_id) {
 }
 
 function loadMapToCanvas() {
+    Stop();
     let cookie = Cookies.get("recent_map"), //載入MapCookies
         recentMaps = typeof (cookie) === 'undefined' ? [] : JSON.parse(cookie);
     if (typeof (recentMaps) !== 'object') {
@@ -631,21 +632,18 @@ function locateTag(tag_id) {
         locating_id = tag_id;
         checkMapIsUsed(groupfindMap[tagArray[tag_id].point[frames - 1].group_id]);
     } else {
-        showMyModel();
+        showAlertDialog();
     }
 }
 
-function showMyModel() {
-    let myModal = document.getElementById("myModal");
+function showAlertDialog() {
+    let dialog = document.getElementById("alert_window");
     if (display_setting.display_no_position) {
-        //myModal.style.display = 'block';
-        $('#myModal').modal('show');
-        //console.log("display:" + myModal.style.display);
-        pageTimer["model"] = setTimeout(function () {
-            //myModal.style.display = 'none';
-            $('#myModal').modal('hide');
-            //console.log("display:" + myModal.style.display);
-            clearTimeout(pageTimer["model"]);
+        dialog.style.display = 'block';
+        dialog.classList.remove("fadeOut");
+        pageTimer["dialog"] = setTimeout(function () {
+            dialog.classList.add("fadeOut");
+            clearTimeout(pageTimer["dialog"]);
         }, 1200);
     }
 }
@@ -680,7 +678,7 @@ function search() {
                                 "<td>" + member_data.job_title + "</td>" +
                                 "<td>" + member_data.type + "</td>" +
                                 //"<td>" + member_data.alarm_group_id + "</td>" +
-                                "<td><button class=\"btn btn-default\"" +
+                                "<td><button class=\"btn btn-default btn-focus\"" +
                                 " onclick=\"locateTag(\'" + v.id + "\')\">" +
                                 "<img class=\"icon-image\" src=\"../image/target.png\">" +
                                 "</button></td></tr>";
@@ -691,13 +689,13 @@ function search() {
         }
     } else {
         let memberArray = [];
-        for (let each in MemberList) {
+        for (let each in MemberList) { //each : 'user_id'
             if (key == "user_id") {
                 if (each == value)
-                    memberArray.push(element);
-            } else if (MemberList[key]) {
-                if (MemberList[key] == value)
-                    memberArray.push(element);
+                    memberArray.push(MemberList[each]);
+            } else if (MemberList[each][key]) {
+                if (MemberList[each][key] == value)
+                    memberArray.push(MemberList[each]);
             }
         }
         memberArray.forEach(element => {
@@ -709,7 +707,7 @@ function search() {
                 "<td>" + element.job_title + "</td>" +
                 "<td>" + element.type + "</td>" +
                 //"<td>" + memberArray[i].alarm_group_id + "</td>" +
-                "<td><button class=\"btn btn-default\"" +
+                "<td><button class=\"btn btn-default btn-focus\"" +
                 " onclick=\"locateTag(\'" + element.tag_id + "\')\">" +
                 "<img class=\"icon-image\" src=\"../image/target.png\">" +
                 "</button></td></tr>";

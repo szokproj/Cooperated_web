@@ -2,7 +2,7 @@ function drawTag(dctx, id, x, y, color) {
     dctx.globalCompositeOperation = "source-over";
     dctx.beginPath();
     dctx.fillStyle = color; //'#66ccff';
-    dctx.arc(x, y, 5, 0, Math.PI * 2, true); // circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
+    dctx.arc(x, y, 5, 0, Math.PI * 2, true); //circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
     dctx.fill(); //填滿圓形
     //dctx.strokeStyle = color; //'#0084ff';
     //dctx.stroke(); //畫圓形的線

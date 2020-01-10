@@ -1,5 +1,8 @@
 var token = "";
 $(function () {
+    let h = document.documentElement.clientHeight;
+    $("#chart-container").css("height", h - 150 + "px");
+    
     token = getToken();
     /**
      * Check this page's permission and load navbar

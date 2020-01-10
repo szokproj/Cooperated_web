@@ -5,7 +5,7 @@ $(function () {
 
     hiddenBlock();
     $("#block_info").show();
-    $("#label_map_info").css('background-color', 'rgb(40, 108, 197)');
+    $("#label_map_info").addClass("opened");//.css('background-color', 'rgb(40, 108, 197)');
     $("#menu_load_map").on("change", function () {
         var file = this.files[0];
         var valid = checkExt(this.value);
@@ -19,22 +19,22 @@ $(function () {
     $("#menu_map_info").on("click", function () {
         hiddenBlock();
         $("#block_info").show();
-        $("#label_map_info").css('background-color', 'rgb(40, 108, 197)');
+        $("#label_map_info").addClass("opened");//.css('background-color', 'rgb(40, 108, 197)');
     });
     $("#menu_anchor_list").on("click", function () {
         hiddenBlock();
         $("#block_anchor_list").show();
-        $("#label_anchor_list").css('background-color', 'rgb(40, 108, 197)');
+        $("#label_anchor_list").addClass("opened");//.css('background-color', 'rgb(40, 108, 197)');
     });
     $("#menu_group_list").on("click", function () {
         hiddenBlock();
         $("#block_group_list").show();
-        $("#label_group_list").css('background-color', 'rgb(40, 108, 197)');
+        $("#label_group_list").addClass("opened");//.css('background-color', 'rgb(40, 108, 197)');
     });
     $("#menu_anchor_group").on("click", function () {
         hiddenBlock();
         $("#block_anchor_group").show();
-        $("#label_anchor_group").css('background-color', 'rgb(40, 108, 197)');
+        $("#label_anchor_group").addClass("opened");//.css('background-color', 'rgb(40, 108, 197)');
     });
 
 
@@ -98,7 +98,7 @@ $(function () {
         close: function () {
             hiddenBlock();
             $("#block_info").show();
-            $("#label_map_info").css('background-color', 'rgb(40, 108, 197)');
+            $("#label_map_info").addClass("opened");//.css('background-color', 'rgb(40, 108, 197)');
             $("#btn_submit_map_info").prop('disabled', true);
             allFields.removeClass("ui-state-error");
         }
@@ -121,5 +121,5 @@ function hiddenBlock() {
     $("#block_group_list").hide();
     $("#block_anchor_group").hide();
     $("#block_map_group").hide();
-    $(".sidebar-menu .btn-sidebar").css('background-color', 'rgb(57, 143, 255)');
+    $(".sidebar-menu .btn-sidebar").removeClass("opened");
 }

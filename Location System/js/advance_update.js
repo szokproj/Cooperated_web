@@ -9,6 +9,10 @@ var time = 100;
 var ipPortList = {};
 
 $(function () {
+    let h = document.documentElement.clientHeight;
+    $(".container").css("height", h - 10 + "px");
+    $("#block_files_list").css("max-height", h - 425 + "px");
+
     token = getToken();
     /*
      * Check this page's permission and load navbar
@@ -177,23 +181,21 @@ function updateFileToDevice() {
     if (confirm("確定將檔名為 [" + fileName + "] 更新到裝置 IP address : " + $("#sel_device_ip").val() + "的韌體?(建議先確認更新檔是否符合規定)")) {
         let requestArray = {
                 "Command_Type": ["Read"],
-                "Command_Name": ["update_data"],
+                "Command_Name": ["updateFW"],
                 "Value": {
                     "File_Name": [fileName],
                     "IP_address": [ip_addr]
                 },
                 "api_token": [token]
             },
-            xmlHttp = createJsonXmlHttp("test2");
+            xmlHttp = createJsonXmlHttp("Update_fw");
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 let revObj = JSON.parse(this.responseText);
-                if (checkTokenAlive(token, revObj) && revObj.Value[0]) {
-                    if (revObj.Value[0].success > 0) {
-                        alert("Updated the firmware successfully.");
-                    } else {
-                        alert("Failed to update firmware!");
-                    }
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                    alert("Updated the firmware successfully.");
+                } else {
+                    alert("Failed to update firmware!");
                 }
             }
         };

@@ -601,7 +601,7 @@ function RTLS_Canvas(number) {
 
 function canvasMode(blocks) {
     let content = document.getElementById("content");
-    let h = document.documentElement.clientHeight - 43; //window_height - nav_bar
+    let h = Math.ceil((document.documentElement.clientHeight - 43) * 0.96); //window_height - nav_bar
     //console.log("h : " + h);
     let number = 1;
     content.innerHTML = "";

@@ -38,17 +38,17 @@
 
         <!-- Web Content -->
         <div class="row">
-            <div class="col-lg-12">
-                <div style="float:right;">
-                    <img class="logo" src="../image/logo/icon.png">
-                    <label class="i18n" name="i_language"></label>
-                    <select id="language" class="select-lang">
-                        <option value="en">English</option>
-                        <option value="zh-TW">繁體中文</option>
-                        <option value="zh-CN">简体中文</option>
-                    </select>
-                    <label id="login_user"></label>
-                </div>
+            <div class="col-lg-12 top_nav">
+                <img class="logo" src="../image/logo/yihong_logo.png">
+                <label id="login_user"></label>
+            </div>
+            <div class="tool-bar">
+                <label class="i18n" name="i_language"></label>
+                <select id="language" class="select-lang">
+                    <option value="en">English</option>
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="zh-CN">简体中文</option>
+                </select>
             </div>
         </div>
 
@@ -69,30 +69,33 @@
             </div>
             <div class="col-lg-4">
                 <br><br>
-                <div style="margin-left: 5px;">
-                    <label>Network interface card :&nbsp;</label><select id="interface_card"></select>
-                    <br><br>
-                    <label>Local IP :&nbsp;&nbsp;</label><input type="text" id="local_ip" value="" readonly>
-                    <label for="search_devices" class="btn-label label-search" title="Search Devices">
-                        <i class="fas fa-search"></i></label>
-                    <input id="search_devices" type="button" onclick="searchDevices()" class="btn-hidden" />
-                </div>
-                <br>
+                <label style="margin-left: 5px;">Network interface card :&nbsp;</label>
+                <select id="interface_card"></select>
+                <br><br>
                 <table class="cmd-send-bar">
                     <tr>
-                        <td style="width: 100px;">Device IP :&nbsp;</td>
+                        <td style="width: 100px;">Local IP :&nbsp;</td>
+                        <td>
+                            <input type="text" id="local_ip" style="margin-right: 10px;" readonly>
+                            <label for="search_devices" class="btn-label label-search" title="Search Devices">
+                                <i class="fas fa-search"></i></label>
+                            <input id="search_devices" type="button" onclick="searchDevices()" class="btn-hidden" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Device IP :&nbsp;</td>
                         <td>
                             <select id="sel_device_ip"></select>
                         </td>
                     </tr>
                     <tr>
-                        <td style="width: 100px;">OUT :&nbsp;</td>
+                        <td>OUT :&nbsp;</td>
                         <td>
                             <input type="text" id="send_cmd" style="width: 100%"><br>
                         </td>
                     </tr>
                     <tr>
-                        <td style="width: 100px;">IN :&nbsp;</td>
+                        <td>IN :&nbsp;</td>
                         <td>
                             <input type="text" id="receive_cmd" style="width: 100%"><br>
                         </td>

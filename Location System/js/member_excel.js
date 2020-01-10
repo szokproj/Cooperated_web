@@ -1,13 +1,8 @@
-var token = "";
 var datafield = ["number", "tag_id", "card_id", "Name", "lastName", "firstName", "EnglishName", "gender", "status",
     "department", "department_id", "department_color", "jobTitle", "jobTitle_id", "jobTitle_color", "type",
     "color_type", "color", "alarm_group_id", "phoneJob", "phoneSelf", "mail", "address", "education", "school",
     "grade", "tech_grade", "birthday", "dateEntry", "dateLeave", "note"
 ];
-
-$(function () {
-    token = getToken();
-});
 
 function arrayKeyTranslate(array) {
     var resultArray = [];

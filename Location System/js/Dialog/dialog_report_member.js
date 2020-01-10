@@ -165,6 +165,18 @@ function setMembersDialog() {
         }
     });
 
+    $("#btn_reset_member").on("click", function () {
+        allFields.val("").removeClass("ui-state-error");
+        $("#search_dept option").eq(0).prop("selected", true);
+        $("#search_member_list tbody").empty();
+        let item = 0;
+        for (let number in memberList) {
+            item++;
+            addMemberRow(item, memberList[number]);
+        }
+        $("#chk_all_search_member").prop("checked", false);
+    });
+
     $("#btn_add_members").on("click", function () {
         if ($("#select_report_name").val() != "all_member_attend")
             dialog.dialog("open");
@@ -253,6 +265,30 @@ function setMembersDialog() {
     }
 }
 
+function convertTableToArray(table_id) {
+    var arr = [];
+    var tableObj = document.getElementById(table_id);
+    var allTRs = tableObj.getElementsByTagName("tr");
+    var title_arr = [];
+    for (var trCounter = 0; trCounter < allTRs.length; trCounter++) {
+        if (trCounter == 0) {
+            var allThsInTR = allTRs[trCounter].getElementsByTagName("th");
+            for (var th = 0; th < allThsInTR.length; th++) {
+                title_arr.push(allThsInTR[th].innerHTML);
+            }
+        } else {
+            var tmpObj = {};
+            var allTDsInTR = allTRs[trCounter].getElementsByTagName("td");
+            for (var td = 0; td < allTDsInTR.length; td++) {
+                tmpObj[title_arr[td]] = allTDsInTR[td].innerHTML;
+                //console.log(tmpObj[title_arr[td]]);
+            }
+            arr.push(tmpObj);
+        }
+    }
+    return arr;
+}
+
 function selectCheckbox(tr_id) {
     let tr = document.getElementById(tr_id);
     if (tr.classList.contains("selected"))
@@ -280,8 +316,8 @@ function setDisplayRowsDialog() {
         }
         $("#table_member_attendance thead").html("<tr><th>" + $.i18n.prop("i_item") + "</th>" +
             tr_member_attendance +
-            "<th>上班時間</th>" +
-            "<th>下班時間</th></tr>");
+            "<th>" + $.i18n.prop('i_clockIn') + "</th>" +
+            "<th>" + $.i18n.prop('i_clockOut') + "</th>");
 
         let count_data = 0;
         for (let j = 0; j < chk_person_data.length; j++) {

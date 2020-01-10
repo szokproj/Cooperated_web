@@ -285,7 +285,7 @@ function Navbar() {
             });
             navbarHtml += "<li class=\"start\"><a href=\"javascript: StartClick();\" id=\"btn_start\">" +
                 "<i class=\"fas fa-play\" style=\"padding-left:2px;\"></i>" +
-                "<span>" + $.i18n.prop('i_start') + "</span></a></li>";
+                "<span>" + $.i18n.prop('i_startPositioning') + "</span></a></li>";
         }
     };
     this.loadNavbar = function () {

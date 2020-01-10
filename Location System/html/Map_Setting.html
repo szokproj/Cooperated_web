@@ -47,23 +47,23 @@
 
         <!-- Web Content -->
         <div class="row">
-            <div class="col-lg-12">
-                <div style="float:right;">
-                    <img class="logo" src="../image/logo/icon.png">
-                    <label class="i18n" name="i_language"></label>
-                    <select id="language" class="select-lang">
-                        <option value="en">English</option>
-                        <option value="zh-TW">繁體中文</option>
-                        <option value="zh-CN">简体中文</option>
-                    </select>
-                    <label id="login_user"></label>
-                </div>
+            <div class="col-lg-12 top_nav">
+                <img class="logo" src="../image/logo/yihong_logo.png">
+                <label id="login_user"></label>
+            </div>
+            <div class="tool-bar">
+                <label class="i18n" name="i_language"></label>
+                <select id="language" class="select-lang">
+                    <option value="en">English</option>
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="zh-CN">简体中文</option>
+                </select>
             </div>
         </div>
 
         <div class="row">
             <div class="col-lg-12">
-                <h5 style="text-align: center; margin:0px; padding:5px; background:rgb(0, 65, 117);">Map List</h5>
+                <h5 style="margin-top: 15px;">Map List</h5>
                 <div class="map_list">
                     <div id="maps_gallery"></div>
                     <label for="add_new_map" class="custom-file-download">
@@ -77,8 +77,7 @@
 
         <div class="row">
             <div class="col-lg-6">
-                <h5 style="text-align: center; margin:0px; padding:5px; background:rgb(0, 65, 117);">Map Setting
-                </h5>
+                <h5>Map Setting</h5>
                 <div id="cvsBlock">
                     <canvas id="canvas_map" height="1" width="1">
                         <span class="i18n" name="i_no_canvas"></span>
@@ -127,7 +126,7 @@
                             <input id="menu_anchor_group" type="button" class="btn-hidden" /></li>
                     </ul>
                 </nav>
-                <div id="block_info" style="width:100%; float:left;">
+                <div id="block_info" style="width:100%; float:left;  margin-top:10px;">
                     <input type="hidden" id="map_info_id" />
                     <label class="i18n" name="i_mapName"></label> :&nbsp;
                     <input type="text" id="map_info_name" style="width:120px;" />
@@ -139,7 +138,7 @@
                         disabled />
                 </div>
                 <div id="block_anchor_list">
-                    <div style="width:100%; float:left; margin:0px;">
+                    <span class="control-bar">
                         <label for="btn_add_anchor_list" id="label_add_anchor_list" class="btn-add i18n-input"
                             selectattr="title" selectname="i_addAnchorGroup">
                             <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
@@ -148,7 +147,8 @@
                             selectattr="title" selectname="i_deleteAnchorGroup"><i class="fas fa-minus-square"
                                 style='font-size:20px;'></i></label>
                         <input id="btn_delete_anchor_list" type="button" class="btn-hidden" />
-                    </div>
+                    </span>
+                    <br><br>
                     <div class="anchor_list">
                         <table id="table_main_anchor_list" class="table-line">
                             <thead>
@@ -172,7 +172,7 @@
                     </div>
                 </div>
                 <div id="block_group_list">
-                    <span style="width:100%; float:left;">
+                    <span class="control-bar">
                         <label for="btn_add_group" id="label_add_group" class="btn-add i18n-input" selectattr="title"
                             selectname="i_addGroup">
                             <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
@@ -187,6 +187,7 @@
                             <i class="fas fa-map-marked-alt" style='font-size:20px;'></i></label>
                         <input id="btn_pos_group" type="button" class="btn-hidden" />
                     </span>
+                    <br><br>
                     <div class="block-list">
                         <table id="table_group_list" class="table-line">
                             <thead>
@@ -204,7 +205,7 @@
                     </div>
                 </div>
                 <div id="block_anchor_group">
-                    <span style="width:100%; float:left;">
+                    <span class="control-bar">
                         <label for="btn_add_anchor_group" id="label_add_anchor_group" class="btn-add i18n-input"
                             selectattr="title" selectname="i_addAnchorGroup">
                             <i class="fas fa-plus-square" style='font-size:20px;'></i></label>
@@ -219,6 +220,7 @@
                             <i class="fas fa-map-marked-alt" style='font-size:20px;'></i></label>
                         <input id="btn_pos_anchor_group" type="button" class="btn-hidden" />
                     </span>
+                    <br><br>
                     <div>
                         <ul id="myTab" class="nav nav-tabs">
                             <li class="active">

@@ -25,15 +25,6 @@
     <link rel="stylesheet" type="text/css" href="../css/style.css" />
     <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
     <style>
-        .container {
-            font-weight: bold;
-            font-family: 'Microsoft JhengHei', 'sans-serif';
-        }
-
-        .nav-tabs {
-            margin: 10px 0px 0px 50px;
-        }
-
         th,
         td {
             font-weight: bold;
@@ -47,9 +38,12 @@
         }
 
         .table th {
-            background-color: #082041;
-            /*gray;*/
+            background-color: rgb(201, 201, 201);
             text-align: center;
+        }
+
+        .table td {
+            background-color: rgb(255, 255, 255);
         }
 
         label {
@@ -68,20 +62,24 @@
             border: 0;
         }
 
+        .table-line tbody tr {
+            background-color: rgb(255, 255, 255);
+        }
+
         .table-line tbody tr:hover {
-            background-color: rgb(0, 57, 95);
+            background-color: rgb(255, 194, 102);
             cursor: pointer;
         }
 
         .table-line th {
-            border: 1px solid rgb(0, 105, 175);
-            background: rgb(1, 79, 131);
+            border: 1px solid rgb(71, 71, 71);
+            background: rgb(88, 88, 88);
             color: white;
             text-align: center;
         }
 
         .table-line td {
-            border: 1px solid rgb(0, 105, 175);
+            border: 1px solid rgb(71, 71, 71);
         }
 
 
@@ -140,17 +138,17 @@
         <div id="icon_navbar"></div>
 
         <div class="row">
-            <div class="col-lg-12">
-                <div style="float:right;">
-                    <img class="logo" src="../image/logo/icon.png">
-                    <label class="i18n" name="i_language"></label>
-                    <select id="language" class="select-lang">
-                        <option value="en">English</option>
-                        <option value="zh-TW">繁體中文</option>
-                        <option value="zh-CN">简体中文</option>
-                    </select>
-                    <label id="login_user"></label>
-                </div>
+            <div class="col-lg-12 top_nav">
+                <img class="logo" src="../image/logo/yihong_logo.png">
+                <label id="login_user"></label>
+            </div>
+            <div class="tool-bar">
+                <label class="i18n" name="i_language"></label>
+                <select id="language" class="select-lang">
+                    <option value="en">English</option>
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="zh-CN">简体中文</option>
+                </select>
             </div>
         </div>
 
@@ -209,7 +207,8 @@
                     </tr>
                     <tr>
                         <td><span class="i18n" name="i_password"></span> : </td>
-                        <td><input type="text" id="edit_password" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" /></td>
+                        <td><input type="text" id="edit_password" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" />
+                        </td>
                     </tr>
                     <tr>
                         <td><span class="i18n" name="i_status"></span> : </td>
@@ -219,16 +218,6 @@
                             <label for="is_active" class="i18n" name="i_enable"></label>
                         </td>
                     </tr>
-                    <!--
-                    <tr>
-                        <td></td>
-                        <td><input type="checkbox" id="edit_setnewpass" />
-                            <span class="i18n" name="i_setNewPass"></span></td>
-                    </tr>
-                    <tr id="tr_newpassword">
-                        <td><span class="i18n" name="i_newPassword"></span> : </td>
-                        <td><input type="text" id="edit_newpassword" /></td>
-                    </tr>-->
                     <tr>
                         <td><span class="i18n" name="i_permission"></span> : </td>
                         <td><select id="edit_permission">
@@ -243,111 +232,6 @@
             </fieldset>
         </form>
     </div>
-    <!--
-    <div id="dialog_permission_setting" class="dialog" title="Permission Table">
-        <form>
-            <label class="i18n" name="i_addPermission"></label> : <input type="text" id="permission_name" />
-            <br><br>
-            <fieldset style="text-align: left;">
-                <table id="table_permission_setting" class="ui-widget ui-widget-content">
-                    <thead>
-                        <tr class="ui-widget-header">
-                            <th class="i18n" name="i_pageName"></th>
-                            <th class="i18n" name="i_pageHtml"></th>
-                            <th class="i18n" name="i_operate"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><input type="checkbox" id="chkbox_permission_1" name="chkbox_permission"
-                                    value="radio_permission_1" />
-                                <span class="i18n" name="homePage"></span></td>
-                            <td>index.html</td>
-                            <td>
-                                <input type="radio" name="radio_permission_1" value="readOnly" />
-                                <span class="i18n" name="i_readOnly"></span><br>
-                                <input type="radio" name="radio_permission_1" value="readAndWrite" />
-                                <span class="i18n" name="i_readAndWrite"></span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" id="chkbox_permission_2" name="chkbox_permission"
-                                    value="radio_permission_2" />
-                                <span class="i18n" name="member_settingPage"></span></td>
-                            <td>Member_Setting.html</td>
-                            <td>
-                                <input type="radio" name="radio_permission_2" value="readOnly" />
-                                <span class="i18n" name="i_readOnly"></span><br>
-                                <input type="radio" name="radio_permission_2" value="readAndWrite" />
-                                <span class="i18n" name="i_readAndWrite"></span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" id="chkbox_permission_3" name="chkbox_permission"
-                                    value="radio_permission_3" />
-                                <span class="i18n" name="timelinePage"></span></td>
-                            <td>Timeline.html</td>
-                            <td>
-                                <input type="radio" name="radio_permission_3" value="readOnly" />
-                                <span class="i18n" name="i_readOnly"></span><br>
-                                <input type="radio" name="radio_permission_3" value="readAndWrite" />
-                                <span class="i18n" name="i_readAndWrite"></span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" id="chkbox_permission_4" name="chkbox_permission"
-                                    value="radio_permission_4" />
-                                <span class="i18n" name="map_settingPage"></span></td>
-                            <td>Map_Setting.html</td>
-                            <td>
-                                <input type="radio" name="radio_permission_4" value="readOnly" />
-                                <span class="i18n" name="i_readOnly"></span><br>
-                                <input type="radio" name="radio_permission_4" value="readAndWrite" />
-                                <span class="i18n" name="i_readAndWrite"></span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" id="chkbox_permission_5" name="chkbox_permission"
-                                    value="radio_permission_5" />
-                                <span class="i18n" name="anchor_settingPage"></span></td>
-                            <td>Anchor_Setting.html</td>
-                            <td><input type="radio" name="radio_permission_5" value="readOnly" />
-                                <span class="i18n" name="i_readOnly"></span><br>
-                                <input type="radio" name="radio_permission_5" value="readAndWrite" />
-                                <span class="i18n" name="i_readAndWrite"></span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" id="chkbox_permission_6" name="chkbox_permission"
-                                    value="radio_permission_6" />
-                                <span class="i18n" name="alarm_settingPage"></span></td>
-                            <td>Alarm_Setting.html</td>
-                            <td>
-                                <input type="radio" name="radio_permission_6" value="readOnly" />
-                                <span class="i18n" name="i_readOnly"></span><br>
-                                <input type="radio" name="radio_permission_6" value="readAndWrite" />
-                                <span class="i18n" name="i_readAndWrite"></span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" id="chkbox_permission_7" name="chkbox_permission"
-                                    value="radio_permission_7" />
-                                <span class="i18n" name="advance_settingPage"></span></td>
-                            <td>Advance_cmd.html</td>
-                            <td>
-                                <input type="radio" name="radio_permission_7" value="readOnly" />
-                                <span class="i18n" name="i_readOnly"></span><br>
-                                <input type="radio" name="radio_permission_7" value="readAndWrite" />
-                                <span class="i18n" name="i_readAndWrite"></span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-            </fieldset>
-        </form>
-    </div>
-    -->
     <!-- i18n 多語言翻譯 -->
     <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
     <script type="text/javascript" src="../js/i18n/language.js"></script>

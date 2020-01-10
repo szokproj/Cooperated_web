@@ -41,21 +41,17 @@
 
         <!-- Web content -->
         <div class="row">
-            <div class="col-lg-12">
-                <span style="float:left; margin: 5px 10px;">
-                    <label>Network interface card :&nbsp;</label><select id="interface_card"></select>
-                    <label>, Local IP :&nbsp;</label><input type="text" id="local_ip" value="" readonly>
-                </span>
-                <div style="float:right;">
-                    <img class="logo" src="../image/logo/icon.png">
-                    <label class="i18n" name="i_language"></label>
-                    <select id="language" class="select-lang">
-                        <option value="en">English</option>
-                        <option value="zh-TW">繁體中文</option>
-                        <option value="zh-CN">简体中文</option>
-                    </select>
-                    <label id="login_user"></label>
-                </div>
+            <div class="col-lg-12 top_nav">
+                <img class="logo" src="../image/logo/yihong_logo.png">
+                <label id="login_user"></label>
+            </div>
+            <div class="tool-bar">
+                <label class="i18n" name="i_language"></label>
+                <select id="language" class="select-lang">
+                    <option value="en">English</option>
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="zh-CN">简体中文</option>
+                </select>
             </div>
         </div>
 
@@ -65,13 +61,26 @@
 
         <div class="row">
             <div class="col-lg-12">
+
                 <div class="mode_ethernet">
                     <div class="top">
-                        <button class="btn btn-primary" id="btn_search" onclick="Search()">Search</button>&nbsp;
-                        <button class="btn btn-primary" id="btn_connect" onclick="Connect()">Connect</button>&nbsp;
-                        <button class="btn btn-primary" id="btn_submit" onclick="submitWriteRequest()">Submit</button>
+                        <button class="btn btn-primary" id="btn_search" onclick="Search()">
+                            <span class="i18n" name="i_search"></span>
+                            <i class='fa fa-search'></i></button>&nbsp;
+                        <button class="btn btn-primary" id="btn_connect" onclick="Connect()">
+                            <span class="i18n" name="i_connect"></span>
+                            <i class='fas fa-link'></i></button>&nbsp;
+                        <button class="btn btn-primary" id="btn_submit" onclick="submitWriteRequest()">
+                            <span class="i18n" name="i_writeDevice"></span>
+                            <i class='fas fa-download'></i></button>
+
+                        <span style="margin-left: 10px; color:white">
+                            <label>Network interface card :&nbsp;</label><select id="interface_card"></select>
+                            <label>, Local IP :&nbsp;</label><input type="text" id="local_ip" value="" readonly>
+                        </span>
+
                         <div style="float:right;">
-                            <span>
+                            <span style="color: white;">
                                 <input type="checkbox" id="is_static_ip_connect" value="true" />
                                 <label>Static IP connect : </label>
                                 <input type="text" id="static_ip_1" value="192" maxlength="3" style="max-width: 40px;">

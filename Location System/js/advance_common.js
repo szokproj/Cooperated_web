@@ -87,12 +87,12 @@ function StartClick() {
         isStart = true;
         requestArray.Value = "Start";
         document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-pause\">" +
-            "</i><span>" + $.i18n.prop('i_stop') + "</span>";
+            "</i><span>" + $.i18n.prop('i_stopPositioning') + "</span>";
     } else {
         isStart = false;
         requestArray.Value = "Stop";
         document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\">" +
-            "</i><span>" + $.i18n.prop('i_start') + "</span>";
+            "</i><span>" + $.i18n.prop('i_startPositioning') + "</span>";
     }
     let xmlHttp = createJsonXmlHttp("test2");
     xmlHttp.onreadystatechange = function () {

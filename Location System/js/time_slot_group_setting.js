@@ -1,49 +1,78 @@
-var token = "";
-var count_time_groups = 0;
-var count_time_group_slots = 0;
-var TimeSlotArr = [];
-var TimeGroupArr = [];
+let timeSlotArr = [],
+    includeSlotsArr = [],
+    count_time_groups = 0,
+    count_time_group_slots = 0;
 
-$(function () {
-    token = getToken();
+function importTimeSlotGroup() {
     inputTimeGroups();
 
     //Dialog to edit time group.
     var dialog, form,
         add_group_id = $("#add_time_group_id"),
         add_group_name = $("#add_time_group_name"),
-        add_group_slots = document.getElementsByName("chkbox_time_group_slot"),
+        add_group_slots = document.getElementsByName("time_group_slot"),
         allFields = $([]).add(add_group_name);
 
-    function EditTimeGroup() {
+    function submitTimeGroup() {
         allFields.removeClass("ui-state-error");
-        var valid = true && checkLength(add_group_name, $.i18n.prop('i_alarmAlert_4'), 1, 50);
-        if (valid) {
-            if (add_group_slots.length == 0) {
-                alert($.i18n.prop('i_alarmAlert_8'));
-                return false;
-            }
-            var requestJSON = JSON.stringify({
-                "Command_Type": ["Write"],
-                "Command_Name": ["EditTimeGroup"],
-                "Value": {
-                    "time_group_id": add_group_id.val(),
-                    "time_group_name": add_group_name.val()
-                },
-                "api_token": [token]
-            });
-            var addXmlHttp = createJsonXmlHttp("sql");
-            addXmlHttp.onreadystatechange = function () {
-                if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
-                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0)
-                        inputTimeGroups();
-                    dialog.dialog("close");
+        if (checkLength(add_group_name, $.i18n.prop('i_alarmAlert_4'), 1, 50)) {
+            if (add_group_slots.length == 0)
+                return alert($.i18n.prop('i_alarmAlert_8'));
+            let isRepeat = false;
+            for (let i = 0; i < add_group_slots.length; i++) {
+                for (let j = i + 1; j < add_group_slots.length; j++) {
+                    if (add_group_slots[i].value == add_group_slots[j].value)
+                        isRepeat = true;
                 }
-            };
-            addXmlHttp.send(requestJSON);
+            }
+            if (isRepeat)
+                return alert($.i18n.prop('i_alarmAlert_16'));
+            if (submit_type["time_group"] == "Add") {
+                if (!confirm($.i18n.prop('i_alarmAlert_19')))
+                    return;
+                let requestJSON = JSON.stringify({
+                    "Command_Type": ["Write"],
+                    "Command_Name": ["AddTimeGroup"],
+                    "Value": {
+                        "time_group_name": add_group_name.val()
+                    },
+                    "api_token": [token]
+                });
+                let xmlHttp = createJsonXmlHttp("sql");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        let revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                            let revInfo = revObj.Value[0].Values || [];
+                            add_group_id.val(revInfo.time_gid);
+                            addTimeGroup_Slots();
+                        } else {
+                            alert($.i18n.prop('i_alarmAlert_18'));
+                        }
+                    }
+                };
+                xmlHttp.send(requestJSON);
+            } else {
+                let requestJSON = JSON.stringify({
+                    "Command_Type": ["Write"],
+                    "Command_Name": ["EditTimeGroup"],
+                    "Value": {
+                        "time_group_id": add_group_id.val(),
+                        "time_group_name": add_group_name.val()
+                    },
+                    "api_token": [token]
+                });
+                let xmlHttp = createJsonXmlHttp("sql");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        let revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0)
+                            updateTimeGroup_Slots();
+                    }
+                };
+                xmlHttp.send(requestJSON);
+            }
         }
-        return valid;
     }
 
     dialog = $("#dialog_time_group_slot").dialog({
@@ -52,7 +81,7 @@ $(function () {
         width: 350,
         modal: true,
         buttons: {
-            "Confirm": EditTimeGroup,
+            "Confirm": submitTimeGroup,
             Cancel: function () {
                 form[0].reset();
                 allFields.removeClass("ui-state-error");
@@ -67,81 +96,66 @@ $(function () {
 
     form = dialog.find("form").on("submit", function (event) {
         event.preventDefault();
-        EditTimeGroup();
+        submitTimeGroup();
     });
 
     //新增時段群組與時段的關聯
-    $("#btn_add_time_group_slot").button().on("click", function () {
-        add_group_name.removeClass("ui-state-error");
-        if (add_group_name.val() == "") {
-            add_group_name.addClass("ui-state-error");
-            alert($.i18n.prop('i_alarmAlert_11'));
-            return;
-        }
-        $("#add_time_group_slot").html(createOptions_name(TimeSlotArr, TimeSlotArr[0].id));
-        $("#dialog_add_time_group_slot").dialog("open");
+    $("#btn_add_time_group_slot").on("click", function () {
+        let count_time_group_slots = document.querySelectorAll("#table_time_group_slot tr").length,
+            tr_id = "tr_time_group_slot" + count_time_group_slots;
+        $("#table_time_group_slot tbody").append(
+            "<tr id=\"" + tr_id + "\">" +
+            "<td><input type='checkbox' name=\"chkbox_time_group_slot\" value=\"" + tr_id +
+            "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_time_group_slots + "</td>" +
+            "<td><select name=\"time_group_slot\">" + createOptions_name(timeSlotArr, timeSlotArr[0].id) +
+            "</select></td></tr>");
     });
 
     //刪除時段群組與時段的關聯
-    $("#btn_delete_time_group_slot").button().on("click", function () {
-        var checkboxs = document.getElementsByName("chkbox_time_group_slot");
-        var delete_arr = [];
-        for (k in checkboxs) {
-            if (checkboxs[k].checked)
-                delete_arr.push({
-                    "time_group_id": add_group_id.val(),
-                    "time_slot_id": checkboxs[k].value
-                });
+    $("#btn_delete_time_group_slot").on("click", function () {
+        let save_time_slots = [],
+            items = document.getElementsByName("chkbox_time_group_slot"),
+            timeslots = document.getElementsByName("time_group_slot"); //timeslot_ids
+        for (let k = 0; k < items.length; k++) {
+            if (!items[k].checked)
+                save_time_slots.push(timeslots[k].value);
         }
-        if (delete_arr.length == 0) {
-            alert($.i18n.prop('i_alarmAlert_9'));
-            return;
-        } else if (delete_arr.length == checkboxs.length) {
-            alert($.i18n.prop('i_alarmAlert_15'));
-            return;
-        }
-        var requestJSON = JSON.stringify({
-            "Command_Type": ["Write"],
-            "Command_Name": ["DeleteTimeSlotGroup"],
-            "Value": delete_arr,
-            "api_token": [token]
+        if (save_time_slots.length == items.length)
+            return alert($.i18n.prop('i_alarmAlert_9'));
+        $("#table_time_group_slot tbody").empty();
+        save_time_slots.forEach(function (time_slot, index) {
+            let tr_id = "tr_time_group_slot" + (index + 1);
+            $("#table_time_group_slot tbody").append(
+                "<tr id=\"" + tr_id + "\">" +
+                "<td><input type='checkbox' name=\"chkbox_time_group_slot\" value=\"" + tr_id +
+                "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (index + 1) + "</td>" +
+                "<td><select name=\"time_group_slot\">" + createOptions_name(timeSlotArr, time_slot) +
+                "</select></td></tr>");
         });
-        var deleteXmlHttp = createJsonXmlHttp("sql");
-        deleteXmlHttp.onreadystatechange = function () {
-            if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
-                var revObj = JSON.parse(this.responseText);
-                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                    inputTimeGroups();
-                    inputTimeGroupSlots(add_group_id.val())
-                    alert($.i18n.prop('i_alarmAlert_12'));
-                }
-            }
-        };
-        deleteXmlHttp.send(requestJSON);
     });
 
     //按下新增Time Group
     $("#btn_add_time_group").button().on("click", function () {
+        submit_type["time_group"] = "Add";
         $("#add_time_group_id").val("");
-        $("#add_time_group_naem").val("");
+        $("#add_time_group_name").val("");
         $("#table_time_group_slot tbody").empty();
-        var requestJSON = JSON.stringify({
+        let requestJSON = JSON.stringify({
             "Command_Type": ["Write"],
             "Command_Name": ["GetTimeSlot_list"], //先取得所有的TimeSlot
             "api_token": [token]
         });
-        var getTimesXmlHttp = createJsonXmlHttp("sql");
+        let getTimesXmlHttp = createJsonXmlHttp("sql");
         getTimesXmlHttp.onreadystatechange = function () {
             if (getTimesXmlHttp.readyState == 4 || getTimesXmlHttp.readyState == "complete") {
-                var revObj = JSON.parse(this.responseText);
+                let revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     $("#table_time_group_settings tbody").empty();
                     count_time_group_settings = 0;
-                    TimeSlotArr = [];
-                    var revList = revObj.Value[0].Values;
-                    if (revList) {
-                        revList.forEach(element => {
-                            TimeSlotArr.push({
+                    timeSlotArr = [];
+                    if (revObj.Value[0].Values) {
+                        revObj.Value[0].Values.forEach(element => {
+                            timeSlotArr.push({
                                 id: element.time_slot_id,
                                 name: element.time_slot_name
                             });
@@ -184,37 +198,45 @@ $(function () {
                 var revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     inputTimeGroups();
-                    alert($.i18n.prop('i_alarmAlert_9'));
                 }
             }
         };
         deleteXmlHttp.send(requestJSON);
     });
 
-    //Dialog to add time slot group.
-    var dialog2, form2,
-        time_group_id = $("#add_time_group_id"),
-        time_group_name = $("#add_time_group_name"),
-        add_slot = $("#add_time_group_slot"),
-        allFields2 = $([]).add(add_slot);
-
-    function SubmitGroup_Slot() {
-        var valid = true && checkLength(add_slot, $.i18n.prop('i_alarmAlert_28'), 1, 20); //text
-        var existed_slot = document.getElementsByName("chkbox_time_group_slot");
-        existed_slot.forEach(element => {
-            if (element.value == add_slot.val()) {
-                valid = false;
-                alert($.i18n.prop('i_alarmAlert_16'));
-                return;
-            }
+    function updateTimeGroup_Slots() {
+        if (includeSlotsArr.length == 0)
+            return;
+        var requestJSON = JSON.stringify({
+            "Command_Type": ["Write"],
+            "Command_Name": ["DeleteTimeSlotGroup"],
+            "Value": includeSlotsArr,
+            "api_token": [token]
         });
-        if (valid) {
+        var deleteXmlHttp = createJsonXmlHttp("sql");
+        deleteXmlHttp.onreadystatechange = function () {
+            if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
+                var revObj = JSON.parse(this.responseText);
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                    addTimeGroup_Slots();
+                }
+            }
+        };
+        deleteXmlHttp.send(requestJSON);
+    }
+
+    function addTimeGroup_Slots() {
+        let count = 0;
+
+        addTimeSlot(add_group_slots[count].value);
+
+        function addTimeSlot(time_slot_id) {
             var request = {
                 "Command_Type": ["Write"],
                 "Command_Name": ["AddTimeSlotGroup"],
                 "Value": {
-                    "time_group_id": time_group_id.val(),
-                    "time_slot_id": add_slot.val()
+                    "time_group_id": $("#add_time_group_id").val(),
+                    "time_slot_id": time_slot_id
                 },
                 "api_token": [token]
             };
@@ -223,119 +245,24 @@ $(function () {
                 if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                     var revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                        inputTimeGroups();
-                        var getRequest = {
-                            "Command_Type": ["Read"],
-                            "Command_Name": ["GetTimeGroup_list"],
-                            "api_token": [token]
-                        };
-                        var xmlHttp = createJsonXmlHttp("sql");
-                        xmlHttp.onreadystatechange = function () {
-                            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                                var revObj2 = JSON.parse(this.responseText);
-                                if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
-                                    count_time_groups = 0;
-                                    $("#table_time_group tbody").empty();
-                                    TimeGroupArr = revObj2.Value[0].Values.slice(0) || [];
-                                    for (i = 0; i < TimeGroupArr.length; i++) {
-                                        var timelist_name = [];
-                                        if (TimeGroupArr[i].elements) {
-                                            TimeGroupArr[i].elements.forEach(element => {
-                                                timelist_name.push(element.time_slot_name);
-                                            });
-                                        }
-                                        count_time_groups++;
-                                        var tr_id = "tr_time_group_" + count_time_groups;
-                                        $("#table_time_group tbody").append("<tr id=\"" + tr_id + "\">" +
-                                            "<td><input type='checkbox' name=\"chkbox_time_group\" value=\"" + TimeGroupArr[i].time_group_id +
-                                            "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_time_groups + "</td>" +
-                                            "<td><label name=\"time_group_name\">" + TimeGroupArr[i].time_group_name + "</label></td>" +
-                                            "<td><label name=\"time_group_slots\">" + timelist_name.toString() + "</label></td>" +
-                                            "<td style='text-align:center;'><label for=\"btn_edit_time_group_" + count_time_groups +
-                                            "\" class='btn-edit' title='" + $.i18n.prop('i_editTimeSlotGroup') + "'><i class='fas fa-edit'" +
-                                            " style='font-size:18px;'></i></label>" +
-                                            "<input id=\"btn_edit_time_group_" + count_time_groups + "\" type='button' class='btn-hidden'" +
-                                            " onclick=\"inputTimeGroupSlots(\'" + TimeGroupArr[i].time_group_id + "\')\" /></td></tr>");
-                                    }
-                                    inputTimeGroupSlots(time_group_id.val());
-                                    alert($.i18n.prop('i_alarmAlert_17'));
-                                    dialog2.dialog("close");
-                                } else {
-                                    alert($.i18n.prop('i_alarmAlert_6'));
-                                    return;
-                                }
-                            }
-                        };
-                        xmlHttp.send(JSON.stringify(getRequest));
+                        count++;
+                        if (count < add_group_slots.length) {
+                            addTimeSlot(add_group_slots[count].value);
+                        } else {
+                            inputTimeGroups();
+                            dialog.dialog("close");
+                        }
                     } else {
                         alert($.i18n.prop('i_alarmAlert_18'));
+                        inputTimeGroups();
                         return;
                     }
                 }
             };
             addXmlHttp.send(JSON.stringify(request));
         }
-        return valid;
     }
-
-
-    function AddTimeGroup_Slot() {
-        allFields2.removeClass("ui-state-error");
-        if (time_group_id.val() == "") {
-            var r = confirm($.i18n.prop('i_alarmAlert_19'));
-            if (r == false)
-                return;
-            var requestJSON = JSON.stringify({
-                "Command_Type": ["Write"],
-                "Command_Name": ["AddTimeGroup"],
-                "Value": {
-                    "time_group_name": time_group_name.val()
-                },
-                "api_token": [token]
-            });
-            var addXmlHttp = createJsonXmlHttp("sql");
-            addXmlHttp.onreadystatechange = function () {
-                if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
-                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                        var revInfo = revObj.Value[0].Values || [];
-                        time_group_id.val(revInfo.time_gid);
-                        SubmitGroup_Slot();
-                    } else {
-                        alert($.i18n.prop('i_alarmAlert_18'));
-                    }
-                }
-            };
-            addXmlHttp.send(requestJSON);
-        } else {
-            SubmitGroup_Slot();
-        }
-    }
-
-    dialog2 = $("#dialog_add_time_group_slot").dialog({
-        autoOpen: false,
-        height: 170,
-        width: 220,
-        modal: true,
-        buttons: {
-            "Confirm": AddTimeGroup_Slot,
-            Cancel: function () {
-                form2[0].reset();
-                allFields2.removeClass("ui-state-error");
-                dialog2.dialog("close");
-            }
-        },
-        close: function () {
-            form2[0].reset();
-            allFields2.removeClass("ui-state-error");
-        }
-    });
-
-    form2 = dialog2.find("form").on("submit", function (event) {
-        event.preventDefault();
-        AddTimeGroup_Slot();
-    });
-});
+}
 
 function inputTimeGroups() {
     var request = {
@@ -350,28 +277,27 @@ function inputTimeGroups() {
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 count_time_groups = 0;
                 $("#table_time_group tbody").empty();
-                TimeGroupArr = revObj.Value[0].Values.slice(0) || [];
-                getTimeGroups(TimeGroupArr);
+                timeSlotArr = revObj.Value[0].Values.slice(0) || [];
                 inputAlarmGroupTable(); //載入警報群組已設定的內容
-                for (i = 0; i < TimeGroupArr.length; i++) {
+                for (i = 0; i < timeSlotArr.length; i++) {
                     var timelist_name = [];
-                    if (TimeGroupArr[i].elements) {
-                        TimeGroupArr[i].elements.forEach(element => {
+                    if (timeSlotArr[i].elements) {
+                        timeSlotArr[i].elements.forEach(element => {
                             timelist_name.push(element.time_slot_name);
                         });
                     }
                     count_time_groups++;
                     var tr_id = "tr_time_group_" + count_time_groups;
                     $("#table_time_group tbody").append("<tr id=\"" + tr_id + "\">" +
-                        "<td><input type='checkbox' name=\"chkbox_time_group\" value=\"" + TimeGroupArr[i].time_group_id +
+                        "<td><input type='checkbox' name=\"chkbox_time_group\" value=\"" + timeSlotArr[i].time_group_id +
                         "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_time_groups + "</td>" +
-                        "<td><label name=\"time_group_name\">" + TimeGroupArr[i].time_group_name + "</label></td>" +
+                        "<td><label name=\"time_group_name\">" + timeSlotArr[i].time_group_name + "</label></td>" +
                         "<td><label name=\"time_group_slots\">" + timelist_name.toString() + "</label></td>" +
                         "<td style='text-align:center;'><label for=\"btn_edit_time_group_" + count_time_groups +
                         "\" class='btn-edit' title='" + $.i18n.prop('i_editTimeSlotGroup') + "'><i class='fas fa-edit'" +
                         " style='font-size:18px;'></i></label>" +
                         "<input id=\"btn_edit_time_group_" + count_time_groups + "\" type='button' class='btn-hidden'" +
-                        " onclick=\"inputTimeGroupSlots(\'" + TimeGroupArr[i].time_group_id + "\')\" /></td></tr>");
+                        " onclick=\"inputTimeGroupSlots(\'" + timeSlotArr[i].time_group_id + "\')\" /></td></tr>");
                 }
             } else {
                 alert($.i18n.prop('i_alarmAlert_6'));
@@ -384,16 +310,18 @@ function inputTimeGroups() {
 
 
 function inputTimeGroupSlots(time_group_id) {
-    var index = TimeGroupArr.findIndex(function (info) {
+    submit_type["time_group"] = "Edit";
+    var index = timeSlotArr.findIndex(function (info) {
         return info.time_group_id == time_group_id;
     });
     if (index > -1) {
         $("#add_time_group_id").val(time_group_id);
-        $("#add_time_group_name").val(TimeGroupArr[index].time_group_name);
+        $("#add_time_group_name").val(timeSlotArr[index].time_group_name);
         $("#table_time_group_slot tbody").empty();
+        includeSlotsArr = [];
         count_time_group_slots = 0;
         var requestJSON = JSON.stringify({
-            "Command_Type": ["Write"],
+            "Command_Type": ["Read"],
             "Command_Name": ["GetTimeSlot_list"], //先取得所有的TimeSettings
             "api_token": [token]
         });
@@ -403,22 +331,29 @@ function inputTimeGroupSlots(time_group_id) {
                 var revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     var revList = revObj.Value[0].Values || [];
-                    TimeSlotArr = [];
+                    timeSlotArr = [];
                     revList.forEach(element => {
-                        TimeSlotArr.push({
+                        timeSlotArr.push({
                             id: element.time_slot_id,
                             name: element.time_slot_name
                         });
                     });
-                    if (TimeGroupArr[index].elements) {
-                        TimeGroupArr[index].elements.forEach(element => {
+                    if (timeSlotArr[index].elements) {
+                        timeSlotArr[index].elements.forEach(element => {
                             count_time_group_slots++;
                             var tr_id = "tr_time_group_slot" + count_time_group_slots;
                             $("#table_time_group_slot tbody").append(
                                 "<tr id=\"" + tr_id + "\">" +
-                                "<td><input type='checkbox' name=\"chkbox_time_group_slot\" value=\"" + element.time_slot_id +
+                                "<td><input type='checkbox' name=\"chkbox_time_group_slot\" value=\"" + tr_id +
                                 "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_time_group_slots + "</td>" +
-                                "<td><label name=\"time_group_slot\">" + element.time_slot_name + "</label></td></tr>");
+                                "<td><select name=\"time_group_slot\">" + createOptions_name(timeSlotArr, element.time_slot_id) +
+                                "</select></td></tr>");
+
+                            //紀錄原本時段群組內包含多少時段，以便更新時使用
+                            includeSlotsArr.push({
+                                "time_group_id": time_group_id,
+                                "time_slot_id": element.time_slot_id
+                            });
                         });
                     }
                     $("#dialog_time_group_slot").dialog("open");

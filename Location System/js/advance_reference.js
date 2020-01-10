@@ -5,6 +5,10 @@ var isStart = false,
     pageTimer = 0,
     countDatas = 0;
 $(function () {
+    let h = document.documentElement.clientHeight;
+    $(".container").css("height", h - 10 + "px");
+    $(".table_block").css("max-height", h - 80 + "px");
+
     token = getToken();
     /*
      * Check this page's permission and load navbar

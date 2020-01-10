@@ -5,6 +5,10 @@ var command_name = "";
 var ipPortList = {};
 var token = "";
 $(function () {
+    let h = document.documentElement.clientHeight;
+    $(".container").css("height", h - 10 + "px");
+    $(".table_block").css("max-height", h - 80 + "px");
+    
     token = getToken();
     /*
      * Check this page's permission and load navbar

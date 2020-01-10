@@ -32,6 +32,9 @@ var locate_tag = "";
 var MemberData = {};
 
 $(function () {
+    let h = document.documentElement.clientHeight;
+    $(".container").css("height", h - 10 + "px");
+    $("#cvsBlock").css("height", h - 90 + "px");
     //Check this page's permission and load navbar
     token = getToken();
     if (!getPermissionOfPage("Timeline")) {
@@ -94,11 +97,6 @@ $(function () {
         save_array.forEach(html => {
             $("#table_target tbody").append("<tr>" + html + "</tr>");
         });
-    });
-
-    $('#myModal').modal({
-        backdrop: false,
-        show: false
     });
 
     $("#canvas").on("mousedown", function (e) {
@@ -741,7 +739,7 @@ function search() {
             historyData = {
                 search_type: "Tag"
             };
-            getTimelineByTags();
+            getTimelineByTags(datetime_start, datetime_end);
             break;
         case "Group":
             var group_id = $("#target_group_id").val();
@@ -762,9 +760,11 @@ function search() {
     showSearching();
 }
 
-function getTimelineByTags() {
-    var interval_times = 0;
-    var count_times = 0;
+function getTimelineByTags(datetime_start, datetime_end) {
+    let timeslot = datetime_end - datetime_start;
+    //console.log("timeslot=> " + Math.floor(timeslot / 3600000));
+    let interval_times = 0;
+    let count_times = 0;
     for (i in timeDelay["search"])
         clearTimeout(timeDelay["search"][i]);
     timeDelay["search"] = [];
@@ -786,6 +786,8 @@ function getTimelineByTags() {
             });
         }, 100 * i));
     });
+    interval_times *= Math.floor(timeslot / 3600000) + ($("#end_time").val().split(":")[1] == "00" ? 2 : 1);
+    //console.log("interval_times=> " + interval_times);
     inputWaitTime(interval_times);
 
     function sendRequest(request) {
@@ -793,7 +795,7 @@ function getTimelineByTags() {
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 if (!this.responseText) {
-                    $('#myModal').modal('hide');
+                    $('#progress_block').hide();
                     clearTimeout(timeDelay["model"]);
                     alert("搜尋失敗，請稍候再試一次!");
                     return;
@@ -816,6 +818,9 @@ function getTimelineByTags() {
                             });
                         }
                     }
+                    count_times++;
+                    $("#progress_bar").text(Math.round(count_times / interval_times * 100) + " %");
+
                     if (revObj.Value[0].Status == "1") {
                         //以1小時為基準，分批接受並傳送要求
                         sendRequest({
@@ -830,11 +835,12 @@ function getTimelineByTags() {
                             },
                             "api_token": [token]
                         });
+                        //console.log("count_times=> " + count_times);
                     } else {
-                        count_times++;
+                        //console.log("End=> " + count_times);
                         if (historyData[tag_id] && historyData[tag_id].length > max_times)
                             max_times = historyData[tag_id].length;
-                        $("#progress_bar").text(Math.round(count_times / interval_times * 100) + " %");
+                        //找最長的Tag歷史軌跡長度，定為一週期繪製軌跡的結束
                         if (interval_times <= count_times)
                             completeSearch();
                     }
@@ -864,7 +870,7 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
                     return info.group_id == group_id;
                 });
                 if (index == -1) {
-                    $('#myModal').modal('hide');
+                    $('#progress_block').hide();
                     clearTimeout(timeDelay["model"]);
                     alert("此群組不存在，請輸入其他群組編號再查詢!");
                     return false;
@@ -902,7 +908,7 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 if (!this.responseText) {
-                    $('#myModal').modal('hide');
+                    $('#progress_block').hide();
                     clearTimeout(timeDelay["model"]);
                     alert("搜尋失敗，請稍候再試一次!");
                     return;
@@ -1074,16 +1080,16 @@ function getAlarmHandleByTime() {
  * Show Search Model
  */
 function showSearching() {
-    $('#myModal').modal('show');
+    $('#progress_block').show();
     $("#progress_bar").text(0 + " %");
     timeDelay["model"] = setTimeout(function () {
-        $('#myModal').modal('hide');
+        $('#progress_block').hide();
         clearTimeout(timeDelay["model"]);
     }, 3600000);
 }
 
 function completeSearch() {
-    $('#myModal').modal('hide');
+    $('#progress_block').hide();
     clearTimeout(timeDelay["model"]);
     alert($.i18n.prop('i_searchOver'));
     var num = Object.keys(historyData).length;

@@ -5,6 +5,9 @@ var token = "",
     usertypeNameArray = [];
 
 $(function () {
+    let h = document.documentElement.clientHeight;
+    $(".container").css("height", h - 10 + "px");
+
     //Check this page's permission and load navbar
     token = getToken();
     if (!getPermissionOfPage("Member_Setting")) {

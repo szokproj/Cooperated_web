@@ -1,4 +1,3 @@
-var token = "";
 var isAllSelected = false;
 var DeviceCheckbox = document.getElementsByName("checkbox_ipAddr");
 var deviceArray = {};
@@ -10,11 +9,6 @@ var timeDelay = {
     send_rf: [],
     model: null
 }; //restore timeout
-
-
-$(function () {
-    token = getToken();
-});
 
 function Load() {
     var requestArray = {
@@ -190,31 +184,93 @@ function Connect() {
         };
         xmlHttp.send(json_request);
     } else { //TCP Connect
-        var static_ip_1 = document.getElementById("static_ip_1").value,
+        let static_ip_1 = document.getElementById("static_ip_1").value,
             static_ip_2 = document.getElementById("static_ip_2").value,
             static_ip_3 = document.getElementById("static_ip_3").value,
-            static_ip_4 = document.getElementById("static_ip_4").value;
-        var valid = checkAddressFragment(static_ip_1) && checkAddressFragment(static_ip_2) &&
-            checkAddressFragment(static_ip_3) && checkAddressFragment(static_ip_4);
+            static_ip_4 = document.getElementById("static_ip_4").value,
+            valid = checkAddressFragment(static_ip_1) && checkAddressFragment(static_ip_2) &&
+            checkAddressFragment(static_ip_3) && checkAddressFragment(static_ip_4),
+            static_ip = static_ip_1 + "." + static_ip_2 + "." + static_ip_3 + "." + static_ip_4;
         if (valid) {
-            var Connect_Request = {
+            let send_request = {
                 "Command_Type": ["Read"],
                 "Command_Name": ["Connect"],
                 "Value": {
-                    "IP_address": static_ip_1 + "." + static_ip_2 + "." + static_ip_3 + "." + static_ip_4
+                    "IP_address": [static_ip]
                 },
                 "api_token": [token]
             };
-            var xmlHttp = createJsonXmlHttp("Command");
+            let xmlHttp = createJsonXmlHttp("Command");
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                    var revObj = JSON.parse(this.responseText);
+                    let revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj)) {
-                        return true;
+                        let revInfo = revObj.Value[0][0];
+                        connect_ip_array = [static_ip];
+                        deviceArray = {};
+                        deviceArray[static_ip] = {
+                            Checked: true,
+                            Status: true,
+                            Anchor_ID: revInfo.dev_active_ID,
+                            IP_address: revInfo.dev_ip,
+                            MAC_address: "",
+                            Gateway_address: "",
+                            Mask_address: "",
+                            Client_ip_addr: "",
+                            Machine_Number: "",
+                            Model: "",
+                            TCP_Serve_Port: "",
+                            UDP_Serve_Port: "",
+                            TCP_Client_Src_Port: "",
+                            TCP_Client_Des_Port: ""
+                        };
+                        let send_request2 = {
+                            "Command_Type": ["Read"],
+                            "Command_Name": ["Network"],
+                            "Value": {
+                                "IP_address": [static_ip],
+                                "function": [
+                                    /*
+                                    "Client_ip_addr", "Gateway_address", "IP_address", "MAC_address", "Machine_Number", "Mask_address",
+                                    "Model", "TCP_Client_Des_Port", "TCP_Client_Src_Port", "TCP_Serve_Port", "UDP_Serve_Port",
+                                    */
+                                    //Network
+                                    "dev_Mask", "dev_GW", "dev_Client_IP"
+                                ]
+                            },
+                            "api_token": [token]
+                        };
+                        let xmlHttp2 = createJsonXmlHttp("test2");
+                        xmlHttp2.onreadystatechange = function () {
+                            if (xmlHttp2.readyState == 4 || xmlHttp2.readyState == "complete") {
+                                var revObj2 = JSON.parse(this.responseText);
+                                if (checkTokenAlive(token, revObj2)) {
+                                    var revInfo2 = revObj2.Value[0][0][0];
+                                    resetListenersOfSelects();
+                                    $("#table_ip_address_info tbody").empty();
+                                    if (revInfo2 && revInfo2.Command_status > 0) {
+                                        for (let i = 0; i < 4; i++) {
+                                            let end = (i == 3) ? "" : ".";
+                                            deviceArray[static_ip].Gateway_address += revInfo2.dev_GW[i] + end;
+                                            deviceArray[static_ip].Mask_address += revInfo2.dev_Mask[i] + end;
+                                            deviceArray[static_ip].Client_ip_addr += revInfo2.dev_Client_IP[i] + end;
+                                        }
+                                        inputDataToColumns(deviceArray[static_ip]);
+                                        setCheckboxListeners();
+                                        checked_trans();
+                                        setListenerOfInput();
+                                        RF_setting_read(connect_ip_array);
+                                    } else {
+                                        alert("static connect failed!");
+                                    }
+                                }
+                            }
+                        };
+                        xmlHttp2.send(JSON.stringify(send_request2));
                     }
                 }
             };
-            xmlHttp.send(JSON.stringify(Connect_Request));
+            xmlHttp.send(JSON.stringify(send_request));
         } else {
             alert($.i18n.prop('i_deviceAlert_1'));
         }

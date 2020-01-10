@@ -3,6 +3,9 @@ var CommandName_account = "";
 var userArray = [];
 
 $(function () {
+    let h = document.documentElement.clientHeight;
+    $(".container").css("height", h - 10 + "px");
+
     token = getToken();
     if (!getPermissionOfPage("Account_Management")) {
         alert("Permission denied!");

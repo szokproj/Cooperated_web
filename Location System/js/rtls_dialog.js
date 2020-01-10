@@ -155,10 +155,8 @@ var setDialog = {
         function sendResult() {
             let mode = $("#select_canvas_mode").val();
             Cookies.set("separate_canvas", mode);
-            Stop();
             canvasMode(mode);
             loadMapToCanvas();
-            Start();
             $("#separate_canvas_dialog").dialog("close");
         }
 

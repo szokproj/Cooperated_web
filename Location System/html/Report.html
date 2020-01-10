@@ -24,12 +24,18 @@
     <link rel="stylesheet" type="text/css" href="../css/style.css" />
     <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
     <link rel="stylesheet" type="text/css" href="../css/report_setting.css" />
+    <!-- Excel -->
+    <!--<script type="text/javascript" src="../js/xlsx/xlsx.full.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.1/xlsx.core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.1/xlsx.full.min.js"></script>
+    <script type="text/javascript" src="../js/excel_export.js"></script>
+    <!--編寫js-->
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/report.js"></script>
     <!--JQuery UI - Dialog-->
-    <script type="text/javascript" src="../js/Dialog/dialog_search_member.js"></script>
+    <script type="text/javascript" src="../js/Dialog/dialog_report_member.js"></script>
 </head>
 
 <body>
@@ -39,17 +45,17 @@
 
         <!-- Web Content -->
         <div class="row">
-            <div class="col-lg-12">
-                <div style="float:right;">
-                    <img class="logo" src="../image/logo/icon.png">
-                    <label class="i18n" name="i_language"></label>
-                    <select id="language" class="select-lang">
-                        <option value="en">English</option>
-                        <option value="zh-TW">繁體中文</option>
-                        <option value="zh-CN">简体中文</option>
-                    </select>
-                    <label id="login_user"></label>
-                </div>
+            <div class="col-lg-12 top_nav">
+                <img class="logo" src="../image/logo/yihong_logo.png">
+                <label id="login_user"></label>
+            </div>
+            <div class="tool-bar">
+                <label class="i18n" name="i_language"></label>
+                <select id="language" class="select-lang">
+                    <option value="en">English</option>
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="zh-CN">简体中文</option>
+                </select>
             </div>
         </div>
 
@@ -66,74 +72,6 @@
         <div id="sidebarRightTabContent" class="tab-content">
             <div class="tab-pane fade in active" id="daily_report">-->
         <div class="row">
-            <div class="col-lg-9">
-                <div class="report-page" id="report_page_timeline">
-                    <table>
-                        <tr>
-                            <td><label>日期 : <span id="report_date"></span></label></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <h3 style="margin: auto;">個人一日軌跡</h3>
-                            </td>
-                        </tr>
-                    </table>
-                    <br>
-                    <table class="table-line" id="report_person_timeline">
-                        <tr>
-                            <td class="i18n" name="i_number"></td>
-                            <td><label id="report_person_number"></label></td>
-                            <td class="i18n" name="i_userID"></td>
-                            <td><label id="report_person_user_id"></label></td>
-                            <td class="i18n" name="i_name"></td>
-                            <td><label id="report_person_Name"></label></td>
-                            <td class="i18n" name="i_dept"></td>
-                            <td><label id="report_person_department"></label></td>
-                        </tr>
-                    </table>
-                    <br>
-                    <div style="overflow: auto; max-height: 1130px;">
-                        <table class="table-line" id="table_person_timeline">
-                            <thead>
-                                <tr>
-                                    <th>項目</th>
-                                    <th>時間</th>
-                                    <th>地點</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="report-page" id="report_page_member" style="display: none;">
-                    <label>日期 : <span id="report_attend_date"></span></label>
-                    <table>
-                        <tr>
-                            <td>
-                                <h3 id="report_attend_title" style="margin: auto;">人員出勤表</h3>
-                            </td>
-                        </tr>
-                    </table>
-                    <br>
-                    <div style="overflow: auto; max-height: 1200px;">
-                        <table class="table-line" id="table_member_attendance">
-                            <thead>
-                                <tr>
-                                    <th class="i18n" name="i_item"></th>
-                                    <th class="i18n" name="i_number"></th>
-                                    <th class="i18n" name="i_userID"></th>
-                                    <th class="i18n" name="i_dept"></th>
-                                    <th class="i18n" name="i_name"></th>
-                                    <th>上班時間</th>
-                                    <th>下班時間</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
             <div class="col-lg-3">
                 <div class="search_bar">
                     <label for="btn_set_display_rows" class="btn-add" title="Add Members" style="float: right;">
@@ -182,6 +120,76 @@
                     <br><br>
                     <div style="width: 100%; text-align: center;">
                         <button class="btn btn-default" id="btn_create_report" style="margin:auto;">建立報表</button>
+                        <button class="btn btn-default" id="btn_export_excel" style="margin:auto;">匯出報表</button>
+                        <a href="" id="excel_export_download"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="report-page" id="report_page_timeline">
+                    <table>
+                        <tr>
+                            <td><label>日期 : <span id="report_date"></span></label></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h3 style="margin: auto;">個人一日軌跡</h3>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <table class="table-line info-table" id="report_person_timeline">
+                        <tr>
+                            <td class="i18n" name="i_number"></td>
+                            <td><label id="report_person_number"></label></td>
+                            <td class="i18n" name="i_userID"></td>
+                            <td><label id="report_person_user_id"></label></td>
+                            <td class="i18n" name="i_name"></td>
+                            <td><label id="report_person_Name"></label></td>
+                            <td class="i18n" name="i_dept"></td>
+                            <td><label id="report_person_department"></label></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <div style="overflow: auto; max-height: 1130px;">
+                        <table class="table-line" id="table_person_timeline">
+                            <thead>
+                                <tr>
+                                    <th>項目</th>
+                                    <th>時間</th>
+                                    <th>地點</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="report-page" id="report_page_member" style="display: none;">
+                    <label>日期 : <span id="report_attend_date"></span></label>
+                    <table>
+                        <tr>
+                            <td>
+                                <h3 id="report_attend_title" style="margin: auto;">人員出勤表</h3>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <div style="overflow: auto; max-height: 1200px;">
+                        <table class="table-line" id="table_member_attendance">
+                            <thead>
+                                <tr>
+                                    <th class="i18n" name="i_item"></th>
+                                    <th class="i18n" name="i_number"></th>
+                                    <th class="i18n" name="i_userID"></th>
+                                    <th class="i18n" name="i_dept"></th>
+                                    <th class="i18n" name="i_name"></th>
+                                    <th class="i18n" name="i_clockIn"></th>
+                                    <th class="i18n" name="i_clockOut"></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -290,7 +298,7 @@
             <!--<label id="wait_time"></label>-->
         </div>
         <!--The dialog of search specific members-->
-        <div id="search_member_dialog" class="dialog" title="Search and Select the member">
+        <div id="search_member_dialog" class="dialog" title="Search and select the member">
             <label>輸入搜尋條件</label> : <br>
             <table class="table-noborder">
                 <tr>
@@ -301,17 +309,17 @@
                 </tr>
                 <tr>
                     <td>標籤編號 : <input type="text" id="search_tag_id" /></td>
-
                     <td>姓名 : <input type="text" id="search_name" /></td>
-
                 </tr>
             </table>
-            <label for="btn_reset_member" class="btn-add" title="Reset">
-                <i class="btn_reset_member" style='font-size:20px;'></i></label>
-            <input id="btn_reset_member" type="button" class="btn-hidden" />
-            <label for="btn_search_member" class="btn-search" title="Search">
-                <i class="fas fa-search" style='font-size:20px;'></i></label>
-            <input id="btn_search_member" type="button" class="btn-hidden" />
+            <span style="float: right;">
+                <label for="btn_reset_member" class="btn-add" title="Reset" style="margin-right: 10px;">
+                    <i class="fas fa-sync" style='font-size:18px;'></i></label>
+                <input id="btn_reset_member" type="button" class="btn-hidden" />
+                <label for="btn_search_member" class="btn-search" title="Search">
+                    <i class="fas fa-search" style='font-size:20px;'></i></label>
+                <input id="btn_search_member" type="button" class="btn-hidden" />
+            </span>
             <br>
             <hr>
             <div style="max-height: 230px; overflow: auto;">

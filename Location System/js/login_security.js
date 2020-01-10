@@ -1,6 +1,6 @@
 $(function () {
     let h = document.documentElement.clientHeight;
-    $(".container").css("height", h + "px");
+    $(".container").css("height", h - 10 + "px");
 
     if (getCookie('user') && getCookie('pswd')) {
         $("#account").val(getCookie('user'));

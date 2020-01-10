@@ -1,55 +1,59 @@
-const IP_MODE = ["DHCP", "Static"]
-const RF_CHANNEL = ["CH1(3.5GHz)", "CH2(4.0GHz)", "CH3(4.5GHz)", "CH4(4.5GHz WBW)", "CH5(6.5GHz)", "CH7(6.5GHz WBW)"];
-const RF_DATARATE = ["110Kbps", "850Kbps", "6.8Mbps"];
-const RF_PRF = ["16M", "64M"];
-const RF_PREAMBLE_CODE = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "17", "18", "19", "20"];
-const RF_PREAMBLE_LEN = ["64", "128", "256", "512", "1024", "1536", "2048", "4096"];
-const RF_PAC = ["8", "16", "32", "64"];
-const RF_TX_PG_DELAY = ["CH1", "CH2", "CH3", "CH4", "CH5", "CH7"];
-const RF_NSD = ["0", "1"];
-const RF_SDF_TIMEOUTR = ["1089"];
-const RF_SMARTPOWER = ["0", "1"];
-const RF_NTM = [
-    "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "17", "18", "19", "20", "21", "22", "23", "24",
-    "25", "26", "27", "28", "29", "30", "31"
-];
-const RF_MULT = ["0", "1", "2", "3", "4", "5", "6", "7"];
-const RED_LIGHT = "<img src=\"../image/redLight.png\"/>";
-const GREEN_LIGHT = "<img src=\"../image/greenLight.png\"/>";
+const IP_MODE = ["DHCP", "Static"],
+    RF_CHANNEL = ["CH1(3.5GHz)", "CH2(4.0GHz)", "CH3(4.5GHz)", "CH4(4.5GHz WBW)", "CH5(6.5GHz)", "CH7(6.5GHz WBW)"],
+    RF_DATARATE = ["110Kbps", "850Kbps", "6.8Mbps"],
+    RF_PRF = ["16M", "64M"],
+    RF_PREAMBLE_CODE = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "17", "18", "19", "20"],
+    RF_PREAMBLE_LEN = ["64", "128", "256", "512", "1024", "1536", "2048", "4096"],
+    RF_PAC = ["8", "16", "32", "64"],
+    RF_TX_PG_DELAY = ["CH1", "CH2", "CH3", "CH4", "CH5", "CH7"],
+    RF_NSD = ["0", "1"],
+    RF_SDF_TIMEOUTR = ["1089"],
+    RF_SMARTPOWER = ["0", "1"],
+    RF_NTM = [
+        "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "17", "18", "19", "20", "21", "22", "23", "24",
+        "25", "26", "27", "28", "29", "30", "31"
+    ],
+    RF_MULT = ["0", "1", "2", "3", "4", "5", "6", "7"],
+    RED_LIGHT = "<img src=\"../image/redLight.png\"/>",
+    GREEN_LIGHT = "<img src=\"../image/greenLight.png\"/>";
 var displayRowArray = {
-    "check_all_net_basic": true,
-    "check_all_net_advance": true,
-    "check_all_rf_basic": true,
-    "check_all_rf_advance": true,
-    "row_ip_addr": true,
-    "row_gateway_addr": true,
-    "row_mask_addr": true,
-    "row_client_ip_addr": true,
-    "row_machine_number": true,
-    "row_model": true,
-    "row_tcp_server_port": true,
-    "row_udp_server_port": true,
-    "row_tcp_client_src_port": true,
-    "row_tcp_client_des_port": true,
-    "row_rf_mode": true,
-    "row_rf_version": true,
-    "row_rf_channel": true,
-    "row_rf_datarate": true,
-    "row_rf_preamble_code": true,
-    "row_rf_preamble_len": true,
-    "row_rf_pac": true,
-    "row_rf_sdf_timeoutr": true,
-    "row_rf_prf": true,
-    "row_rf_pg_delay": true,
-    "row_rf_power": true,
-    "row_rf_nsd": true,
-    "row_rf_smartpower": true,
-    "row_rf_ntm": true,
-    "row_rf_mult": true
-};
-var token = "";
+        "check_all_net_basic": true,
+        "check_all_net_advance": true,
+        "check_all_rf_basic": true,
+        "check_all_rf_advance": true,
+        "row_ip_addr": true,
+        "row_gateway_addr": true,
+        "row_mask_addr": true,
+        "row_client_ip_addr": true,
+        "row_machine_number": true,
+        "row_model": true,
+        "row_tcp_server_port": true,
+        "row_udp_server_port": true,
+        "row_tcp_client_src_port": true,
+        "row_tcp_client_des_port": true,
+        "row_rf_mode": true,
+        "row_rf_version": true,
+        "row_rf_channel": true,
+        "row_rf_datarate": true,
+        "row_rf_preamble_code": true,
+        "row_rf_preamble_len": true,
+        "row_rf_pac": true,
+        "row_rf_sdf_timeoutr": true,
+        "row_rf_prf": true,
+        "row_rf_pg_delay": true,
+        "row_rf_power": true,
+        "row_rf_nsd": true,
+        "row_rf_smartpower": true,
+        "row_rf_ntm": true,
+        "row_rf_mult": true
+    },
+    token = "";
 
 $(function () { //Load==>
+    let h = document.documentElement.clientHeight;
+    $(".container").css("height", h - 10 + "px");
+    $(".middle").css("height", h - 120 + "px");
+
     token = getToken();
     /**
      * Check this page's permission and load navbar
@@ -59,8 +63,6 @@ $(function () { //Load==>
         window.location.href = '../index.html';
     }
     setNavBar("Anchor_Setting", "");
-
-    $(".middle").css("height", screen.availHeight * 0.75 + "px");
 
     var dialog, form;
     dialog = $("#dialog_set_table_display").dialog({

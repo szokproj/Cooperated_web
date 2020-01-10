@@ -1,22 +1,17 @@
-var token = "";
-var fenceArray = [];
-
 /**
  * FAG = FenceAlarmGroup 圍籬警戒群組
  */
 
-$(function () {
-    token = getToken();
-
-    var dialog, form;
-    var sendFAG_Set = function () {
+function importFenceAlarmGroup() {
+    let dialog, form;
+    let sendFAG_Set = function () {
         $("#add_FAG_id").removeClass("ui-state-error");
-        var valid = true && checkLength($("#add_FAG_id"), $.i18n.prop('i_alarmAlert_39'), 1, 20);
-        var fence_ids = document.getElementsByName("included_fences")
+        let valid = true && checkLength($("#add_FAG_id"), $.i18n.prop('i_alarmAlert_39'), 1, 20),
+            fence_ids = document.getElementsByName("included_fences")
         if (fence_ids.length == 0)
             return alert($.i18n.prop('i_alarmAlert_40'));
         if (valid) {
-            var fenceAG_arr = [];
+            let fenceAG_arr = [];
             fence_ids.forEach(element => {
                 fenceAG_arr.push({
                     "fence_id": element.value,
@@ -24,13 +19,13 @@ $(function () {
                 })
             });
             if (operating == "Add") {
-                var addXmlHttp = createJsonXmlHttp("sql");
+                let addXmlHttp = createJsonXmlHttp("sql");
                 addXmlHttp.onreadystatechange = function () {
                     if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
+                        let revObj = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                             if (!revObj.Value[0].Value) return;
-                            var key = Object.keys(revObj.Value[0].Value);
+                            let key = Object.keys(revObj.Value[0].Value);
                             updateFenceAG_List(key);
                             alert($.i18n.prop('i_alarmAlert_41'));
                         } else {
@@ -45,18 +40,18 @@ $(function () {
                     "api_token": [token]
                 }));
             } else if (operating == "Edit") {
-                var deleteXmlHttp = createJsonXmlHttp("sql");
+                let deleteXmlHttp = createJsonXmlHttp("sql");
                 deleteXmlHttp.onreadystatechange = function () {
                     if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
+                        let revObj = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                            var addXmlHttp = createJsonXmlHttp("sql");
+                            let addXmlHttp = createJsonXmlHttp("sql");
                             addXmlHttp.onreadystatechange = function () {
                                 if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                                    var revObj2 = JSON.parse(this.responseText);
+                                    let revObj2 = JSON.parse(this.responseText);
                                     if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
                                         if (!revObj2.Value[0].Value) return;
-                                        var key = Object.keys(revObj2.Value[0].Value);
+                                        let key = Object.keys(revObj2.Value[0].Value);
                                         updateFenceAG_List(key);
                                         alert($.i18n.prop('i_alarmAlert_43'));
                                     } else {
@@ -121,7 +116,7 @@ $(function () {
         //getFences();
         $("#add_FAG_id").val("").prop('disabled', false);
         for (i = 0; i < fenceArray.length; i++) {
-            var tr_id = "remaining_fences_" + fenceArray[i].fence_id;
+            let tr_id = "remaining_fences_" + fenceArray[i].fence_id;
             $("#table_remaining_fences tbody").append("<tr id=\"" + tr_id + "\"" +
                 " onclick=\"beCheckedColumn(\'" + tr_id + "\')\">" +
                 "<td><input type=\"checkbox\" class=\"chk-hidden\"" +
@@ -169,7 +164,7 @@ $(function () {
 
     getFenceAlarmGroup();
     getFences();
-});
+}
 
 function updateFenceAG_List(array) {
     $("#table_fence_alarm_group tbody").empty();

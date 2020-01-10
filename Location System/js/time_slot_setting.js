@@ -1,12 +1,8 @@
-var token = "";
-var operate = "";
-var count_time_setting = 0;
-var weekday_arr = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-var timeSlotArray = [];
+const weekday_arr = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-$(function () {
-    token = getToken();
+let timeSlotArray = [];
 
+function importTimeSlot() {
     inputTimeSetting();
     resetWeekSchedule();
     weekday_arr.forEach(weekday => {
@@ -100,7 +96,7 @@ $(function () {
         });
 
         if (valid) {
-            if (operate == "Add") {
+            if (submit_type["time_slot"] == "Add") {
                 var request = {
                     "Command_Type": ["Write"],
                     "Command_Name": ["AddTimeSlot"],
@@ -122,7 +118,7 @@ $(function () {
                     }
                 };
                 addXmlHttp.send(JSON.stringify(request));
-            } else if (operate == "Edit") {
+            } else if (submit_type["time_slot"] == "Edit") {
                 time_slot_setting.time_slot_id = $("#add_time_slot_id").val();
                 var request = {
                     "Command_Type": ["Write"],
@@ -182,7 +178,7 @@ $(function () {
 
     //新增Time Setting
     $("#btn_add_time_slot").button().on("click", function () {
-        operate = "Add";
+        submit_type["time_slot"] = "Add";
         dialog.dialog("open");
     });
 
@@ -221,7 +217,7 @@ $(function () {
         };
         deleteXmlHttp.send(requestJSON);
     });
-});
+}
 
 function inputTimeSetting() {
     var request = {
@@ -261,7 +257,7 @@ function inputTimeSetting() {
 }
 
 function inputWeekSchedule(id) {
-    operate = "Edit";
+    submit_type["time_slot"] = "Edit";
     var index = timeSlotArray.findIndex(function (info) {
         return info.time_slot_id == id;
     });

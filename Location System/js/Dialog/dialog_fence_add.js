@@ -1,10 +1,4 @@
-var token = "";
-var operating = "";
-var addFenceContainGroup = [];
-
-$(function () {
-    token = getToken();
-
+function importAddFenceDialog() {
     //Dialog to add fence.
     var dialog, form,
         add_fence_id = $("#add_fence_id"),
@@ -15,7 +9,7 @@ $(function () {
         allFields.removeClass("ui-state-error");
         var valid = true;
         valid = valid && checkLength(add_fence_name, $.i18n.prop('i_alarmAlert_38'), 1, 100);
-        if (operating == "Add") {
+        if (submit_type["fence"] == "Add") {
             document.getElementsByName("fence_name").forEach(element => {
                 if (element.innerText == add_fence_name.val()) {
                     valid = false;
@@ -29,7 +23,7 @@ $(function () {
             return;
         }
         if (valid) {
-            if (operating == "Add") {
+            if (submit_type["fence"] == "Add") {
                 var fence_name = add_fence_name.val();
                 var addRequest = {
                     "Command_Type": ["Write"],
@@ -59,7 +53,7 @@ $(function () {
                     }
                 };
                 addXmlHttp.send(JSON.stringify(addRequest));
-            } else if (operating == "Edit") {
+            } else if (submit_type["fence"] == "Edit") {
                 if (add_fence_id.val() == "") {
                     alert($.i18n.prop('i_alarmAlert_38'));
                     return;
@@ -159,9 +153,9 @@ $(function () {
         if ($("#select_map_id").val() == '') {
             alert($.i18n.prop('i_alarmAlert_29'));
         } else {
-            operating = "Add";
-            resetDotArray();
-            resetDotGroup();
+            submit_type["fence"] = "Add";
+            addFenceDotArray = [];
+            addFenceContainGroup = [];
             $("#table_fence_dot_setting tbody").empty();
             $("#table_fence_group tbody").empty();
             dialog.dialog("open");
@@ -236,7 +230,7 @@ $(function () {
     var dialog2, form2,
         add_x = $("#add_dot_x"),
         add_y = $("#add_dot_y"),
-        allFields2 = $([]).add(add_x, add_y);
+        allFields2 = $([]).add(add_x).add(add_y);
 
     var SendToAddDot = function () {
         allFields2.removeClass("ui-state-error");
@@ -277,11 +271,6 @@ $(function () {
     });
 
     $("#btn_fence_dot_delete").button().on("click", deleteDotArray);
-});
-
-
-function updateFenceGroup(fg_arr) {
-    addFenceContainGroup = fg_arr.slice(0);
 }
 
 function editFenceInfo(f_id) {
@@ -298,7 +287,7 @@ function editFenceInfo(f_id) {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                operating = "Edit";
+                submit_type["fence"] = "Edit";
                 if (revObj.Value[0].Values) {
                     var editFence = revObj.Value[0].Values[0];
                     $("#add_fence_id").val(editFence.fence_id);
@@ -331,7 +320,7 @@ function getFencePoints(f_id) {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                operating = "Edit";
+                submit_type["fence"] = "Edit";
                 var fencePoints = revObj.Value[0].Values || [];
                 $("#table_fence_dot_setting tbody").empty();
                 for (j = 0; j < fencePoints.length; j++) {
@@ -364,7 +353,7 @@ function getFenceGroups(f_id) {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                operating = "Edit";
+                submit_type["fence"] = "Edit";
                 var fenceGroups = revObj.Value[0].Values || [];
                 $("#table_fence_group tbody").empty();
                 fenceGroups.forEach(function (element, index) {
@@ -397,7 +386,7 @@ function addFencePoints(f_id) {
         if (fd_addXmlHttp.readyState == 4 || fd_addXmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                resetDotArray();
+                addFenceDotArray = [];
                 updateFenceTable();
             } else {
                 alert($.i18n.prop('i_alarmAlert_32'));
@@ -420,21 +409,25 @@ function addFenceGroups(f_id) {
             "group_id": element.g_id
         });
     });
-    var fg_addXmlHttp = createJsonXmlHttp("sql");
-    fg_addXmlHttp.onreadystatechange = function () {
-        if (fg_addXmlHttp.readyState == 4 || fg_addXmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                resetDotGroup();
-            } else {
-                alert($.i18n.prop('i_alarmAlert_32'));
+    if (add_group_arr.length == 0) {
+        addFenceContainGroup = [];
+    } else {
+        var fg_addXmlHttp = createJsonXmlHttp("sql");
+        fg_addXmlHttp.onreadystatechange = function () {
+            if (fg_addXmlHttp.readyState == 4 || fg_addXmlHttp.readyState == "complete") {
+                var revObj = JSON.parse(this.responseText);
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                    addFenceContainGroup = [];
+                } else {
+                    alert($.i18n.prop('i_alarmAlert_32'));
+                }
             }
-        }
-    };
-    fg_addXmlHttp.send(JSON.stringify({
-        "Command_Type": ["Write"],
-        "Command_Name": ["AddFenceGroup"],
-        "Value": add_group_arr,
-        "api_token": [token]
-    }));
+        };
+        fg_addXmlHttp.send(JSON.stringify({
+            "Command_Type": ["Write"],
+            "Command_Name": ["AddFenceGroup"],
+            "Value": add_group_arr,
+            "api_token": [token]
+        }));
+    }
 }

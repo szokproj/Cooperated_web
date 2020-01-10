@@ -54,28 +54,27 @@
         <!--Web content-->
         <div class="row">
             <div class="col-lg-12 top_nav">
-                <!--Top-->
-                <img class="logo" src="../image/logo/icon.png">
+                <img class="logo" src="../image/logo/yihong_logo.png">
+                <label id="login_user"></label>
+            </div>
 
+            <div class="tool-bar">
                 <label class="i18n" name="i_language"></label>
                 <select id="language" class="select-lang">
                     <option value="en">English</option>
                     <option value="zh-TW">繁體中文</option>
                     <option value="zh-CN">简体中文</option>
                 </select>
-                <label id="login_user"></label>
-
-                <div class="tool-bar" style="float:right;">
-                    <div class="dropdown">
-                        <label class="btn-set i18n-input" selectattr="title" selectname="i_setting">
-                            <i class="fas fa-cog"></i></label>
-                        <div class="dropdown-content" style="left:-130px;">
-                            <a id="btn_adjust_focus" class="i18n" name="i_adjustDisplay"></a>
-                            <a id="btn_display_size" class="i18n" name="i_adjustIconSize"></a>
-                            <a id="btn_separate_canvas" class="i18n" name="i_multiWindowMode"></a>
-                        </div>
+                <div class="dropdown" style="margin-right: 10px;">
+                    <span class="btn-set i18n-input" selectattr="title" selectname="i_setting">
+                        <i class="fas fa-cog"></i></span>
+                    <div class="dropdown-content" style="left:-130px;">
+                        <a id="btn_adjust_focus" class="i18n" name="i_adjustDisplay"></a>
+                        <a id="btn_display_size" class="i18n" name="i_adjustIconSize"></a>
+                        <a id="btn_separate_canvas" class="i18n" name="i_multiWindowMode"></a>
                     </div>
                 </div>
+
             </div>
         </div>
 
@@ -203,18 +202,10 @@
     <!--Hidden Dialog-->
     <div class="hidden_dialog">
         <!--Modal-->
-        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <!--<div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
-                        </button>
-                    </div>-->
-                    <div class="modal-body i18n" name="i_alarmLocate_1"></div>
-                </div>
-            </div>
+        <div class="alert_block" id="alert_window">
+            <label class="i18n" name="i_alarmLocate_1"></label>
         </div>
+
         <!--The dialog of tag's infomation-->
         <div id="member_dialog" class="dialog" title="Tag Infomation" style="background:rgb(195, 228, 230);">
             <img id="member_dialog_image" class="member_photo" src="">

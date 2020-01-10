@@ -3,9 +3,8 @@
     display: inline-block;
     top: 10px;
     left: 10px;
-    height: 500px;
     width: calc(100% - 24px);
-    border: 2px dashed rgb(47, 95, 201);
+    border: 2px dashed rgb(107, 107, 107);
     border-radius: 5px;
     overflow: auto;
     text-align: center;
@@ -13,7 +12,7 @@
     font-size: 14px;
     line-height: 1.428571429;
     color: #333333;
-    background-color: transparent;
+    background-color: white;
 }
 
 .orgchart {
@@ -23,11 +22,11 @@
 .orgchart td.left,
 .orgchart td.right,
 .orgchart td.top {
-    border-color: #aaa;
+    border-color: rgb(105, 105, 105);
 }
 
 .orgchart td>.down {
-    background-color: #aaa;
+    background-color: rgb(105, 105, 105);
 }
 
 .orgchart.edit-state .edge {
@@ -42,7 +41,7 @@
     height: 30px;
     line-height: 30px;
     border-radius: 5px;
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid rgb(105, 105, 105);
 }
 
 .orgchart .node .title .symbol {
@@ -55,10 +54,10 @@
     width: calc(100% - 25px);
     border-radius: 4px;
     float: left;
-    margin-top: 10px;
+    margin: 10px 0px 20px 0px;
     padding: 10px;
     color: #fff;
-    background-color: rgb(28, 55, 112);
+    background-color: rgb(125, 125, 125);
 }
 
 #edit-panel input[type='text'] {

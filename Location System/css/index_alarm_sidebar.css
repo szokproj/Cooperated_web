@@ -19,12 +19,18 @@
 }
 
 .alarm-sideBar {
-    background: #082041 !important;
     position: fixed;
     top: 0px;
-    left: -300px;
-    width: 330px;
+    left: -335px;
+    width: 335px;
     height: 100%;
+    z-index: 2;
+    padding: 7px 0px 5px 25px;
+    border: 3px solid #e4e4e4;
+    box-shadow: 0px 0px 4px 2px rgb(123, 123, 123) inset;
+    -webkit-box-shadow: 0px 0px 4px 2px rgb(123, 123, 123) inset;
+    border-radius: 7px;
+    background: white;
 }
 
 .alarm-sideBar .sideBar-left {
@@ -32,9 +38,8 @@
     display: inline-block;
     overflow-x: hidden;
     overflow-y: auto;
-    margin-left: 30px;
     width: 300px;
-    height: 95%;
+    height: 92%;
 }
 
 .sideBar-left-button {
@@ -44,10 +49,8 @@
 
 .sideBar-left-button button {
     height: 30px;
-    margin: 5px 5px 5px 30px;
     width: 282px;
     background: transparent;
-    color: white;
 }
 
 .sideBar-left-button button:hover,
@@ -57,7 +60,7 @@
 
 .sideBar-left-button i {
     margin: auto;
-    color: white;
+    color: black;
 }
 
 .thumbnail {

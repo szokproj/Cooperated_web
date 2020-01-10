@@ -38,17 +38,17 @@
 
         <!-- Web Content -->
         <div class="row">
-            <div class="col-lg-12">
-                <div style="float:right;">
-                    <img class="logo" src="../image/logo/icon.png">
-                    <label class="i18n" name="i_language"></label>
-                    <select id="language" class="select-lang">
-                        <option value="en">English</option>
-                        <option value="zh-TW">繁體中文</option>
-                        <option value="zh-CN">简体中文</option>
-                    </select>
-                    <label id="login_user"></label>
-                </div>
+            <div class="col-lg-12 top_nav">
+                <img class="logo" src="../image/logo/yihong_logo.png">
+                <label id="login_user"></label>
+            </div>
+            <div class="tool-bar">
+                <label class="i18n" name="i_language"></label>
+                <select id="language" class="select-lang">
+                    <option value="en">English</option>
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="zh-CN">简体中文</option>
+                </select>
             </div>
         </div>
 
@@ -75,17 +75,8 @@
                     <br>
                     <div style="text-align: center;">
                         <button class="btn btn-primary" id="btn_reset">Reset</button>
-
-                        <button class="btn btn-primary" id="btn_upload" style="margin-left: 10px;">Upload
-                            Firmware</button>
-
-                        <!--<label for="btn_reset" class="btn-reset" title="Reset Progress">
-                            <i class="fas fa-undo-alt"></i></label>
-                        <input id="btn_reset" type="button" class="btn-hidden" />
-
-                        <label for="btn_upload" class="btn-upload" title="Upload Firmware">
-                            <i class="fas fa-upload"></i></label>
-                        <input id="btn_upload" type="button" class="btn-hidden" />-->
+                        <button class="btn btn-primary" id="btn_upload" style="margin-left: 10px;">
+                            Upload Firmware</button>
                     </div>
                 </div>
             </div>
@@ -125,18 +116,6 @@
                 </div>
                 <div id="block_files_list"></div>
             </div>
-            <!--<div class="col-lg-3">
-                <label>Network interface card :&nbsp;</label><select id="interface_card"></select>
-                <br><br>
-                <label>Local IP :&nbsp;</label><input type="text" id="local_ip" value="" readonly>
-                <br><br>
-                <button class="btn btn-primary" id="search_devices" style="float: right;"
-                    onclick="searchDevices()">Search Devices</button>
-                <br><br>
-                <label>Device IP :&nbsp;<select id="sel_device_ip"></select></label>
-                <br><br>
-                <button id="btn_update" class="btn btn-primary">Update Firmware</button>
-            </div>-->
         </div>
     </div>
     <!-- i18n -->

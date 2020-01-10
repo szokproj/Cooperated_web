@@ -12,20 +12,25 @@ td {
     text-align: left;
 }
 
+h4 {
+    color: white;
+}
+
 .table_block {
     max-height: 690px;
     overflow: auto;
+    margin: 10px 0px;
 }
 
 .table-line th {
-    border: 1px solid rgb(0, 105, 175);
-    background: rgb(0, 104, 173);
+    border: 1px solid rgb(189, 189, 189);
+    background: rgb(125, 125, 125);
     color: white;
     text-align: center;
 }
 
 .table-line td {
-    border: 1px solid rgb(0, 105, 175);
+    border: 1px solid rgb(117, 117, 117);
     background: #f2f2f2;
     color: black;
 }
@@ -74,26 +79,8 @@ input[type="file"] {
     padding: 10px 15px;
     border: 2px solid lightgray;
     border-radius: 4px;
-    box-shadow: 4px 4px 3px rgba(0, 0, 0, 0.7);
+    box-shadow: 1px 3px 2px rgba(0, 0, 0, 0.719);
     background: gray;
-}
-
-/* icon navbar */
-.sidebar ul .setting-type a {
-    background: transparent;
-}
-
-.sidebar ul .setting-type.active:hover a,
-.sidebar ul .setting-type.active a {
-    background: rgb(135, 145, 160);
-}
-
-.menu-left ul .start a {
-    background: transparent;
-}
-
-.menu-left ul .start:hover a {
-    background: rgb(4, 143, 124)
 }
 
 .btn-hidden {
@@ -149,7 +136,7 @@ input[type="file"] {
 }*/
 
 .network-bar {
-    margin-left: 10px;
+    margin: 0px 10px;
     border: 2px solid lightgray;
     background: lightgray;
     color: black;
@@ -157,7 +144,7 @@ input[type="file"] {
 }
 
 #block_files_list {
-    margin-left: 10px;
+    margin: 0px 10px;
     border: 2px solid lightgray;
     background: white;
     height: 350px;
@@ -200,4 +187,23 @@ input[type="file"] {
 
 .cmd-send-bar td {
     padding: 15px 5px;
+}
+
+/* icon navbar */
+.sidebar ul .setting-type a {
+    background: transparent;
+}
+
+.sidebar ul .setting-type:hover a,
+.sidebar ul .setting-type.active a,
+.sidebar ul .setting-type.active:hover a {
+    background: rgb(135, 145, 160);
+}
+
+.menu-left ul .start a {
+    background: transparent;
+}
+
+.menu-left ul .start:hover a {
+    background: rgb(4, 143, 124)
 }

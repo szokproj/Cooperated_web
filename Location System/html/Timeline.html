@@ -43,25 +43,25 @@
 
         <!--Web content-->
         <div class="row">
-            <div class="col-lg-12">
-                <div style="float:right;">
-                    <img class="logo" src="../image/logo/icon.png">
-                    <label class="i18n" name="i_language"></label>
-                    <select id="language" class="select-lang">
-                        <option value="en">English</option>
-                        <option value="zh-TW">繁體中文</option>
-                        <option value="zh-CN">简体中文</option>
-                    </select>
-                    <label id="login_user"></label>
-                </div>
+            <div class="col-lg-12 top_nav">
+                <img class="logo" src="../image/logo/yihong_logo.png">
+                <label id="login_user"></label>
+            </div>
+            <div class="tool-bar">
+                <label class="i18n" name="i_language"></label>
+                <select id="language" class="select-lang">
+                    <option value="en">English</option>
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="zh-CN">简体中文</option>
+                </select>
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" style="margin-top: 10px;">
             <div class="col-lg-3">
                 <div class="sidebar_left">
                     <div class="panel-group" id="accordion">
-                        <div class="panel panel-primary">
+                        <div class="panel">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
                                     <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="i18n"
@@ -95,7 +95,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="panel panel-primary">
+                        <div class="panel">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
                                     <a data-toggle="collapse" data-parent="#accordion" href="#collapse3" class="i18n"
@@ -178,11 +178,10 @@
                                             <option class="i18n" name="i_electronicFence" value="Fence"></option>
                                         </select>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
-                        <div class="panel panel-primary">
+                        <div class="panel">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
                                     <a data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="i18n"
@@ -226,7 +225,7 @@
                         </canvas>
                     </div>
                     <div id="positionInfo">
-                        <span class="i18n" name="i_posX" style="margin-left:20px;">
+                        <span class="i18n" name="i_posX">
                         </span> : <label id="draw_x"></label>
                         <span class="i18n" name="i_posY" style="margin-left:20px;">
                         </span> : <label id="draw_y"></label>
@@ -252,11 +251,25 @@
             </div>
             <div class="col-lg-3">
                 <div class="sidebar_right">
-                    <div id="statistics_info">
-                        <label>地圖名稱</label>: <label id="current_map"></label><br>
-                        <label>時間</label>: <label id="current_time"></label><br>
-                        <label>區域人數</label>: <label id="current_tags_amount"></label><br>
-                        <label>群組人數</label>: <label id="group_amount"></label>
+                    <div id="statistics_info" class="noborder-block">
+                        <table>
+                            <tr>
+                                <td><label>地圖名稱</label>: </td>
+                                <td><label id="current_map"></label></td>
+                            </tr>
+                            <tr>
+                                <td><label>時間</label>: </td>
+                                <td><label id="current_time"></label></td>
+                            </tr>
+                            <tr>
+                                <td><label>區域人數</label>: </td>
+                                <td><label id="current_tags_amount"></label></td>
+                            </tr>
+                            <tr>
+                                <td><label>群組人數</label>: </td>
+                                <td><label id="group_amount"></label></td>
+                            </tr>
+                        </table>
                     </div>
                     <br>
                     <div id="member_info">
@@ -271,21 +284,20 @@
                                             id="thumb_name"></span><br>
                                         <label class="i18n" name="i_userID"></label>: <span class="i18n"
                                             id="thumb_user_id"></span><br>
-                                        <label class="i18n" name="i_dept"></label>:
-                                        <span id="thumb_dept"></span><br>
-                                        <label class="i18n" name="i_date"></label>: <span class="i18n"
-                                            id="thumb_date"></span><br>
-                                        <label class="i18n" name="i_time"></label>:
-                                        <span id="thumb_time"></span><br>
-                                        <label class="i18n" name="i_position"></label>:
-                                        <span id="thumb_position"></span><br>
-                                        <div id="display_status" style="display: none;">
-                                            <label class="i18n" name="i_status">: <span id="thumb_status"></span>
-                                            </label>
-                                        </div>
+                                        <label class="i18n" name="i_dept"></label>: <span id="thumb_dept"></span><br>
                                     </td>
                                 </tr>
                             </table>
+
+                            <label class="i18n" name="i_date"></label>: <span class="i18n" id="thumb_date"></span><br>
+                            <label class="i18n" name="i_time"></label>:
+                            <span id="thumb_time"></span><br>
+                            <label class="i18n" name="i_position"></label>:
+                            <span id="thumb_position"></span><br>
+                            <div id="display_status" style="display: none;">
+                                <label class="i18n" name="i_status">: <span id="thumb_status"></span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -294,21 +306,12 @@
     </div>
 
     <!--Hidden Dialog-->
-    <!--Modal-->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!--<div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
-                    </button>
-                </div>-->
-                <label><i class="fas fa-spinner fa-pulse"></i>
-                    <apan class="i18n" name="i_searchingBar"></apan>
-                    <span id="progress_bar"></span>
-                </label><br>
-                <label id="wait_time"></label>
-            </div>
-        </div>
+    <!--progress bar-->
+    <div class="progress" id="progress_block">
+        <label>
+            <i class="fas fa-spinner fa-pulse"></i> 寫入中，進度 : <span id="progress_bar"></span>
+        </label><br>
+        <label id="wait_time"></label>
     </div>
 
     <div id="timeline_dialog" class="dialog" title="Timeline">

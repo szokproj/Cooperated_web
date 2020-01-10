@@ -1,9 +1,5 @@
 .nav-tabs {
-    margin: 10px 0px 0px 50px;
-}
-
-.row {
-    margin-left: 30px;
+    margin-top: 10px;
 }
 
 th {
@@ -45,7 +41,7 @@ table.sticky-table {
 .sticky-table th {
     padding: 5px;
     text-align: center;
-    outline: 2px solid rgb(0, 65, 117);
+    outline: 2px solid rgb(68, 68, 68);
     outline-offset: -1px;
     width: 150px;
 }
@@ -53,9 +49,9 @@ table.sticky-table {
 .sticky-table td {
     padding: 5px;
     text-align: center;
-    outline: 2px solid rgb(0, 65, 117);
+    outline: 2px solid rgb(68, 68, 68);
     outline-offset: -1px;
-    background: #f2f2f2;
+    background: #ffffff;
 }
 
 .sticky-table td:nth-child(1),
@@ -108,21 +104,21 @@ table.sticky-table {
     top: 0px;
     position: sticky;
     position: -webkit-sticky;
-    background: rgb(0, 104, 173);
-    outline: 2px solid rgb(0, 65, 117);
+    background: rgb(210, 210, 210);
+    outline: 2px solid rgb(68, 68, 68);
     outline-offset: -1px;
-    color: white;
+    color: black;
 }
 
 .sticky-table thead tr:nth-child(2) th {
     top: 30px;
     position: sticky;
     position: -webkit-sticky;
-    background: rgb(0, 104, 173);
-    outline: 2px solid rgb(0, 65, 117);
+    background: rgb(210, 210, 210);
+    outline: 2px solid rgb(68, 68, 68);
     outline-offset: -1px;
     padding: 3px;
-    color: black;
+    color: #000000;
 }
 
 .sticky-table th:nth-child(1),
@@ -157,14 +153,17 @@ table.sticky-table {
 /*====================*/
 
 .top {
-    margin: 10px 0px 5px 10px;
+    margin: 10px 0px;
+}
+
+.top button {
+    padding: 5px 10px;
 }
 
 .middle {
     background-color: transparent;
-    border: 1px solid rgb(0, 65, 117);
+    border: 1px solid rgb(68, 68, 68);
     height: 600px;
-    margin-left: 10px;
     overflow: auto;
 }
 
@@ -225,7 +224,7 @@ table.noborder-block {
 .btn-set {
     cursor: pointer;
     background: transparent !important;
-    color: rgb(0, 119, 255) !important;
+    color: rgb(0, 85, 182) !important;
     font-size: 18px !important;
     margin-left: 5px !important;
     padding: 0px !important;
@@ -233,7 +232,7 @@ table.noborder-block {
 
 .btn-set:hover {
     background: transparent !important;
-    color: rgb(90, 158, 236) !important;
+    color: rgb(0, 119, 255) !important;
 }
 
 /*test*/

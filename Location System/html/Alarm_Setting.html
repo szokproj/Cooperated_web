@@ -48,17 +48,17 @@
 
         <!-- Web content  -->
         <div class="row">
-            <div class="col-lg-12">
-                <div style="float:right;">
-                    <img class="logo" src="../image/logo/icon.png">
-                    <label class="i18n" name="i_language"></label>
-                    <select id="language" class="select-lang">
-                        <option value="en">English</option>
-                        <option value="zh-TW">繁體中文</option>
-                        <option value="zh-CN">简体中文</option>
-                    </select>
-                    <label id="login_user"></label>
-                </div>
+            <div class="col-lg-12 top_nav">
+                <img class="logo" src="../image/logo/yihong_logo.png">
+                <label id="login_user"></label>
+            </div>
+            <div class="tool-bar">
+                <label class="i18n" name="i_language"></label>
+                <select id="language" class="select-lang">
+                    <option value="en">English</option>
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="zh-CN">简体中文</option>
+                </select>
             </div>
         </div>
 
@@ -161,22 +161,32 @@
                         </div>
                     </div>
                     <div class="col-lg-5">
-                        <div class="btn-group" style="margin:5px 0px 5px 0px;">
-                            <div class="btn-group dropdown" id="input_map">
-                                <button type="button" class="btn btn-default dropdown-toggle i18n-input"
-                                    data-toggle="dropdown" selectattr="title" selectname="i_selectMap">
-                                    <i class="far fa-image" style='font-size:20px;'></i></button>
-                                <ul class="dropdown-menu" role="menu" id="select_map"></ul>
-                            </div>
-                            <button id="menu_resize" class="btn btn-default i18n-input" selectattr="title"
-                                selectname="i_restore_scale">
-                                <i class="fas fa-expand" style='font-size:20px;'></i></button>
-                            <button id="menu_fence_info" class="btn btn-default i18n-input" selectattr="title"
-                                selectname="i_fenceSetting">
-                                <i class="fas fa-vector-square" style='font-size:20px;'></i></button>
-                            <button id="menu_fence_alarm_group" class="btn btn-default" title="Fence Collection">
-                                <i class="fas fa-file-alt" style='font-size:20px;'></i></button>
-                        </div>
+                        <nav class="sidebar-menu">
+                            <ul class="nav">
+                                <!--Load Map-->
+                                <li class="nav-li"><label for="input_map" class="btn-sidebar i18n-input"
+                                        selectattr="title" selectname="i_selectMap"><i class="far fa-image"></i></label>
+                                    <input type="button" id="input_map" class="btn-hidden dropdown-toggle"
+                                        data-toggle="dropdown" />
+                                    <ul class="dropdown-menu" role="menu" id="select_map"></ul>
+                                </li>
+                                <!--Restore Size-->
+                                <li class="nav-li"><label for="menu_resize" id="label_resize"
+                                        class="btn-sidebar i18n-input" selectattr="title" selectname="i_restore_scale">
+                                        <i class="fas fa-expand"></i></label>
+                                    <input id="menu_resize" type="button" class="btn-hidden" /></li>
+                                <!--Fence info-->
+                                <li class="nav-li"><label for="menu_fence_info" id="label_fence_info"
+                                        class="btn-sidebar i18n-input" selectattr="title" selectname="i_fenceSetting">
+                                        <i class="fas fa-vector-square"></i></label>
+                                    <input id="menu_fence_info" type="button" class="btn-hidden" /></li>
+                                <!--Fence Alarm Group-->
+                                <li class="nav-li"><label for="menu_fence_alarm_group" id="label_fence_alarm_group"
+                                        class="btn-sidebar i18n-input" title="Fence Collection">
+                                        <i class="fas fa-file-alt"></i></label>
+                                    <input id="menu_fence_alarm_group" type="button" class="btn-hidden" /></li>
+                            </ul>
+                        </nav>
                         <br>
 
                         <div id="block_fence_info">
@@ -194,8 +204,8 @@
                                     <i class="fas fa-minus-square" style='font-size:20px;'></i></label>
                                 <input id="btn_fence_delete" type="button" class="btn-hidden" />
                             </span>
-                            <label>Fence Lsit</label> : <br>
-                            <div class="block-list">
+                            <label class="i18n" name="i_fenceList"></label> : <br>
+                            <div class="block-list" style="max-height: 492px;">
                                 <table id="table_fence_setting" class="table-line">
                                     <thead>
                                         <tr>
@@ -209,8 +219,7 @@
                                 </table>
                             </div>
                         </div>
-                        <div id="block_fence_alarm_group">
-                            <br>
+                        <div id="block_fence_alarm_group" style="display: none;">
                             <span style="float: right;">
                                 <label for="btn_fenceAG_add" id="label_fenceAG_add" class="btn-add i18n-input"
                                     selectattr="title" selectname="i_addFence">
@@ -221,8 +230,8 @@
                                     <i class="fas fa-minus-square" style='font-size:20px;'></i></label>
                                 <input id="btn_fenceAG_delete" type="button" class="btn-hidden" />
                             </span>
-                            <label>Fence Alarm Group</label> : <br>
-                            <div class="block-list">
+                            <label class="i18n" name="i_fenceAlarmGroup"></label> : <br>
+                            <div class="block-list" style="max-height: 540px;">
                                 <table id="table_fence_alarm_group" class="table-line">
                                     <thead>
                                         <tr>
@@ -392,17 +401,6 @@
                 </fieldset>
             </form>
         </div>
-        <!-- Following is a dialog to set the time group's slots -->
-        <div id="dialog_add_time_group_slot" class="dialog" title="Add Time slot Group">
-            <form>
-                <fieldset style="text-align: left;">
-                    <label class="i18n" name="i_addTimeSlotSetting"></label> :
-                    <select id="add_time_group_slot"></select>
-                    <br>
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                </fieldset>
-            </form>
-        </div>
         <!-- Following is a dialog to add a new fence -->
         <div id="dialog_add_fence" class="dialog" title="Set Electronic Fence">
             <form>
@@ -474,7 +472,7 @@
         <div id="dialog_fence_alarm_group" class="dialog" title="Set Fence Collection">
             <form>
                 <fieldset style="text-align: left;">
-                    <label for="add_FAG_id">Fence Alarm Group ID</label> :
+                    <label for="add_FAG_id" class="i18n" name="i_fenceAlarmGroupID"></label> :
                     <input type="text" id="add_FAG_id" style="width:50%;" />
                     <!--<input type="hidden" id="add_FAG_id">
                     <label for="add_FAG_name">Fence Alarm Group Name</label> :
@@ -484,7 +482,7 @@
                         <tr>
                             <td class="left">
                                 <div class="block-fence-list">
-                                    <label class="fence-list-title">Included Fences</label>
+                                    <label class="fence-list-title i18n" name="i_includedFences"></label>
                                     <table id="table_included_fences" class="table-line-gray">
                                         <thead>
                                             <tr>
@@ -509,7 +507,7 @@
                                 </span></td>
                             <td class="right">
                                 <div class="block-fence-list">
-                                    <label class="fence-list-title">Not Included Fences</label>
+                                    <label class="fence-list-title i18n" name="i_excludedFences"></label>
                                     <table id="table_remaining_fences" class="table-line-gray">
                                         <thead>
                                             <tr>

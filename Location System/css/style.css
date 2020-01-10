@@ -1,9 +1,6 @@
 body {
-    /*background: linear-gradient(180deg, #0077F7 0%, #08132E 100%);
-    background: -moz-linear-gradient(180deg, #0077F7 0%, #08132E 100%);
-    background: -webkit-linear-gradient(180deg, #0077F7 0%, #08132E 100%);
-    background: -o-linear-gradient(180deg, #0077F7 0%, #08132E 100%);*/
-    background: #132742;
+    background: black;
+    padding: 5px;
 }
 
 table {
@@ -12,51 +9,70 @@ table {
 }
 
 .container {
-    width: 100%;
+    width: auto;
     height: 100%;
-    background: transparent;
-    color: white;
+    margin-left: 50px;
+
+    /*background: rgb(146, 145, 145);*/
+
+    background: linear-gradient(90deg, lightgray 0%, gray 100%);
+    background: -moz-linear-gradient(90deg, lightgray 0%, gray 100%);
+    background: -webkit-linear-gradient(90deg, lightgray 0%, gray 100%);
+    background: -o-linear-gradient(90deg, lightgray 0%, gray 100%);
+
+    box-shadow: 0px 0px 2px 3px rgb(255, 255, 255) inset;
+    -moz-box-shadow: 0px 0px 2px 3px rgb(255, 255, 255) inset;
+    -webkit-box-shadow: 0px 0px 2px 3px rgb(255, 255, 255) inset;
+    border-radius: 8px;
     font-family: 'Microsoft JhengHei', 'sans-serif';
 }
 
-.container select,
-.container select option,
-.container option label,
-.container option span,
-.container input[type=text],
-.container input[type=date],
-.container input[type=time],
-.container input[type=search] {
-    background: #132742;
-    border: 1px solid lightgray;
-}
-
-.row {
-    margin-left: 40px;
-}
-
 .top_nav {
-    padding-top: 5px;
-    /*border: 1px solid #0055ff;*/
-    background: #000c2570;
+    padding-top: 3px;
+    width: auto;
+    border-radius: 5px;
+    background: black;
+    color: white;
+    box-shadow: 0px 0px 3px 4px rgb(211, 211, 211) inset;
+    -moz-box-shadow: 0px 0px 3px 4px rgb(211, 211, 211) inset;
+    -webkit-box-shadow: 0px 0px 3px 4px rgb(211, 211, 211) inset;
+
     /*background: linear-gradient(270deg, rgba(0, 227, 255, 1)0%, rgba(47, 149, 255, 1)65%);
     background: -moz-linear-gradient(270deg, rgba(0, 227, 255, 1)0%, rgba(47, 149, 255, 1)65%);
     background: -webkit-linear-gradient(270deg, rgba(0, 227, 255, 1)0%, rgba(47, 149, 255, 1)65%);
     background: -o-linear-gradient(270deg, rgba(0, 227, 255, 1)0%, rgba(47, 149, 255, 1)65%);*/
 }
 
-.select-lang {
-    margin-top: 5px;
-    margin-right: 10px;
-    background: #082041;
+.top_nav img {
+    padding-top: 3px;
+}
+
+
+.tool-bar {
+    float: right;
+    margin: 8px;
+}
+
+.tool-bar label {
     color: white;
 }
 
+.select-lang {
+    margin-top: 5px;
+    margin-right: 10px;
+    background: white;
+    color: black;
+}
+
 img.logo {
-    max-height: 30px;
-    max-width: 30px;
+    max-height: 60px;
+    max-width: 60px;
     margin: auto;
     background: transparent !important;
+}
+
+#login_user {
+    margin-left: 10px;
 }
 
 .btn-user {
@@ -117,33 +133,6 @@ canvas {
     height: 100px;
 }
 
-/*@media only screen and (min-width: 769px) {
-
-    桌上型電腦
-    .cvsBlock {
-        width: 100%;
-        height: 330px;
-    }
-}
-
-@media only screen and (min-width: 321px) and (max-width: 768px) {
-
-    平板
-    .cvsBlock {
-        width: 100%;
-        height: 250px;
-    }
-}
-
-@media only screen and (min-width: 0px) and (max-width: 320px) {
-
-    手機
-    .cvsBlock {
-        width: 100%;
-        height: 500px;
-    }
-}*/
-
 /*DropDownList*/
 .dropbtn {
     background-color: #4CAF50;
@@ -196,9 +185,7 @@ canvas {
 
 /*
  * A time picker for jQuery
- * Based on original timePicker by Sam Collet (http://www.texotela.co.uk)
- * @name     timePicker
- * @version  0.1 
+ * Based on original2
  * @author   Anders Fajerson (http://perifer.se)
  * @example  $("#mytime").timePicker();
  * @example  $("#mytime").timePicker({step:30, startTime:"15:00", endTime:"18:00"}); 
@@ -235,4 +222,34 @@ div.time-picker li {
 div.time-picker li.selected {
     background: #316AC5;
     color: #fff;
+}
+
+.nav-tabs {
+    border-color: rgb(0, 0, 0);
+    margin: 0px 3px;
+}
+
+.nav-tabs li a {
+    padding: 6px 10px;
+    background-color: transparent;
+    color: black;
+}
+
+.nav-tabs li:hover a {
+    border-color: rgb(54, 54, 54);
+    background-color: transparent;
+}
+
+.nav-tabs li.active a:hover,
+.nav-tabs li.active a:focus,
+.nav-tabs li.active a {
+    border-color: rgb(0, 0, 0);
+    background-color: rgb(0, 0, 0);
+    color: white;
+}
+
+.nav-tabs a,
+.tab-pane th,
+.tab-pane td {
+    font-family: 'Microsoft JhengHei', 'sans-serif';
 }

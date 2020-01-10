@@ -24,7 +24,8 @@ $(function () {
     setNavBar("Member_Setting", "Member_Setting");
 
     var h = document.documentElement.clientHeight;
-    $(".table_member").css("height", h * 0.9 + "px");
+    $(".container").css("height", h - 10 + "px");
+    $(".member_list").css("max-height", h - 110 + "px");
 
     sortTable('.row_number', '');
     sortTable('.row_user_id', '');
@@ -137,7 +138,7 @@ $(function () {
         } else {
             $("input[name='chkbox_members']").prop("checked", false);
             $("#table_member_setting tbody tr").removeClass("selected");
-           // $("#table_member_setting tbody tr td").css("background-color", "#ffffff");
+            // $("#table_member_setting tbody tr td").css("background-color", "#ffffff");
         }
     });
     $("#selectAll").on('click', function () {
