@@ -23,7 +23,7 @@
     <!-- Edit css -->
     <link rel="stylesheet" type="text/css" href="../css/style.css" />
     <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
-    <link rel="stylesheet" type="text/css" href="../css/map_setting_style.css">
+    <link rel="stylesheet" type="text/css" href="../css/test_map_list.css">
     <link rel="stylesheet" type="text/css" href="../css/tree_table/tree.css">
     <!-- Edit js -->
     <script type="text/javascript" src="../js/tree_table/tree.js"></script>
@@ -34,7 +34,6 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_map_draw.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_map_setting.js"></script>
-    <script type="text/javascript" src="../js/Dialog/dialog_map_add.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_anchor_list.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_anchor_group.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_group_list.js"></script>
@@ -60,10 +59,10 @@
                 </select>
             </div>
         </div>
-
+        <br>
         <div class="row">
             <div class="col-lg-12">
-                <h5 style="margin-top: 15px;">Map List</h5>
+                <!--<h5 style="margin-top: 15px;">Map List</h5>-->
                 <div class="map_list">
                     <div id="maps_gallery"></div>
                     <label for="add_new_map" class="custom-file-download">
@@ -73,11 +72,12 @@
                     <input id="add_new_map" type="button" class="btn-hidden" />
                 </div>
             </div>
-        </div>
 
+        </div>
+        <br>
         <div class="row">
             <div class="col-lg-6">
-                <h5>Map Setting</h5>
+                <!--<h5>Map Setting</h5>-->
                 <div id="cvsBlock">
                     <canvas id="canvas_map" height="1" width="1">
                         <span class="i18n" name="i_no_canvas"></span>
@@ -105,7 +105,7 @@
                                 <i class="fas fa-expand" style='font-size:20px;'></i></label>
                             <input id="menu_resize" type="button" class="btn-hidden" /></li>
                         <!--Map Info-->
-                        <li><label for="menu_map_info" id="label_map_info" class="btn-sidebar i18n-input"
+                        <li><label for="menu_map_info" id="label_map_info" class="btn-sidebar opened i18n-input"
                                 selectattr="title" selectname="i_mapInfo">
                                 <i class="fas fa-info-circle" style='font-size:20px;'></i></label>
                             <input id="menu_map_info" type="button" class="btn-hidden" /></li>
@@ -126,7 +126,7 @@
                             <input id="menu_anchor_group" type="button" class="btn-hidden" /></li>
                     </ul>
                 </nav>
-                <div id="block_info" style="width:100%; float:left;  margin-top:10px;">
+                <div id="block_info" class="display-block" style="width:100%; float:left; margin-top:10px;">
                     <input type="hidden" id="map_info_id" />
                     <label class="i18n" name="i_mapName"></label> :&nbsp;
                     <input type="text" id="map_info_name" style="width:120px;" />
@@ -137,7 +137,7 @@
                     <input type="button" id="btn_submit_map_info" class="btn btn-primary" value="確認變更地圖資訊(包含圖片)"
                         disabled />
                 </div>
-                <div id="block_anchor_list">
+                <div id="block_anchor_list" class="display-block" style="display: none;">
                     <span class="control-bar">
                         <label for="btn_add_anchor_list" id="label_add_anchor_list" class="btn-add i18n-input"
                             selectattr="title" selectname="i_addAnchorGroup">
@@ -171,7 +171,7 @@
                         </table>
                     </div>
                 </div>
-                <div id="block_group_list">
+                <div id="block_group_list" class="display-block" style="display: none;">
                     <span class="control-bar">
                         <label for="btn_add_group" id="label_add_group" class="btn-add i18n-input" selectattr="title"
                             selectname="i_addGroup">
@@ -204,7 +204,7 @@
                         </table>
                     </div>
                 </div>
-                <div id="block_anchor_group">
+                <div id="block_anchor_group" class="display-block" style="display: none;">
                     <span class="control-bar">
                         <label for="btn_add_anchor_group" id="label_add_anchor_group" class="btn-add i18n-input"
                             selectattr="title" selectname="i_addAnchorGroup">

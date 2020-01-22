@@ -63,7 +63,6 @@ function importAddFenceDialog() {
                     if (editXmlHttp.readyState == 4 || editXmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-
                             var fd_editXmlHttp = createJsonXmlHttp("sql");
                             fd_editXmlHttp.onreadystatechange = function () {
                                 if (fd_editXmlHttp.readyState == 4 || fd_editXmlHttp.readyState == "complete") {
@@ -169,61 +168,64 @@ function importAddFenceDialog() {
         }
         var checkboxs = document.getElementsByName("chkbox_fence_setting");
         var delete_arr = [];
-        for (k in checkboxs) {
+        for (var k = 0; k < checkboxs.length; k++) {
             if (checkboxs[k].checked) {
                 delete_arr.push({
                     "fence_id": checkboxs[k].value
                 });
             }
         }
-        var lan = delete_arr.length;
-        //刪除圍籬資訊
-        var del_xmlHttp = createJsonXmlHttp("sql");
-        del_xmlHttp.onreadystatechange = function () {
-            if (del_xmlHttp.readyState == 4 || del_xmlHttp.readyState == "complete") {
-                var del_response = JSON.parse(this.responseText);
-                if (checkTokenAlive(token, del_response) && del_response.Value[0].success == lan) {
-                    //刪除此圍籬的所有座標點
-                    var fd_xmlHttp = createJsonXmlHttp("sql");
-                    fd_xmlHttp.onreadystatechange = function () {
-                        if (fd_xmlHttp.readyState == 4 || fd_xmlHttp.readyState == "complete") {
-                            var fd_response = JSON.parse(this.responseText);
-                            if (checkTokenAlive(token, fd_response) && fd_response.Value[0].success > 0) {
-                                //刪除此圍籬的所有群組
-                                var fg_xmlHttp = createJsonXmlHttp("sql");
-                                fg_xmlHttp.onreadystatechange = function () {
-                                    if (fg_xmlHttp.readyState == 4 || fg_xmlHttp.readyState == "complete") {
-                                        var fg_response = JSON.parse(this.responseText);
-                                        if (checkTokenAlive(token, fg_response))
-                                            updateFenceTable(); //更新列表
-                                    }
-                                };
-                                fg_xmlHttp.send(JSON.stringify({
-                                    "Command_Type": ["Write"],
-                                    "Command_Name": ["DeleteFence_group_by_fid"],
-                                    "Value": delete_arr,
-                                    "api_token": [token]
-                                }));
+        if (delete_arr.length == 0)
+            return alert($.i18n.prop('i_alarmAlert_62'));
+        if (confirm($.i18n.prop('i_alarmAlert_63'))) {
+            //刪除圍籬資訊
+            var del_xmlHttp = createJsonXmlHttp("sql");
+            del_xmlHttp.onreadystatechange = function () {
+                if (del_xmlHttp.readyState == 4 || del_xmlHttp.readyState == "complete") {
+                    var del_response = JSON.parse(this.responseText);
+                    if (checkTokenAlive(token, del_response) && del_response.Value[0].success == delete_arr.length) {
+                        //刪除此圍籬的所有座標點
+                        var fd_xmlHttp = createJsonXmlHttp("sql");
+                        fd_xmlHttp.onreadystatechange = function () {
+                            if (fd_xmlHttp.readyState == 4 || fd_xmlHttp.readyState == "complete") {
+                                var fd_response = JSON.parse(this.responseText);
+                                if (checkTokenAlive(token, fd_response) && fd_response.Value[0].success > 0) {
+                                    //刪除此圍籬的所有群組
+                                    var fg_xmlHttp = createJsonXmlHttp("sql");
+                                    fg_xmlHttp.onreadystatechange = function () {
+                                        if (fg_xmlHttp.readyState == 4 || fg_xmlHttp.readyState == "complete") {
+                                            var fg_response = JSON.parse(this.responseText);
+                                            if (checkTokenAlive(token, fg_response))
+                                                updateFenceTable(); //更新列表
+                                        }
+                                    };
+                                    fg_xmlHttp.send(JSON.stringify({
+                                        "Command_Type": ["Write"],
+                                        "Command_Name": ["DeleteFence_group_by_fid"],
+                                        "Value": delete_arr,
+                                        "api_token": [token]
+                                    }));
+                                }
                             }
-                        }
-                    };
-                    fd_xmlHttp.send(JSON.stringify({
-                        "Command_Type": ["Write"],
-                        "Command_Name": ["DeleteFence_point_by_fid"],
-                        "Value": delete_arr,
-                        "api_token": [token]
-                    }));
-                } else {
-                    alert($.i18n.prop('i_alarmAlert_35') + (lan - del_response.Value[0].success));
+                        };
+                        fd_xmlHttp.send(JSON.stringify({
+                            "Command_Type": ["Write"],
+                            "Command_Name": ["DeleteFence_point_by_fid"],
+                            "Value": delete_arr,
+                            "api_token": [token]
+                        }));
+                    } else {
+                        alert($.i18n.prop('i_alarmAlert_35') + (delete_arr.length - del_response.Value[0].success));
+                    }
                 }
-            }
-        };
-        del_xmlHttp.send(JSON.stringify({
-            "Command_Type": ["Write"],
-            "Command_Name": ["DeleteFence_info"],
-            "Value": delete_arr,
-            "api_token": [token]
-        }));
+            };
+            del_xmlHttp.send(JSON.stringify({
+                "Command_Type": ["Write"],
+                "Command_Name": ["DeleteFence_info"],
+                "Value": delete_arr,
+                "api_token": [token]
+            }));
+        }
     });
 
     //Dialog to add the fence dot.
@@ -319,7 +321,9 @@ function getFencePoints(f_id) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+            if (!checkTokenAlive(token, revObj)) {
+                return;
+            } else if (revObj.Value[0].success > 0) {
                 submit_type["fence"] = "Edit";
                 var fencePoints = revObj.Value[0].Values || [];
                 $("#table_fence_dot_setting tbody").empty();
@@ -352,7 +356,9 @@ function getFenceGroups(f_id) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+            if (!checkTokenAlive(token, revObj)) {
+                return;
+            } else if (revObj.Value[0].success > 0) {
                 submit_type["fence"] = "Edit";
                 var fenceGroups = revObj.Value[0].Values || [];
                 $("#table_fence_group tbody").empty();

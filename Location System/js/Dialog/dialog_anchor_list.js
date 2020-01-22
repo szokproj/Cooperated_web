@@ -1,9 +1,6 @@
-var token = "";
 var anchorsInfoArray = [];
 
-$(function () {
-    token = getToken();
-
+function importAnchorList() {
     $("#anchor_id").on('change', function () {
         //預設anchor_type為anchor
         if ($(this).val().length > 0) {
@@ -103,7 +100,7 @@ $(function () {
         event.preventDefault();
         submitAddAnchor();
     });
-});
+}
 
 function getAnchorList() {
     var requestArray = {

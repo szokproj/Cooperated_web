@@ -464,11 +464,7 @@ function RTLS_Canvas(number) {
                             let radius = dot_size.tag / Zoom,
                                 distance = Math.sqrt(Math.pow(point.x - p.x, 2) + Math.pow(point.y - (p.y - radius * 2), 2));
                             if (distance <= radius) {
-                                document.getElementById("member_dialog_tag_id").innerText = parseInt(v.id.substring(8), 16);
-                                document.getElementById("member_dialog_number").innerText = v.number;
-                                document.getElementById("member_dialog_name").innerText = v.name;
-                                setMemberPhoto("member_dialog_image", "member_dialog_number", v.number);
-                                $("#member_dialog").dialog("open");
+                                setTagDialog(v);
                             }
                         }
                     }

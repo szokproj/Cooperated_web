@@ -120,11 +120,11 @@ function setMembersDialog() {
             return alert("請至少選擇一個人員!");
         chk_members.forEach(chk => {
             if (chk.checked) {
-                let exist = sel_members_number.findIndex(function (number) {
+                let exist = selectNumberArray.findIndex(function (number) {
                     return number == chk.value;
                 });
                 if (exist == -1) {
-                    sel_members_number.push(chk.value);
+                    selectNumberArray.push(chk.value);
                     add_number_arr.push(chk.value);
                 }
             }
@@ -389,4 +389,114 @@ function setDisplayRowsDialog() {
             return html;
         }
     }
+}
+
+function arraysToExcel(arrays, wsnames, wbname, appname) {
+    var ctx = "";
+    var workbookXML = "";
+    var worksheetsXML = "";
+    var rowsXML = "";
+    var titlesList = {};
+    var uri = 'data:application/vnd.ms-excel;base64,',
+        tmplWorkbookXML = '<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?>' +
+        '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">' +
+        '<DocumentProperties xmlns="urn:schemas-microsoft-com:office:office"><Author>Axel Richter</Author>' +
+        '<Created>{created}</Created></DocumentProperties>' +
+        '<Styles>' +
+        '<Style ss:ID="Currency"><NumberFormat ss:Format="Currency"></NumberFormat></Style>' +
+        '<Style ss:ID="Date"><NumberFormat ss:Format="Medium Date"></NumberFormat></Style>' +
+        '</Styles>' +
+        '{worksheets}</Workbook>',
+        tmplWorksheetXML = '<Worksheet ss:Name="{nameWS}"><Table>{rows}</Table></Worksheet>',
+        tmplCellXML = '<Cell{attributeStyleID}{attributeFormula}><Data ss:Type="{nameType}">{data}</Data></Cell>',
+        base64 = function (s) {
+            return window.btoa(unescape(encodeURIComponent(s)));
+        },
+        format = function (s, c) {
+            return s.replace(/{(\w+)}/g, function (m, p) {
+                return c[p];
+            });
+        };
+
+    titlesList["item"] = $.i18n.prop('i_item');
+    for (let title in RowsList) {
+        if (RowsList[title]["attendance"] == true)
+            titlesList[title] = $.i18n.prop(RowsList[title]["i18n"]);
+    }
+    titlesList["clockIn"] = $.i18n.prop('i_clockIn');
+    titlesList["clockOut"] = $.i18n.prop('i_clockOut');
+
+    for (var i = 0; i < arrays.length; i++) {
+        //標題列
+        rowsXML += '<Row>';
+        for (let title in titlesList) {
+            ctx = {
+                attributeStyleID: '',
+                nameType: 'String',
+                data: titlesList[title],
+                attributeFormula: ''
+            };
+            rowsXML += format(tmplCellXML, ctx);
+        }
+        rowsXML += '</Row>';
+
+        //內容列
+        let count = 0;
+        for (let tag_id in selectMembers) {
+            let member_info = selectMembers[tag_id],
+                attend_from = historyData[i][tag_id].first,
+                attend_end = historyData[i][tag_id].last;
+            count++;
+            rowsXML += '<Row>';
+            for (let title in titlesList) {
+                let value = null;
+                switch (title) {
+                    case "item":
+                        value = count;
+                        break;
+                    case "clockIn":
+                        value = (attend_from ? attend_from.time.split(" ")[1] : "缺席");
+                        break;
+                    case "clockOut":
+                        value = (attend_end ? attend_end.time.split(" ")[1] : "缺席");
+                        break;
+                    default:
+                        value = member_info[title] ? member_info[title] : "";
+                        break;
+                }
+                ctx = {
+                    attributeStyleID: '',
+                    nameType: 'String',
+                    data: value,
+                    attributeFormula: ''
+                };
+                rowsXML += format(tmplCellXML, ctx);
+            }
+            rowsXML += '</Row>';
+        }
+
+        ctx = {
+            rows: rowsXML,
+            nameWS: wsnames[i] || 'Sheet' + i
+        };
+        worksheetsXML += format(tmplWorksheetXML, ctx);
+        rowsXML = "";
+    }
+
+    ctx = {
+        created: (new Date()).getTime(),
+        worksheets: worksheetsXML
+    };
+    workbookXML = format(tmplWorkbookXML, ctx);
+
+    //查看后台的打印输出
+    //console.log(workbookXML);
+
+    var link = document.createElement("A");
+    link.href = uri + base64(workbookXML);
+    link.download = wbname || 'Workbook.xls';
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }

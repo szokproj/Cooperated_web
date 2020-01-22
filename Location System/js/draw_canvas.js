@@ -225,12 +225,11 @@ function Fence(dctx, zoom) {
     };
     this.drawFence = function () {
         var len = fence_dot_array.length;
-        var displace = 5 * zoom;
         dctx.beginPath();
         fence_dot_array.forEach(function (v, i, arr) {
-            dctx.lineTo(v.x + displace, v.y + displace);
+            dctx.lineTo(v.x, v.y);
             if (i == len - 1)
-                dctx.lineTo(arr[0].x + displace, arr[0].y + displace);
+                dctx.lineTo(arr[0].x, arr[0].y);
         })
         dctx.strokeStyle = "rgb(0, 153, 51)";
         dctx.stroke();

@@ -137,13 +137,13 @@ function checkRegexp(o, regexp, n) {
 }
 
 function TimeToArray(time_str) {
+    var arr = ["--/--/--", "--:--:--"];
     if (time_str.length > 0) {
         var break_index = time_str.lastIndexOf(" ");
-        return {
-            date: time_str.substring(0, break_index),
-            time: time_str.substring(break_index + 1, time_str.length)
-        };
+        arr[0] = time_str.substring(0, break_index);
+        arr[1] = time_str.substring(break_index + 1, time_str.length);
     }
+    return arr;
 }
 
 function selectColumn(id) {

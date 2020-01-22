@@ -83,10 +83,12 @@ function loadMaps() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             let revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                let revInfo = revObj.Value[0].Values.slice(0) || [];
+            if (!checkTokenAlive(token, revObj)) {
+                return;
+            } else if (revObj.Value[0].success > 0) {
+                let revInfo = revObj.Value[0].Values || [];
                 mapArray = [];
-                $("#select_map").empty()
+                $("#select_map").empty();
                 revInfo.forEach(v => {
                     mapArray.push({
                         id: v.map_id,
@@ -98,6 +100,8 @@ function loadMaps() {
                     $("#select_map").append("<li><input type=\"button\" id=\"map_btn_" + v.map_id + "\" " +
                         "value=\"" + v.map_name + "\" onclick=\"setMapById(\'" + v.map_id + "\')\"></li>");
                 });
+            } else {
+                alert($.i18n.prop('i_mapAlert_18'));
             }
         }
     };
@@ -274,7 +278,9 @@ function updateFenceTable() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             let revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+            if (!checkTokenAlive(token, revObj)) {
+                return;
+            } else if (revObj.Value[0].success > 0) {
                 fenceArray = "Values" in revObj.Value[0] ? revObj.Value[0].Values.slice(0) : [];
                 $("#table_fence_setting tbody").empty();
                 fenceDotArray = [];
@@ -313,8 +319,10 @@ function getFencePointArray(fence_id) {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             let revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                let arr = revObj.Value[0].Values.slice(0) || [];
+            if (!checkTokenAlive(token, revObj)) {
+                return;
+            } else if (revObj.Value[0].success > 0) {
+                let arr = revObj.Value[0].Values || [];
                 for (i = 0; i < arr.length; i++)
                     fenceDotArray.push(arr[i]);
                 draw();
@@ -338,6 +346,26 @@ function updateFenceDotsArr() {
     }
 }
 
+function getFences() {
+    let xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            let revObj = JSON.parse(this.responseText);
+            if (!checkTokenAlive(token, revObj))
+                return;
+            else if (revObj.Value[0].success > 0)
+                fenceArray = "Values" in revObj.Value[0] ? revObj.Value[0].Values.slice(0) : [];
+            else
+                alert($.i18n.prop('i_alarmAlert_30'));
+        }
+    };
+    xmlHttp.send(JSON.stringify({
+        "Command_Type": ["Read"],
+        "Command_Name": ["GetFence_info_ALL"],
+        "api_token": [token]
+    }));
+}
+
 function getGroups() {
     let request = {
         "Command_Type": ["Read"],
@@ -348,7 +376,9 @@ function getGroups() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             let revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+            if (!checkTokenAlive(token, revObj)) {
+                return;
+            } else if (revObj.Value[0].success > 0) {
                 let mapGroups = revObj.Value[0].Values || [];
                 groupArray = [];
                 mapGroups.forEach(element => {
@@ -358,7 +388,6 @@ function getGroups() {
                 getAnchor_Group();
             } else {
                 alert($.i18n.prop('i_alarmAlert_31'));
-                return;
             }
         }
     };
@@ -378,7 +407,9 @@ function getAnchor_Group() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             let revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+            if (!checkTokenAlive(token, revObj)) {
+                return;
+            } else if (revObj.Value[0].success > 0) {
                 anchorGroupArray = "Values" in revObj.Value[0] ? revObj.Value[0].Values.slice(0) : [];
                 draw();
             } else {
@@ -555,13 +586,12 @@ function Fence() {
     this.drawFence = function () {
         let canvas = document.getElementById("canvas_map"),
             ctx = canvas.getContext("2d"),
-            len = fence_dot_array.length,
-            displace = 5 / Zoom;
+            len = fence_dot_array.length;
         ctx.beginPath();
         fence_dot_array.forEach(function (v, i, arr) {
-            ctx.lineTo(v.x + displace, v.y + displace);
+            ctx.lineTo(v.x, v.y);
             if (i == len - 1)
-                ctx.lineTo(arr[0].x + displace, arr[0].y + displace);
+                ctx.lineTo(arr[0].x, arr[0].y);
         })
         ctx.strokeStyle = "rgb(0, 153, 51)";
         ctx.stroke();
@@ -571,9 +601,9 @@ function Fence() {
         ctx.fillStyle = "blue";
         ctx.font = 26 / Zoom + 'px serif';
         let arr = fence_dot_array,
-            displace_x = (arr[2].x - arr[0].x) / 2,
-            displace_y = (arr[2].y - arr[0].y) / 2;
-        ctx.fillText(arr[0].fence_name, arr[0].x + displace_x - 15, arr[0].y + displace_y - 6);
+            displace_x = (arr[2].x - arr[0].x) / 2 - 13 * arr[0].fence_name.length,
+            displace_y = (arr[2].y - arr[0].y) / 2 - 13;
+        ctx.fillText(arr[0].fence_name, arr[0].x + displace_x, arr[0].y + displace_y);
         ctx.closePath();
     };
 }

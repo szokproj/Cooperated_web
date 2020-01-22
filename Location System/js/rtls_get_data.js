@@ -1,4 +1,4 @@
-'use strict';
+//'use strict';
 const ALARM_TYPE = ["low_power", "help", "still", "active", "Fence", "stay", "hidden"];
 var token = "",
     userName = "",
@@ -276,37 +276,6 @@ function getMemberData() {
     jxh.send(json_request);
 }
 
-function setMemberPhoto(img_id, number_id, number) {
-    if (number == "") {
-        $("#" + img_id).attr('src', "");
-    } else {
-        const json_request = JSON.stringify({
-            "Command_Type": ["Read"],
-            "Command_Name": ["GetOneStaff"],
-            "Value": {
-                "number": number
-            },
-            "api_token": [token]
-        });
-        let jxh = createJsonXmlHttp("sql");
-        jxh.onreadystatechange = function () {
-            if (jxh.readyState == 4 || jxh.readyState == "complete") {
-                let revObj = JSON.parse(this.responseText);
-                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0 && revObj.Value[0].Values) {
-                    let revInfo = revObj.Value[0].Values[0];
-                    if (document.getElementById(number_id).innerText != number)
-                        return;
-                    if (revInfo.file_ext != "" && revInfo.photo != "")
-                        document.getElementById(img_id).setAttribute("src", "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo);
-                    else
-                        document.getElementById(img_id).setAttribute("src", "");
-                }
-            }
-        };
-        jxh.send(json_request);
-    }
-}
-
 function changeAlarmLight() {
     let alarmSideBar_icon = document.getElementById("alarmSideBar_icon");
     if (alarmFilterArr.length > 0) {
@@ -408,8 +377,8 @@ function updateAlarmList() {
                         let tagid_alarm = element.id + element.alarm_type,
                             time_arr = TimeToArray(element.alarm_time);
                         document.getElementById("count_" + tagid_alarm).innerText = element.count;
-                        document.getElementById("date_" + tagid_alarm).innerText = time_arr.date;
-                        document.getElementById("time_" + tagid_alarm).innerText = time_arr.time;
+                        document.getElementById("date_" + tagid_alarm).innerText = time_arr[0];
+                        document.getElementById("time_" + tagid_alarm).innerText = time_arr[1];
                     });
                 }
             }

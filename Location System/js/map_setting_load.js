@@ -5,8 +5,8 @@ var thumb_height = 180;
 
 $(function () {
     let h = document.documentElement.clientHeight;
-    $(".container").css("height", h - 10 + "px");
-    $("#cvsBlock").css("height", h - 400 + "px");
+    /*$(".container").css("height", h - 10 + "px");*/
+    $("#cvsBlock").css("height", h - 375 + "px");
     //Check this page's permission and load navbar
     token = getToken();
     if (!getPermissionOfPage("Map_Setting")) {
@@ -17,6 +17,12 @@ $(function () {
     thumb_width = parseInt(document.getElementById("new_map_block").style.maxWidth, 10);
     thumb_height = parseInt(document.getElementById("new_map_block").style.maxHeight, 10);
     loadMap();
+
+    importSetMapDialog();
+    importNewMapDialog();
+    importAnchorList();
+    importAnchorGroup();
+    importGroupList();
 });
 
 function loadMap() {
@@ -29,7 +35,9 @@ function loadMap() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+            if (!checkTokenAlive(token, revObj)) {
+                return;
+            } else if (revObj.Value[0].success > 0) {
                 mapArray = revObj.Value[0].Values.slice(0); //利用抽離全部陣列完成陣列拷貝
                 $("#maps_gallery").empty();
                 if (mapArray) {
@@ -109,7 +117,7 @@ function setMapById(id) { //點擊設定:開啟設定視窗
     }
 }
 
-function newMap() {
+function clearNewMap() {
     $("#map_info_id").val("");
     $("#map_info_name").val("");
     $("#map_info_scale").val("");
@@ -121,7 +129,7 @@ function newMap() {
     //$("#dialog_map_setting").dialog("open");
 }
 
-function addMap() {
+function newMap() {
     if (confirm($.i18n.prop('i_mapAlert_17'))) {
         $("#add_map_name").removeClass("ui-state-error");
         $("#add_map_image").removeClass("ui-state-error");
@@ -202,7 +210,7 @@ function deleteMap(id) {
                         }
                     };
                     mapGroupHttp.send(deleteMap_GroupReq);
-                    newMap();
+                    clearNewMap();
                     loadMap();
                 }
             }

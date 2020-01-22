@@ -1,3 +1,4 @@
+const noImagePng = "../image/no_image.png";
 var leftSide_isOpen = false;
 var rightSide_isOpen = false;
 
@@ -98,9 +99,9 @@ function inputAlarmData(element, i) {
         "<span id=\"" + thumb_number + "\">" + element.number + "</span></label><br>" +
         "<label>" + $.i18n.prop('i_name') + " : " + element.name + "</label><br>" +
         "<label>" + $.i18n.prop('i_userID') + " : " + parseInt(element.id.substring(8), 16) + "</label><br>" +
-        "<label>" + $.i18n.prop('i_date') + " : <span id=\"date_" + tagid_alarm + "\">" + time_arr.date + "</span></label>" +
+        "<label>" + $.i18n.prop('i_date') + " : <span id=\"date_" + tagid_alarm + "\">" + time_arr[0] + "</span></label>" +
         "<br>" +
-        "<label>" + $.i18n.prop('i_time') + " : <span id=\"time_" + tagid_alarm + "\">" + time_arr.time + "</span></label>" +
+        "<label>" + $.i18n.prop('i_time') + " : <span id=\"time_" + tagid_alarm + "\">" + time_arr[1] + "</span></label>" +
         "</td></tr></table>" +
         "<label style=\"margin-left:10px; color:white;\">" + $.i18n.prop('i_status') + " : " + status + "</label>" +
         "<br><div style=\"text-align:center; margin:5px;\">" +
@@ -193,8 +194,8 @@ function setAlarmDialog(Obj) {
     $("#alarm_dialog_number").text(Obj.number);
     $("#alarm_dialog_name").text(Obj.name);
     $("#alarm_dialog_id").text(parseInt(Obj.id.substring(8), 16));
-    $("#alarm_dialog_date").text(time_arr.date);
-    $("#alarm_dialog_time").text(time_arr.time);
+    $("#alarm_dialog_date").text(time_arr[0]);
+    $("#alarm_dialog_time").text(time_arr[1]);
     $("#alarm_dialog_status").text(status);
     $("#alarm_dialog_btn_focus").off("click").on("click", function () {
         changeFocusAlarm(Obj.id, Obj.status);
@@ -214,4 +215,35 @@ function setTagDialog(Obj) {
     });
     $("#alarm_dialog").dialog("close");
     $("#member_dialog").dialog("open");
+}
+
+function setMemberPhoto(img_id, number_id, number) {
+    if (number == "") {
+        $("#" + img_id).attr('src', noImagePng);
+    } else {
+        const json_request = JSON.stringify({
+            "Command_Type": ["Read"],
+            "Command_Name": ["GetOneStaff"],
+            "Value": {
+                "number": number
+            },
+            "api_token": [token]
+        });
+        let jxh = createJsonXmlHttp("sql");
+        jxh.onreadystatechange = function () {
+            if (jxh.readyState == 4 || jxh.readyState == "complete") {
+                let revObj = JSON.parse(this.responseText);
+                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0 && revObj.Value[0].Values) {
+                    let revInfo = revObj.Value[0].Values[0];
+                    if (document.getElementById(number_id).innerText != number)
+                        return;
+                    if (revInfo.file_ext != "" && revInfo.photo != "")
+                        document.getElementById(img_id).setAttribute("src", "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo);
+                    else
+                        document.getElementById(img_id).setAttribute("src", noImagePng);
+                }
+            }
+        };
+        jxh.send(json_request);
+    }
 }

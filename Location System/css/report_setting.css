@@ -15,10 +15,6 @@ td {
     font-family: 'Microsoft JhengHei', 'sans-serif';
 }
 
-input[type='month'] {
-    background: transparent;
-}
-
 .report-page {
     width: auto;
     height: auto;
@@ -191,4 +187,15 @@ input[type="text"] {
 
 .progress i {
     color: rgb(255, 255, 255);
+}
+
+#report_pages_control {
+    border: 1px solid white;
+    border-radius: 5px;
+    background-color: rgb(211, 211, 211);
+    padding: 0px 10px;
+}
+
+#report_pages_control button {
+    margin: 5px 0px;
 }

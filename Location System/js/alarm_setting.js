@@ -49,6 +49,7 @@ $(function () {
         lang: 'en',
         format: 'HH:mm'
     });
+
     let dialog, form,
         name = $("#add_alarm_mode_name"),
         fenceAG_id = $("#add_alarm_mode_0_fagID"),
@@ -57,148 +58,158 @@ $(function () {
         hidden_time = $("#add_alarm_mode_2_time"),
         time_group = $("#add_alarm_time_group"),
         allFields = $([]).add(name).add(fenceAG_id).add(fenceAG_time).add(stay_time).add(hidden_time).add(time_group),
-        modes = $("input[name=add_alarm_mode]"), //不用把add_modes放進allFields
+        modes = $("input[name=add_alarm_mode]"); //不用把add_modes放進allFields
 
-        SendResult = function () {
-            let valid = true;
-            allFields.removeClass("ui-state-error");
-            valid = valid && checkLength(name, $.i18n.prop('i_alarmAlert_4'), 1, 100);
-            if ($("#add_alarm_mode_0").prop("checked")) {
-                valid = valid && checkLength(fenceAG_id, $.i18n.prop('i_alarmAlert_49'), 1, 100);
-                valid = valid && checkLength(fenceAG_time, $.i18n.prop('i_alarmAlert_4'), 1, 100);
-            }
-            if ($("#add_alarm_mode_1").prop("checked"))
-                valid = valid && checkLength(stay_time, $.i18n.prop('i_alarmAlert_4'), 1, 100);
-            if ($("#add_alarm_mode_2").prop("checked"))
-                valid = valid && checkLength(hidden_time, $.i18n.prop('i_alarmAlert_4'), 1, 100);
-            valid = valid && checkLength(time_group, $.i18n.prop('i_alarmAlert_4'), 1, 100);
-            if (valid) {
-                if (submit_type["alarm"] == "Add") {
-                    let request_addGroupID = JSON.stringify({
-                        "Command_Type": ["Write"],
-                        "Command_Name": ["AddAlarmGroup"],
-                        "Value": {
-                            "alarm_group_name": name.val(),
-                            "time_group_id": time_group.val()
-                        },
-                        "api_token": [token]
-                    });
-                    let addIdXmlHttp = createJsonXmlHttp("sql");
-                    addIdXmlHttp.onreadystatechange = function () {
-                        if (addIdXmlHttp.readyState == 4 || addIdXmlHttp.readyState == "complete") {
-                            let revObj = JSON.parse(this.responseText);
-                            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                                let revInfo = revObj.Value[0].Values;
-                                let alarmModeGroupArr = [];
-                                for (let i = 0; i < alarmModeArray.length; i++) {
-                                    let isSwitch = "0",
-                                        alarm_value = "-1",
-                                        isAddFenceAG = false;
-                                    if (modes.eq(i).prop("checked")) {
-                                        isSwitch = "1";
-                                        if (i == 0) {
-                                            let fag_info_id = $("#add_alarm_mode_0_id").val();
-                                            alarm_value = fag_info_id.length == 0 ? "-1" : fag_info_id;
-                                            isAddFenceAG = true;
-                                        } else {
-                                            let alarm_time = $("#add_alarm_mode_" + i + "_time").val();
-                                            alarm_value = alarm_time.length == 0 ? "-1" : alarm_time;
-                                        }
+    let SendResult = function () {
+        allFields.removeClass("ui-state-error");
+        let valid = true;
+        valid = valid && checkLength(name, $.i18n.prop('i_alarmAlert_4'), 1, 100);
+        if ($("#add_alarm_mode_0").prop("checked")) {
+            valid = valid && checkLength(fenceAG_id, $.i18n.prop('i_alarmAlert_49'), 1, 100);
+            valid = valid && checkLength(fenceAG_time, $.i18n.prop('i_alarmAlert_4'), 1, 100);
+        }
+        if ($("#add_alarm_mode_1").prop("checked"))
+            valid = valid && checkLength(stay_time, $.i18n.prop('i_alarmAlert_4'), 1, 100);
+        if ($("#add_alarm_mode_2").prop("checked"))
+            valid = valid && checkLength(hidden_time, $.i18n.prop('i_alarmAlert_4'), 1, 100);
+        valid = valid && checkLength(time_group, $.i18n.prop('i_alarmAlert_4'), 1, 100);
+        if (valid) {
+            if (submit_type["alarm"] == "Add") {
+                let request_addGroupID = JSON.stringify({
+                    "Command_Type": ["Write"],
+                    "Command_Name": ["AddAlarmGroup"],
+                    "Value": {
+                        "alarm_group_name": name.val(),
+                        "time_group_id": time_group.val()
+                    },
+                    "api_token": [token]
+                });
+                let addIdXmlHttp = createJsonXmlHttp("sql");
+                addIdXmlHttp.onreadystatechange = function () {
+                    if (addIdXmlHttp.readyState == 4 || addIdXmlHttp.readyState == "complete") {
+                        let revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                            let revInfo = revObj.Value[0].Values || [],
+                                alarmModeGroupArr = [],
+                                isAddFenceAG = false;
+                            for (let i = 0; i < alarmModeArray.length; i++) {
+                                let isSwitch = "0",
+                                    alarm_value = "-1";
+                                if (modes.eq(i).prop("checked")) {
+                                    isSwitch = "1";
+                                    if (i == 0) {
+                                        let fag_info_id = $("#add_alarm_mode_0_id").val();
+                                        alarm_value = fag_info_id.length == 0 ? "-1" : fag_info_id;
+                                        isAddFenceAG = true;
+                                    } else {
+                                        let alarm_time = $("#add_alarm_mode_" + i + "_time").val();
+                                        alarm_value = alarm_time.length == 0 ? "-1" : alarm_time;
                                     }
-                                    alarmModeGroupArr.push({
-                                        "alarm_name": alarmModeArray[i].id,
-                                        "alarm_switch": isSwitch,
-                                        "alarm_value": alarm_value,
-                                        "alarm_group_id": revInfo.alarm_gid
-                                    });
                                 }
-                                let requestElements = JSON.stringify({
-                                    "Command_Type": ["Write"],
-                                    "Command_Name": ["AddAlarmInfo"],
-                                    "Value": alarmModeGroupArr,
-                                    "api_token": [token]
+                                alarmModeGroupArr.push({
+                                    "alarm_name": alarmModeArray[i].id,
+                                    "alarm_switch": isSwitch,
+                                    "alarm_value": alarm_value,
+                                    "alarm_group_id": revInfo.alarm_gid
                                 });
-                                let addXmlHttp = createJsonXmlHttp("sql");
-                                addXmlHttp.onreadystatechange = function () {
-                                    if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                                        let revObj = JSON.parse(this.responseText);
-                                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                                            if (isAddFenceAG)
-                                                addFenceAG_info(revInfo.alarm_gid);
-                                            else {
-                                                inputAlarmGroupTable();
-                                                dialog.dialog("close");
-                                            }
-                                        }
-                                    }
-                                };
-                                addXmlHttp.send(requestElements);
                             }
-                        }
-                    };
-                    addIdXmlHttp.send(request_addGroupID);
-                } else if (submit_type["alarm"] == "Edit") {
-                    let group_id = $("#edit_alarm_group_id").val();
-                    let request_EditInfo = JSON.stringify({
-                        "Command_Type": ["Write"],
-                        "Command_Name": ["EditAlarmGroupInfo"],
-                        "Value": {
-                            "alarm_gid": group_id,
-                            "alarm_group_name": name.val(),
-                            "time_group_id": time_group.val()
-                        },
-                        "api_token": [token]
-                    });
-                    let addIdXmlHttp = createJsonXmlHttp("sql");
-                    addIdXmlHttp.onreadystatechange = function () {
-                        if (addIdXmlHttp.readyState == 4 || addIdXmlHttp.readyState == "complete") {
-                            let revObj = JSON.parse(this.responseText);
-                            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                                let alarmModeGroupArr = [];
-                                for (let i = 0; i < alarmModeArray.length; i++) {
-                                    let isSwitch = "0",
-                                        alarm_value = "-1";
-                                    if (modes.eq(i).prop("checked")) {
-                                        isSwitch = "1";
-                                        if (i == 0) {
-                                            let fag_info_id = $("#add_alarm_mode_0_id").val();
-                                            alarm_value = fag_info_id.length > 0 ? fag_info_id : "-1";
-                                        } else {
-                                            let alarm_time = $("#add_alarm_mode_" + i + "_time").val();
-                                            alarm_value = alarm_time.length > 0 ? alarm_time : "-1";
+                            let requestElements = JSON.stringify({
+                                "Command_Type": ["Write"],
+                                "Command_Name": ["AddAlarmInfo"],
+                                "Value": alarmModeGroupArr,
+                                "api_token": [token]
+                            });
+                            let addXmlHttp = createJsonXmlHttp("sql");
+                            addXmlHttp.onreadystatechange = function () {
+                                if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
+                                    let revObj = JSON.parse(this.responseText);
+                                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                                        if (isAddFenceAG)
+                                            addFenceAG_info(revInfo.alarm_gid);
+                                        else {
+                                            inputAlarmGroupTable();
+                                            dialog.dialog("close");
                                         }
+                                        alert($.i18n.prop('i_alarmAlert_54'));
+                                    } else {
+                                        alert($.i18n.prop('i_alarmAlert_55'));
                                     }
-                                    alarmModeGroupArr.push({
-                                        "alarm_iid": modes.eq(i).val(),
-                                        "alarm_name": alarmModeArray[i].id,
-                                        "alarm_switch": isSwitch,
-                                        "alarm_value": alarm_value,
-                                        "alarm_group_id": group_id
-                                    });
                                 }
-                                let requestElements = JSON.stringify({
-                                    "Command_Type": ["Write"],
-                                    "Command_Name": ["EditAlarmInfo"],
-                                    "Value": alarmModeGroupArr,
-                                    "api_token": [token]
-                                });
-                                let addXmlHttp = createJsonXmlHttp("sql");
-                                addXmlHttp.onreadystatechange = function () {
-                                    if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                                        let revObj = JSON.parse(this.responseText);
-                                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                                            editFenceAG_info(group_id);
-                                        }
-                                    }
-                                };
-                                addXmlHttp.send(requestElements);
-                            }
+                            };
+                            addXmlHttp.send(requestElements);
+                        } else {
+                            alert($.i18n.prop('i_alarmAlert_55'));
                         }
-                    };
-                    addIdXmlHttp.send(request_EditInfo);
-                }
+                    }
+                };
+                addIdXmlHttp.send(request_addGroupID);
+            } else if (submit_type["alarm"] == "Edit") {
+                let group_id = $("#edit_alarm_group_id").val();
+                let request_EditInfo = JSON.stringify({
+                    "Command_Type": ["Write"],
+                    "Command_Name": ["EditAlarmGroupInfo"],
+                    "Value": {
+                        "alarm_gid": group_id,
+                        "alarm_group_name": name.val(),
+                        "time_group_id": time_group.val()
+                    },
+                    "api_token": [token]
+                });
+                let addIdXmlHttp = createJsonXmlHttp("sql");
+                addIdXmlHttp.onreadystatechange = function () {
+                    if (addIdXmlHttp.readyState == 4 || addIdXmlHttp.readyState == "complete") {
+                        let revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                            let alarmModeGroupArr = [];
+                            for (let i = 0; i < alarmModeArray.length; i++) {
+                                let isSwitch = "0",
+                                    alarm_value = "-1";
+                                if (modes.eq(i).prop("checked")) {
+                                    isSwitch = "1";
+                                    if (i == 0) {
+                                        let fag_info_id = $("#add_alarm_mode_0_id").val();
+                                        alarm_value = fag_info_id.length > 0 ? fag_info_id : "-1";
+                                    } else {
+                                        let alarm_time = $("#add_alarm_mode_" + i + "_time").val();
+                                        alarm_value = alarm_time.length > 0 ? alarm_time : "-1";
+                                    }
+                                }
+                                alarmModeGroupArr.push({
+                                    "alarm_iid": modes.eq(i).val(),
+                                    "alarm_name": alarmModeArray[i].id,
+                                    "alarm_switch": isSwitch,
+                                    "alarm_value": alarm_value,
+                                    "alarm_group_id": group_id
+                                });
+                            }
+                            let requestElements = JSON.stringify({
+                                "Command_Type": ["Write"],
+                                "Command_Name": ["EditAlarmInfo"],
+                                "Value": alarmModeGroupArr,
+                                "api_token": [token]
+                            });
+                            let addXmlHttp = createJsonXmlHttp("sql");
+                            addXmlHttp.onreadystatechange = function () {
+                                if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
+                                    let revObj = JSON.parse(this.responseText);
+                                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                                        editFenceAG_info(group_id);
+                                        alert($.i18n.prop('i_alarmAlert_56'));
+                                    } else {
+                                        alert($.i18n.prop('i_alarmAlert_57'));
+                                    }
+                                }
+                            };
+                            addXmlHttp.send(requestElements);
+                        } else {
+                            alert($.i18n.prop('i_alarmAlert_57'));
+                        }
+                    }
+                };
+                addIdXmlHttp.send(request_EditInfo);
             }
-        };
+        }
+    };
 
     dialog = $("#dialog_add_alarm_group").dialog({
         autoOpen: false,
@@ -227,9 +238,11 @@ $(function () {
      */
     $("#btn_add_alarm_group").button().on("click", function () {
         $("#add_alarm_time_group").empty();
-        $("#add_alarm_time_group").append(
-            createOptions_name(TimeGroupArr, TimeGroupArr[0].time_group_id)
-        );
+        if (TimeGroupArr.length > 0) {
+            $("#add_alarm_time_group").append(
+                createOptions_name(TimeGroupArr, TimeGroupArr[0].time_group_id)
+            );
+        }
         $("#add_alarm_mode_0_fagID option").eq(0).prop("selected", true);
         $("input[name=add_alarm_mode]").val("");
         $("input[name=add_alarm_mode_time").val("");
@@ -243,55 +256,63 @@ $(function () {
     $("#btn_delete_alarm_group").button().on("click", function () {
         let checkboxs = document.getElementsByName("chkbox_alarm_group");
         let sel_group_arr = [];
-        for (i in checkboxs) {
+        for (let i = 0; i < checkboxs.length; i++) {
             if (checkboxs[i].checked)
                 sel_group_arr.push({
                     "alarm_gid": checkboxs[i].value
                 });
         }
-        let request_DelInfo = JSON.stringify({
-            "Command_Type": ["Write"],
-            "Command_Name": ["DeleteAlarmGroupInfo"],
-            "Value": sel_group_arr,
-            "api_token": [token]
-        });
-        let deleteIDXmlHttp = createJsonXmlHttp("sql");
-        deleteIDXmlHttp.onreadystatechange = function () {
-            if (deleteIDXmlHttp.readyState == 4 || deleteIDXmlHttp.readyState == "complete") {
-                let revObj = JSON.parse(this.responseText);
-                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                    let sel_alarm_arr = [];
-                    for (j in sel_group_arr) {
-                        let g_index = alarmSettingArr.findIndex(function (info) {
-                            return info.alarm_gid == sel_group_arr[j].alarm_gid;
-                        });
-                        alarmSettingArr[g_index].elements.forEach(function (element) {
-                            sel_alarm_arr.push({
-                                "alarm_iid": element.alarm_iid
+        if (sel_group_arr.length == 0)
+            return alert($.i18n.prop('i_alarmAlert_5'));
+        if (confirm($.i18n.prop('i_alarmAlert_60'))) {
+            let request_DelInfo = JSON.stringify({
+                "Command_Type": ["Write"],
+                "Command_Name": ["DeleteAlarmGroupInfo"],
+                "Value": sel_group_arr,
+                "api_token": [token]
+            });
+            let deleteIDXmlHttp = createJsonXmlHttp("sql");
+            deleteIDXmlHttp.onreadystatechange = function () {
+                if (deleteIDXmlHttp.readyState == 4 || deleteIDXmlHttp.readyState == "complete") {
+                    let revObj = JSON.parse(this.responseText);
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        let sel_alarm_arr = [];
+                        for (j in sel_group_arr) {
+                            let g_index = alarmSettingArr.findIndex(function (info) {
+                                return info.alarm_gid == sel_group_arr[j].alarm_gid;
                             });
-                        });
-                    }
-                    let requestElements = JSON.stringify({
-                        "Command_Type": ["Write"],
-                        "Command_Name": ["DeleteAlarmInfo"],
-                        "Value": sel_alarm_arr,
-                        "api_token": [token]
-                    });
-                    let deleteXmlHttp = createJsonXmlHttp("sql");
-                    deleteXmlHttp.onreadystatechange = function () {
-                        if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
-                            let revObj = JSON.parse(this.responseText);
-                            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                                deleteFenceAG_info();
-                                alert($.i18n.prop('i_alarmAlert_5'));
-                            }
+                            alarmSettingArr[g_index].elements.forEach(function (element) {
+                                sel_alarm_arr.push({
+                                    "alarm_iid": element.alarm_iid
+                                });
+                            });
                         }
-                    };
-                    deleteXmlHttp.send(requestElements);
+                        let requestElements = JSON.stringify({
+                            "Command_Type": ["Write"],
+                            "Command_Name": ["DeleteAlarmInfo"],
+                            "Value": sel_alarm_arr,
+                            "api_token": [token]
+                        });
+                        let deleteXmlHttp = createJsonXmlHttp("sql");
+                        deleteXmlHttp.onreadystatechange = function () {
+                            if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
+                                let revObj = JSON.parse(this.responseText);
+                                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                                    deleteFenceAG_info();
+                                    alert($.i18n.prop('i_alarmAlert_58'));
+                                } else {
+                                    alert($.i18n.prop('i_alarmAlert_59'));
+                                }
+                            }
+                        };
+                        deleteXmlHttp.send(requestElements);
+                    } else {
+                        alert($.i18n.prop('i_alarmAlert_59'));
+                    }
                 }
-            }
-        };
-        deleteIDXmlHttp.send(request_DelInfo);
+            };
+            deleteIDXmlHttp.send(request_DelInfo);
+        }
     });
 
     setupCanvas(); //set_fence.js
@@ -416,18 +437,6 @@ function editAlarmGroupInfo_fence(id) {
     editXmlHttp.send(JSON.stringify(request));
 }
 
-function removeMapGroup() {
-    let checkboxs = document.getElementsByName("chkbox_map_group"),
-        arr = [];
-    for (j in checkboxs) {
-        if (checkboxs[j].checked)
-            arr.push(checkboxs[j].value);
-    }
-    arr.forEach(function (v) {
-        $("#tr_map_group_" + v).remove();
-    });
-}
-
 
 function inputAlarmGroupTable() {
     let alarmRequest = {
@@ -439,9 +448,11 @@ function inputAlarmGroupTable() {
     alarmXmlHttp.onreadystatechange = function () {
         if (alarmXmlHttp.readyState == 4 || alarmXmlHttp.readyState == "complete") {
             let revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+            if (!checkTokenAlive(token, revObj)) {
+                return;
+            } else if (revObj.Value[0].success > 0) {
                 //get all data of alarm_group and input alarmSettingArr variable
-                alarmSettingArr = revObj.Value[0].Values ? revObj.Value[0].Values.slice(0) : [];
+                alarmSettingArr = "Values" in revObj.Value[0] ? revObj.Value[0].Values.slice(0) : [];
                 //send request to get all data of fence_alarm_group
                 let fagRequest = {
                     "Command_Type": ["Read"],
@@ -452,7 +463,9 @@ function inputAlarmGroupTable() {
                 fagXmlHttp.onreadystatechange = function () {
                     if (fagXmlHttp.readyState == 4 || fagXmlHttp.readyState == "complete") {
                         let response = JSON.parse(this.responseText);
-                        if (checkTokenAlive(token, response) && response.Value[0].success > 0) {
+                        if (!checkTokenAlive(token, response)) {
+                            return;
+                        } else if (response.Value[0].success > 0) {
                             let values = response.Value[0].Values || [];
                             $("#table_alarm_mode tbody").empty();
                             count_alarm_group = 0;
@@ -501,6 +514,8 @@ function inputAlarmGroupTable() {
                                     "\" type='button' class='btn-hidden' onclick=\"editAlarmGroup(\'" + ag_info.alarm_gid + "\')\" />" +
                                     "</td></tr>");
                             });
+                        } else {
+                            alert($.i18n.prop('i_alarmAlert_48'));
                         }
                     }
                 };

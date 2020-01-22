@@ -1,0 +1,410 @@
+table {
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+th,
+td {
+    padding: 1px;
+    text-align: left;
+    border: none;
+    background-color: white;
+}
+
+input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.custom-file-selected {
+    display: inline-block;
+    cursor: pointer;
+    color: #dddddd;
+    text-decoration: none;
+    font-family: Sans-serif;
+    padding: 10px 15px 10px 50px;
+}
+
+/* 網頁內的輸入框 */
+.dialog input[type="button"] {
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+    font-size: 14px;
+}
+
+label,
+input {
+    display: inline-block;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+input[type="text"] {
+    width: 150px;
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+    font-size: 14px;
+}
+
+fieldset {
+    padding: 0;
+    border: 0;
+    margin-top: 10px;
+}
+
+h1 {
+    font-size: 1.2em;
+    margin: .6em 0;
+}
+
+h5 {
+    height: 0px;
+    text-align: center;
+    padding: 0px;
+    font-weight: bold;
+    background: rgba(82, 82, 82, 0);
+    color: rgba(255, 255, 255, 0);
+}
+
+.ui-dialog .ui-state-error {
+    padding: .3em;
+}
+
+.table-line th,
+.table-line td {
+    border: 1px solid black;
+    padding: 0px 8px 0px 8px;
+    text-decoration: none;
+    text-align: left;
+    font-size: 14px;
+}
+
+.table-line th {
+    background: rgb(148, 148, 148);
+}
+
+.table-line input[type="text"] {
+    border: none;
+}
+
+.dialog {
+    overflow: hidden;
+}
+
+.dialog .table-line th,
+.dialog .table-line td {
+    border: 1px solid gray;
+}
+
+.dialog .table-line th {
+    background: lightgray;
+}
+
+
+.btn-add-file {
+    background-color: rgb(45, 176, 219);
+    border: 1px solid rgb(0, 142, 189);
+    width: 140px;
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+}
+
+.btn-add-file:hover {
+    background-color: rgb(0, 142, 189);
+}
+
+.custom-file-download {
+    background-color: lightgray;
+    border: 1px solid gray;
+    border-radius: 3px;
+    width: 350px;
+    height: 220px;
+    color: rgb(63, 62, 62);
+    font-size: 18px;
+    text-align: center;
+    padding: 5px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+#new_map_block {
+    width: 100%;
+    height: 170px;
+    max-width: 340px;
+    max-height: 170px;
+    margin-bottom: 10px;
+    background-color: rgb(167, 166, 166);
+}
+
+.thumbnail {
+    display: block;
+    position: relative;
+    float: left;
+    margin: 10px;
+    width: 350px;
+    height: 220px;
+    max-width: 350px;
+    max-height: 220px;
+    background-color: rgb(33, 33, 33);
+    border: 1px solid rgb(0, 0, 0);
+}
+
+.thumbnail .image_block {
+    width: 340px;
+    height: 170px;
+    max-width: 340px;
+    max-height: 170px;
+    background-color: lightgray;
+}
+
+.thumbnail th {
+    background-color: transparent;
+}
+
+.image_block img {
+    max-width: 340px;
+    max-height: 170px;
+}
+
+.thumbnail label {
+    background-color: transparent;
+    color: white;
+    font-size: 16px;
+}
+
+.btn-cancel {
+    cursor: pointer;
+    float: right;
+    margin: 0px 1px 0px 0px;
+
+}
+
+.btn-cancel i {
+    font-size: 20px;
+    background: transparent;
+    color: rgb(255, 0, 0);
+    border-radius: 2px;
+}
+
+.btn-cancel:hover i {
+    color: rgb(255, 91, 91);
+}
+
+.btn-delete {
+    cursor: pointer;
+    color: rgb(255, 0, 0);
+    font-size: 18px;
+    margin: 0px 5px;
+}
+
+.btn-delete:hover {
+    color: rgb(255, 91, 91);
+}
+
+.btn-remove {
+    cursor: pointer;
+    color: rgb(73, 70, 70);
+    font-size: 18px;
+    margin: 0px 5px;
+}
+
+.btn-remove:hover {
+    color: rgb(175, 175, 175);
+}
+
+.btn-add {
+    cursor: pointer;
+    color: rgb(0, 119, 255);
+    font-size: 20px;
+    margin: 0px 5px;
+}
+
+.btn-add:hover {
+    color: rgb(83, 163, 255);
+}
+
+.btn-add-pos {
+    cursor: pointer;
+    color: rgb(105, 196, 0);
+    font-size: 20px;
+    margin: 0px 5px;
+}
+
+.btn-add-pos:hover {
+    color: rgb(152, 219, 75)
+}
+
+.btn-set i {
+    cursor: pointer;
+    color: rgb(0, 130, 255);
+    font-size: 20px;
+    margin: 0px 5px;
+}
+
+.btn-set:hover i {
+    color: rgb(109, 184, 255);
+}
+
+.btn-edit {
+    cursor: pointer;
+    color: rgb(0, 130, 255);
+    font-size: 18px;
+    margin: 0px 5px;
+}
+
+.btn-edit:hover {
+    color: rgb(109, 184, 255);
+}
+
+.sidebar-menu {
+    margin-bottom: 10px;
+    position: relative;
+    display: block;
+}
+
+.sidebar-menu ul {
+    list-style-type: none;
+}
+
+.sidebar-menu li {
+    line-height: 38px;
+    width: 40px;
+    height: 38px;
+    position: relative;
+    float: left;
+    background-color: rgb(82, 82, 82);
+    border: 1px solid rgb(163, 163, 163);
+}
+
+.sidebar-menu li:before {
+    -webkit-transition: width 0.2s ease-in;
+    transition: width 0.2s ease-in;
+    background-color: #00000000;
+    position: relative;
+    height: 100%;
+    z-index: -1;
+    left: 0;
+    top: 0;
+}
+
+.btn-sidebar {
+    width: 40px;
+    height: 36px;
+    background-color: rgb(82, 82, 82);
+    color: white;
+    text-align: center;
+    /*border-radius: 5px;*/
+    padding-top: 1px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+}
+
+.btn-sidebar.opened {
+    background-color: rgb(255, 96, 22);
+    color: rgb(0, 0, 0);
+}
+
+.btn-sidebar:hover {
+    color: rgb(0, 0, 0);
+}
+
+.control-bar {
+    width: auto;
+    float: left;
+    border: 1px solid rgb(99, 99, 99);
+    border-radius: 5px;
+    padding: 0px 2px 1px 2px;
+    background-color: rgb(255, 255, 255);
+}
+
+.btn-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+canvas {
+    margin: 0px;
+    width: 1px;
+    height: 1px;
+    position: relative;
+    display: inline-block;
+}
+
+#cvsBlock {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    background: transparent;
+    height: 360px;
+    width: 100%;
+    overflow: auto;
+    border: 1px solid rgb(82, 82, 82);
+}
+
+#dialog_map_setting {
+    max-width: 1000px;
+    max-height: 640px;
+}
+
+.block-list {
+    overflow: auto;
+    max-height: 414px;
+    width: 100%;
+    padding-right: 10px;
+}
+
+.anchor_list {
+    overflow: auto;
+    max-height: 300px;
+    width: 300px;
+}
+
+.map_list {
+    display: inline-block;
+    max-height: 240px;
+    height: 240px;
+    width: 100%;
+    overflow: auto;
+    border: 1px solid rgb(125, 125, 125);
+    box-shadow: 1px 1px 4px 2px #3a3a3a inset;
+    background: #888888;
+}
+
+#myTab {
+    margin: 0px 0px 10px 0px;
+}
+
+#anchor_group_chart {
+    max-height: 240px;
+}
+
+.tab-pane {
+    overflow: auto;
+    max-height: 240px;
+    width: 100%;
+    margin-right: 20px;
+}
+
+.coordinate {
+    background-color: white;
+    max-width: 100px;
+    border: none;
+}
+
+.display-block {
+    margin-bottom: 20px;
+}

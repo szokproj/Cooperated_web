@@ -14,6 +14,10 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <!--Time picker-->
+    <link rel="stylesheet" href="../css/timepicker/bootstrap-material-datetimepicker.css" />
+    <script type="text/javascript" src="http://momentjs.com/downloads/moment-with-locales.js"></script>
+    <script type="text/javascript" src="../js/timepicker/bootstrap-material-datetimepicker.js"></script>
     <!--Add icon library-->
     <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'
         integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
@@ -30,10 +34,6 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/timeline_get.js"></script>
     <script type="text/javascript" src="../js/timeline_draw.js"></script>
-    <!--Time picker-->
-    <link rel="stylesheet" href="../css/timepicker/bootstrap-material-datetimepicker.css" />
-    <script type="text/javascript" src="http://momentjs.com/downloads/moment-with-locales.js"></script>
-    <script type="text/javascript" src="../js/timepicker/bootstrap-material-datetimepicker.js"></script>
 </head>
 
 <body>
@@ -254,19 +254,23 @@
                     <div id="statistics_info" class="noborder-block">
                         <table>
                             <tr>
-                                <td><label>地圖名稱</label>: </td>
+                                <td><label class="i18n" name="i_mapName"></label>: </td>
                                 <td><label id="current_map"></label></td>
                             </tr>
                             <tr>
-                                <td><label>時間</label>: </td>
+                                <td><label class="i18n" name="i_date"></label class="i18n" name="">: </td>
+                                <td><label id="current_date"></label></td>
+                            </tr>
+                            <tr>
+                                <td><label class="i18n" name="i_time"></label class="i18n" name="">: </td>
                                 <td><label id="current_time"></label></td>
                             </tr>
                             <tr>
-                                <td><label>區域人數</label>: </td>
+                                <td><label class="i18n" name="i_regionalPopulation"></label class="i18n" name="">: </td>
                                 <td><label id="current_tags_amount"></label></td>
                             </tr>
                             <tr>
-                                <td><label>群組人數</label>: </td>
+                                <td><label>群組人數</label class="i18n" name="">: </td>
                                 <td><label id="group_amount"></label></td>
                             </tr>
                         </table>
@@ -276,28 +280,35 @@
                         <div class="thumbnail" id="member_thumb">
                             <table>
                                 <tr>
-                                    <td><img id="thumb_img" src=""></td>
+                                    <td><img id="thumb_img" src="../image/no_image.png" style="height:auto;"></td>
                                     <td>
-                                        <label class="i18n" name="i_number"></label>: <span
-                                            id="thumb_number"></span><br>
+                                        <label class="i18n" name="i_number"></label>: <span id="thumb_number"></span>
+                                        <br>
                                         <label class="i18n" name="i_name"></label>: <span class="i18n"
-                                            id="thumb_name"></span><br>
+                                            id="thumb_name"></span>
+                                        <br>
                                         <label class="i18n" name="i_userID"></label>: <span class="i18n"
-                                            id="thumb_user_id"></span><br>
-                                        <label class="i18n" name="i_dept"></label>: <span id="thumb_dept"></span><br>
+                                            id="thumb_user_id"></span>
+                                        <br>
+                                        <label class="i18n" name="i_dept"></label>: <span id="thumb_dept"></span>
+                                        <br>
+                                        <label class="i18n" name="i_date"></label>: <span class="i18n"
+                                            id="thumb_date"></span>
+                                        <br>
+                                        <label class="i18n" name="i_time"></label>: <span id="thumb_time"></span>
+                                        <br>
+                                        <label class="i18n" name="i_map"></label>: <span id="thumb_map"></span>
+                                        <br>
+                                        <label class="i18n" name="i_position"></label>: <span
+                                            id="thumb_position"></span>
+                                        <br>
+                                        <div id="display_status" style="display: none;">
+                                            <label class="i18n" name="i_status">: <span id="thumb_status"></span>
+                                            </label>
+                                        </div>
                                     </td>
                                 </tr>
                             </table>
-
-                            <label class="i18n" name="i_date"></label>: <span class="i18n" id="thumb_date"></span><br>
-                            <label class="i18n" name="i_time"></label>:
-                            <span id="thumb_time"></span><br>
-                            <label class="i18n" name="i_position"></label>:
-                            <span id="thumb_position"></span><br>
-                            <div id="display_status" style="display: none;">
-                                <label class="i18n" name="i_status">: <span id="thumb_status"></span>
-                                </label>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -306,28 +317,12 @@
     </div>
 
     <!--Hidden Dialog-->
-    <!--progress bar-->
     <div class="progress" id="progress_block">
+        <!--progress bar-->
         <label>
-            <i class="fas fa-spinner fa-pulse"></i> 寫入中，進度 : <span id="progress_bar"></span>
-        </label><br>
-        <label id="wait_time"></label>
-    </div>
-
-    <div id="timeline_dialog" class="dialog" title="Timeline">
-        <span style="display:block;">
-            <label class="i18n" name="i_tagID"></label> :
-            <label id="timeline_dialog_tag_id"></label>
-            <br>
-            <label class="i18n" name="i_time"></label> :
-            <label id="timeline_dialog_time"></label>
-            <br>
-            <label class="i18n" name="i_posX"></label> :
-            <label id="timeline_dialog_x"></label>
-            <br>
-            <label class="i18n" name="i_posY"></label> :
-            <label id="timeline_dialog_y"></label>
-        </span>
+            <i class="fas fa-spinner fa-pulse"></i> <span class="i18n" name="i_searchingBar"></span>
+            <span id="progress_bar"></span>
+        </label>
     </div>
 
     <div id="add_target_dialog" class="dialog" title="Add a target">

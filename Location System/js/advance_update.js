@@ -24,11 +24,16 @@ $(function () {
     setNavBar("Reference", "Update");
 
     $("#btn_upload").click(function () {
-        if (fileArray == []) {
-            alert("請先載入更新檔");
+        $("#update_file").removeClass("ui-state-error");
+        if (fileArray.length == 0) {
+            $("#update_file").addClass("ui-state-error");
+            alert($.i18n.prop('i_selectFirmwareFirst'));
         } else {
-            setProgress(0);
-            sendFileToServer(0);
+            if (confirm($.i18n.prop('i_confirmUploadFirmware'))) {
+                let file_name = $("#update_file").val().substring($("#update_file").val().lastIndexOf('\\') + 1);
+                setProgress(0);
+                sendFileToServer(file_name, 0);
+            }
         }
     });
     $("#btn_reset").click(function () {
@@ -37,7 +42,9 @@ $(function () {
     $("#btn_refresh").on("click", getFileList);
     $("#btn_check_fm").on("click", checkFileByName);
     $("#btn_delete").on("click", function () {
-        if (confirm("Are you sure to delete this file ?"))
+        if (fileName.length == 0)
+            alert($.i18n.prop('i_selectFileFirst'));
+        else if (confirm($.i18n.prop('i_confirmDeleteFile')))
             deleteFileByName();
     });
     $("#btn_update").on("click", updateFileToDevice)
@@ -58,7 +65,6 @@ function handleFiles(files) {
     $("#btn_upload").prop("disabled", true);
     $("#btn_reset").prop("disabled", true);
     let file = files[0];
-    fileName = file.name;
     let fileExt = (file.name.substring(file.name.lastIndexOf('.'))).toLowerCase();
     if (fileExt == ".bin") {
         let src = document.getElementById('file_upload').value;
@@ -69,10 +75,8 @@ function handleFiles(files) {
                 let file_data = new Uint8Array(e.target.result);
                 let temp = "";
                 for (let i = 0; i < file_data.length; i++) {
-                    //fileArray.push(uint8ToHex16(file_data[i]));
                     temp += uint8ToHex16(file_data[i]);
                 }
-                let len = temp.length;
                 fileArray = [];
                 while (temp.length > 51200) {
                     fileArray.push(temp.substr(0, 51200));
@@ -86,17 +90,16 @@ function handleFiles(files) {
             };
             fr.readAsArrayBuffer(file);
         } else {
-            alert('The File APIs are not fully supported in this browser.');
+            alert($.i18n.prop('i_browserNotSupport'));
         }
     } else {
         document.getElementById('file_form').reset();
-        alert("The uploading file's ext should be .bin!");
+        alert($.i18n.prop('i_firmwareFileExt'));
     }
 }
 
-function sendFileToServer(index) { //傳輸bin檔到Server
+function sendFileToServer(file_name, index) { //上傳bin檔到Server
     let total_files = fileArray.length;
-    let file_name = $("#update_file").val().substring($("#update_file").val().lastIndexOf('\\') + 1);
     let requestArray = {
         "Command_Type": ["Write"],
         "Command_Name": ["uploadFW"],
@@ -106,29 +109,26 @@ function sendFileToServer(index) { //傳輸bin檔到Server
         },
         "api_token": [token]
     };
-    //return;
     let xmlHttp = createJsonXmlHttp("Update_fw");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 //當Server回傳接收成功後, 持續向Server傳送取得更新進度的要求
-                //let revInfo = revObj.Value[0].Values ? revObj.Value[0].Values : [];
                 if (revObj.Value[0].Status == "Upload OK") {
                     index++;
                     setProgress(Math.ceil(index / total_files * 100));
                     $("#btn_upload").prop("disabled", true);
                     if (index != total_files) {
                         setTimeout(function () {
-                            sendFileToServer(index);
+                            sendFileToServer(file_name, index);
                         }, 500);
                     }
                 } else {
-                    alert("傳送更新檔失敗，請稍候再試一次!");
-                    //stop();
+                    alert($.i18n.prop('i_uploadFirmwareFailed'));
                 }
             } else {
-                alert("傳送更新檔失敗，請稍候再試一次!");
+                alert($.i18n.prop('i_uploadFirmwareFailed'));
             }
         }
     };
@@ -136,33 +136,26 @@ function sendFileToServer(index) { //傳輸bin檔到Server
 }
 
 function stop() {
-    //clearTimeout(st);
     $("#prog").removeClass("progress-bar-info").css("width", "0%");
 }
 
 function setProgress(percent) {
     if (percent == 0) { //reset
-        //clearTimeout(st);
         $("#prog").removeClass("progress-bar-info").css("width", "0%");
-        //st = setTimeout(increment, time);
     } else if (percent > 0 && percent < 100) {
         $("#prog").css("width", percent + "%").text(percent + "%");
         $("#prog").addClass("progress-bar-info");
-        //st = setTimeout(increment, time);
     } else if (percent == 100) {
         $("#prog").css("width", percent + "%").text(percent + "%");
         $("#btn_upload").prop("disabled", false);
         getFileList();
-        //alert("Update Success!");
         setTimeout(function () {
-            alert("開檔上傳成功");
+            alert($.i18n.prop('i_uploadFirmwareCompleted'));
         }, 1000);
     }
 }
 
 function reset() {
-    //clearTimeout(st);
-    fileName = "";
     fileArray = [];
     document.getElementById("file_upload").value = "";
     document.getElementById("update_file").value = "";
@@ -170,15 +163,18 @@ function reset() {
 }
 
 function updateFileToDevice() {
+    $("#sel_device_ip").removeClass("ui-state-error");
     let ip_addr = $("#sel_device_ip").val();
     if (!ip_addr || ip_addr == "") {
-        alert("請選擇裝置的IP address!");
+        $("#sel_device_ip").addClass("ui-state-error");
+        alert($.i18n.prop('i_selectIpAddress'));
         return;
     } else if (fileName == "") {
-        alert("請先點選下方資料夾內的更新檔!");
+        alert($.i18n.prop('i_selectFirmware'));
         return;
     }
-    if (confirm("確定將檔名為 [" + fileName + "] 更新到裝置 IP address : " + $("#sel_device_ip").val() + "的韌體?(建議先確認更新檔是否符合規定)")) {
+    if (confirm($.i18n.prop('i_checkUpdateFirmware_1') + fileName + $.i18n.prop('i_checkUpdateFirmware_2') +
+            $("#sel_device_ip").val() + $.i18n.prop('i_checkUpdateFirmware_3'))) {
         let requestArray = {
                 "Command_Type": ["Read"],
                 "Command_Name": ["updateFW"],
@@ -193,9 +189,9 @@ function updateFileToDevice() {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 let revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                    alert("Updated the firmware successfully.");
+                    alert($.i18n.prop('i_updateFirmwareOK'));
                 } else {
-                    alert("Failed to update firmware!");
+                    alert($.i18n.prop('i_updateFirmwareFailed'));
                 }
             }
         };
@@ -218,9 +214,9 @@ function deleteFileByName() {
             let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 getFileList();
-                alert("The file was successfully deleted.");
+                alert($.i18n.prop('i_deleteFirmwareOK'));
             } else {
-                alert("Failed to delete file!");
+                alert($.i18n.prop('i_deleteFirmwareFailed'));
             }
         }
     };
@@ -228,10 +224,8 @@ function deleteFileByName() {
 }
 
 function checkFileByName() {
-    if (fileArray == []) {
-        alert("請先載入更新檔");
-        return;
-    }
+    if (fileName.length == 0)
+        return alert($.i18n.prop('i_selectFileFirst'));
     let requestArray = {
             "Command_Type": ["Read"],
             "Command_Name": ["checkFW"],
@@ -245,12 +239,19 @@ function checkFileByName() {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                if (revObj.Value[0].Status == "FW check OK")
-                    alert("檔案格式正確");
-                else
-                    alert("檔案格式錯誤");
+                alert($.i18n.prop('i_checkFirmwareOK'));
             } else {
-                alert(revObj.Value[0].Status);
+                switch (revObj.Value[0].Status) {
+                    case "open file error":
+                        alert($.i18n.prop('i_openFileError'));
+                        break;
+                    case "file data error":
+                        alert($.i18n.prop('i_checkFirmwareError'));
+                        break;
+                    default:
+                        alert($.i18n.prop('i_checkFirmwareError'));
+                        break;
+                }
             }
         }
     };
@@ -269,17 +270,17 @@ function getFileList() {
             let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 let revInfo = revObj.Value[0].FileName ? revObj.Value[0].FileName : [];
+                fileName = ""; //清空指定的檔名
                 $("#block_files_list").empty();
                 revInfo.forEach(function (element, i) {
                     let id = "files_" + i;
-                    $("#block_files_list").append("<button" +
-                        " class=\"btn file-img-name\" id=\"" + id + "\"" +
-                        " name=\"files\" onclick=\"setSelected(\'" + id + "\',\'" +
-                        element + "\')\"><img src=\"../image/file.png\"><br>" +
+                    $("#block_files_list").append("<button class=\"btn file-img-name\" id=\"" + id + "\"" +
+                        " name=\"files\" onclick=\"setSelected(\'" + id + "\',\'" + element + "\')\">" +
+                        "<img src=\"../image/file.png\"><br>" +
                         "<label>" + element + "</label></button>");
                 });
             } else {
-                alert(revObj.Value[0].Status);
+                alert($.i18n.prop('i_getFileListFailed'));
             }
         }
     };

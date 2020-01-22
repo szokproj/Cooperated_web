@@ -1,8 +1,4 @@
-var token = "";
-
-$(function () {
-    token = getToken();
-
+function importAnchorGroup() {
     var dialog, form,
         add_group_id = $("#add_group_id"),
         add_group_name = $("#add_group_name"),
@@ -324,7 +320,7 @@ $(function () {
         event.preventDefault();
         submitEditAnchorGroup();
     });
-});
+}
 
 function getAnchor_Group() {
     var map_id = $("#map_info_id").val();

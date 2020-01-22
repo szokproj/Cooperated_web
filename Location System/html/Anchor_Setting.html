@@ -61,9 +61,8 @@
 
         <div class="row">
             <div class="col-lg-12">
-
-                <div class="mode_ethernet">
-                    <div class="top">
+                <div class="top">
+                    <div style="float: left;">
                         <button class="btn btn-primary" id="btn_search" onclick="Search()">
                             <span class="i18n" name="i_search"></span>
                             <i class='fa fa-search'></i></button>&nbsp;
@@ -74,69 +73,73 @@
                             <span class="i18n" name="i_writeDevice"></span>
                             <i class='fas fa-download'></i></button>
 
-                        <span style="margin-left: 10px; color:white">
+                        <span style="margin-left: 10px; color:white;">
                             <label>Network interface card :&nbsp;</label><select id="interface_card"></select>
-                            <label>, Local IP :&nbsp;</label><input type="text" id="local_ip" value="" readonly>
+                            <label> , Local IP :&nbsp;</label><input type="text" id="local_ip" value="" readonly />
                         </span>
+                    </div>
 
-                        <div style="float:right;">
-                            <span style="color: white;">
-                                <input type="checkbox" id="is_static_ip_connect" value="true" />
-                                <label>Static IP connect : </label>
-                                <input type="text" id="static_ip_1" value="192" maxlength="3" style="max-width: 40px;">
-                                <label>.</label>
-                                <input type="text" id="static_ip_2" value="168" maxlength="3" style="max-width: 40px;">
-                                <label>.</label>
-                                <input type="text" id="static_ip_3" value="1" maxlength="3" style="max-width: 40px;">
-                                <label>.</label>
-                                <input type="text" id="static_ip_4" value="3" maxlength="3" style="max-width: 40px;">
-                            </span>
-                            <label for="open_dialog_set" class="btn-set i18n-input" selectattr="title"
-                                selectname="i_set">
-                                <i class="fas fa-cog" style='font-size:20px;'></i></label>
-                            <input type="button" id="open_dialog_set" class="btn-hidden" />&nbsp;
-                        </div>
+                    <div style="float:right;">
+                        <span style="color: white;">
+                            <input type="checkbox" id="is_static_ip_connect" value="true" />
+                            <label>Static IP connect : </label>
+                            <input type="text" id="static_ip_1" value="192" maxlength="3" style="max-width: 40px;">
+                            <label>.</label>
+                            <input type="text" id="static_ip_2" value="168" maxlength="3" style="max-width: 40px;">
+                            <label>.</label>
+                            <input type="text" id="static_ip_3" value="1" maxlength="3" style="max-width: 40px;">
+                            <label>.</label>
+                            <input type="text" id="static_ip_4" value="3" maxlength="3" style="max-width: 40px;">
+                        </span>
+                        <label for="open_dialog_set" class="btn-set i18n-input" selectattr="title" selectname="i_set">
+                            <i class="fas fa-cog" style='font-size:20px;'></i></label>
+                        <input type="button" id="open_dialog_set" class="btn-hidden" />&nbsp;
                     </div>
-                    <div class="middle">
-                        <table id="table_ip_address_info" class="sticky-table">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>Status</th>
-                                    <th class="row_anchor_id">Anchor ID</th>
-                                    <th class="row_mac_address">MAC Address</th>
-                                    <th class="row_ip_mode" style="width:90px;">IP Mode</th>
-                                    <th class="row_ip_addr">IP Address</th>
-                                    <th class="row_gateway_addr">Gateway</th>
-                                    <th class="row_mask_addr">Subnet Mask</th>
-                                    <th class="row_client_ip_addr">Client IP</th>
-                                    <th class="row_machine_number">Machine Number</th>
-                                    <th class="row_model">Model Name</th>
-                                    <th class="row_tcp_server_port">TCP Server Port</th>
-                                    <th class="row_udp_server_port">Udp Server Port</th>
-                                    <th class="row_tcp_client_src_port">Tcp Client Src Port</th>
-                                    <th class="row_tcp_client_des_port">Tcp Client Des Port</th>
-                                    <th style="width:3px; padding:0px;"></th>
-                                    <th class="row_rf_mode">MODE</th>
-                                    <th class="row_rf_version">Version</th>
-                                    <th class="row_rf_channel" style="width:180px;">Channel</th>
-                                    <th class="row_rf_datarate">Datarate</th>
-                                    <th class="row_rf_prf">PRF</th>
-                                    <th class="row_rf_preamble_code">PreambleCode</th>
-                                    <th class="row_rf_preamble_len">PreambleLength</th>
-                                    <th class="row_rf_pac">PAC</th>
-                                    <th class="row_rf_pg_delay">TX PGdelay</th>
-                                    <th class="row_rf_power">TX Power</th>
-                                    <th class="row_rf_nsd">NSD</th>
-                                    <th class="row_rf_sdf_timeoutr">SDF_timeoutr</th>
-                                    <th class="row_rf_smartpower">SMARTPOWER</th>
-                                    <th class="row_rf_ntm">NTM</th>
-                                    <th class="row_rf_mult">MULT</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="middle">
+                    <table id="table_ip_address_info" class="sticky-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Status</th>
+                                <th class="row_anchor_id">Anchor ID</th>
+                                <th class="row_mac_address">MAC Address</th>
+                                <th class="row_ip_mode" style="width:90px;">IP Mode</th>
+                                <th class="row_ip_addr">IP Address</th>
+                                <th class="row_gateway_addr">Gateway</th>
+                                <th class="row_mask_addr">Subnet Mask</th>
+                                <th class="row_client_ip_addr">Client IP</th>
+                                <th class="row_machine_number">Machine Number</th>
+                                <th class="row_model">Model Name</th>
+                                <th class="row_tcp_server_port">TCP Server Port</th>
+                                <th class="row_udp_server_port">Udp Server Port</th>
+                                <th class="row_tcp_client_src_port">Tcp Client Src Port</th>
+                                <th class="row_tcp_client_des_port">Tcp Client Des Port</th>
+                                <th style="width:3px; padding:0px;"></th>
+                                <th class="row_rf_mode">MODE</th>
+                                <th class="row_rf_version">Version</th>
+                                <th class="row_rf_channel" style="width:180px;">Channel</th>
+                                <th class="row_rf_datarate">Datarate</th>
+                                <th class="row_rf_prf">PRF</th>
+                                <th class="row_rf_preamble_code">PreambleCode</th>
+                                <th class="row_rf_preamble_len">PreambleLength</th>
+                                <th class="row_rf_pac">PAC</th>
+                                <th class="row_rf_pg_delay">TX PGdelay</th>
+                                <th class="row_rf_power">TX Power</th>
+                                <th class="row_rf_nsd">NSD</th>
+                                <th class="row_rf_sdf_timeoutr">SDF_timeoutr</th>
+                                <th class="row_rf_smartpower">SMARTPOWER</th>
+                                <th class="row_rf_ntm">NTM</th>
+                                <th class="row_rf_mult">MULT</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </div>

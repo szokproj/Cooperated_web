@@ -1,3 +1,5 @@
+const noImagePng = "../image/no_image.png";
+
 var token = "";
 var PIXEL_RATIO; // 獲取瀏覽器像素比
 var cvsBlock, canvas, ctx;
@@ -33,8 +35,8 @@ var MemberData = {};
 
 $(function () {
     let h = document.documentElement.clientHeight;
-    $(".container").css("height", h - 10 + "px");
-    $("#cvsBlock").css("height", h - 90 + "px");
+    //$(".container").css("height", h - 10 + "px");
+    $("#cvsBlock").css("height", h - 100 + "px");
     //Check this page's permission and load navbar
     token = getToken();
     if (!getPermissionOfPage("Timeline")) {
@@ -48,10 +50,6 @@ $(function () {
         clearButton: true,
         lang: 'en',
         format: 'HH:mm'
-    });
-
-    $("#timeline_dialog").dialog({
-        autoOpen: false
     });
 
     var dialog = $("#add_target_dialog");
@@ -172,6 +170,8 @@ $(function () {
             $("#limit_count").prop('disabled', $(this).val());
     });
 
+    $("input[type=text]").prop("disabled", false);
+
     setup();
 });
 
@@ -258,7 +258,7 @@ function loadImage(map_url, map_scale) {
             Zoom = cvs_height / serverImg.height;
             setCanvas(this.src, serverImg.width * Zoom, cvs_height);
         }
-        reDrawTag(ctx);
+        reDrawTag();
         document.getElementById("btn_restore").disabled = false;
     };
 }
@@ -289,43 +289,39 @@ function setSize() { //縮放canvas與背景圖大小
 function restoreCanvas() {
     if (!canvasImg.isPutImg)
         return;
-    $(function () {
-        var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
-        var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
-        xleftView = 0;
-        ytopView = 0;
-        Zoom = 1.0;
-        if (isFitWindow) { //恢復原比例
-            ctx.restore();
-            ctx.save();
-            isFitWindow = false; //目前狀態:原比例
-            document.getElementById("btn_restore").innerHTML = "<i class=\"fas fa-expand\"></i>";
-        } else { //依比例拉伸(Fit in Window)
-            if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
-                Zoom = cvsBlock_width / serverImg.width;
-            else
-                Zoom = cvsBlock_height / serverImg.height;
-            isFitWindow = true; //目前狀態:依比例拉伸
-            document.getElementById("btn_restore").innerHTML = "<i class=\"fas fa-compress\"></i>";
-        }
-        $("#canvas").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
-        reDrawTag(ctx);
-    });
-}
-
-function restartCanvas() {
-    $(function () {
-        var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
-        var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
-        xleftView = 0;
-        ytopView = 0;
+    var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
+    var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
+    xleftView = 0;
+    ytopView = 0;
+    Zoom = 1.0;
+    if (isFitWindow) { //恢復原比例
+        ctx.restore();
+        ctx.save();
+        isFitWindow = false; //目前狀態:原比例
+        document.getElementById("btn_restore").innerHTML = "<i class=\"fas fa-expand\"></i>";
+    } else { //依比例拉伸(Fit in Window)
         if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
             Zoom = cvsBlock_width / serverImg.width;
         else
             Zoom = cvsBlock_height / serverImg.height;
-        $("#canvas").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
-        reDrawTag(ctx);
-    });
+        isFitWindow = true; //目前狀態:依比例拉伸
+        document.getElementById("btn_restore").innerHTML = "<i class=\"fas fa-compress\"></i>";
+    }
+    $("#canvas").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
+    reDrawTag();
+}
+
+function restartCanvas() {
+    var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
+    var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
+    xleftView = 0;
+    ytopView = 0;
+    if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
+        Zoom = cvsBlock_width / serverImg.width;
+    else
+        Zoom = cvsBlock_height / serverImg.height;
+    $("#canvas").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
+    reDrawTag();
 }
 
 function handleMouseWheel(event) {
@@ -340,7 +336,7 @@ function handleMouseWheel(event) {
         scale = 1.1;
     }
     Zoom *= scale; //縮放比例
-    reDrawTag(ctx);
+    reDrawTag();
     xleftView += pos_x - lastX * Zoom; //滑鼠滾動的位置-縮放後滑鼠位移後的位置(X軸)
     ytopView += pos_y - lastY * Zoom; //滑鼠滾動的位置-縮放後滑鼠位移後的位置(Y軸)
     $("#canvas").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");
@@ -363,21 +359,15 @@ function handleMouseClick(event) {
                     if (p && ctx.isPointInPath(p.x, p.y)) {
                         //如果傳入了事件坐標，就用isPointInPath判斷一下
                         var user_id = parseInt(tag_id.value, 16);
-                        var time_arr = TimeToArray(array[i].time);
-                        /*$("#timeline_dialog_tag_id").text(user_id);
-                        $("#timeline_dialog_time").text(array[i].time);
-                        $("#timeline_dialog_x").text(array[i].x);
-                        $("#timeline_dialog_y").text(array[i].y);
-                        $("#timeline_dialog").dialog("open");*/
-                        //member_info
                         var member_info = MemberData[user_id];
                         $("#thumb_user_id").text(user_id);
                         $("#thumb_number").text(member_info.number);
                         $("#thumb_name").text(member_info.name);
                         $("#thumb_dept").text(member_info.dept);
-                        $("#thumb_date").text(time_arr.date);
-                        $("#thumb_time").text(time_arr.time);
-                        $("#thumb_position").text(array[i].map_name + " ( " + array[i].x + "," + array[i].y + " )");
+                        $("#thumb_date").text(array[i].date);
+                        $("#thumb_time").text(array[i].time);
+                        $("#thumb_map").text(array[i].map_name);
+                        $("#thumb_position").text("( " + array[i].x + " , " + array[i].y + " )");
                         inputMemberPhoto(member_info.photo)
                     }
                 }
@@ -397,21 +387,15 @@ function handleMouseClick(event) {
                     ctx.closePath();
                     if (p && ctx.isPointInPath(p.x, p.y)) {
                         var user_id = parseInt(info.tag_id, 16);
-                        var time_arr = TimeToArray(info.time);
-                        /*$("#timeline_dialog_tag_id").text(user_id);
-                        $("#timeline_dialog_time").text(info.time);
-                        $("#timeline_dialog_x").text(info.x);
-                        $("#timeline_dialog_y").text(info.y);
-                        $("#timeline_dialog").dialog("open");*/
-                        //member_info
                         var member_info = MemberData[user_id];
                         $("#thumb_user_id").text(user_id);
                         $("#thumb_number").text(member_info.number);
                         $("#thumb_name").text(member_info.name);
                         $("#thumb_dept").text(member_info.dept);
-                        $("#thumb_date").text(time_arr.date);
-                        $("#thumb_time").text(time_arr.time);
-                        $("#thumb_position").text(info.map_name + " ( " + info.x + "," + info.y + " )");
+                        $("#thumb_date").text(info.date);
+                        $("#thumb_time").text(info.time);
+                        $("#thumb_map").text(info.map_name);
+                        $("#thumb_position").text("( " + info.x + " , " + info.y + " )");
                         inputMemberPhoto(member_info.photo)
                     }
                 });
@@ -438,9 +422,11 @@ function getMemberNumber() {
     var xmlHttp = createJsonXmlHttp("sql"); //updateMemberList
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj2 = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
-                var memberArray = revObj2.Value[0].Values.slice(0) || [];
+            var revObj = JSON.parse(this.responseText);
+            if (!checkTokenAlive(token, revObj)) {
+                return;
+            } else if (revObj.Value[0].success > 0) {
+                var memberArray = revObj.Value[0].Values || [];
                 for (var i = 0; i < memberArray.length; i++) {
                     var user_id = parseInt(memberArray[i].tag_id.substring(8), 16);
                     MemberData[user_id] = {
@@ -467,7 +453,7 @@ function getMemberData(user_id) {
             number: "",
             name: "",
             dept: "",
-            photo: "",
+            photo: noImagePng,
             card_id: ""
         };
         return;
@@ -488,7 +474,7 @@ function getMemberData(user_id) {
                 if ("Values" in revObj.Value[0]) {
                     var revInfo = revObj.Value[0].Values[0];
                     if (revInfo.file_ext == "" || revInfo.photo == "")
-                        MemberData[user_id].photo = "";
+                        MemberData[user_id].photo = noImagePng;
                     else
                         MemberData[user_id].photo = "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
                 }
@@ -516,8 +502,7 @@ function inputMemberPhoto(src) {
             }
         }
     } else {
-        //$("#thumb_img").attr('src', '../image/no_image.png').width(thumb_width).height(thumb_height);
-        $("#thumb_img").attr('src', '').width(thumb_width).height(thumb_height);
+        $("#thumb_img").attr('src', noImagePng).width(thumb_width).height(thumb_height);
     }
 }
 
@@ -541,7 +526,8 @@ function drawTimeline() {
                     $("#target_map").val(mapInfo.map_id);
                     loadImage(mapInfo.map_src, mapInfo.map_scale);
                 }
-                timeDelay["draw"].push(setInterval("drawNextTimeByTag()", $("#interval").val())); //計時器賦值
+                //計時器賦值
+                timeDelay["draw"].push(setInterval("drawNextTimeByTag()", $("#interval").val()));
                 break;
             case "Group":
                 if (!canvasImg.isPutImg) {
@@ -550,7 +536,8 @@ function drawTimeline() {
                     $("#target_map").val(mapInfo.map_id);
                     loadImage(mapInfo.map_src, mapInfo.map_scale);
                 }
-                timeDelay["draw"].push(setInterval("drawNextTimeByGroup()", $("#interval").val())); //計時器賦值
+                //計時器賦值
+                timeDelay["draw"].push(setInterval("drawNextTimeByGroup()", $("#interval").val()));
                 break;
             default:
                 break;
@@ -581,10 +568,12 @@ function drawNextTimeByTag() {
         document.getElementsByName("chk_target_id").forEach(function (tag_id, i) {
             var color = document.getElementsByName("input_target_color")[i].value;
             var array = historyData[tag_id.value];
-            if (!array) return alert($.i18n.prop('i_targetTagChange'));
+            if (!array)
+                return alert($.i18n.prop('i_tagID') + ":[" + parseInt(tag_id.value, 16) + "]" + $.i18n.prop('i_tagSearchNoData'));
             if (array[0] && array[0].map_id == locate_map) {
                 drawTag(ctx, array[0].time, array[0].x, canvasImg.height - array[0].y, color);
                 document.getElementById("current_map").innerText = array[0].map_name;
+                document.getElementById("current_date").innerText = array[0].date;
                 document.getElementById("current_time").innerText = array[0].time;
                 document.getElementById("draw_x").innerText = array[0].x;
                 document.getElementById("draw_y").innerText = array[0].y;
@@ -594,20 +583,19 @@ function drawNextTimeByTag() {
         document.getElementById("current_tags_amount").innerText = count;
         times++;
     } else if (times < max_times) {
-        reDrawTag(ctx);
+        reDrawTag();
         document.getElementsByName("chk_target_id").forEach(function (tag_id, i) {
             //var color = document.getElementsByName("input_target_color")[i].value;
             var array = historyData[tag_id.value];
-            if (!array) return false;
-            if (array[times] && array[times].map_id == locate_map) {
-                drawArrow(ctx, array[times - 1].x, canvasImg.height - array[times - 1].y,
-                    array[times].x, canvasImg.height - array[times].y, 30, 8, 2, "#000000");
-                drawTag(ctx, array[times].time, array[times].x, canvasImg.height - array[times].y, "#000000");
-                document.getElementById("current_map").innerText = array[times].map_name;
-                document.getElementById("current_time").innerText = array[times].time;
-                document.getElementById("draw_x").innerText = array[times].x;
-                document.getElementById("draw_y").innerText = array[times].y;
-            }
+            if (!array)
+                return false;
+            //if (array[times] && array[times].map_id == locate_map) {
+            document.getElementById("current_map").innerText = array[times].map_name;
+            document.getElementById("current_date").innerText = array[times].date;
+            document.getElementById("current_time").innerText = array[times].time;
+            document.getElementById("draw_x").innerText = array[times].x;
+            document.getElementById("draw_y").innerText = array[times].y;
+            //}
             count++;
         });
         document.getElementById("current_tags_amount").innerText = count;
@@ -646,20 +634,23 @@ function drawNextTimeByGroup() {
             });
             document.getElementById("current_tags_amount").innerText = count;
         } else {
-            reDrawTag(ctx);
+            reDrawTag();
         }
-        document.getElementById("current_map").innerText = historyData[timeslot_array[times]][0].map_name;
-        document.getElementById("current_time").innerText = timeslot_array[times];
+        let history = historyData[timeslot_array[times]][0];
+        document.getElementById("current_map").innerText = history.map_name;
+        document.getElementById("current_date").innerText = history.date;
+        document.getElementById("current_time").innerText = history.time;
         times++;
     }
 }
 
-function reDrawTag(dctx) {
+function reDrawTag() {
     setSize();
     switch (historyData["search_type"]) {
         case "Tag":
             var locate_map = document.getElementById("target_map").value;
             var k = 0;
+            if (times == 0) return false;
             if (document.getElementsByName("radio_is_limit")[1].checked) {
                 var limitCount = document.getElementById("limit_count").value;
                 if (limitCount != "" && times > limitCount)
@@ -669,13 +660,19 @@ function reDrawTag(dctx) {
                 var color = document.getElementsByName("input_target_color")[i].value;
                 var array = historyData[tag_id.value];
                 if (!array) return false;
-                for (i = k; i < times; i++) {
-                    if (array[i] && array[i].map_id == locate_map) {
-                        if (i > 0)
-                            drawArrow(dctx, array[i - 1].x, canvasImg.height - array[i - 1].y,
-                                array[i].x, canvasImg.height - array[i].y, 30, 8, 2, color);
-                        drawTag(dctx, array[i].time, array[i].x, canvasImg.height - array[i].y, color);
+                for (var j = k; j < times; j++) {
+                    if (array[j] && array[j].map_id == locate_map) {
+                        if (j > k) {
+                            drawArrow(ctx, array[j - 1].x, canvasImg.height - array[j - 1].y,
+                                array[j].x, canvasImg.height - array[j].y, 30, 8, 2, color);
+                        }
+                        drawTag(ctx, array[j].time, array[j].x, canvasImg.height - array[j].y, color);
                     }
+                }
+                if (array[times] && array[times].map_id == locate_map) {
+                    drawArrow(ctx, array[times - 1].x, canvasImg.height - array[times - 1].y,
+                        array[times].x, canvasImg.height - array[times].y, 30, 8, 2, color);
+                    drawTag(ctx, array[times].time, array[times].x, canvasImg.height - array[times].y, "#000000");
                 }
             });
             break;
@@ -685,9 +682,9 @@ function reDrawTag(dctx) {
             var count = 0;
             if (!document.getElementById("chk_is_overlap").checked && times > 0)
                 start = times - 1;
-            for (i = start; i < times; i++) {
+            for (var i = start; i < times; i++) {
                 historyData[timeslot_array[i]].forEach(info => {
-                    if (i == times - 1)
+                    if (i == start)
                         count++;
                     if (info.tag_id == locate_tag)
                         locate_arr.push(info);
@@ -786,9 +783,8 @@ function getTimelineByTags(datetime_start, datetime_end) {
             });
         }, 100 * i));
     });
-    interval_times *= Math.floor(timeslot / 3600000) + ($("#end_time").val().split(":")[1] == "00" ? 2 : 1);
+    interval_times *= Math.floor(timeslot / 3600000) + 1; //($("#end_time").val().split(":")[1] == "00" ? 1 : 1);
     //console.log("interval_times=> " + interval_times);
-    inputWaitTime(interval_times);
 
     function sendRequest(request) {
         var xmlHttp = createJsonXmlHttp("sql");
@@ -807,6 +803,7 @@ function getTimelineByTags(datetime_start, datetime_end) {
                     for (i = 0; i < revInfo.length; i++) {
                         if (revInfo[i].map_id in mapCollection) {
                             var mapInfo = mapCollection[revInfo[i].map_id];
+                            var datetime_arr = TimeToArray(revInfo[i].time);
                             if (!historyData[tag_id])
                                 historyData[tag_id] = [];
                             historyData[tag_id].push({
@@ -814,7 +811,8 @@ function getTimelineByTags(datetime_start, datetime_end) {
                                 map_name: mapInfo.map_name,
                                 x: parseInt(revInfo[i].coordinate_x, 10),
                                 y: parseInt(revInfo[i].coordinate_y, 10),
-                                time: revInfo[i].time
+                                date: datetime_arr[0],
+                                time: datetime_arr[1]
                             });
                         }
                     }
@@ -853,7 +851,7 @@ function getTimelineByTags(datetime_start, datetime_end) {
 
 function getTimelineByGroup(datetime_start, datetime_end, group_id) {
     var timeslot = datetime_end - datetime_start;
-    var interval_times = Math.ceil(timeslot / 60000); //間隔多少分鐘(無條件進位)
+    var interval_times = Math.ceil(timeslot / 3600000); //間隔多少分鐘(無條件進位)
     var count_times = 0;
     var tag_array = [];
     var group_map = {
@@ -879,7 +877,7 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
                 group_map.name = mapCollection[revInfo[index].map_id].map_name;
                 var start_datetime = new Date(datetime_start)
                     .format("yyyy-MM-dd hh:mm:ss").split(" ");
-                var end_datetime = new Date(datetime_start + 60000)
+                var end_datetime = new Date(datetime_start + 3600000) //原本切隔搜尋間隔為1分鐘，改為1小時。
                     .format("yyyy-MM-dd hh:mm:ss").split(" ");
                 sendRequest({
                     "Command_Type": ["Read"],
@@ -901,7 +899,6 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
         "Command_Name": ["GetMaps_Groups"],
         "api_token": [token]
     }));
-    inputWaitTime(interval_times);
 
     function sendRequest(request) {
         var xmlHttp = createJsonXmlHttp("sql");
@@ -929,28 +926,29 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
                         var index = tag_array.indexOf(revInfo[i].tag_id);
                         if (index == -1) {
                             tag_array.push(revInfo[i].tag_id);
-                            //getMemberData(parseInt(revInfo[i].tag_id.substring(8), 16));
                         }
                         var repeat = historyData[time].findIndex(function (info) {
                             return info.tag_id == revInfo[i].tag_id;
                         });
                         if (repeat == -1) {
+                            var datetime_arr = TimeToArray(revInfo[i].time);
                             historyData[time].push({
                                 tag_id: revInfo[i].tag_id,
                                 map_id: group_map.id,
                                 map_name: group_map.name,
                                 x: parseInt(revInfo[i].coordinate_x, 10),
                                 y: parseInt(revInfo[i].coordinate_y, 10),
-                                time: revInfo[i].time
+                                date: datetime_arr[0],
+                                time: datetime_arr[1]
                             });
                         }
                     }
                     count_times++
                     $("#progress_bar").text(Math.round(count_times / interval_times * 100) + " %");
                     if (interval_times > count_times) {
-                        var start_datetime = new Date(datetime_start + 60000 * count_times)
+                        var start_datetime = new Date(datetime_start + 3600000 * count_times)
                             .format("yyyy-MM-dd hh:mm:ss").split(" ");
-                        var end_datetime = new Date(datetime_start + 60000 * (count_times + 1))
+                        var end_datetime = new Date(datetime_start + 3600000 * (count_times + 1))
                             .format("yyyy-MM-dd hh:mm:ss").split(" ");
                         //以1分鐘為基準，分批接受並傳送要求
                         sendRequest({
@@ -967,6 +965,7 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
                         });
                     } else {
                         $("#table_tag_list tbody").empty();
+                        tag_array.sort();
                         tag_array.forEach(tag_id => {
                             $("#table_tag_list tbody").append(
                                 "<tr><td><label name=\"tag_list_id\">" + parseInt(tag_id.substring(8), 16) + "</label></td>" +
@@ -986,7 +985,7 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
 
 function changeLocateTag(tag_id) {
     locate_tag = tag_id;
-    reDrawTag(ctx);
+    reDrawTag();
 }
 
 function locateTag(tag_id) {
@@ -1016,23 +1015,23 @@ function clearDrawInterval() {
 
 
 function getAlarmHandleByTime() {
-    var getStaff = createJsonXmlHttp("sql");
-    getStaff.onreadystatechange = function () {
-        if (getStaff.readyState == 4 || getStaff.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
+    let xmlHttp = createJsonXmlHttp("sql");
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+            let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                var MemberList = {};
-                var revInfo = revObj.Value[0].Values || [];
+                let MemberList = {};
+                let revInfo = revObj.Value[0].Values || [];
                 revInfo.forEach(element => {
                     MemberList[element.tag_id] = element;
                 });
-                var xmlHttp = createJsonXmlHttp("alarmhandle");
-                xmlHttp.onreadystatechange = function () {
-                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                        var revObj = JSON.parse(this.responseText);
-                        if (checkTokenAlive(token, revObj) && revObj.Value[0]) {
-                            var revInfo = revObj.Value[0].Values;
-                            if (revObj.Value[0].success == 0 || !revInfo || revInfo.length == 0)
+                let xmlHttp2 = createJsonXmlHttp("alarmhandle");
+                xmlHttp2.onreadystatechange = function () {
+                    if (xmlHttp2.readyState == 4 || xmlHttp2.readyState == "complete") {
+                        var revObj2 = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj2) && revObj2.Value[0]) {
+                            var revInfo = revObj2.Value[0].Values;
+                            if (revObj2.Value[0].success == 0 || !revInfo || revInfo.length == 0)
                                 return alert($.i18n.prop('i_searchNoData'));
                             var type = $("#target_alarm_type").val();
                             $("#table_alarm_handle tbody").empty();
@@ -1054,7 +1053,7 @@ function getAlarmHandleByTime() {
                         }
                     }
                 };
-                xmlHttp.send(JSON.stringify({
+                xmlHttp2.send(JSON.stringify({
                     "Command_Type": ["Read"],
                     "Command_Name": ["gethandlerecordbytime"],
                     "Value": [{
@@ -1068,7 +1067,7 @@ function getAlarmHandleByTime() {
             }
         }
     };
-    getStaff.send(JSON.stringify({
+    xmlHttp.send(JSON.stringify({
         "Command_Type": ["Read"],
         "Command_Name": ["GetStaffs"],
         "api_token": [token]
@@ -1095,18 +1094,6 @@ function completeSearch() {
     var num = Object.keys(historyData).length;
     if (num <= 1)
         alert($.i18n.prop('i_searchNoData'));
-}
-
-function inputWaitTime(interval_times) {
-    var sec = interval_times * 1.3;
-    if (sec > 3600)
-        $("#wait_time").text($.i18n.prop('i_estimatedTime') + Math.ceil(sec / 3600) + $.i18n.prop('i_hour') +
-            Math.ceil((sec % 3600) / 60) + $.i18n.prop('i_minute') + Math.ceil(sec % 60) + $.i18n.prop('i_second'));
-    else if (sec > 60)
-        $("#wait_time").text($.i18n.prop('i_estimatedTime') + Math.ceil(sec / 60) + $.i18n.prop('i_minute') +
-            Math.ceil(sec % 60) + $.i18n.prop('i_second'));
-    else
-        $("#wait_time").text($.i18n.prop('i_estimatedTime') + Math.ceil(sec) + $.i18n.prop('i_second'));
 }
 
 function fullOf4Byte(id) {

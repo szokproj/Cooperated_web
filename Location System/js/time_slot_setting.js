@@ -61,10 +61,8 @@ function importTimeSlot() {
     function SendResult() {
         if (!confirm($.i18n.prop('i_alarmAlert_21')))
             return;
-
         allFields.removeClass("ui-state-error");
         resetWeekTimeColor();
-
         let valid = true && checkLength(add_name, $.i18n.prop('i_alarmAlert_22'), 1, 20),
             time_slot_setting = {
                 "time_slot_name": add_name.val(),
@@ -83,7 +81,6 @@ function importTimeSlot() {
                 "Sat_start": "-1",
                 "Sat_end": "-1"
             };
-
         weekday_arr.forEach(weekday => {
             if ($("#week_time_check_" + weekday).prop('checked')) {
                 valid = valid && checkLength($("#week_time_start_" + weekday), $.i18n.prop('i_alarmAlert_23'), 5, 5);
@@ -93,7 +90,6 @@ function importTimeSlot() {
                 time_slot_setting[weekday + "_end"] = $("#week_time_end_" + weekday).val() + ":59";
             }
         });
-
         if (valid) {
             if (submit_type["time_slot"] == "Add") {
                 let request = {
@@ -192,29 +188,29 @@ function importTimeSlot() {
                 });
             }
         }
-        if (delete_arr.length == 0) {
-            alert($.i18n.prop('i_alarmAlert_9'));
-            return;
-        }
-        let requestJSON = JSON.stringify({
-            "Command_Type": ["Write"],
-            "Command_Name": ["DeleteTimeSlot"],
-            "Value": delete_arr,
-            "api_token": [token]
-        });
-        let deleteXmlHttp = createJsonXmlHttp("sql");
-        deleteXmlHttp.onreadystatechange = function () {
-            if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
-                let revObj = JSON.parse(this.responseText);
-                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                    inputTimeSetting();
-                    alert($.i18n.prop('i_alarmAlert_26'));
-                } else {
-                    alert($.i18n.prop('i_alarmAlert_27'));
+        if (delete_arr.length == 0)
+            return alert($.i18n.prop('i_alarmAlert_9'));
+        if (confirm($.i18n.prop('i_alarmAlert_19'))) {
+            let requestJSON = JSON.stringify({
+                "Command_Type": ["Write"],
+                "Command_Name": ["DeleteTimeSlot"],
+                "Value": delete_arr,
+                "api_token": [token]
+            });
+            let deleteXmlHttp = createJsonXmlHttp("sql");
+            deleteXmlHttp.onreadystatechange = function () {
+                if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
+                    let revObj = JSON.parse(this.responseText);
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        inputTimeSetting();
+                        alert($.i18n.prop('i_alarmAlert_26'));
+                    } else {
+                        alert($.i18n.prop('i_alarmAlert_27'));
+                    }
                 }
-            }
-        };
-        deleteXmlHttp.send(requestJSON);
+            };
+            deleteXmlHttp.send(requestJSON);
+        }
     });
 }
 
@@ -230,8 +226,10 @@ function inputTimeSetting() {
             let revObj = JSON.parse(this.responseText);
             $("#table_time_slot tbody").empty(); //先重置表格
             count_time_slot = 0;
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                TimeSlotArr = revObj.Value[0].Values.slice(0) || [];
+            if (!checkTokenAlive(token, revObj)) {
+                return;
+            } else if (revObj.Value[0].success > 0) {
+                TimeSlotArr = "Values" in revObj.Value[0] ? revObj.Value[0].Values.slice(0) : [];
                 for (i = 0; i < TimeSlotArr.length; i++) {
                     TimeSlotArr[i]["id"] = TimeSlotArr[i].time_slot_id;
                     TimeSlotArr[i]["name"] = TimeSlotArr[i].time_slot_name;
@@ -250,7 +248,6 @@ function inputTimeSetting() {
                 inputTimeGroups();
             } else {
                 alert($.i18n.prop('i_alarmAlert_14'));
-                return;
             }
         }
     };

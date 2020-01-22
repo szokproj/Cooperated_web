@@ -51,7 +51,7 @@ var displayRowArray = {
 
 $(function () { //Load==>
     let h = document.documentElement.clientHeight;
-    $(".container").css("height", h - 10 + "px");
+    //$(".container").css("height", h - 10 + "px");
     $(".middle").css("height", h - 120 + "px");
 
     token = getToken();
@@ -116,17 +116,6 @@ $(function () { //Load==>
         $("#check_all_rf_basic").prop("checked", displayRowArray["check_all_rf_basic"]);
         $("#check_all_rf_advance").prop("checked", displayRowArray["check_all_rf_advance"]);
         dialog.dialog("open");
-    });
-
-    $("#select_connect_mode").change(function () {
-        var opt = $(this).children('option:selected').val();
-        if (opt == "ethernet") {
-            $(".mode_ethernet").show();
-            $(".mode_comport").hide();
-        } else {
-            $(".mode_ethernet").hide();
-            $(".mode_comport").show();
-        }
     });
 
     $("#check_all_net_basic").change(function () {

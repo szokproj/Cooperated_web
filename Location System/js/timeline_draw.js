@@ -9,32 +9,17 @@ function drawTag(dctx, id, x, y, color) {
     dctx.closePath();
 }
 
-
 function drawArrow(dctx, fromX, fromY, toX, toY, theta, headlen, width, color) {
     ctx.globalCompositeOperation = "destination-over";
     var deltaX = toX - fromX;
     var deltaY = toY - fromY;
-    if (Math.sqrt(Math.abs(deltaX) ^ 2 + Math.abs(deltaY) ^ 2) > 5) {
-        if (deltaX != 0 && deltaY != 0) {
-            if (deltaX > 0) //正 
-                toX -= 5 * Math.cos(1 / 12) * Zoom;
-            else //負
-                toX += 5 * Math.cos(1 / 12) * Zoom;
-            if (deltaY > 0) //正
-                toY -= 5 * Math.sin(1 / 12) * Zoom;
-            else //負
-                toY += 5 * Math.sin(1 / 12) * Zoom;
-        } else if (deltaX != 0) {
-            if (deltaX > 0) //正 
-                toX -= 5 * Zoom;
-            else //負
-                toX += 5 * Zoom;
-        } else if (deltaY != 0) {
-            if (deltaY > 0) //正
-                toY -= 5 * Zoom;
-            else //負
-                toY += 5 * Zoom;
-        }
+    let len = Math.pow(deltaX, 2) + Math.pow(deltaY, 2);
+    if (len > 100) {
+        //將指向圓心的(toX,toY)往回退，讓箭頭能完全被畫出來
+        let m = Math.sqrt(Math.pow(5, 2) / len);
+        toX -= m * deltaX;
+        toY -= m * deltaY;
+
         theta = typeof (theta) != 'undefined' ? theta : 30;
         headlen = typeof (headlen) != 'undefined' ? headlen : 10;
         width = typeof (width) != 'undefined' ? width : 1;
@@ -47,7 +32,6 @@ function drawArrow(dctx, fromX, fromY, toX, toY, theta, headlen, width, color) {
             topY = headlen * Math.sin(angle1),
             botX = headlen * Math.cos(angle2),
             botY = headlen * Math.sin(angle2);
-        dctx.save();
         dctx.beginPath();
         var arrowX = fromX - topX,
             arrowY = fromY - topY;
@@ -64,7 +48,6 @@ function drawArrow(dctx, fromX, fromY, toX, toY, theta, headlen, width, color) {
         dctx.strokeStyle = color;
         dctx.lineWidth = width;
         dctx.stroke();
-        dctx.restore();
     } else {
         dctx.beginPath();
         dctx.moveTo(fromX, fromY);

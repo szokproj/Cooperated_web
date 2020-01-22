@@ -27,8 +27,6 @@ function importTimeSlotGroup() {
             if (isRepeat)
                 return alert($.i18n.prop('i_alarmAlert_16'));
             if (submit_type["time_group"] == "Add") {
-                if (!confirm($.i18n.prop('i_alarmAlert_19')))
-                    return;
                 let requestJSON = JSON.stringify({
                     "Command_Type": ["Write"],
                     "Command_Name": ["AddTimeGroup"],
@@ -65,8 +63,9 @@ function importTimeSlotGroup() {
                 xmlHttp.onreadystatechange = function () {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                         let revObj = JSON.parse(this.responseText);
-                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0)
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                             updateTimeGroup_Slots();
+                        }
                     }
                 };
                 xmlHttp.send(requestJSON);
@@ -98,7 +97,7 @@ function importTimeSlotGroup() {
         submitTimeGroup();
     });
 
-    //新增時段群組與時段的關聯
+    //新增時段群組中包含的時段
     $("#btn_add_time_group_slot").on("click", function () {
         let count_time_group_slots = document.querySelectorAll("#table_time_group_slot tr").length,
             tr_id = "tr_time_group_slot" + count_time_group_slots;
@@ -110,7 +109,7 @@ function importTimeSlotGroup() {
             "</select></td></tr>");
     });
 
-    //刪除時段群組與時段的關聯
+    //刪除時段群組中包含的時段
     $("#btn_delete_time_group_slot").on("click", function () {
         let save_time_slots = [],
             items = document.getElementsByName("chkbox_time_group_slot"),
@@ -133,7 +132,7 @@ function importTimeSlotGroup() {
         });
     });
 
-    //按下新增Time Group
+    //按下新增時段群組
     $("#btn_add_time_group").button().on("click", function () {
         submit_type["time_group"] = "Add";
         $("#add_time_group_id").val("");
@@ -142,7 +141,7 @@ function importTimeSlotGroup() {
         dialog.dialog("open");
     });
 
-    //按下刪除Time Group
+    //按下刪除時段群組
     $("#btn_delete_time_group").button().on("click", function () {
         let checkboxs = document.getElementsByName("chkbox_time_group"),
             delete_arr = [];
@@ -152,47 +151,50 @@ function importTimeSlotGroup() {
                     "time_group_id": checkboxs[k].value
                 });
         }
-        if (delete_arr.length == 0) {
-            alert($.i18n.prop('i_alarmAlert_10'));
-            return;
-        }
-        let requestJSON = JSON.stringify({
-            "Command_Type": ["Write"],
-            "Command_Name": ["DeleteTimeGroup"],
-            "Value": delete_arr,
-            "api_token": [token]
-        });
-        let deleteXmlHttp = createJsonXmlHttp("sql");
-        deleteXmlHttp.onreadystatechange = function () {
-            if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
-                let revObj = JSON.parse(this.responseText);
-                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                    inputTimeGroups();
+        if (delete_arr.length == 0)
+            return alert($.i18n.prop('i_alarmAlert_10'));
+        if (confirm($.i18n.prop('i_alarmAlert_13'))) {
+            let requestJSON = JSON.stringify({
+                "Command_Type": ["Write"],
+                "Command_Name": ["DeleteTimeGroup"],
+                "Value": delete_arr,
+                "api_token": [token]
+            });
+            let deleteXmlHttp = createJsonXmlHttp("sql");
+            deleteXmlHttp.onreadystatechange = function () {
+                if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
+                    let revObj = JSON.parse(this.responseText);
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        inputTimeGroups();
+                    }
                 }
-            }
-        };
-        deleteXmlHttp.send(requestJSON);
+            };
+            deleteXmlHttp.send(requestJSON);
+        }
     });
 
     function updateTimeGroup_Slots() {
-        if (includeSlotsArr.length == 0)
-            return;
-        let requestJSON = JSON.stringify({
-            "Command_Type": ["Write"],
-            "Command_Name": ["DeleteTimeSlotGroup"],
-            "Value": includeSlotsArr,
-            "api_token": [token]
-        });
-        let deleteXmlHttp = createJsonXmlHttp("sql");
-        deleteXmlHttp.onreadystatechange = function () {
-            if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
-                let revObj = JSON.parse(this.responseText);
-                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                    addTimeGroup_Slots();
+        if (includeSlotsArr.length == 0) {
+            //如果時段群組原本沒有包含任何時段
+            addTimeGroup_Slots();
+        } else {
+            let requestJSON = JSON.stringify({
+                "Command_Type": ["Write"],
+                "Command_Name": ["DeleteTimeSlotGroup"],
+                "Value": includeSlotsArr,
+                "api_token": [token]
+            });
+            let deleteXmlHttp = createJsonXmlHttp("sql");
+            deleteXmlHttp.onreadystatechange = function () {
+                if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
+                    let revObj = JSON.parse(this.responseText);
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+                        addTimeGroup_Slots();
+                    }
                 }
-            }
-        };
-        deleteXmlHttp.send(requestJSON);
+            };
+            deleteXmlHttp.send(requestJSON);
+        }
     }
 
     function addTimeGroup_Slots() {
@@ -243,7 +245,9 @@ function inputTimeGroups() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             let revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+            if (!checkTokenAlive(token, revObj)) {
+                return;
+            } else if (revObj.Value[0].success > 0) {
                 count_time_groups = 0;
                 $("#table_time_group tbody").empty();
                 TimeGroupArr = revObj.Value[0].Values.slice(0) || [];
@@ -273,7 +277,6 @@ function inputTimeGroups() {
                 }
             } else {
                 alert($.i18n.prop('i_alarmAlert_6'));
-                return;
             }
         }
     };

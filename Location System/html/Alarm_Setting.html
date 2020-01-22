@@ -35,7 +35,7 @@
     <script type="text/javascript" src="../js/set_fence_alarm_group.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/Dialog/dialog_fence_add.js"></script>
-    <!--Time picker-->
+    <!--Time picker => https://github.com/T00rk/bootstrap-material-datetimepicker#updates-->
     <link rel="stylesheet" href="../css/timepicker/bootstrap-material-datetimepicker.css" />
     <script type="text/javascript" src="http://momentjs.com/downloads/moment-with-locales.js"></script>
     <script type="text/javascript" src="../js/timepicker/bootstrap-material-datetimepicker.js"></script>
@@ -73,18 +73,21 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h3 class="i18n" name="i_customAlarmGroup"></h3>
-                        <table id="table_alarm_mode" class="table-line">
-                            <thead>
-                                <th class="i18n" name="i_item"></th>
-                                <th class="i18n" name="i_groupName" style="min-width:80px;"></th>
-                                <th class="i18n" name="i_electronicFence" style="min-width:100px;"></th>
-                                <th class="i18n" name="i_stayAlarm" style="min-width:100px;"></th>
-                                <th class="i18n" name="i_hiddenAlarm" style="min-width:100px;"></th>
-                                <th class="i18n" name="i_matchTime" style="min-width:100px;"></th>
-                                <th class="i18n" name="i_edit" style="min-width:50px;"></th>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                        <div style="max-width: 100%; overflow-x: auto;">
+                            <table id="table_alarm_mode" class="table-line">
+                                <thead>
+                                    <th class="i18n" name="i_item" style="min-width:50px;"></th>
+                                    <th class="i18n" name="i_groupName" style="min-width:80px;"></th>
+                                    <th class="i18n" name="i_electronicFence" style="min-width:250px;"></th>
+                                    <th class="i18n" name="i_stayAlarm" style="min-width:150px;"></th>
+                                    <th class="i18n" name="i_hiddenAlarm" style="min-width:150px;"></th>
+                                    <th class="i18n" name="i_matchTime" style="min-width:150px;"></th>
+                                    <th class="i18n" name="i_edit" style="min-width:50px;"></th>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
                         <span>
                             <label for="btn_add_alarm_group" class="btn-add" title="Add alarm group">
                                 <i class="fas fa-plus-square" style='font-size:20px;'></i></label>

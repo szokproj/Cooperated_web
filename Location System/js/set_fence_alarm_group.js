@@ -24,10 +24,11 @@ function importFenceAlarmGroup() {
                         if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                             let revObj = JSON.parse(this.responseText);
                             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                                if (!revObj.Value[0].Value) return;
-                                let key = Object.keys(revObj.Value[0].Value);
-                                updateFenceAG_List(key);
-                                alert($.i18n.prop('i_alarmAlert_41'));
+                                if (revObj.Value[0].Value) {
+                                    let key = Object.keys(revObj.Value[0].Value);
+                                    updateFenceAG_List(key);
+                                    alert($.i18n.prop('i_alarmAlert_41'));
+                                }
                             } else {
                                 alert($.i18n.prop('i_alarmAlert_42'));
                             }
@@ -50,10 +51,11 @@ function importFenceAlarmGroup() {
                                     if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
                                         let revObj2 = JSON.parse(this.responseText);
                                         if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
-                                            if (!revObj2.Value[0].Value) return;
-                                            let key = Object.keys(revObj2.Value[0].Value);
-                                            updateFenceAG_List(key);
-                                            alert($.i18n.prop('i_alarmAlert_43'));
+                                            if (revObj2.Value[0].Value) {
+                                                let key = Object.keys(revObj2.Value[0].Value);
+                                                updateFenceAG_List(key);
+                                                alert($.i18n.prop('i_alarmAlert_43'));
+                                            }
                                         } else {
                                             alert($.i18n.prop('i_alarmAlert_44'));
                                         }
@@ -65,6 +67,8 @@ function importFenceAlarmGroup() {
                                     "Value": fenceAG_arr,
                                     "api_token": [token]
                                 }));
+                            } else {
+                                alert($.i18n.prop('i_alarmAlert_44'));
                             }
                         }
                     };
@@ -81,7 +85,6 @@ function importFenceAlarmGroup() {
                 }
                 dialog.dialog("close");
             }
-            return valid;
         };
 
     dialog = $("#dialog_fence_alarm_group").dialog({
@@ -128,25 +131,28 @@ function importFenceAlarmGroup() {
         dialog.dialog("open");
     });
     $("#btn_fenceAG_delete").on('click', function () {
-        if (confirm($.i18n.prop('i_alarmAlert_47'))) {
-            let fenceAGs = document.getElementsByName("chk_fenceAG"),
-                delete_arr = [];
-            for (i = 0; i < fenceAGs.length; i++) {
-                if (fenceAGs[i].checked) {
-                    delete_arr.push({
-                        "fence_alarm_gid": fenceAGs[i].value
-                    });
-                }
+        let fenceAGs = document.getElementsByName("chk_fenceAG"),
+            delete_arr = [];
+        for (i = 0; i < fenceAGs.length; i++) {
+            if (fenceAGs[i].checked) {
+                delete_arr.push({
+                    "fence_alarm_gid": fenceAGs[i].value
+                });
             }
+        }
+        if (delete_arr.length == 0)
+            return alert($.i18n.prop('i_alarmAlert_61'));
+        if (confirm($.i18n.prop('i_alarmAlert_47'))) {
             let deleteXmlHttp = createJsonXmlHttp("sql");
             deleteXmlHttp.onreadystatechange = function () {
                 if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
                     let revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                        if (!revObj.Value[0].Value) return;
-                        let key = Object.keys(revObj.Value[0].Value);
-                        updateFenceAG_List(key);
-                        alert($.i18n.prop('i_alarmAlert_45'));
+                        if (revObj.Value[0].Value) {
+                            let key = Object.keys(revObj.Value[0].Value);
+                            updateFenceAG_List(key);
+                            alert($.i18n.prop('i_alarmAlert_45'));
+                        }
                     } else {
                         alert($.i18n.prop('i_alarmAlert_46'));
                     }
@@ -191,7 +197,9 @@ function getFenceAlarmGroup() {
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             let revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
+            if (!checkTokenAlive(token, revObj)) {
+                return;
+            } else if (revObj.Value[0].success > 0) {
                 if (revObj.Value[0].Value) {
                     let key = Object.keys(revObj.Value[0].Value);
                     updateFenceAG_List(key);
@@ -255,26 +263,6 @@ function editFenceAlarmGroup(fence_alarm_gid) {
         "Value": {
             "fence_alarm_gid": fence_alarm_gid
         },
-        "api_token": [token]
-    }));
-}
-
-
-function getFences() {
-    let xmlHttp = createJsonXmlHttp("sql");
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                fenceArray = revObj.Value[0].Values.slice(0) || [];
-            } else {
-                alert($.i18n.prop('i_alarmAlert_30'));
-            }
-        }
-    };
-    xmlHttp.send(JSON.stringify({
-        "Command_Type": ["Read"],
-        "Command_Name": ["GetFence_info_ALL"],
         "api_token": [token]
     }));
 }

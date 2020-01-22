@@ -214,8 +214,6 @@
         }
 
         function exportToExcelIE(table) {
-
-
             var el = document.createElement('div');
             el.innerHTML = table;
 
@@ -230,7 +228,6 @@
             } else {
                 tab = el.children[0]; // get table
             }
-
 
 
             for (j = 0; j < tab.rows.length; j++) {
@@ -265,7 +262,6 @@
 
 //get columns
 function getColumns(paramData) {
-
     var header = [];
     $.each(paramData[0], function (key, value) {
         var obj = {}

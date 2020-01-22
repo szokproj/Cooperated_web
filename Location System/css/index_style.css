@@ -101,8 +101,7 @@ fieldset {
 
 .member_photo {
     float: left;
-    max-width: 130px;
-    margin-right: 10px;
+    max-width: 120px;
 }
 
 canvas:hover {

@@ -153,7 +153,7 @@ table.sticky-table {
 /*====================*/
 
 .top {
-    margin: 10px 0px;
+    margin-top: 10px;
 }
 
 .top button {
@@ -161,18 +161,11 @@ table.sticky-table {
 }
 
 .middle {
+    margin: 10px 0px;
     background-color: transparent;
     border: 1px solid rgb(68, 68, 68);
     height: 600px;
     overflow: auto;
-}
-
-.mode_comport {
-    margin: auto;
-    width: 400px;
-    padding: 100px;
-    text-align: left;
-    display: none;
 }
 
 .checkBox_block {

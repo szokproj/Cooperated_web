@@ -1,16 +1,7 @@
-var token = "";
-
-$(function () {
-    token = getToken();
-
-    hiddenBlock();
-    $("#block_info").show();
-    $("#label_map_info").addClass("opened");//.css('background-color', 'rgb(40, 108, 197)');
+function importSetMapDialog() {
     $("#menu_load_map").on("change", function () {
         var file = this.files[0];
-        var valid = checkExt(this.value);
-        valid = valid && checkImageSize(file);
-        if (valid) {
+        if (file && checkExt(this.value) && checkImageSize(file)) {
             transBase64(file);
             $("#btn_submit_map_info").prop('disabled', false);
         }
@@ -19,24 +10,32 @@ $(function () {
     $("#menu_map_info").on("click", function () {
         hiddenBlock();
         $("#block_info").show();
-        $("#label_map_info").addClass("opened");//.css('background-color', 'rgb(40, 108, 197)');
+        $("#label_map_info").addClass("opened");
     });
     $("#menu_anchor_list").on("click", function () {
         hiddenBlock();
         $("#block_anchor_list").show();
-        $("#label_anchor_list").addClass("opened");//.css('background-color', 'rgb(40, 108, 197)');
+        $("#label_anchor_list").addClass("opened");
     });
     $("#menu_group_list").on("click", function () {
         hiddenBlock();
         $("#block_group_list").show();
-        $("#label_group_list").addClass("opened");//.css('background-color', 'rgb(40, 108, 197)');
+        $("#label_group_list").addClass("opened");
     });
     $("#menu_anchor_group").on("click", function () {
         hiddenBlock();
         $("#block_anchor_group").show();
-        $("#label_anchor_group").addClass("opened");//.css('background-color', 'rgb(40, 108, 197)');
+        $("#label_anchor_group").addClass("opened");
     });
 
+    function hiddenBlock() {
+        $("#block_info").hide();
+        $("#block_anchor_list").hide();
+        $("#block_group_list").hide();
+        $("#block_anchor_group").hide();
+        $("#block_map_group").hide();
+        $(".sidebar-menu .btn-sidebar").removeClass("opened");
+    }
 
     //map info
     var mapinfo_image = $("#canvas_map"),
@@ -98,7 +97,7 @@ $(function () {
         close: function () {
             hiddenBlock();
             $("#block_info").show();
-            $("#label_map_info").addClass("opened");//.css('background-color', 'rgb(40, 108, 197)');
+            $("#label_map_info").addClass("opened");
             $("#btn_submit_map_info").prop('disabled', true);
             allFields.removeClass("ui-state-error");
         }
@@ -113,13 +112,52 @@ $(function () {
         if (confirm($.i18n.prop('i_mapAlert_4')) == true)
             SubmitResult();
     });
-});
+}
 
-function hiddenBlock() {
-    $("#block_info").hide();
-    $("#block_anchor_list").hide();
-    $("#block_group_list").hide();
-    $("#block_anchor_group").hide();
-    $("#block_map_group").hide();
-    $(".sidebar-menu .btn-sidebar").removeClass("opened");
+
+function importNewMapDialog() {
+    var dialog, form,
+        allFields = $([]).add($("#add_map_name")).add($("#add_map_image"));
+
+    $("#add_map_file").on("change", function () {
+        var file = this.files[0];
+        if (file && checkExt(this.value) && checkImageSize(file)) {
+            var FR = new FileReader();
+            FR.readAsDataURL(file);
+            FR.onloadend = function (e) {
+                var base64data = e.target.result;
+                $("#add_map_image").attr("src", base64data);
+            };
+        }
+    });
+
+    dialog = $("#dialog_add_map").dialog({
+        autoOpen: false,
+        height: 350,
+        width: 350,
+        modal: true,
+        buttons: {
+            "Confirm": newMap,
+            Cancel: function () {
+                form[0].reset();
+                allFields.removeClass("ui-state-error");
+                dialog.dialog("close");
+            }
+        },
+        close: function () {
+            form[0].reset();
+            allFields.removeClass("ui-state-error");
+        }
+    });
+
+    form = dialog.find("form").on("submit", function (event) {
+        event.preventDefault();
+        newMap();
+    });
+
+    $("#add_new_map").button().on("click", function () {
+        $("#add_map_name").val(""); //reset
+        $("#add_map_image").attr("src", "");
+        dialog.dialog("open");
+    });
 }

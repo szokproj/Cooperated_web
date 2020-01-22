@@ -1,16 +1,16 @@
-var token = "";
-var permission = "0";
-var default_color = '#2eb82e';
-var memberArray = [];
-var deptColorArray = [];
-var titleColorArray = [];
-var userTypeColorArray = [];
-var userTypeArr = [];
-var alarmGroupArr = [];
-var dotTypeArr = ['Dept', 'JobTitle', 'UserType', 'Custom'];
-var statusArr = ['OnJob', 'LeaveJob'];
-var genderArr = ['Male', 'Female'];
-var educationArr = ['PrimarySchool', 'MiddleSchool', 'HighSchool', 'JuniorSchool', 'College', 'GraduateSchool'];
+var token = "",
+    permission = "0",
+    default_color = '#2eb82e',
+    memberArray = [],
+    deptColorArray = [],
+    titleColorArray = [],
+    userTypeColorArray = [],
+    userTypeArr = [],
+    alarmGroupArr = [],
+    dotTypeArr = ['Dept', 'JobTitle', 'UserType', 'Custom'],
+    statusArr = ['OnJob', 'LeaveJob'],
+    genderArr = ['Male', 'Female'],
+    educationArr = ['PrimarySchool', 'MiddleSchool', 'HighSchool', 'JuniorSchool', 'College', 'GraduateSchool'];
 
 
 $(function () {
@@ -23,7 +23,7 @@ $(function () {
     }
     setNavBar("Member_Setting", "Member_Setting");
 
-    var h = document.documentElement.clientHeight;
+    let h = document.documentElement.clientHeight;
     $(".container").css("height", h - 10 + "px");
     $(".member_list").css("max-height", h - 110 + "px");
 
@@ -39,13 +39,13 @@ $(function () {
     UpdateMemberList();
 
     //Set deptColorArray
-    var deptXmlHttp = createJsonXmlHttp('sql');
+    let deptXmlHttp = createJsonXmlHttp('sql');
     deptXmlHttp.onreadystatechange = function () {
         if (deptXmlHttp.readyState == 4 || deptXmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
+            let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                var revInfo = revObj.Value[0].Values || [];
-                for (i = 0; i < revInfo.length; i++)
+                let revInfo = revObj.Value[0].Values || [];
+                for (let i = 0; i < revInfo.length; i++)
                     deptColorArray.push(revInfo[i]);
             }
         }
@@ -56,12 +56,12 @@ $(function () {
         "api_token": [token]
     }));
     //Set titleColorArray
-    var titleXmlHttp = createJsonXmlHttp('sql');
+    let titleXmlHttp = createJsonXmlHttp('sql');
     titleXmlHttp.onreadystatechange = function () {
         if (titleXmlHttp.readyState == 4 || titleXmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
+            let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                var revInfo = revObj.Value[0].Values || [];
+                let revInfo = revObj.Value[0].Values || [];
                 revInfo.forEach(element => {
                     titleColorArray.push(element);
                 });
@@ -74,12 +74,12 @@ $(function () {
         "api_token": [token]
     }));
     //Set userTypeColorArray and userTypeArr
-    var userTypeXmlHttp = createJsonXmlHttp('sql');
+    let userTypeXmlHttp = createJsonXmlHttp('sql');
     userTypeXmlHttp.onreadystatechange = function () {
         if (userTypeXmlHttp.readyState == 4 || userTypeXmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
+            let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                var revInfo = revObj.Value[0].Values || [];
+                let revInfo = revObj.Value[0].Values || [];
                 revInfo.forEach(element => {
                     userTypeColorArray.push(element);
                     userTypeArr.push(element.type);
@@ -93,8 +93,8 @@ $(function () {
         "api_token": [token]
     }));
     $("#main_type").change(function () {
-        var type = typeof ($(this).val()) != 'undefined' ? $(this).val() : "";
-        var index = $("#main_select_tag_color").children('option:selected').index();
+        let type = typeof ($(this).val()) != 'undefined' ? $(this).val() : "",
+            index = $("#main_select_tag_color").children('option:selected').index();
         if (index == 3 && type != "") {
             userTypeColorArray.forEach(v => {
                 if (v.type == type) {
@@ -105,8 +105,8 @@ $(function () {
     });
     $("#main_picture_upload").unbind();
     $("#main_picture_upload").change(function () {
-        var file = this.files[0];
-        var valid = checkExt(this.value);
+        let file = this.files[0],
+            valid = checkExt(this.value);
         //console.log(file.size / 1024);
         valid = valid && checkImageSize(file); //" KB"
         if (valid)
@@ -129,7 +129,7 @@ $(function () {
         $("#dialog_tree_chart").dialog("open");
     });
     $("#selectAll").parent().on('click', function () {
-        var state = $("#selectAll").prop("checked");
+        let state = $("#selectAll").prop("checked");
         $("#selectAll").prop("checked", !state)
         if (!state) {
             $("input[name='chkbox_members']").prop("checked", true);
@@ -153,7 +153,7 @@ $(function () {
         $(this).val(''); //reset input[type='file']
     });
     $("#excel_export").click(function () {
-        var array = arrayKeyTranslate(memberArray);
+        let array = arrayKeyTranslate(memberArray);
         $("#dvjson").excelexportjs({
             containerid: "dvjson",
             datatype: 'json',
@@ -163,7 +163,7 @@ $(function () {
             worksheetName: "Member Data"
         });
     });
-    var lang = getCookie("userLanguage");
+    let lang = getCookie("userLanguage");
     $("#excel_example").click(function () {
         link = document.getElementById("excel_export_download");
         if (lang == "en") {
@@ -184,17 +184,17 @@ $(function () {
 });
 
 function UpdateMemberList() {
-    var getAlarmGroupReq = {
+    let getAlarmGroupReq = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetAlarmGroup_list"],
         "api_token": [token]
     };
-    var getXmlHttp = createJsonXmlHttp("sql");
+    let getXmlHttp = createJsonXmlHttp("sql");
     getXmlHttp.onreadystatechange = function () {
         if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
+            let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                var revList = revObj.Value[0].Values || [];
+                let revList = revObj.Value[0].Values || [];
                 alarmGroupArr = [];
                 revList.forEach(element => {
                     alarmGroupArr.push({
@@ -202,27 +202,27 @@ function UpdateMemberList() {
                         name: element.alarm_group_name
                     });
                 });
-                var request = {
+                let request = {
                     "Command_Type": ["Read"],
                     "Command_Name": ["GetStaffs"],
                     "api_token": [token]
                 };
-                var xmlHttp = createJsonXmlHttp("sql"); //updateMemberList
+                let xmlHttp = createJsonXmlHttp("sql"); //updateMemberList
                 xmlHttp.onreadystatechange = function () {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                        var revObj2 = JSON.parse(this.responseText);
+                        let revObj2 = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
                             $(function () {
                                 $("#table_member_setting tbody").empty(); //先重置表格
                                 memberArray = revObj2.Value[0].Values.slice(0) || [];
-                                for (var i = 0; i < memberArray.length; i++) {
-                                    var tr_id = "tr_member_" + i;
-                                    var user_id = parseInt(memberArray[i].tag_id.substring(8), 16);
-                                    var number = memberArray[i].number;
-                                    var alarm_index = alarmGroupArr.findIndex(function (array) {
-                                        return array.id == memberArray[i].alarm_group_id;
-                                    });
-                                    var alarm_group_name = alarm_index > -1 ? alarmGroupArr[alarm_index].name : "";
+                                for (let i = 0; i < memberArray.length; i++) {
+                                    let tr_id = "tr_member_" + i,
+                                        user_id = parseInt(memberArray[i].tag_id.substring(8), 16),
+                                        number = memberArray[i].number,
+                                        alarm_index = alarmGroupArr.findIndex(function (array) {
+                                            return array.id == memberArray[i].alarm_group_id;
+                                        }),
+                                        alarm_group_name = alarm_index > -1 ? alarmGroupArr[alarm_index].name : "";
                                     $("#table_member_setting tbody").append("<tr id=\"" + tr_id + "\">" +
                                         "<td><input type=\"checkbox\" name=\"chkbox_members\" value=\"" + number + "\" " +
                                         " /> <label>" + (i + 1) + "</label></td>" +
@@ -257,7 +257,7 @@ function UpdateMemberList() {
 
 
 function editMemberData(number) {
-    var request = {
+    let request = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetOneStaff"],
         "Value": {
@@ -265,12 +265,12 @@ function editMemberData(number) {
         },
         "api_token": [token]
     };
-    var xmlHttp = createJsonXmlHttp("sql");
+    let xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
+            let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                var revInfo = revObj.Value[0].Values[0];
+                let revInfo = revObj.Value[0].Values[0];
                 $("#main_tid_id").val(parseInt(revInfo.tag_id.substring(0, 8), 16));
                 $("#main_user_id").val(parseInt(revInfo.tag_id.substring(8), 16));
                 $("#main_card_id").val(revInfo.card_id);
@@ -284,12 +284,12 @@ function editMemberData(number) {
                 if (revInfo.file_ext == "" || revInfo.photo == "") {
                     adjustImageSize("");
                 } else {
-                    var src = "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
+                    let src = "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
                     adjustImageSize(src);
                 }
                 $("#main_select_tag_color").html(createI18nOptions(dotTypeArr, revInfo.color_type));
                 selectTagColor(); //依照畫點依據的內容代入已設定的顏色，未設定則採用預設顏色
-                var color_type_index = $("#main_select_tag_color").children('option:selected').index();
+                let color_type_index = $("#main_select_tag_color").children('option:selected').index();
                 if (color_type_index == 4) { //自訂
                     $("#main_input_tag_color").val(colorToHex(revInfo.color));
                 }
@@ -346,18 +346,18 @@ function editMemberData(number) {
 
 function transBase64(file) {
     if (file) { //file transform base64
-        var FR = new FileReader();
+        let FR = new FileReader();
         FR.readAsDataURL(file);
         FR.onloadend = function (e) {
-            var base64data = e.target.result;
+            let base64data = e.target.result;
             adjustImageSize(base64data);
         };
     }
 }
 
 function checkExt(fileName) {
-    var validExts = new Array(".png", ".jpg", ".jpeg"); // 可接受的副檔名
-    var fileExt = fileName.substring(fileName.lastIndexOf('.'));
+    let validExts = new Array(".png", ".jpg", ".jpeg"), // 可接受的副檔名
+        fileExt = fileName.substring(fileName.lastIndexOf('.'));
     if (validExts.indexOf(fileExt) < 0) {
         alert($.i18n.prop('i_fileError_2') + validExts.toString());
         return false;
@@ -377,7 +377,7 @@ function checkImageSize(file) {
 function convertTobase64(file) {
     return new Promise((resolve, reject) => {
         // 建立FileReader物件
-        var reader = new FileReader();
+        let reader = new FileReader();
         // 註冊onload事件，取得result則resolve (會是一個Base64字串)
         reader.onload = () => {
             resolve(reader.result);
@@ -392,14 +392,14 @@ function convertTobase64(file) {
 }
 
 function adjustImageSize(src) {
-    var thumb_width = parseInt($("#main_picture_block").css('max-width'), 10);
-    var thumb_height = parseInt($("#main_picture_block").css('max-height'), 10);
+    let thumb_width = parseInt($("#main_picture_block").css('max-width'), 10),
+        thumb_height = parseInt($("#main_picture_block").css('max-height'), 10);
     if (src.length > 0) {
-        var img = new Image();
+        let img = new Image();
         img.src = src;
         img.onload = function () {
-            var thumbSize = thumb_width / thumb_height;
-            var imgSize = img.width / img.height;
+            let thumbSize = thumb_width / thumb_height,
+                imgSize = img.width / img.height;
             if (imgSize > thumbSize) { //原圖比例寬邊較長
                 $("#main_picture_img").attr('src', src);
                 $("#main_picture_img").width(thumb_width).height(img.height * (thumb_width / img.width));
@@ -454,9 +454,9 @@ function addMemberData() {
 }
 
 function removeMemberDatas() {
-    var checkboxs = document.getElementsByName("chkbox_members");
-    var num_arr = [];
-    for (j in checkboxs) {
+    let checkboxs = document.getElementsByName("chkbox_members"),
+        num_arr = [];
+    for (let j = 0; j < checkboxs.length; j++) {
         if (checkboxs[j].checked)
             num_arr.push({
                 "number": checkboxs[j].value
@@ -465,16 +465,16 @@ function removeMemberDatas() {
     if (num_arr.length == 0)
         return alert($.i18n.prop('i_alertError_2'));
     if (confirm($.i18n.prop('i_confirm_1'))) {
-        var request = {
+        let request = {
             "Command_Type": ["Write"],
             "Command_Name": ["DeleteStaff"],
             "Value": num_arr,
             "api_token": [token]
         };
-        var xmlHttp = createJsonXmlHttp("sql");
+        let xmlHttp = createJsonXmlHttp("sql");
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                var revObj = JSON.parse(this.responseText);
+                let revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     UpdateMemberList();
                 }
@@ -485,9 +485,9 @@ function removeMemberDatas() {
 }
 
 function multiEditData() {
-    var checkboxs = document.getElementsByName("chkbox_members");
-    var num_arr = [];
-    for (j in checkboxs) {
+    var checkboxs = document.getElementsByName("chkbox_members"),
+        num_arr = [];
+    for (let j = 0; j < checkboxs.length; j++) {
         if (checkboxs[j].checked)
             num_arr.push(checkboxs[j].value);
     }
@@ -511,8 +511,8 @@ function multiEditData() {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                            var revInfo = revObj.Value[0].Values || [];
-                            var deptArr = [];
+                            var revInfo = revObj.Value[0].Values || [],
+                                deptArr = [];
                             revInfo.forEach(element => {
                                 deptArr.push({
                                     id: element.c_id,
@@ -537,8 +537,8 @@ function multiEditData() {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                            var revInfo = revObj.Value[0].Values || [];
-                            var titleArr = [];
+                            var revInfo = revObj.Value[0].Values || [],
+                                titleArr = [];
                             revInfo.forEach(element => {
                                 titleArr.push({
                                     id: element.c_id,
@@ -563,8 +563,8 @@ function multiEditData() {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                            var revInfo = revObj.Value[0].Values || [];
-                            var typeArr = [];
+                            var revInfo = revObj.Value[0].Values || [],
+                                typeArr = [];
                             revInfo.forEach(element => {
                                 typeArr.push(element.type);
                             });
@@ -586,8 +586,8 @@ function multiEditData() {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                         var revObj = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                            var revInfo = revObj.Value[0].Values || [];
-                            var alarmGroupArr = [];
+                            var revInfo = revObj.Value[0].Values || [],
+                                alarmGroupArr = [];
                             revInfo.forEach(element => {
                                 alarmGroupArr.push({
                                     id: element.alarm_gid,
@@ -610,11 +610,11 @@ function multiEditData() {
 }
 
 function createI18nOptions(array, select) {
-    var options = "";
+    let options = "";
     select = typeof (select) != 'undefined' ? select : "";
     options += "<option value=\"\">" + $.i18n.prop('i_select') + "</option>"; //增加預設的空白項
-    for (i = 0; i < array.length; i++) {
-        var i18n_value = $.i18n.prop(array[i]);
+    for (let i = 0; i < array.length; i++) {
+        let i18n_value = $.i18n.prop(array[i]);
         if (array[i] == select) {
             options += "<option value=\"" + array[i] + "\" selected=\"selected\">" + i18n_value + "</option>";
         } else {
@@ -625,10 +625,10 @@ function createI18nOptions(array, select) {
 }
 
 function createOptions(array, select) {
-    var options = "";
+    let options = "";
     select = typeof (select) != 'undefined' ? select : "";
     options += "<option value=\"\">" + $.i18n.prop('i_select') + "</option>";
-    for (i = 0; i < array.length; i++) {
+    for (let i = 0; i < array.length; i++) {
         if (array[i] == select) {
             options += "<option value=\"" + array[i] + "\" selected=\"selected\">" +
                 array[i] + "</option>";
@@ -640,7 +640,7 @@ function createOptions(array, select) {
 }
 
 function displayNameOptions(array, select_id) {
-    var options = "";
+    let options = "";
     array.forEach(element => {
         if (element.id == select_id) {
             options += "<option value=\"" + element.id + "\" selected=\"selected\">" +
@@ -653,9 +653,9 @@ function displayNameOptions(array, select_id) {
 }
 
 function getFileName(src) {
-    var pos1 = src.lastIndexOf("\\");
-    var pos2 = src.lastIndexOf("/");
-    var pos = -1;
+    let pos1 = src.lastIndexOf("\\"),
+        pos2 = src.lastIndexOf("/"),
+        pos = -1;
     if (pos1 < 0) pos = pos2;
     else pos = pos1;
     return src.substring(pos + 1);
