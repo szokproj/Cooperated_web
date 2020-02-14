@@ -105,11 +105,9 @@ $(function () {
     });
     $("#main_picture_upload").unbind();
     $("#main_picture_upload").change(function () {
-        let file = this.files[0],
-            valid = checkExt(this.value);
+        let file = this.files[0];
         //console.log(file.size / 1024);
-        valid = valid && checkImageSize(file); //" KB"
-        if (valid)
+        if (checkExt(this.value) && checkImageSize(file))
             transBase64(file);
     });
     $("#main_picture_clear").click(function () {
@@ -166,18 +164,23 @@ $(function () {
     let lang = getCookie("userLanguage");
     $("#excel_example").click(function () {
         link = document.getElementById("excel_export_download");
-        if (lang == "en") {
-            link.download = "RTLS_Example_EN.xls";
-            link.href = "../excel/RTLS_Example_EN.xls";
-        } else if (lang == "zh-TW") {
-            link.download = "RTLS_Example_TW.xls";
-            link.href = "../excel/RTLS_Example_TW.xls";
-        } else if (lang == "zh-CN") {
-            link.download = "RTLS_Example_CN.xls";
-            link.href = "../excel/RTLS_Example_CN.xls";
-        } else {
-            link.download = "RTLS_Example_EN.xls";
-            link.href = "../excel/RTLS_Example_EN.xls";
+        switch (lang) {
+            case "en":
+                link.download = "RTLS_Example_EN.xls";
+                link.href = "../excel/RTLS_Example_EN.xls";
+                break;
+            case "zh-TW":
+                link.download = "RTLS_Example_TW.xls";
+                link.href = "../excel/RTLS_Example_TW.xls";
+                break;
+            case "zh-CN":
+                link.download = "RTLS_Example_CN.xls";
+                link.href = "../excel/RTLS_Example_CN.xls";
+                break;
+            default:
+                link.download = "RTLS_Example_EN.xls";
+                link.href = "../excel/RTLS_Example_EN.xls";
+                break;
         }
         link.click();
     });

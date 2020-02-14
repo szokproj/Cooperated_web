@@ -10,8 +10,7 @@ var ipPortList = {};
 
 $(function () {
     let h = document.documentElement.clientHeight;
-    $(".container").css("height", h - 10 + "px");
-    $("#block_files_list").css("max-height", h - 425 + "px");
+    $("#block_files_list").css("max-height", h - 432 + "px");
 
     token = getToken();
     /*

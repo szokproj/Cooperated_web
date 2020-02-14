@@ -6,8 +6,10 @@ var isStart = false,
     countDatas = 0;
 $(function () {
     let h = document.documentElement.clientHeight;
-    $(".container").css("height", h - 10 + "px");
-    $(".table_block").css("max-height", h - 80 + "px");
+    $(".table_block").css({
+        "max-height": h - 80 + "px",
+        "height": h - 80 + "px"
+    });
 
     token = getToken();
     /*

@@ -194,7 +194,7 @@ function drawFocusMark(dctx, x, y, zoom) {
 
 function drawFocusFrame(dctx, x, y, size, zoom) {
     var radius = parseInt(size, 10); //size:10
-    dctx.strokeStyle = '#006affd5'; //'#446ca3d5';
+    dctx.strokeStyle = 'rgb(0, 106, 255)'; //'#446ca3d5';
     dctx.lineWidth = 2 * zoom;
     dctx.strokeRect(
         x - (radius + 5) * zoom,

@@ -6,8 +6,8 @@ var token = "",
     MapList = {}, //[map_id]{ map_name, map_file & map_file_ext, map_scale }
     groupfindMap = {},
     MemberList = {},
-    tagArray = {},
-    alarmArray = [],
+    TagList = {},
+    AlarmList = {},
     alarmFilterArr = [],
     canvasArray = [], //input myCanvas
     xmlHttp = {
@@ -46,10 +46,7 @@ $(function () {
     //https://www.minwt.com/webdesign-dev/js/16298.html
     let h = document.documentElement.clientHeight,
         w = document.documentElement.clientWidth;
-    $(".container").css("height", h - 10 + "px");
-    /*$(".member-table").css("max-height", h + "px");
-    $(".alarm-table").css("max-height", h + "px");
-    $(".search-table").css("max-height", h + "px");*/
+    $("#content").css("height", h - 82 + "px");
     //Check this page's permission and load navbar
 
     let userInfo = getUser();
@@ -301,20 +298,19 @@ function updateAlarmHandle() {
             let revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                 let revInfo = "Values" in revObj.Value[0] ? revObj.Value[0].Values : [],
-                    len = revInfo.length,
                     html = "";
                 for (let i = 0; i < revInfo.length; i++) {
-                    let tag_id = revInfo[i].tagid,
-                        number = tag_id in MemberList ? MemberList[tag_id].number : "",
-                        name = tag_id in MemberList ? MemberList[tag_id].name : "";
-                    html = "<tr><td>" + (len - i) +
+                    let user_id = parseInt(revInfo[i].tagid.substring(8), 16),
+                        number = user_id in MemberList ? MemberList[user_id].number : "",
+                        name = user_id in MemberList ? MemberList[user_id].name : "";
+                    html += "<tr><td>" + (i + 1) +
                         "</td><td>" + revInfo[i].alarmtype +
-                        "</td><td>" + parseInt(tag_id.substring(8), 16) +
+                        "</td><td>" + user_id +
                         "</td><td>" + number +
                         "</td><td>" + name +
                         "</td><td>" + revInfo[i].alarmhelper +
                         "</td><td>" + revInfo[i].endtime +
-                        "</td></tr>" + html;
+                        "</td></tr>";
                 }
                 document.getElementById("table_rightbar_alarm_list").children[1].innerHTML = html;
             }
@@ -341,9 +337,9 @@ function updateAlarmList() {
                 alarmFilterArr = [];
                 revInfo.forEach(element => {
                     if (ALARM_TYPE.indexOf(element.tag_alarm_type) > -1) {
-                        let tag_id = element.tag_id,
-                            number = tag_id in MemberList ? MemberList[tag_id].number : "",
-                            name = tag_id in MemberList ? MemberList[tag_id].name : "";
+                        let user_id = parseInt(element.tag_id.substring(8), 16),
+                            number = user_id in MemberList ? MemberList[user_id].number : "",
+                            name = user_id in MemberList ? MemberList[user_id].name : "";
                         if (element.tag_alarm_type == "low_power" && !display_setting.display_alarm_low_power)
                             return;
                         if (element.tag_alarm_type == "active" && !display_setting.display_alarm_active)
@@ -351,7 +347,8 @@ function updateAlarmList() {
                         if (element.tag_alarm_type == "still" && !display_setting.display_alarm_still)
                             return;
                         alarmFilterArr.push({ //添加元素到陣列的開頭
-                            id: tag_id,
+                            id: element.tag_id,
+                            user_id: user_id,
                             number: number,
                             name: name,
                             alarm_type: element.tag_alarm_type,
@@ -359,7 +356,7 @@ function updateAlarmList() {
                             count: element.counter
                         });
                         update += temp_arr.findIndex(function (info) {
-                            return info.id == tag_id && info.alarm_type == element.tag_alarm_type;
+                            return info.id == element.tag_id && info.alarm_type == element.tag_alarm_type;
                         }) > -1 ? 0 : 1; //計算新增筆數
                     }
                 });
@@ -388,10 +385,12 @@ function updateAlarmList() {
 }
 
 function inputTagPoints(old_point, new_point) {
+    /**
+     * Note:
+     *  old_point = temp_arr[element.tag_id].point[frames-1];
+     *  new_point = element;
+     */
     let point_array = [];
-    /* Note:
-        old_point = temp_arr[element.tag_id].point[frames-1];
-        new_point = element;*/
     if (!old_point || old_point.group_id != new_point.group_id) {
         for (let i = 0; i < frames; i++) {
             point_array.push({
@@ -439,54 +438,44 @@ function updateTagList() {
                 //console.log("get datas : " + new Date().getTime());
                 let revInfo = revObj,
                     tagArrTemp = {},
-                    update = 0,
-                    focus_data = null;
-
-                revInfo.forEach(element => { //=new Tag datas
-                    let number = element.tag_id in MemberList ? MemberList[element.tag_id].number : "",
-                        name = element.tag_id in MemberList ? MemberList[element.tag_id].name : "",
-                        color = element.tag_id in MemberList ? MemberList[element.tag_id].color : "",
-                        old_point = tagArray[element.tag_id] ? tagArray[element.tag_id].point[frames - 1] : null,
-                        point_array = inputTagPoints(old_point, element); //tagArray = oldArray
+                    update = 0;
+                //focus_data = null;
+                revInfo.forEach(element => { //new tag datas
+                    element["user_id"] = parseInt(element.tag_id.substring(8), 16);
+                    element["number"] = MemberList[element.user_id] ? MemberList[element.user_id].number : "";
+                    element["name"] = MemberList[element.user_id] ? MemberList[element.user_id].name : "";
+                    //TagList = oldArray
+                    let old_point = TagList[element.tag_id] ? TagList[element.tag_id].point[frames - 1] : null;
                     //update tag array
-                    if (element.tag_id == locating_id) {
-                        focus_data = {
-                            id: element.tag_id,
-                            point: point_array,
-                            system_time: element.tag_time,
-                            color: color,
-                            number: number,
-                            name: name,
-                            type: "normal",
-                        };
-                    } else {
-                        tagArrTemp[element.tag_id] = {
-                            id: element.tag_id,
-                            point: point_array,
-                            system_time: element.tag_time,
-                            color: color,
-                            number: number,
-                            name: name,
-                            type: "normal"
-                        };
-                    }
-                    element["number"] = number;
-                    element["name"] = name;
-                    update += tagArray[element.tag_id] ? 0 : 1;
+                    tagArrTemp[element.tag_id] = {
+                        id: element.tag_id,
+                        user_id: element.user_id,
+                        number: element.number,
+                        name: element.name,
+                        system_time: element.tag_time,
+                        point: inputTagPoints(old_point, element), //create point array
+                        color: MemberList[element.user_id] ? MemberList[element.user_id].color : "",
+                        type: "normal"
+                    };
+                    update += TagList[element.tag_id] ? 0 : 1;
                 });
-                if (focus_data)
-                    tagArrTemp[locating_id] = focus_data;
-                if (update > 0) {
+                if (locating_id != "") {
+                    let temp = tagArrTemp[locating_id];
+                    if (temp) {
+                        delete tagArrTemp[locating_id];
+                        tagArrTemp[locating_id] = temp;
+                    }
+                }
+                if (update > 0) { //update member list
                     let html = "";
-                    //update member list
                     revInfo.sort(function (a, b) {
-                        let A = parseInt(a.tag_id.substring(8), 16),
-                            B = parseInt(b.tag_id.substring(8), 16);
+                        let A = a.user_id,
+                            B = b.user_id;
                         return A - B;
                     });
                     revInfo.forEach(function (v, i) {
                         html += "<tr><td>" + (i + 1) +
-                            "</td><td>" + parseInt(v.tag_id.substring(8), 16) +
+                            "</td><td>" + v.user_id +
                             "</td><td>" + v.number +
                             "</td><td>" + v.name +
                             "</td><td><button class=\"btn btn-default btn-focus\"" +
@@ -497,23 +486,33 @@ function updateTagList() {
                     document.getElementById("table_rightbar_member_list").children[1].innerHTML = html; //tbody
                 }
                 tableFilter("table_filter_member", "table_rightbar_member_list");
-
-                tagArray = tagArrTemp;
-                tagArrTemp = {};
-                //定時比對tagArray更新alarmArray
-                alarmArray = []; //每次更新都必須重置alarmArray
+                revInfo = null;
+                TagList = tagArrTemp;
+                tagArrTemp = null;
+                //定時比對TagList更新AlarmList
+                AlarmList = {}; //每次更新都必須重置AlarmList
                 alarmFilterArr.forEach(element => {
-                    if (element.id in tagArray) {
-                        alarmArray.push({ //依序將Tag資料放入AlarmArray中
+                    if (element.id in TagList) {
+                        //依序將Tag資料放入AlarmList中
+                        AlarmList[element.id] = {
                             id: element.id,
-                            point: tagArray[element.id].point,
+                            user_id: element.user_id,
+                            number: element.number,
+                            name: element.name,
+                            point: TagList[element.id].point,
                             status: element.alarm_type,
                             alarm_time: element.alarm_time
-                        });
-                        tagArray[element.id].type = "alarm";
+                        };
+                        TagList[element.id].type = "alarm";
                     }
                 });
-
+                if (locating_id != "") {
+                    let temp = AlarmList[locating_id];
+                    if (temp) {
+                        delete AlarmList[locating_id];
+                        AlarmList[locating_id] = temp;
+                    }
+                }
                 //console.log("update tag array : " + new Date().getTime());
                 draw();
             }
@@ -596,18 +595,18 @@ function checkMapIsUsed(map_id) {
 }
 
 function locateTag(tag_id) {
-    if (tag_id in tagArray) {
+    if (tag_id in TagList) {
         isFocus = true;
         locating_id = tag_id;
-        checkMapIsUsed(groupfindMap[tagArray[tag_id].point[frames - 1].group_id]);
+        checkMapIsUsed(groupfindMap[TagList[tag_id].point[frames - 1].group_id]);
     } else {
         showAlertDialog();
     }
 }
 
 function showAlertDialog() {
-    let dialog = document.getElementById("alert_window");
     if (display_setting.display_no_position) {
+        let dialog = document.getElementById("alert_window");
         dialog.style.display = 'block';
         dialog.classList.remove("fadeOut");
         pageTimer["dialog"] = setTimeout(function () {
@@ -629,18 +628,17 @@ function search() {
                     if (groupfindMap[i] == map_id)
                         group_arr.push(i);
                 }
-                for (let j in tagArray) {
-                    let v = tagArray[j];
+                for (let tag_id in TagList) {
+                    let v = TagList[tag_id];
                     group_arr.forEach(group_id => {
                         if (v.point[frames - 1].group_id == group_id) {
-                            let user_id = parseInt(v.id.substring(8), 16),
-                                member_data = MemberList[user_id] || {
-                                    dept: "",
-                                    job_title: "",
-                                    type: ""
-                                };
+                            let member_data = MemberList[v.user_id] || {
+                                dept: "",
+                                job_title: "",
+                                type: ""
+                            };
                             html += "<tr>" +
-                                "<td>" + user_id + "</td>" +
+                                "<td>" + v.user_id + "</td>" +
                                 "<td>" + v.number + "</td>" +
                                 "<td>" + v.name + "</td>" +
                                 "<td>" + member_data.dept + "</td>" +

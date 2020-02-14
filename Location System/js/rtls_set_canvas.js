@@ -55,6 +55,8 @@ function RTLS_Canvas(number) {
         },
         adjust = {
             setCanvas: function (img_src, width, height) {
+                canvas.style.marginLeft = "0px";
+                canvas.style.marginTop = "0px";
                 canvas.style.backgroundImage = "url(" + img_src + ")";
                 canvas.style.backgroundSize = width + "px " + height + "px";
                 canvas.width = width * PIXEL_RATIO;
@@ -64,6 +66,8 @@ function RTLS_Canvas(number) {
             },
             setSize: function () { //縮放canvas與背景圖大小
                 if (canvasImg.isLoad) {
+                    canvas.style.marginLeft = xleftView + "px";
+                    canvas.style.marginTop = ytopView + "px";
                     canvas.style.backgroundSize = (canvasImg.width * Zoom) + "px " + (canvasImg.height * Zoom) + "px";
                     canvas.width = canvasImg.width * PIXEL_RATIO * Zoom;
                     canvas.height = canvasImg.height * PIXEL_RATIO * Zoom;
@@ -97,8 +101,6 @@ function RTLS_Canvas(number) {
                         restore.label.innerHTML = "<i class=\"fas fa-compress\"" +
                             " style='font-size:20px;' title=\"" + $.i18n.prop('i_restore_scale') + "\"></i>";
                     }
-                    canvas.style.marginLeft = "0px";
-                    canvas.style.marginTop = "0px";
                     draw();
                 }
             },
@@ -108,8 +110,10 @@ function RTLS_Canvas(number) {
                         cvsBlock_height = parseFloat(cvsBlock.clientHeight),
                         focus_x = cvsBlock_width / 2 - parseFloat(x) * Zoom,
                         focus_y = cvsBlock_height / 2 - parseFloat(y) * Zoom;
-                    canvas.style.marginLeft = focus_x + "px";
-                    canvas.style.marginTop = focus_y + "px";
+                    xleftView = focus_x;
+                    ytopView = focus_y;
+                    canvas.style.marginLeft = xleftView + "px";
+                    canvas.style.marginTop = ytopView + "px";
                 }
             },
             unlockFocusCenter: function () { //解除定位
@@ -122,8 +126,6 @@ function RTLS_Canvas(number) {
                     ctx.restore();
                     ctx.save();
                     isFitWindow = false;
-                    canvas.style.marginLeft = "0px";
-                    canvas.style.marginTop = "0px";
                     if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
                         Zoom = (cvsBlock_width / serverImg.width).toFixed(2);
                     else
@@ -313,14 +315,12 @@ function RTLS_Canvas(number) {
             }
         },
         draw = function () {
-            if (Map_id == "") //reset canvas map
+            if (Map_id == "") //if reset the canvas map
                 return;
-
             pageTimer["draw_frame"]["canvas" + number].forEach(timeout => {
                 clearTimeout(timeout);
             });
             pageTimer["draw_frame"]["canvas" + number] = [];
-
             for (let t = 0; t < frames; t++) {
                 pageTimer["draw_frame"]["canvas" + number].push(
                     setTimeout(function () {
@@ -338,18 +338,19 @@ function RTLS_Canvas(number) {
             anchorArray.forEach(function (v) {
                 drawAnchor(ctx, v.id, v.type, v.x, v.y, dot_size.anchor, 1 / Zoom);
             });
-            for (let tag_id in tagArray) {
-                let v = tagArray[tag_id];
+            for (let tag_id in TagList) {
+                let v = TagList[tag_id];
                 if (groupfindMap[v.point[i].group_id] == Map_id)
                     drawTags(ctx, v.id, v.point[i].x, canvasImg.height - v.point[i].y, v.color, dot_size.tag, 1 / Zoom);
             }
-            alarmArray.forEach(function (v) {
+            for (let tag_id in AlarmList) {
+                let v = AlarmList[tag_id];
                 if (groupfindMap[v.point[i].group_id] == Map_id)
                     drawAlarmTags(ctx, v.id, v.point[i].x, canvasImg.height - v.point[i].y, v.status, dot_size.alarm, 1 / Zoom);
-            });
+            }
             //Focus the position of this locating tag.
-            if (isFocus && locating_id in tagArray) {
-                let target = tagArray[locating_id],
+            if (isFocus && locating_id in TagList) {
+                let target = TagList[locating_id],
                     target_map = groupfindMap[target.point[i].group_id] || "",
                     x = target.point[i].x,
                     y = canvasImg.height - target.point[i].y;
@@ -380,20 +381,17 @@ function RTLS_Canvas(number) {
                     if (Zoom > 0.1)
                         scale = 0.9;
                 } else {
-                    scale = 1.1;
+                    if (Zoom < 2.0)
+                        scale = 1.1;
                 }
                 Zoom = (Zoom * scale).toFixed(2); //縮放比例
                 if (display_setting.lock_window && isFocus)
                     return;
-                draw();
                 let Next_x = lastX * Zoom, //縮放後滑鼠位移後的位置(x坐標)
                     Next_y = (canvasImg.height - lastY) * Zoom; //縮放後滑鼠位移後的位置(y坐標)
-                //let canvas_left = parseFloat(canvas.style.marginLeft); //canvas目前相對於div的位置(x坐標)
-                //let canvas_top = parseFloat(canvas.style.marginTop); //canvas目前相對於div的位置(y坐標)
                 xleftView += pos_x - Next_x;
                 ytopView += pos_y - Next_y;
-                canvas.style.marginLeft = xleftView + "px";
-                canvas.style.marginTop = ytopView + "px";
+                draw();
             },
             handleCanvasDown: function (e) {
                 if (display_setting.lock_window && isFocus)
@@ -421,69 +419,52 @@ function RTLS_Canvas(number) {
             },
             handleMouseClick: function (e) { //滑鼠點擊事件
                 let p = {
-                    x: lastX,
-                    y: lastY
-                };
-                for (let tag_id in tagArray) {
-                    let v = tagArray[tag_id],
-                        point = v.point[times];
-                    if (v.type == "normal" && groupfindMap[point.group_id] == Map_id) {
-                        let radius = dot_size.tag / Zoom,
-                            distance = Math.sqrt(Math.pow(point.x - p.x, 2) + Math.pow(point.y - (p.y - radius * 2), 2));
-                        if (distance <= radius) {
-                            setTagDialog(v);
+                        x: lastX,
+                        y: lastY
+                    },
+                    radius = dot_size.tag / Zoom;
+                for (let tag_id in TagList) {
+                    let point = TagList[tag_id].point[times];
+                    if (TagList[tag_id].type == "normal" && groupfindMap[point.group_id] == Map_id) {
+                        //判斷點擊位置到座標點位置的距離是否<=半徑長度
+                        if (Math.pow(radius, 2) >= Math.pow(point.x - p.x, 2) + Math.pow(point.y - (p.y - radius * 2), 2)) {
+                            setTagDialog(TagList[tag_id]);
                         }
                     }
                 }
-                alarmArray.forEach(function (v) {
-                    let point = v.point[times];
+                radius = dot_size.alarm / Zoom;
+                for (let tag_id in AlarmList) {
+                    let point = AlarmList[tag_id].point[times];
                     if (groupfindMap[point.group_id] == Map_id) {
-                        let radius = dot_size.alarm / Zoom,
-                            distance = Math.sqrt(Math.pow(point.x - p.x, 2) + Math.pow(point.y - (p.y - radius * 2), 2));
-                        if (distance <= radius) {
-                            setAlarmDialog({
-                                id: v.id,
-                                number: v.id in MemberList ? MemberList[v.id].number : "",
-                                name: v.id in MemberList ? MemberList[v.id].name : "",
-                                status: v.status,
-                                alarm_time: v.alarm_time
-                            });
+                        if (Math.pow(radius, 2) >= Math.pow(point.x - p.x, 2) + Math.pow(point.y - (p.y - radius * 2), 2)) {
+                            setAlarmDialog(AlarmList[tag_id]);
                         }
                     }
-                });
+                }
             },
             handleMobileTouch: function (e) { //手指觸碰事件
                 if (canvasImg.isLoad) {
-                    let x = e.changedTouches[0].pageX,
-                        y = e.changedTouches[0].pageY,
-                        p = get.pointOnCanvas(x, y);
-                    for (let each in tagArray) {
-                        let v = tagArray[each],
-                            point = v.point[times];
-                        if (v.type == "normal" && groupfindMap[point.group_id] == Map_id) {
-                            let radius = dot_size.tag / Zoom,
-                                distance = Math.sqrt(Math.pow(point.x - p.x, 2) + Math.pow(point.y - (p.y - radius * 2), 2));
-                            if (distance <= radius) {
-                                setTagDialog(v);
+                    let x = e.changedTouches[0].clientX,
+                        y = e.changedTouches[0].clientY,
+                        p = get.pointOnCanvas(x, y),
+                        radius = dot_size.tag / Zoom;
+                    for (let tag_id in TagList) {
+                        let point = TagList[tag_id].point[times];
+                        if (TagList[tag_id].type == "normal" && groupfindMap[point.group_id] == Map_id) {
+                            if (Math.pow(radius, 2) >= Math.pow(point.x - p.x, 2) + Math.pow(point.y - (p.y - radius * 2), 2)) {
+                                setTagDialog(TagList[tag_id]);
                             }
                         }
                     }
-                    alarmArray.forEach(function (v) {
-                        let point = v.point[times];
+                    radius = dot_size.alarm / Zoom;
+                    for (let tag_id in AlarmList) {
+                        let point = AlarmList[tag_id].point[times];
                         if (groupfindMap[point.group_id] == Map_id) {
-                            let radius = dot_size.alarm / Zoom,
-                                distance = Math.sqrt(Math.pow(point.x - p.x, 2) + Math.pow(point.y - (p.y - radius * 2), 2));
-                            if (distance <= radius) {
-                                setAlarmDialog({
-                                    id: v.id,
-                                    number: v.id in MemberList ? MemberList[v.id].number : "",
-                                    name: v.id in MemberList ? MemberList[v.id].name : "",
-                                    status: v.status,
-                                    alarm_time: v.alarm_time
-                                });
+                            if (Math.pow(radius, 2) >= Math.pow(point.x - p.x, 2) + Math.pow(point.y - (p.y - radius * 2), 2)) {
+                                setAlarmDialog(AlarmList[tag_id]);
                             }
                         }
-                    });
+                    }
                 }
             }
         },
@@ -521,13 +502,11 @@ function RTLS_Canvas(number) {
                 Zoom *= scale; //縮放比例
                 if (display_setting.lock_window && isFocus)
                     return;
-                draw();
                 let Next_x = pos_x * scale, //縮放後的位置(x坐標)
                     Next_y = pos_y * scale; //縮放後的位置(y坐標)
                 xleftView += pos_x - Next_x;
                 ytopView += pos_y - Next_y;
-                canvas.style.marginLeft = xleftView + "px";
-                canvas.style.marginTop = ytopView + "px";
+                draw();
             });
             canvas.addEventListener("touchstart", event.handleMobileTouch, { //手指點擊畫布中座標，跳出tag的訊息框
                 passive: true
@@ -539,7 +518,7 @@ function RTLS_Canvas(number) {
     canvas.addEventListener("mousemove", event.handleMouseMove, false); //滑鼠在畫布中移動的座標
     canvas.addEventListener("mousedown", event.handleCanvasDown, false); //滑鼠按住畫布綁定畫布拖移事件
     canvas.addEventListener("DOMMouseScroll", event.handleMouseWheel, false); // 畫面縮放(for Firefox)
-    canvas.addEventListener('click', event.handleMouseClick, false); //點擊地圖上的tag，跳出tag的訊息框
+    canvas.addEventListener("click", event.handleMouseClick, false); //點擊地圖上的tag，跳出tag的訊息框
     canvas.addEventListener("mousewheel", event.handleMouseWheel, { //畫布縮放
         passive: true
     });
@@ -566,7 +545,7 @@ function RTLS_Canvas(number) {
             canvasImg.height = serverImg.height;
             canvasImg.scale = MapList[map_id].scale;
             visibleScale.innerText = MapList[map_id].scale;
-            visibleMapName.innerText = "[" + MapList[map_id].name + "]";
+            visibleMapName.innerText = "【" + MapList[map_id].name + "】";
             adjust.setCanvas(this.src, serverImg.width, serverImg.height);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             pageTimer["draw_frame"]["canvas" + number] = []; //smooth display

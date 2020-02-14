@@ -113,6 +113,7 @@ input[type="file"] {
 
 .label-search {
     color: rgb(255, 174, 0);
+    margin-right: 20px;
 }
 
 .btn-label {
@@ -141,6 +142,7 @@ input[type="file"] {
     background: lightgray;
     color: black;
     padding: 5px 10px;
+    /*min-width: 570px;*/
 }
 
 #block_files_list {
@@ -148,6 +150,7 @@ input[type="file"] {
     border: 2px solid lightgray;
     background: white;
     height: 350px;
+    /*min-width: 570px;*/
     color: black;
 }
 

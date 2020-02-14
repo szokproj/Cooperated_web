@@ -46,16 +46,16 @@ function inputAlarmData(element, i) {
     /**
      * Alarm Card
      */
-    var html = "";
-    var time_arr = TimeToArray(element.alarm_time);
-    var thumb_id = "alarmCard_" + i;
-    var thumb_img = "alarmCard_img_" + i;
-    var thumb_number = "alarmCard_number_" + i;
-    var thumb_unlock_btn_id = "alarmCard_unlock_btn_" + i;
-    var thumb_focus_btn_id = "alarmCard_focus_btn_" + i;
-    var tagid_alarm = element.id + element.alarm_type; //used by count & date & time 
-    var color = "",
-        status = "";
+    let html = "",
+        color = "",
+        status = "",
+        time_arr = TimeToArray(element.alarm_time),
+        thumb_id = "alarmCard_" + i,
+        thumb_img = "alarmCard_img_" + i,
+        thumb_number = "alarmCard_number_" + i,
+        thumb_unlock_btn_id = "alarmCard_unlock_btn_" + i,
+        thumb_focus_btn_id = "alarmCard_focus_btn_" + i,
+        tagid_alarm = element.id + element.alarm_type; //used by count & date & time 
     switch (element.alarm_type) {
         case "low_power":
             color = "#72ac1b";
@@ -98,7 +98,7 @@ function inputAlarmData(element, i) {
         "<label>" + $.i18n.prop('i_number') + " : " +
         "<span id=\"" + thumb_number + "\">" + element.number + "</span></label><br>" +
         "<label>" + $.i18n.prop('i_name') + " : " + element.name + "</label><br>" +
-        "<label>" + $.i18n.prop('i_userID') + " : " + parseInt(element.id.substring(8), 16) + "</label><br>" +
+        "<label>" + $.i18n.prop('i_userID') + " : " + element.user_id + "</label><br>" +
         "<label>" + $.i18n.prop('i_date') + " : <span id=\"date_" + tagid_alarm + "\">" + time_arr[0] + "</span></label>" +
         "<br>" +
         "<label>" + $.i18n.prop('i_time') + " : <span id=\"time_" + tagid_alarm + "\">" + time_arr[1] + "</span></label>" +
@@ -141,9 +141,9 @@ function inputAlarmData(element, i) {
     setMemberPhoto("alarm_dialog_image", "alarm_dialog_number", element.number);
     $("#alarm_dialog_number").text(element.number);
     $("#alarm_dialog_name").text(element.name);
-    $("#alarm_dialog_id").text(parseInt(element.id.substring(8), 16));
-    $("#alarm_dialog_date").text(time_arr.date);
-    $("#alarm_dialog_time").text(time_arr.time);
+    $("#alarm_dialog_id").text(element.user_id);
+    $("#alarm_dialog_date").text(time_arr[0]);
+    $("#alarm_dialog_time").text(time_arr[1]);
     $("#alarm_dialog_status").text(status);
     $("#alarm_dialog_btn_focus").off("click").on("click", function () {
         changeFocusAlarm(element.id, element.alarm_type);
@@ -153,9 +153,9 @@ function inputAlarmData(element, i) {
 }
 
 function setAlarmDialog(Obj) {
-    var time_arr = TimeToArray(Obj.alarm_time);
-    var color = "",
-        status = "";
+    let color = "",
+        status = "",
+        time_arr = TimeToArray(Obj.alarm_time);
     switch (Obj.status) {
         case "low_power":
             color = "#72ac1b";
@@ -193,7 +193,7 @@ function setAlarmDialog(Obj) {
     setMemberPhoto("alarm_dialog_image", "alarm_dialog_number", Obj.number);
     $("#alarm_dialog_number").text(Obj.number);
     $("#alarm_dialog_name").text(Obj.name);
-    $("#alarm_dialog_id").text(parseInt(Obj.id.substring(8), 16));
+    $("#alarm_dialog_id").text(Obj.user_id);
     $("#alarm_dialog_date").text(time_arr[0]);
     $("#alarm_dialog_time").text(time_arr[1]);
     $("#alarm_dialog_status").text(status);
@@ -205,7 +205,7 @@ function setAlarmDialog(Obj) {
 }
 
 function setTagDialog(Obj) {
-    $("#member_dialog_tag_id").text(parseInt(Obj.id.substring(8), 16));
+    $("#member_dialog_tag_id").text(Obj.user_id);
     $("#member_dialog_number").text(Obj.number);
     $("#member_dialog_name").text(Obj.name);
     setMemberPhoto("member_dialog_image", "member_dialog_number", Obj.number);

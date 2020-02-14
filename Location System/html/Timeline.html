@@ -29,6 +29,7 @@
     <link rel="stylesheet" type="text/css" href="../css/login_user.css" />
     <link rel="stylesheet" type="text/css" href="../css/timeline.css" />
     <!--Edit js-->
+    <script type="text/javascript" src="../js/hammer/hammer.min.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -158,6 +159,8 @@
                                             <thead>
                                                 <tr>
                                                     <th class="i18n" name="i_id"></th>
+                                                    <th class="i18n" name="i_number"></th>
+                                                    <th class="i18n" name="i_name"></th>
                                                     <th class="i18n" name="i_assign" style="max-width:30px;"></th>
                                                 </tr>
                                             </thead>
@@ -204,12 +207,18 @@
                                             <i class="fas fa-compress"></i></button>
                                     </div>
                                     <br>
-                                    <label><span class="i18n" name="i_intervals"></span> : <input type="text"
-                                            id="interval" value="100"
-                                            style="border:0; color:#f6931f; font-weight:bold; width:40px;" />
-                                        <label style="color:#f6931f;">(<span class="i18n" name="i_ms"></span>)</label>
-                                        <div id="interval_slider" style="width:250px"></div>
-                                    </label>
+                                    <input type="checkbox" id="chk_diaplay_alarm" /> <label>在地圖上標示警報紀錄</label>
+                                    <br>
+                                    <input type="checkbox" id="chk_use_input_map" /> <label>使用導入的地圖當底圖(不可切換地圖)</label>
+                                    <label for="btn_input_map" class="btn-add-file"><span class="i18n"
+                                            name="i_input_map"></span> <i class="far fa-image"></i></label>
+                                    <input id="btn_input_map" type="file" accept="image/*" /></li>
+                                    <input type="text" id="input_map_src" style="width: auto;" readonly />
+                                    <br><br>
+                                    <label class="i18n" name="i_intervals"></label> : <label id="interval"
+                                        style="border:0; color:#f6931f; font-weight:bold; width:auto;"></label>
+                                    <span style="color:#f6931f;">(<label class="i18n" name="i_ms"></label>)</span>
+                                    <div id="interval_slider" style="width:250px"></div>
                                 </div>
                             </div>
                         </div>
@@ -251,28 +260,44 @@
             </div>
             <div class="col-lg-3">
                 <div class="sidebar_right">
-                    <div id="statistics_info" class="noborder-block">
+                    <div id="statistics_info" class="noborder-block info-block">
                         <table>
                             <tr>
                                 <td><label class="i18n" name="i_mapName"></label>: </td>
                                 <td><label id="current_map"></label></td>
                             </tr>
                             <tr>
-                                <td><label class="i18n" name="i_date"></label class="i18n" name="">: </td>
+                                <td><label class="i18n" name="i_date"></label>: </td>
                                 <td><label id="current_date"></label></td>
                             </tr>
                             <tr>
-                                <td><label class="i18n" name="i_time"></label class="i18n" name="">: </td>
+                                <td><label class="i18n" name="i_time"></label>: </td>
                                 <td><label id="current_time"></label></td>
                             </tr>
                             <tr>
-                                <td><label class="i18n" name="i_regionalPopulation"></label class="i18n" name="">: </td>
+                                <td><label class="i18n" name="i_regionalPopulation"></label>: </td>
                                 <td><label id="current_tags_amount"></label></td>
                             </tr>
                             <tr>
-                                <td><label>群組人數</label class="i18n" name="">: </td>
+                                <td><label>群組人數</label>: </td>
                                 <td><label id="group_amount"></label></td>
                             </tr>
+                        </table>
+                    </div>
+                    <br>
+                    <div id="alarm_info" class="info-block">
+                        <label>警報紀錄:</label>
+                        <table id="alarm_table">
+                            <thead>
+                                <tr>
+                                    <th style="min-width: 60px;"><label class="i18n" name="i_item"></label></th>
+                                    <th style="min-width: 100px;"><label class="i18n" name="i_alarmStatus"></label></th>
+                                    <th style="min-width: 80px;"><label class="i18n" name="i_tagID"></label></th>
+                                    <th style="min-width: 170px;"><label class="i18n" name="i_time"></label></th>
+                                    <th style="min-width: 60px;"><label class="i18n" name="i_locate"></label></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
                         </table>
                     </div>
                     <br>
@@ -317,6 +342,11 @@
     </div>
 
     <!--Hidden Dialog-->
+    <!--Modal-->
+    <div class="alert_block" id="alert_window">
+        <label>此警報無座標位置紀錄!</label>
+    </div>
+
     <div class="progress" id="progress_block">
         <!--progress bar-->
         <label>

@@ -1,42 +1,52 @@
-const noImagePng = "../image/no_image.png";
+const noImagePng = "../image/no_image.png",
+    locateColor = "#9c00f7",
+    groupColor = "#ff9933";
 
-var token = "";
-var PIXEL_RATIO; // 獲取瀏覽器像素比
-var cvsBlock, canvas, ctx;
-var canvasImg = {
-    isPutImg: false,
-    width: 0,
-    height: 0,
-    scale: 1 //預設比例尺為1:1
-};
-var serverImg = new Image();
-// View parameters
-var lastX = 0; //滑鼠最後位置的X座標
-var lastY = 0; //滑鼠最後位置的Y座標
-var xleftView = 0; //canvas的X軸位移(負值向左，正值向右)
-var ytopView = 0; //canvas的Y軸位移(負值向上，正值向下)
-var Zoom = 1.0; //縮放比例
-var isFitWindow = true;
-var map_id = "";
-var mapCollection = {};
-var historyData = {};
-var times = 0;
-var max_times = 0;
-var isContinue = false;
-var timeDelay = {
-    search: [],
-    draw: [],
-    model: ""
-};
-var group_color = "#ff9933";
-var timeslot_array = [];
-var locate_tag = "";
-var MemberData = {};
+var token = "",
+    PIXEL_RATIO, // 獲取瀏覽器像素比
+    chkUseInputMap, cvsBlock, canvas, ctx,
+    canvasImg = {
+        isPutImg: false,
+        width: 0,
+        height: 0,
+        scale: 1 //預設比例尺為1:1
+    },
+    serverImg = new Image(),
+    // View parameters
+    lastX = 0, //滑鼠最後位置的X座標
+    lastY = 0, //滑鼠最後位置的Y座標
+    xleftView = 0, //canvas的X軸位移(負值向左，正值向右)
+    ytopView = 0, //canvas的Y軸位移(負值向上，正值向下)
+    Zoom = 1.0, //縮放比例
+    isFitWindow = true,
+    inputMapSrc = "",
+    MapList = {},
+    MemberData = {},
+    HistoryData = {},
+    AlarmList = {},
+    displayAlarms = [],
+    posAlarmData = null,
+    locate_tag = "",
+    times = 0,
+    max_times = 0,
+    timeslot_array = [],
+    isContinue = false,
+    timeDelay = {
+        search: [],
+        draw: [],
+        model: "",
+        dialog: ""
+    },
+    panPos = {
+        canvasLeft: 0,
+        canvasTop: 0
+    };
+
 
 $(function () {
     let h = document.documentElement.clientHeight;
     //$(".container").css("height", h - 10 + "px");
-    $("#cvsBlock").css("height", h - 100 + "px");
+    $("#cvsBlock").css("height", h - 102 + "px");
     //Check this page's permission and load navbar
     token = getToken();
     if (!getPermissionOfPage("Timeline")) {
@@ -78,12 +88,14 @@ $(function () {
             }
         }
     });
+
     $("#btn_target_add").on('click', function () {
         stopTimeline();
         $("#add_target_tag_id").val("");
         $("#add_target_color").val("#00cc66");
         dialog.dialog("open");
     });
+
     $("#btn_target_delete").on('click', function () {
         stopTimeline();
         var save_array = [];
@@ -120,18 +132,18 @@ $(function () {
         max: 1000,
         step: 20,
         slide: function (event, ui) {
-            $("#interval").val(ui.value);
+            $("#interval").text(ui.value);
         }
     });
-    $("#interval").val($("#interval_slider").slider("value"));
+    $("#interval").text($("#interval_slider").slider("value"));
 
     $("#interval_slider").mousedown(function () {
         $(this).mousemove(function () {
             clearDrawInterval();
-            if (historyData["search_type"] && historyData["search_type"] == "Tag") {
-                timeDelay["draw"].push(setInterval("drawNextTimeByTag()", $("#interval").val()));
+            if (HistoryData["search_type"] && HistoryData["search_type"] == "Tag") {
+                timeDelay["draw"].push(setInterval("drawNextTimeByTag()", $("#interval").text()));
             } else {
-                timeDelay["draw"].push(setInterval("drawNextTimeByGroup()", $("#interval").val()));
+                timeDelay["draw"].push(setInterval("drawNextTimeByGroup()", $("#interval").text()));
             }
         });
         $(this).mouseup(function () {
@@ -140,24 +152,28 @@ $(function () {
     });
 
     $("#target_type").on('change', function () {
-        if ($(this).val() == "Tag") {
-            $("#target_group").hide();
-            $("#target_alarm_handle").hide();
-            $("#target_tag").show();
-            $("#alarmBlock").hide();
-            $("#timelineBlock").show();
-        } else if ($(this).val() == "Group") {
-            $("#target_tag").hide();
-            $("#target_alarm_handle").hide();
-            $("#target_group").show();
-            $("#alarmBlock").hide();
-            $("#timelineBlock").show();
-        } else {
-            $("#target_tag").hide();
-            $("#target_group").hide();
-            $("#target_alarm_handle").show();
-            $("#timelineBlock").hide();
-            $("#alarmBlock").show();
+        switch ($(this).val()) {
+            case "Tag":
+                $("#target_group").hide();
+                $("#target_alarm_handle").hide();
+                $("#target_tag").show();
+                $("#alarmBlock").hide();
+                $("#timelineBlock").show();
+                break;
+            case "Group":
+                $("#target_tag").hide();
+                $("#target_alarm_handle").hide();
+                $("#target_group").show();
+                $("#alarmBlock").hide();
+                $("#timelineBlock").show();
+                break;
+            default:
+                $("#target_tag").hide();
+                $("#target_group").hide();
+                $("#target_alarm_handle").show();
+                $("#timelineBlock").hide();
+                $("#alarmBlock").show();
+                break;
         }
     });
 
@@ -172,10 +188,36 @@ $(function () {
 
     $("input[type=text]").prop("disabled", false);
 
+    $("#chk_use_input_map").on("click", function () {
+        if ($(this).prop('checked')) {
+            $("#target_map").prop('disabled', true);
+            if (inputMapSrc.length > 0)
+                loadImage(inputMapSrc);
+        } else {
+            $("#target_map").prop('disabled', false);
+        }
+    })
+
+    $("#btn_input_map").on("change", function () {
+        var file = this.files[0];
+        if (file && checkExt(this.value)) {
+            var FR = new FileReader();
+            FR.readAsDataURL(file);
+            FR.onloadend = function (e) {
+                var base64data = e.target.result;
+                inputMapSrc = base64data;
+                document.getElementById("input_map_src").value = file.name;
+                if (chkUseInputMap.checked)
+                    loadImage(base64data, 1);
+            };
+        }
+    });
+
     setup();
 });
 
 function setup() {
+    chkUseInputMap = document.getElementById("chk_use_input_map");
     cvsBlock = document.getElementById("cvsBlock");
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
@@ -194,6 +236,7 @@ function setup() {
     canvas.addEventListener("mousewheel", handleMouseWheel, { //畫布縮放
         passive: true
     });
+    setMobileEvents();
     getMemberNumber();
     /**
      * 接收並載入Server的地圖資訊
@@ -207,8 +250,8 @@ function setup() {
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                 $("#target_map").empty();
                 revObj.Value[0].Values.forEach(element => {
-                    //mapCollection => key: map_id | value: {map_id, map_name, map_src, map_scale}
-                    mapCollection[element.map_id] = {
+                    //MapList => key: map_id | value: {map_id, map_name, map_src, map_scale}
+                    MapList[element.map_id] = {
                         map_id: element.map_id,
                         map_name: element.map_name,
                         map_src: "data:image/" + element.map_file_ext + ";base64," + element.map_file,
@@ -217,7 +260,7 @@ function setup() {
                     $("#target_map").append("<option value=\"" + element.map_id + "\">" + element.map_name + "</option>");
                 });
                 $("#target_map").on('change', function () {
-                    var mapInfo = mapCollection[$(this).val()];
+                    var mapInfo = MapList[$(this).val()];
                     loadImage(mapInfo.map_src, mapInfo.map_scale);
                     restartCanvas();
                 });
@@ -229,188 +272,6 @@ function setup() {
         "Command_Name": ["GetMaps"],
         "api_token": [token]
     }));
-}
-
-function loadImage(map_url, map_scale) {
-    map_scale = typeof (map_scale) != 'undefined' && map_scale != "" ? map_scale : 1;
-    serverImg.src = map_url;
-    serverImg.onload = function () {
-        cvsBlock.style.background = "none";
-        canvasImg.isPutImg = true;
-        canvasImg.width = serverImg.width;
-        canvasImg.height = serverImg.height;
-        canvasImg.scale = map_scale;
-        setCanvas(this.src, serverImg.width, serverImg.height);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        xleftView = 0;
-        ytopView = 0;
-        Zoom = 1.0;
-        ctx.save(); //紀錄原比例
-
-        var serImgSize = serverImg.width / serverImg.height;
-        var cvs_width = parseFloat($("#cvsBlock").css("width"));
-        var cvs_height = parseFloat($("#cvsBlock").css("height"));
-        var cvsSize = cvs_width / cvs_height;
-        if (serImgSize > cvsSize) { //原圖比例寬邊較長
-            Zoom = cvs_width / serverImg.width;
-            setCanvas(this.src, cvs_width, serverImg.height * Zoom);
-        } else {
-            Zoom = cvs_height / serverImg.height;
-            setCanvas(this.src, serverImg.width * Zoom, cvs_height);
-        }
-        reDrawTag();
-        document.getElementById("btn_restore").disabled = false;
-    };
-}
-
-function setCanvas(img_src, width, height) {
-    canvas.style.backgroundImage = "url(" + img_src + ")";
-    canvas.style.backgroundSize = width + "px " + height + "px";
-    canvas.width = width * PIXEL_RATIO;
-    canvas.height = height * PIXEL_RATIO;
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
-}
-
-function setSize() { //縮放canvas與背景圖大小
-    if (canvasImg.isPutImg) {
-        canvas.style.backgroundSize = (canvasImg.width * Zoom) + "px " + (canvasImg.height * Zoom) + "px";
-        canvas.width = canvasImg.width * PIXEL_RATIO * Zoom;
-        canvas.height = canvasImg.height * PIXEL_RATIO * Zoom;
-        canvas.style.width = canvasImg.width * Zoom + 'px';
-        canvas.style.height = canvasImg.height * Zoom + 'px';
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.setTransform(PIXEL_RATIO, 0, 0, PIXEL_RATIO, 0, 0);
-        ctx.scale(Zoom, Zoom);
-        ctx.translate(0, 0);
-    }
-}
-
-function restoreCanvas() {
-    if (!canvasImg.isPutImg)
-        return;
-    var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
-    var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
-    xleftView = 0;
-    ytopView = 0;
-    Zoom = 1.0;
-    if (isFitWindow) { //恢復原比例
-        ctx.restore();
-        ctx.save();
-        isFitWindow = false; //目前狀態:原比例
-        document.getElementById("btn_restore").innerHTML = "<i class=\"fas fa-expand\"></i>";
-    } else { //依比例拉伸(Fit in Window)
-        if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
-            Zoom = cvsBlock_width / serverImg.width;
-        else
-            Zoom = cvsBlock_height / serverImg.height;
-        isFitWindow = true; //目前狀態:依比例拉伸
-        document.getElementById("btn_restore").innerHTML = "<i class=\"fas fa-compress\"></i>";
-    }
-    $("#canvas").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
-    reDrawTag();
-}
-
-function restartCanvas() {
-    var cvsBlock_width = parseFloat($("#cvsBlock").css("width"));
-    var cvsBlock_height = parseFloat($("#cvsBlock").css("height"));
-    xleftView = 0;
-    ytopView = 0;
-    if ((serverImg.width / serverImg.height) > (cvsBlock_width / cvsBlock_height)) //原圖比例寬邊較長
-        Zoom = cvsBlock_width / serverImg.width;
-    else
-        Zoom = cvsBlock_height / serverImg.height;
-    $("#canvas").css("margin-left", 0 + "px").css("margin-top", 0 + "px");
-    reDrawTag();
-}
-
-function handleMouseWheel(event) {
-    var BCR = canvas.getBoundingClientRect();
-    var pos_x = event.pageX - BCR.left;
-    var pos_y = event.pageY - BCR.top;
-    var scale = 1.0;
-    if (event.wheelDelta < 0 || event.detail > 0) {
-        if (Zoom > 0.1)
-            scale = 0.9;
-    } else {
-        scale = 1.1;
-    }
-    Zoom *= scale; //縮放比例
-    reDrawTag();
-    xleftView += pos_x - lastX * Zoom; //滑鼠滾動的位置-縮放後滑鼠位移後的位置(X軸)
-    ytopView += pos_y - lastY * Zoom; //滑鼠滾動的位置-縮放後滑鼠位移後的位置(Y軸)
-    $("#canvas").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");
-}
-
-function handleMouseClick(event) {
-    var p = getEventPosition(event); //滑鼠點擊事件
-    switch ($("#target_type").val()) {
-        case "Tag":
-            document.getElementsByName("chk_target_id").forEach(tag_id => {
-                var array = historyData[tag_id.value];
-                for (i = 0; i < times; i++) {
-                    if (typeof (array[i]).x == 'undefined') return;
-                    ctx.beginPath();
-                    ctx.fillStyle = '#ffffff00';
-                    //circle(x座標,y座標,半徑,開始弧度,結束弧度,順t/逆f時針)
-                    ctx.arc(array[i].x, canvasImg.height - array[i].y, 6, 0, Math.PI * 2, true);
-                    ctx.fill(); //填滿圓形
-                    ctx.closePath();
-                    if (p && ctx.isPointInPath(p.x, p.y)) {
-                        //如果傳入了事件坐標，就用isPointInPath判斷一下
-                        var user_id = parseInt(tag_id.value, 16);
-                        var member_info = MemberData[user_id];
-                        $("#thumb_user_id").text(user_id);
-                        $("#thumb_number").text(member_info.number);
-                        $("#thumb_name").text(member_info.name);
-                        $("#thumb_dept").text(member_info.dept);
-                        $("#thumb_date").text(array[i].date);
-                        $("#thumb_time").text(array[i].time);
-                        $("#thumb_map").text(array[i].map_name);
-                        $("#thumb_position").text("( " + array[i].x + " , " + array[i].y + " )");
-                        inputMemberPhoto(member_info.photo)
-                    }
-                }
-            });
-            break;
-        case "Group":
-            var start = 0;
-            if (!document.getElementById("chk_is_overlap").checked && times > 0)
-                start = times - 1;
-            for (i = start; i < times; i++) {
-                historyData[timeslot_array[i]].forEach(info => {
-                    if (typeof (info).x == 'undefined') return;
-                    ctx.beginPath();
-                    ctx.fillStyle = '#ffffff00';
-                    ctx.arc(info.x, canvasImg.height - info.y, 6, 0, Math.PI * 2, true);
-                    ctx.fill();
-                    ctx.closePath();
-                    if (p && ctx.isPointInPath(p.x, p.y)) {
-                        var user_id = parseInt(info.tag_id, 16);
-                        var member_info = MemberData[user_id];
-                        $("#thumb_user_id").text(user_id);
-                        $("#thumb_number").text(member_info.number);
-                        $("#thumb_name").text(member_info.name);
-                        $("#thumb_dept").text(member_info.dept);
-                        $("#thumb_date").text(info.date);
-                        $("#thumb_time").text(info.time);
-                        $("#thumb_map").text(info.map_name);
-                        $("#thumb_position").text("( " + info.x + " , " + info.y + " )");
-                        inputMemberPhoto(member_info.photo)
-                    }
-                });
-            }
-            break;
-        default:
-            alert($.i18n.prop('i_noSearch'));
-            return false;
-    }
-}
-
-function handleMouseMove(event) { //滑鼠移動事件
-    var p = getPointOnCanvas(event.pageX, event.pageY);
-    lastX = p.x;
-    lastY = p.y;
 }
 
 function getMemberNumber() {
@@ -506,203 +367,6 @@ function inputMemberPhoto(src) {
     }
 }
 
-function drawTimeline() {
-    if (!isContinue) {
-        if (!historyData["search_type"]) {
-            alert($.i18n.prop('i_searchFirst'));
-            return;
-        }
-        isContinue = true;
-        document.getElementById("btn_stop").disabled = false;
-        document.getElementById("btn_restore").disabled = false;
-        document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-pause\" ></i >";
-        document.getElementById("btn_search").disabled = false;
-        switch (historyData["search_type"]) {
-            case "Tag":
-                if (!canvasImg.isPutImg) {
-                    //第一個tag_id搜尋到的歷史軌跡的第一筆的map_id, 對應的地圖資訊
-                    var tag_id = document.getElementsByName("chk_target_id");
-                    var mapInfo = mapCollection[historyData[tag_id[0].value][times].map_id];
-                    $("#target_map").val(mapInfo.map_id);
-                    loadImage(mapInfo.map_src, mapInfo.map_scale);
-                }
-                //計時器賦值
-                timeDelay["draw"].push(setInterval("drawNextTimeByTag()", $("#interval").val()));
-                break;
-            case "Group":
-                if (!canvasImg.isPutImg) {
-                    //第一個timeslot搜尋到的歷史軌跡的第一筆的map_id, 對應的地圖資訊
-                    var mapInfo = mapCollection[historyData[timeslot_array[0]][times].map_id];
-                    $("#target_map").val(mapInfo.map_id);
-                    loadImage(mapInfo.map_src, mapInfo.map_scale);
-                }
-                //計時器賦值
-                timeDelay["draw"].push(setInterval("drawNextTimeByGroup()", $("#interval").val()));
-                break;
-            default:
-                break;
-        }
-    } else {
-        isContinue = false;
-        document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\" ></i >";
-        clearDrawInterval();
-    }
-}
-
-function stopTimeline() {
-    times = 0;
-    isContinue = false;
-    clearDrawInterval();
-    setSize();
-    document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\" ></i >";
-    document.getElementById("btn_stop").disabled = true;
-    document.getElementById("btn_search").disabled = false;
-}
-
-function drawNextTimeByTag() {
-    if (!isContinue)
-        return false;
-    var count = 0;
-    var locate_map = document.getElementById("target_map").value;
-    if (times == 0) {
-        document.getElementsByName("chk_target_id").forEach(function (tag_id, i) {
-            var color = document.getElementsByName("input_target_color")[i].value;
-            var array = historyData[tag_id.value];
-            if (!array)
-                return alert($.i18n.prop('i_tagID') + ":[" + parseInt(tag_id.value, 16) + "]" + $.i18n.prop('i_tagSearchNoData'));
-            if (array[0] && array[0].map_id == locate_map) {
-                drawTag(ctx, array[0].time, array[0].x, canvasImg.height - array[0].y, color);
-                document.getElementById("current_map").innerText = array[0].map_name;
-                document.getElementById("current_date").innerText = array[0].date;
-                document.getElementById("current_time").innerText = array[0].time;
-                document.getElementById("draw_x").innerText = array[0].x;
-                document.getElementById("draw_y").innerText = array[0].y;
-            }
-            count++;
-        });
-        document.getElementById("current_tags_amount").innerText = count;
-        times++;
-    } else if (times < max_times) {
-        reDrawTag();
-        document.getElementsByName("chk_target_id").forEach(function (tag_id, i) {
-            //var color = document.getElementsByName("input_target_color")[i].value;
-            var array = historyData[tag_id.value];
-            if (!array)
-                return false;
-            //if (array[times] && array[times].map_id == locate_map) {
-            document.getElementById("current_map").innerText = array[times].map_name;
-            document.getElementById("current_date").innerText = array[times].date;
-            document.getElementById("current_time").innerText = array[times].time;
-            document.getElementById("draw_x").innerText = array[times].x;
-            document.getElementById("draw_y").innerText = array[times].y;
-            //}
-            count++;
-        });
-        document.getElementById("current_tags_amount").innerText = count;
-        times++;
-    } else {
-        if (confirm($.i18n.prop('i_endOfPlay'))) {
-            setSize();
-            times = 0;
-        } else {
-            isContinue = false;
-            document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\" ></i >";
-            clearDrawInterval();
-        }
-    }
-}
-
-function drawNextTimeByGroup() {
-    if (!isContinue) return false;
-    if (times == timeslot_array.length) {
-        if (confirm($.i18n.prop('i_endOfPlay'))) {
-            setSize();
-            times = 0;
-        } else {
-            isContinue = false;
-            document.getElementById("btn_start").innerHTML = "<i class=\"fas fa-play\" ></i >";
-            clearDrawInterval();
-        }
-    } else {
-        if (!document.getElementById("chk_is_overlap").checked)
-            setSize();
-        if (locate_tag == "") {
-            let count = 0;
-            historyData[timeslot_array[times]].forEach(info => {
-                drawTag(ctx, info.time, info.x, canvasImg.height - info.y, group_color);
-                count++;
-            });
-            document.getElementById("current_tags_amount").innerText = count;
-        } else {
-            reDrawTag();
-        }
-        let history = historyData[timeslot_array[times]][0];
-        document.getElementById("current_map").innerText = history.map_name;
-        document.getElementById("current_date").innerText = history.date;
-        document.getElementById("current_time").innerText = history.time;
-        times++;
-    }
-}
-
-function reDrawTag() {
-    setSize();
-    switch (historyData["search_type"]) {
-        case "Tag":
-            var locate_map = document.getElementById("target_map").value;
-            var k = 0;
-            if (times == 0) return false;
-            if (document.getElementsByName("radio_is_limit")[1].checked) {
-                var limitCount = document.getElementById("limit_count").value;
-                if (limitCount != "" && times > limitCount)
-                    k = times - limitCount;
-            }
-            document.getElementsByName("chk_target_id").forEach(function (tag_id, i) {
-                var color = document.getElementsByName("input_target_color")[i].value;
-                var array = historyData[tag_id.value];
-                if (!array) return false;
-                for (var j = k; j < times; j++) {
-                    if (array[j] && array[j].map_id == locate_map) {
-                        if (j > k) {
-                            drawArrow(ctx, array[j - 1].x, canvasImg.height - array[j - 1].y,
-                                array[j].x, canvasImg.height - array[j].y, 30, 8, 2, color);
-                        }
-                        drawTag(ctx, array[j].time, array[j].x, canvasImg.height - array[j].y, color);
-                    }
-                }
-                if (array[times] && array[times].map_id == locate_map) {
-                    drawArrow(ctx, array[times - 1].x, canvasImg.height - array[times - 1].y,
-                        array[times].x, canvasImg.height - array[times].y, 30, 8, 2, color);
-                    drawTag(ctx, array[times].time, array[times].x, canvasImg.height - array[times].y, "#000000");
-                }
-            });
-            break;
-        case "Group":
-            var locate_arr = [];
-            var start = 0;
-            var count = 0;
-            if (!document.getElementById("chk_is_overlap").checked && times > 0)
-                start = times - 1;
-            for (var i = start; i < times; i++) {
-                historyData[timeslot_array[i]].forEach(info => {
-                    if (i == start)
-                        count++;
-                    if (info.tag_id == locate_tag)
-                        locate_arr.push(info);
-                    else
-                        drawTag(ctx, info.time, info.x, canvasImg.height - info.y, group_color);
-                });
-            }
-            locate_arr.forEach(info => {
-                drawTag(ctx, info.time, info.x, canvasImg.height - info.y, "#9c00f7");
-            });
-            document.getElementById("current_tags_amount").innerText = count;
-            break;
-        default:
-            break;
-    }
-
-}
-
 function search() {
     if ($("#target_type").val() == "AlarmHandle") {
         return getAlarmHandleByTime();
@@ -733,10 +397,10 @@ function search() {
                 alert($.i18n.prop('i_searchNoTag'));
                 return false;
             }
-            historyData = {
+            HistoryData = {
                 search_type: "Tag"
             };
-            getTimelineByTags(datetime_start, datetime_end);
+            getTimelineByTags();
             break;
         case "Group":
             var group_id = $("#target_group_id").val();
@@ -744,11 +408,11 @@ function search() {
                 alert($.i18n.prop('i_searchNoGroup'));
                 return false;
             }
-            timeslot_array = [];
-            historyData = {
+            HistoryData = {
                 search_type: "Group"
             };
-            getTimelineByGroup(datetime_start, datetime_end, group_id);
+            timeslot_array = [];
+            getTimelineByGroup(group_id);
             break;
         default:
             alert($.i18n.prop('i_searchNoType'));
@@ -757,262 +421,396 @@ function search() {
     showSearching();
 }
 
-function getTimelineByTags(datetime_start, datetime_end) {
-    let timeslot = datetime_end - datetime_start;
-    //console.log("timeslot=> " + Math.floor(timeslot / 3600000));
-    let interval_times = 0;
-    let count_times = 0;
-    for (i in timeDelay["search"])
-        clearTimeout(timeDelay["search"][i]);
-    timeDelay["search"] = [];
-    document.getElementsByName("chk_target_id").forEach(function (tag_id, i) {
-        getMemberData(parseInt(tag_id.value, 16));
-        interval_times++;
-        timeDelay["search"].push(setTimeout(function () {
-            sendRequest({
-                "Command_Type": ["Read"],
-                "Command_Name": ["GetLocus_combine_hour"],
-                "Value": {
-                    "tag_id": tag_id.value,
-                    "start_date": $("#start_date").val(),
-                    "start_time": $("#start_time").val() + ":00",
-                    "end_date": $("#end_date").val(),
-                    "end_time": $("#end_time").val() + ":00"
-                },
-                "api_token": [token]
-            });
-        }, 100 * i));
-    });
-    interval_times *= Math.floor(timeslot / 3600000) + 1; //($("#end_time").val().split(":")[1] == "00" ? 1 : 1);
-    //console.log("interval_times=> " + interval_times);
-
-    function sendRequest(request) {
-        var xmlHttp = createJsonXmlHttp("sql");
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                if (!this.responseText) {
-                    $('#progress_block').hide();
-                    clearTimeout(timeDelay["model"]);
-                    alert("搜尋失敗，請稍候再試一次!");
-                    return;
-                }
-                var revObj = JSON.parse(this.responseText);
-                if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                    var revInfo = revObj.Value[0].Values || [];
-                    var tag_id = request.Value.tag_id;
-                    for (i = 0; i < revInfo.length; i++) {
-                        if (revInfo[i].map_id in mapCollection) {
-                            var mapInfo = mapCollection[revInfo[i].map_id];
-                            var datetime_arr = TimeToArray(revInfo[i].time);
-                            if (!historyData[tag_id])
-                                historyData[tag_id] = [];
-                            historyData[tag_id].push({
-                                map_id: mapInfo.map_id,
-                                map_name: mapInfo.map_name,
-                                x: parseInt(revInfo[i].coordinate_x, 10),
-                                y: parseInt(revInfo[i].coordinate_y, 10),
-                                date: datetime_arr[0],
-                                time: datetime_arr[1]
-                            });
+function getTimelineByTags() {
+    var interval_times = 0;
+    var count_times = 0;
+    var target_arr = [];
+    var datetime = { //[Date, Time]
+        start: [$("#start_date").val(), $("#start_time").val() + ":00"],
+        end: [$("#end_date").val(), $("#end_time").val() + ":00"]
+    };
+    var func = {
+        getCount: function () {
+            document.getElementsByName("chk_target_id").forEach(tag_id => {
+                getMemberData(parseInt(tag_id.value, 16));
+                let request = {
+                    "Command_Name": ["GetLocus_combine_with_record"],
+                    "Command_Type": ["Read"],
+                    "Value": {
+                        "start_date": datetime.start[0],
+                        "start_time": datetime.start[1],
+                        "end_date": datetime.end[0],
+                        "end_time": datetime.end[1],
+                        "flag": "3",
+                        "target": tag_id.value,
+                        "startnum": "0",
+                        "getcnt": "1"
+                    },
+                    "api_token": [token]
+                };
+                let xmlHttp = createJsonXmlHttp("sql");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        if (!this.responseText) {
+                            $('#progress_block').hide();
+                            clearTimeout(timeDelay["model"]);
+                            alert("搜尋失敗，請稍候再試一次!");
+                            return;
+                        }
+                        let revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                            let revInfo = revObj.Value[0].location || [{
+                                "Status": "0"
+                            }];
+                            if (revInfo[0].Status == "1") {
+                                let total = parseInt(revInfo[0].Values[0].count, 10);
+                                interval_times += Math.ceil(total / 10000);
+                                target_arr.push({
+                                    tag_id: revInfo[0].tag_id,
+                                    total: parseInt(total, 10)
+                                });
+                                if (target_arr.length == document.getElementsByName("chk_target_id").length)
+                                    func.getDatas(target_arr[0].tag_id, "0", target_arr[0].total);
+                            }
                         }
                     }
-                    count_times++;
-                    $("#progress_bar").text(Math.round(count_times / interval_times * 100) + " %");
-
-                    if (revObj.Value[0].Status == "1") {
-                        //以1小時為基準，分批接受並傳送要求
-                        sendRequest({
-                            "Command_Type": ["Read"],
-                            "Command_Name": ["GetLocus_combine_hour"],
-                            "Value": {
-                                "tag_id": revObj.Value[0].tag_id,
-                                "start_date": revObj.Value[0].start_date,
-                                "start_time": revObj.Value[0].start_time,
-                                "end_date": revObj.Value[0].end_date,
-                                "end_time": revObj.Value[0].end_time
-                            },
-                            "api_token": [token]
-                        });
-                        //console.log("count_times=> " + count_times);
-                    } else {
-                        //console.log("End=> " + count_times);
-                        if (historyData[tag_id] && historyData[tag_id].length > max_times)
-                            max_times = historyData[tag_id].length;
-                        //找最長的Tag歷史軌跡長度，定為一週期繪製軌跡的結束
-                        if (interval_times <= count_times)
-                            completeSearch();
+                };
+                xmlHttp.send(JSON.stringify(request));
+            });
+        },
+        getDatas: function (target, startnum, total) {
+            if (total == 0)
+                alert($.i18n.prop('i_tagID') + ":[" + parseInt(target, 16) + "]在此時段內無歷史資料");
+            let request = {
+                "Command_Name": ["GetLocus_combine_with_record"],
+                "Command_Type": ["Read"],
+                "Value": {
+                    "flag": "3",
+                    "target": target,
+                    "start_date": datetime.start[0],
+                    "start_time": datetime.start[1],
+                    "end_date": datetime.end[0],
+                    "end_time": datetime.end[1],
+                    "startnum": startnum,
+                    "getcnt": "0"
+                },
+                "api_token": [token]
+            }
+            let xmlHttp = createJsonXmlHttp("sql");
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    if (!this.responseText) {
+                        $('#progress_block').hide();
+                        clearTimeout(timeDelay["model"]);
+                        alert("搜尋失敗，請稍候再試一次!");
+                        return;
+                    }
+                    let revObj = JSON.parse(this.responseText);
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                        let event = revObj.Value[0].event || [{
+                            "Status": "0"
+                        }];
+                        if (event[0].Status == "1" && event[0].amount > 0) {
+                            if (!AlarmList[event[0].tag_id])
+                                AlarmList[event[0].tag_id] = {};
+                            event[0].Values.forEach(element => {
+                                AlarmList[event[0].tag_id][element.time] = {
+                                    alarm_type: element.alarm_type,
+                                    status: element.status
+                                };
+                            });
+                        }
+                        let location = revObj.Value[0].location || [{
+                            "Status": "0"
+                        }];
+                        if (location[0].Status == "1") {
+                            let tag_id = location[0].tag_id;
+                            let values = location[0].Values;
+                            if (values) {
+                                for (let i = 0; i < values.length; i++) {
+                                    if (values[i].map_id in MapList) {
+                                        let mapInfo = MapList[values[i].map_id];
+                                        let time = values[i].time;
+                                        let time_arr = TimeToArray(time);
+                                        let type = "normal";
+                                        if (!HistoryData[tag_id])
+                                            HistoryData[tag_id] = [];
+                                        if (AlarmList[tag_id] && AlarmList[tag_id][time]) {
+                                            type = AlarmList[tag_id][time].alarm_type;
+                                            AlarmList[tag_id][time]["map_id"] = mapInfo.map_id;
+                                            AlarmList[tag_id][time]["x"] = parseInt(values[i].coordinate_x, 10);
+                                            AlarmList[tag_id][time]["y"] = parseInt(values[i].coordinate_y, 10);
+                                        }
+                                        HistoryData[tag_id].push({
+                                            map_id: mapInfo.map_id,
+                                            map_name: mapInfo.map_name,
+                                            x: parseInt(values[i].coordinate_x, 10),
+                                            y: parseInt(values[i].coordinate_y, 10),
+                                            date: time_arr[0],
+                                            time: time_arr[1],
+                                            type: type
+                                        });
+                                    }
+                                }
+                            }
+                            count_times++;
+                            $("#progress_bar").text(Math.round(count_times / interval_times * 100) + " %");
+                            let count = parseInt(startnum, 10) + location[0].amount;
+                            if (total != count) {
+                                //以10000筆資料為基準，分批接受並傳送要求
+                                func.getDatas(tag_id, count.toString(), total);
+                            } else {
+                                //找最長的Tag歷史軌跡長度，定為一週期繪製軌跡的結束
+                                if (HistoryData[tag_id] && HistoryData[tag_id].length > max_times)
+                                    max_times = HistoryData[tag_id].length;
+                                target_arr.splice(0, 1);
+                                if (target_arr.length > 0)
+                                    func.getDatas(target_arr[0].tag_id, "0", target_arr[0].total);
+                                if (interval_times <= count_times) {
+                                    completeSearch();
+                                }
+                            }
+                        }
                     }
                 }
-            }
-        };
-        xmlHttp.send(JSON.stringify(request));
-    }
+            };
+            xmlHttp.send(JSON.stringify(request));
+        }
+    };
+    AlarmList = {};
+    return func.getCount();
 }
 
-function getTimelineByGroup(datetime_start, datetime_end, group_id) {
-    var timeslot = datetime_end - datetime_start;
-    var interval_times = Math.ceil(timeslot / 3600000); //間隔多少分鐘(無條件進位)
+function getTimelineByGroup(group_id) {
+    var interval_times = 0;
     var count_times = 0;
     var tag_array = [];
+    var datetime = { //[Date, Time]
+        start: [$("#start_date").val(), $("#start_time").val() + ":00"],
+        end: [$("#end_date").val(), $("#end_time").val() + ":00"]
+    };
     var group_map = {
         id: "",
         name: ""
     };
-    var getMapGroup = createJsonXmlHttp("sql");
-    getMapGroup.onreadystatechange = function () {
-        if (getMapGroup.readyState == 4 || getMapGroup.readyState == "complete") {
-            var revObj = JSON.parse(this.responseText);
-            if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                var revInfo = revObj.Value[0].Values || [];
-                var index = revInfo.findIndex(function (info) {
-                    return info.group_id == group_id;
-                });
-                if (index == -1) {
-                    $('#progress_block').hide();
-                    clearTimeout(timeDelay["model"]);
-                    alert("此群組不存在，請輸入其他群組編號再查詢!");
-                    return false;
-                }
-                group_map.id = revInfo[index].map_id;
-                group_map.name = mapCollection[revInfo[index].map_id].map_name;
-                var start_datetime = new Date(datetime_start)
-                    .format("yyyy-MM-dd hh:mm:ss").split(" ");
-                var end_datetime = new Date(datetime_start + 3600000) //原本切隔搜尋間隔為1分鐘，改為1小時。
-                    .format("yyyy-MM-dd hh:mm:ss").split(" ");
-                sendRequest({
-                    "Command_Type": ["Read"],
-                    "Command_Name": ["GetLocus_combine_group"],
-                    "Value": {
-                        "group_id": group_id,
-                        "start_date": start_datetime[0],
-                        "start_time": start_datetime[1],
-                        "end_date": end_datetime[0],
-                        "end_time": end_datetime[1]
-                    },
-                    "api_token": [token]
-                });
-            }
-        }
-    };
-    getMapGroup.send(JSON.stringify({
-        "Command_Type": ["Read"],
-        "Command_Name": ["GetMaps_Groups"],
-        "api_token": [token]
-    }));
-
-    function sendRequest(request) {
-        var xmlHttp = createJsonXmlHttp("sql");
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                if (!this.responseText) {
-                    $('#progress_block').hide();
-                    clearTimeout(timeDelay["model"]);
-                    alert("搜尋失敗，請稍候再試一次!");
-                    return;
-                }
-                var revObj = JSON.parse(this.responseText);
-                if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                    var revInfo = revObj.Value[0].Values || [];
-                    for (i = 0; i < revInfo.length; i++) {
-                        //改成按照時間分類排序
-                        var time_arr = (revInfo[i].time.split(" ")[1]).split(":");
-                        var second = Math.floor(parseFloat(time_arr[2]));
-                        var time = time_arr[0] + ":" + time_arr[1] + ":" +
-                            (second < 10 ? "0" + second : second);
-                        if (!historyData[time]) {
-                            timeslot_array.push(time);
-                            historyData[time] = [];
-                        }
-                        var index = tag_array.indexOf(revInfo[i].tag_id);
-                        if (index == -1) {
-                            tag_array.push(revInfo[i].tag_id);
-                        }
-                        var repeat = historyData[time].findIndex(function (info) {
-                            return info.tag_id == revInfo[i].tag_id;
+    var func = {
+        getMapGroup: function () {
+            let request = {
+                "Command_Type": ["Read"],
+                "Command_Name": ["GetMaps_Groups"],
+                "api_token": [token]
+            };
+            let xmlHttp = createJsonXmlHttp("sql");
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    let revObj = JSON.parse(this.responseText);
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                        let revInfo = revObj.Value[0].Values || [];
+                        let index = revInfo.findIndex(function (info) {
+                            return info.group_id == group_id;
                         });
-                        if (repeat == -1) {
-                            var datetime_arr = TimeToArray(revInfo[i].time);
-                            historyData[time].push({
-                                tag_id: revInfo[i].tag_id,
-                                map_id: group_map.id,
-                                map_name: group_map.name,
-                                x: parseInt(revInfo[i].coordinate_x, 10),
-                                y: parseInt(revInfo[i].coordinate_y, 10),
-                                date: datetime_arr[0],
-                                time: datetime_arr[1]
+                        if (index == -1) {
+                            $('#progress_block').hide();
+                            clearTimeout(timeDelay["model"]);
+                            return alert("此群組不存在，請輸入其他群組編號再查詢!");
+                        }
+                        group_map.id = revInfo[index].map_id;
+                        group_map.name = MapList[revInfo[index].map_id].map_name;
+                        func.getCount(group_id);
+                    }
+                }
+            };
+            xmlHttp.send(JSON.stringify(request));
+        },
+        getCount: function (target) {
+            let request = {
+                "Command_Name": ["GetLocus_combine_with_record"],
+                "Command_Type": ["Read"],
+                "Value": {
+                    "start_date": datetime.start[0],
+                    "start_time": datetime.start[1],
+                    "end_date": datetime.end[0],
+                    "end_time": datetime.end[1],
+                    "flag": "4",
+                    "target": target,
+                    "startnum": "0",
+                    "getcnt": "1"
+                },
+                "api_token": [token]
+            };
+            let xmlHttp = createJsonXmlHttp("sql");
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    if (!this.responseText) {
+                        $('#progress_block').hide();
+                        clearTimeout(timeDelay["model"]);
+                        alert("搜尋失敗，請稍候再試一次!");
+                        return;
+                    }
+                    let revObj = JSON.parse(this.responseText);
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                        let revInfo = revObj.Value[0].location || [{
+                            "Status": "0"
+                        }];
+                        if (revInfo[0].Status == "1") {
+                            let total = parseInt(revInfo[0].Values[0].count, 10);
+                            interval_times += Math.ceil(total / 10000);
+                            //console.log("total=> " + total);
+                            //console.log("interval_times=> " + interval_times);
+                            func.getDatas(target, "0", total);
+                        }
+                    }
+                }
+            };
+            xmlHttp.send(JSON.stringify(request));
+        },
+        getDatas: function (target, startnum, total) {
+            if (total == 0)
+                alert($.i18n.prop('i_groupID') + ":[" + target + "]在此時段內無歷史資料");
+            let request = {
+                "Command_Name": ["GetLocus_combine_with_record"],
+                "Command_Type": ["Read"],
+                "Value": {
+                    "start_date": datetime.start[0],
+                    "start_time": datetime.start[1],
+                    "end_date": datetime.end[0],
+                    "end_time": datetime.end[1],
+                    "flag": "4",
+                    "target": target,
+                    "startnum": startnum,
+                    "getcnt": "0"
+                },
+                "api_token": [token]
+            };
+            let xmlHttp = createJsonXmlHttp("sql");
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                    if (!this.responseText) {
+                        $('#progress_block').hide();
+                        clearTimeout(timeDelay["model"]);
+                        alert("搜尋失敗，請稍候再試一次!");
+                        return;
+                    }
+                    let revObj = JSON.parse(this.responseText);
+                    if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                        let event = revObj.Value[0].event || [{
+                            "Status": "0"
+                        }];
+                        if (event[0].Status == "1" && event[0].amount > 0) {
+                            event[0].Values.forEach(element => {
+                                if (!AlarmList[element.time])
+                                    AlarmList[element.time] = {};
+                                AlarmList[element.time][element.tag_id] = {
+                                    alarm_type: element.alarm_type,
+                                    status: element.status
+                                };
                             });
                         }
-                    }
-                    count_times++
-                    $("#progress_bar").text(Math.round(count_times / interval_times * 100) + " %");
-                    if (interval_times > count_times) {
-                        var start_datetime = new Date(datetime_start + 3600000 * count_times)
-                            .format("yyyy-MM-dd hh:mm:ss").split(" ");
-                        var end_datetime = new Date(datetime_start + 3600000 * (count_times + 1))
-                            .format("yyyy-MM-dd hh:mm:ss").split(" ");
-                        //以1分鐘為基準，分批接受並傳送要求
-                        sendRequest({
-                            "Command_Type": ["Read"],
-                            "Command_Name": ["GetLocus_combine_group"],
-                            "Value": {
-                                "group_id": group_id,
-                                "start_date": start_datetime[0],
-                                "start_time": start_datetime[1],
-                                "end_date": end_datetime[0],
-                                "end_time": end_datetime[1]
-                            },
-                            "api_token": [token]
-                        });
-                    } else {
-                        $("#table_tag_list tbody").empty();
-                        tag_array.sort();
-                        tag_array.forEach(tag_id => {
-                            $("#table_tag_list tbody").append(
-                                "<tr><td><label name=\"tag_list_id\">" + parseInt(tag_id.substring(8), 16) + "</label></td>" +
-                                "<td><button class=\"btn btn-default btn-focus\" onclick=\"changeLocateTag(\'" + tag_id +
-                                "\')\"><img class=\"icon-image\" src=\"../image/target.png\"></button></td></tr>"
-                            );
-                            getMemberData(parseInt(tag_id.substring(8), 16));
-                        });
-                        completeSearch();
+                        let location = revObj.Value[0].location || [{
+                            "Status": "0"
+                        }];
+                        if (location[0].Status == "1") {
+                            let revInfo = location[0].Values || [];
+                            revInfo.forEach(v => {
+                                //改成按照時間分類排序
+                                let datetime_arr = TimeToArray(v.time);
+                                let date_time = v.time.split(".")[0]; //將秒數的小數點去掉後歸類
+                                let type = "normal";
+                                if (AlarmList[v.time] && AlarmList[v.time][v.tag_id]) {
+                                    type = AlarmList[v.time][v.tag_id].alarm_type;
+                                    AlarmList[v.time][v.tag_id]["map_id"] = group_map.id;
+                                    AlarmList[v.time][v.tag_id]["x"] = parseInt(v.coordinate_x, 10);
+                                    AlarmList[v.time][v.tag_id]["y"] = parseInt(v.coordinate_y, 10);
+                                }
+                                if (!HistoryData[date_time]) {
+                                    timeslot_array.push(date_time);
+                                    HistoryData[date_time] = [];
+                                }
+                                HistoryData[date_time].push({
+                                    tag_id: v.tag_id,
+                                    map_id: group_map.id,
+                                    map_name: group_map.name,
+                                    x: parseInt(v.coordinate_x, 10),
+                                    y: parseInt(v.coordinate_y, 10),
+                                    date: datetime_arr[0],
+                                    time: datetime_arr[1],
+                                    type: type
+                                });
+                                if (tag_array.indexOf(v.tag_id) == -1)
+                                    tag_array.push(v.tag_id);
+                            });
+                            count_times++
+                            $("#progress_bar").text(Math.round(count_times / interval_times * 100) + " %");
+                            let count = parseInt(startnum, 10) + location[0].amount;
+                            if (total != count) {
+                                //以10000筆資料為基準，分批接受並傳送要求
+                                func.getDatas(location[0].group_id, count.toString(), total);
+                            } else {
+                                timeslot_array.sort(); //整理時間順序
+                                tag_array.sort(); //整理標籤編號順序
+                                $("#table_tag_list tbody").empty();
+                                tag_array.forEach(tag_id => {
+                                    let user_id = parseInt(tag_id.substring(8), 16);
+                                    getMemberData(user_id);
+                                    $("#table_tag_list tbody").append(
+                                        "<tr><td><label name=\"tag_list_id\">" + user_id + "</label></td>" +
+                                        "<td><label>" + MemberData[user_id].number + "</label></td>" +
+                                        "<td><label>" + MemberData[user_id].name + "</label></td>" +
+                                        "<td><button class=\"btn btn-default btn-focus\" onclick=\"changeLocateTag(\'" + tag_id +
+                                        "\')\"><img class=\"icon-image\" src=\"../image/target.png\"></button></td></tr>"
+                                    );
+                                });
+                                completeSearch();
+                            }
+                        }
                     }
                 }
-            }
-        };
-        xmlHttp.send(JSON.stringify(request));
-    }
-}
-
-function changeLocateTag(tag_id) {
-    locate_tag = tag_id;
-    reDrawTag();
-}
-
-function locateTag(tag_id) {
-    if (historyData[tag_id])
-        changeFocusMap(historyData[tag_id][times].map_id);
-    else
-        alert($.i18n.prop('i_searchError'));
-}
-
-function changeFocusMap(map_id) {
-    if (map_id == "")
-        alert($.i18n.prop('i_mapAlert_19'));
-    else if (map_id != $("#target_map").val()) {
-        if (map_id in mapCollection) {
-            $("#target_map").val(map_id);
-            var mapInfo = mapCollection[map_id];
-            loadImage(mapInfo.map_src, mapInfo.map_scale);
+            };
+            xmlHttp.send(JSON.stringify(request));
         }
+    };
+    AlarmList = {};
+    return func.getMapGroup();
+}
+
+function updateAlarmTable() {
+    let count = 0;
+    $("#alarm_table tbody").empty();
+    switch (HistoryData["search_type"]) {
+        case "Tag":
+            for (let tag_id in AlarmList) {
+                for (let time in AlarmList[tag_id]) {
+                    count++;
+                    $("#alarm_table tbody").append("<tr><td>" + count + "</td>" +
+                        "<td>" + AlarmList[tag_id][time].alarm_type + "</td>" +
+                        "<td>" + parseInt(tag_id, 16) + "</td>" +
+                        "<td>" + time + "</td>" +
+                        "<td><button class=\"btn btn-default btn-focus\"" +
+                        " onclick=\"displayAlarmPos(\'" + tag_id + "\',\'" + time + "\')\">" +
+                        "<img class=\"icon-image\" src=\"../image/target.png\"></button>" +
+                        "</td></tr>");
+                }
+            }
+            break;
+        case "Group":
+            for (let time in AlarmList) {
+                for (let tag_id in AlarmList[time]) {
+                    count++;
+                    $("#alarm_table tbody").append("<tr><td>" + count + "</td>" +
+                        "<td>" + AlarmList[time][tag_id].alarm_type + "</td>" +
+                        "<td>" + parseInt(tag_id, 16) + "</td>" +
+                        "<td>" + time + "</td>" +
+                        "<td><button class=\"btn btn-default btn-focus\"" +
+                        " onclick=\"displayAlarmPos(\'" + time + "\',\'" + tag_id + "\')\">" +
+                        "<img class=\"icon-image\" src=\"../image/target.png\"></button>" +
+                        "</td></tr>");
+                }
+            }
+            break;
+        default:
+            break;
     }
 }
-
-function clearDrawInterval() {
-    for (i in timeDelay["draw"])
-        clearInterval(timeDelay["draw"][i]);
-    timeDelay["draw"] = [];
-}
-
 
 function getAlarmHandleByTime() {
     let xmlHttp = createJsonXmlHttp("sql");
@@ -1091,14 +889,15 @@ function completeSearch() {
     $('#progress_block').hide();
     clearTimeout(timeDelay["model"]);
     alert($.i18n.prop('i_searchOver'));
-    var num = Object.keys(historyData).length;
+    let num = Object.keys(HistoryData).length;
     if (num <= 1)
         alert($.i18n.prop('i_searchNoData'));
+    updateAlarmTable();
 }
 
 function fullOf4Byte(id) {
     id = parseInt(id).toString(16).toUpperCase();
-    var length = id.length;
+    let length = id.length;
     if (length > 0 && length < 9) {
         for (i = 0; i < 8 - length; i++) {
             id = "0" + id;
@@ -1107,4 +906,14 @@ function fullOf4Byte(id) {
     } else {
         return "";
     }
+}
+
+function checkExt(fileName) {
+    var validExts = new Array(".png", ".jpg", ".jpeg"); // 可接受的副檔名
+    var fileExt = fileName.substring(fileName.lastIndexOf('.'));
+    if (validExts.indexOf(fileExt) < 0) {
+        alert($.i18n.prop('i_fileError_2') + validExts.toString());
+        return false;
+    } else
+        return true;
 }

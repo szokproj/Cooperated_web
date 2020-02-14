@@ -28,8 +28,10 @@ let TimeGroupArr = [],
 
 $(function () {
     let h = document.documentElement.clientHeight;
-    $(".container").css("height", h - 10 + "px");
-    $(".cvsBlock").css("height", h - 150 + "px");
+    //$(".container").css("height", h - 10 + "px");
+    //$(".cvsBlock").css("height", h - 152 + "px");
+    $(".table-block").css("height", h - 158 + "px");
+    $(".cvsBlock").css("height", h - 152 + "px");
     $("#block_fence_info .block-list").css("height", h - 295 + "px");
     $("#block_fence_alarm_group .block-list").css("height", h - 247 + "px");
 

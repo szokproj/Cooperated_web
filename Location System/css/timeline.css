@@ -76,6 +76,12 @@ canvas:active {
     margin-bottom: 10px;
 }
 
+#alarm_info {
+    height: 230px;
+    max-height: 230px;
+    overflow: auto;
+}
+
 #alarmBlock {
     -webkit-flex: 1;
     -ms-flex: 1;
@@ -196,7 +202,7 @@ hr {
 
 .btn-focus {
     height: 26px;
-    width: 30px;
+    width: 100%;
     padding: 0px;
 }
 
@@ -236,7 +242,7 @@ hr {
     color: black;
 }
 
-#statistics_info {
+.info-block {
     display: block;
     background: lightgray;
     width: 100%;
@@ -247,7 +253,7 @@ hr {
     color: rgb(0, 0, 0);
 }
 
-#statistics_info label {
+.info-block label {
     color: black;
 }
 
@@ -298,4 +304,49 @@ hr {
     border-radius: 5px;
     background: rgb(255, 255, 255);
     color: rgb(0, 0, 0);
+}
+
+.alert_block {
+    top: 10px;
+    left: 40%;
+    position: absolute;
+    display: none;
+    margin: auto;
+    width: auto;
+    height: auto;
+    padding: 10px 14px;
+    -moz-box-shadow: 4px 4px 12px -2px rgb(97, 96, 96);
+    -webkit-box-shadow: 4px 4px 12px -2px rgb(97, 96, 96);
+    box-shadow: 4px 4px 12px -2px rgb(97, 96, 96);
+    border-radius: 5px;
+    background: rgb(94, 191, 255);
+    color: rgb(0, 0, 0);
+    opacity: 100;
+    filter: alpha(opacity=100);
+}
+
+.alert_block.fadeOut {
+    -webkit-transition: opacity .5s linear;
+    -moz-transition: opacity .5s linear;
+    -o-transition: opacity .5s linear;
+    transition: opacity .5s linear;
+    opacity: 0;
+}
+
+#alarm_table th{
+    text-align: center;
+}
+
+.btn-add-file {
+    background-color: rgb(172, 172, 172);
+    border: 1px solid rgb(153, 153, 153);
+    width: auto;
+    padding: 5px 10px;
+    border-radius: 4px;
+    color: white;
+    text-align: center;
+}
+
+.btn-add-file:hover {
+    background-color: rgb(134, 134, 134);
 }

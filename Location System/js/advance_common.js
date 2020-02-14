@@ -1,5 +1,3 @@
-'use strict';
-
 function searchNetworkCards() {
     let xmlHttp = createJsonXmlHttp("Command");
     xmlHttp.onreadystatechange = function () {
