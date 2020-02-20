@@ -134,10 +134,6 @@ canvas {
     position: relative;
 }
 
-.canvas-modes img {
-    height: 100px;
-}
-
 /*DropDownList*/
 .dropbtn {
     background-color: #4CAF50;

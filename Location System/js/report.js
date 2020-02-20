@@ -3,9 +3,9 @@ var token = "",
     mapList = {},
     memberList = {},
     timeDelay = {},
-    selectMembers = {},
     selectNumberArray = [],
     dateArray = [],
+    targetArray = [],
     historyData = [];
 
 
@@ -267,113 +267,266 @@ function getMap() {
     }));
 }
 
-
 function getPersonTimeline(number) {
     let person = memberList[number],
+        interval_times = 0,
         count_times = 0,
         row_count = 0,
         date = document.getElementById("date_one_day").value,
-        date_arr = date.split("-");;
-
-    if (date == "") {
-        alert("請選擇日期!");
-        return;
-    }
-
-    for (let title in RowsList) {
-        if (RowsList[title]["timeline"] == true)
-            $("#report_person_" + title).text(person[title]);
-    }
-    if (timeDelay["search"]) {
-        timeDelay["search"].forEach(timeout => {
-            clearTimeout(timeout);
-        });
-    }
-    timeDelay["search"] = [];
-    showSearching();
-
-    document.getElementById("report_date").innerText = date_arr[0] + "年" + date_arr[1] + "月" + date_arr[2] + "日";
-    $("#table_person_timeline tbody").empty();
-    sendRequest({
-        "Command_Type": ["Read"],
-        "Command_Name": ["GetLocus_combine_hour"],
-        "Value": {
-            "tag_id": person.tag_id.substring(8),
-            "start_date": date,
-            "start_time": "00:00:00",
-            "end_date": date,
-            "end_time": "23:59:59"
-        },
-        "api_token": [token]
-    });
-
-    function sendRequest(request) {
-        let xmlHttp = createJsonXmlHttp("sql");
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                if (!this.responseText) {
-                    $('#progress_block').hide();
-                    clearTimeout(timeDelay["progress"]);
-                    alert("搜尋失敗，請稍候再試一次!");
-                    return;
-                }
-                let revObj = JSON.parse(this.responseText);
-                if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                    let revInfo = revObj.Value[0].Values || [];
-                    let record_sec = "";
-                    revInfo.forEach(timeline => {
-                        let sec = parseInt(timeline.time.split(" ")[1].split(":")[2], 10);
-                        if (sec != record_sec) {
-                            row_count++;
-                            record_sec = sec;
-                            $("#table_person_timeline tbody").append("<tr>" +
-                                "<td>" + row_count + "</td>" +
-                                "<td>" + timeline.time.split(" ")[1] + "</td>" +
-                                "<td>" + mapList[timeline.map_id].map_name +
-                                " ( " + parseInt(timeline.coordinate_x, 10) +
-                                " , " + parseInt(timeline.coordinate_y, 10) +
-                                " ) </td></tr>");
-                        }
-                    });
-
-                    if (revObj.Value[0].Status == "1") {
-                        //以1小時為基準，分批接受並傳送要求
-                        count_times++;
-                        $("#progress_bar").text(Math.round(count_times / 24 * 100) + " %");
-                        timeDelay["search"].push(setTimeout(function () {
-                            sendRequest({
-                                "Command_Type": ["Read"],
-                                "Command_Name": ["GetLocus_combine_hour"],
-                                "Value": {
-                                    "tag_id": revObj.Value[0].tag_id,
-                                    "start_date": revObj.Value[0].start_date,
-                                    "start_time": revObj.Value[0].start_time,
-                                    "end_date": revObj.Value[0].end_date,
-                                    "end_time": revObj.Value[0].end_time
-                                },
-                                "api_token": [token]
-                            });
-                        }, 100));
-                    } else {
-                        count_times++;
-                        $("#progress_bar").text(Math.round(count_times / 24 * 100) + " %");
-                        if (count_times >= 24)
-                            completeSearch();
+        date_arr = date.split("-"),
+        func = {
+            getCount: function () {
+                if (date == "")
+                    return alert("請選擇日期!");
+                for (let title in RowsList) {
+                    if (RowsList[title]["timeline"] == true) {
+                        $("#report_person_" + title).text(person[title]);
                     }
                 }
+                showSearching();
+                document.getElementById("report_date").innerText = date_arr[0] + "年" + date_arr[1] + "月" + date_arr[2] + "日";
+                $("#table_person_timeline tbody").empty();
+                let request = {
+                        "Command_Name": ["GetLocus_combine_with_record"],
+                        "Command_Type": ["Read"],
+                        "Value": {
+                            "start_date": date,
+                            "start_time": "00:00:00",
+                            "end_date": date,
+                            "end_time": "23:59:59",
+                            "flag": "1",
+                            "target": person.tag_id.substring(8),
+                            "startnum": "0",
+                            "getcnt": "1"
+                        },
+                        "api_token": [token]
+                    },
+                    xmlHttp = createJsonXmlHttp("sql");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        if (!this.responseText) {
+                            $('#progress_block').hide();
+                            clearTimeout(timeDelay["model"]);
+                            return alert("搜尋失敗，請稍候再試一次!");
+                        }
+                        let revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                            let revInfo = revObj.Value[0].location || [{
+                                "Status": "0"
+                            }];
+                            if (revInfo[0].Status == "1") {
+                                let total = parseInt(revInfo[0].Values[0].count, 10);
+                                interval_times += Math.ceil(total / 10000);
+                                func.getDatas(revInfo[0].tag_id, "0", parseInt(total, 10));
+                            }
+                        }
+                    }
+                };
+                xmlHttp.send(JSON.stringify(request));
+            },
+            getDatas: function (target, startnum, total) {
+                if (total == 0) {
+                    $('#progress_block').hide();
+                    return alert($.i18n.prop('i_tagID') + ":[" + target + "]在此時段內無歷史資料");
+                }
+                let request = {
+                        "Command_Name": ["GetLocus_combine_with_record"],
+                        "Command_Type": ["Read"],
+                        "Value": {
+                            "start_date": date,
+                            "start_time": "00:00:00",
+                            "end_date": date,
+                            "end_time": "23:59:59",
+                            "flag": "1",
+                            "target": target,
+                            "startnum": startnum,
+                            "getcnt": "0"
+                        },
+                        "api_token": [token]
+                    },
+                    xmlHttp = createJsonXmlHttp("sql");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        if (!this.responseText) {
+                            $('#progress_block').hide();
+                            clearTimeout(timeDelay["progress"]);
+                            return alert("搜尋失敗，請稍候再試一次!");
+                        }
+                        let revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                            let location = revObj.Value[0].location || [{
+                                Status: "0"
+                            }];
+                            if (location[0].Status == "1") {
+                                if (location[0].Values) {
+                                    location[0].Values.forEach(timeline => {
+                                        row_count++;
+                                        $("#table_person_timeline tbody").append("<tr>" +
+                                            "<td>" + row_count + "</td>" +
+                                            "<td>" + timeline.time.split(" ")[1] + "</td>" +
+                                            "<td>" + mapList[timeline.map_id].map_name +
+                                            " ( " + timeline.coordinate_x +
+                                            " , " + timeline.coordinate_y +
+                                            " ) </td></tr>");
+                                    });
+                                }
+                            }
+                            count_times++;
+                            $("#progress_bar").text(Math.round(count_times / interval_times * 100) + " %");
+                            let count = parseInt(startnum, 10) + location[0].amount;
+                            if (total > count) /*interval_times > count_times*/ { //以10000筆資料為基準，分批接受並傳送要求
+                                func.getDatas(location[0].tag_id, count.toString(), total);
+                            } else {
+                                completeSearch();
+                            }
+                        }
+                    }
+                };
+                xmlHttp.send(JSON.stringify(request));
             }
-        };
-        xmlHttp.send(JSON.stringify(request));
-    }
+        }
+    return func.getCount();
 }
 
 function getAttendanceList() {
     let interval_times = 0,
         count_times = 0,
-        isStop = false;
+        func = {
+            getCount: function (index, target) {
+                let request = {
+                    "Command_Name": ["GetLocus_combine_with_record"],
+                    "Command_Type": ["Read"],
+                    "Value": {
+                        "start_date": dateArray[index],
+                        "start_time": "00:00:00",
+                        "end_date": dateArray[index],
+                        "end_time": "23:59:59",
+                        "flag": "1",
+                        "target": target,
+                        "startnum": "0",
+                        "getcnt": "1"
+                    },
+                    "api_token": [token]
+                };
+                let xmlHttp = createJsonXmlHttp("sql");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        if (!this.responseText) {
+                            $('#progress_block').hide();
+                            clearTimeout(timeDelay["model"]);
+                            return alert("搜尋失敗，請稍候再試一次!");
+                        }
+                        let revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                            let revInfo = revObj.Value[0].location || [{
+                                Status: "0"
+                            }];
+                            if (revInfo[0].Status == "1") {
+                                let total = parseInt(revInfo[0].Values[0].count, 10);
+                                func.getDatas(index, target, "0", total);
+                            }
+                        }
+                    }
+                };
+                xmlHttp.send(JSON.stringify(request));
+            },
+            getDatas: function (index, target, startnum, total) {
+                let request = {
+                    "Command_Name": ["GetLocus_combine_with_record"],
+                    "Command_Type": ["Read"],
+                    "Value": {
+                        "start_date": dateArray[index],
+                        "start_time": "00:00:00",
+                        "end_date": dateArray[index],
+                        "end_time": "23:59:59",
+                        "flag": "1",
+                        "target": target,
+                        "startnum": startnum,
+                        "getcnt": "0"
+                    },
+                    "api_token": [token]
+                };
+                let xmlHttp = createJsonXmlHttp("sql");
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        if (!this.responseText) {
+                            $('#progress_block').hide();
+                            clearTimeout(timeDelay["model"]);
+                            return alert("搜尋失敗，請稍候再試一次!");
+                        }
+                        let revObj = JSON.parse(this.responseText);
+                        if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
+                            let location = revObj.Value[0].location || [{
+                                Status: "0"
+                            }];
+                            if (location[0].Status == "1") {
+                                let revInfo = location[0].Values || [];
+                                revInfo.forEach(timeline => {
+                                    if (!historyData[index][target].first) {
+                                        historyData[index][target].first = timeline;
+                                    } else {
+                                        historyData[index][target].last = timeline;
+                                    }
+                                });
+                            }
+                            let count = parseInt(startnum, 10) + location[0].amount;
+                            if (total > count) {
+                                //以10000筆資料為基準，分批接受並傳送要求
+                                if (total > 10000) {
+                                    let last_cnt = (Math.round(total / 10000) * 10000).toString();
+                                    func.getDatas(index, target, last_cnt, total);
+                                } else {
+                                    func.getDatas(index, target, count.toString(), total);
+                                }
+                            } else {
+                                count_times++;
+                                $("#table_tag_list tbody").empty();
+                                if (interval_times > count_times) {
+                                    let num_index = targetArray.findIndex(function (info) {
+                                        return info.tag_id == target;
+                                    });
+                                    if (num_index == targetArray.length - 1)
+                                        func.getCount(index + 1, targetArray[0].tag_id);
+                                    else
+                                        func.getCount(index, targetArray[num_index + 1].tag_id);
+                                } else {
+                                    func.inputFP();
+                                    $("#progress_bar").text("100 %");
+                                    completeSearch();
+                                    $("#total_pages").text(dateArray.length);
+                                }
+                            }
+                            $("#progress_bar").text(Math.round(count_times / interval_times * 100) + " %");
+                        }
+
+                    }
+                };
+                xmlHttp.send(JSON.stringify(request));
+            },
+            inputFP: function () {
+                selectNumberArray.forEach(function (number, i) {
+                    let member_info = memberList[number],
+                        tag_id = memberList[number].tag_id.substring(8),
+                        attend_start = historyData[0][tag_id].first,
+                        attend_end = historyData[0][tag_id].last,
+                        date_arr = dateArray[0].split("-"),
+                        tr_context = "";
+                    tr_context += "<tr><td>" + (i + 1) + "</td>";
+                    for (let title in RowsList) {
+                        if (RowsList[title]["attendance"] == true)
+                            tr_context += "<td>" + member_info[title] + "</td>";
+                    }
+                    tr_context += "<td>" + (attend_start ? attend_start.time.split(" ")[1] : "缺席") + "</td>" +
+                        "<td>" + (attend_end ? attend_end.time.split(" ")[1] : "缺席") + "</td></tr>";
+                    $("#table_member_attendance tbody").append(tr_context);
+                    $("#current_pages").val(1);
+                    document.getElementById("report_attend_date").innerText = date_arr[0] + "年" + date_arr[1] + "月" + date_arr[2] + "日";
+                });
+            }
+        };
 
     dateArray = [];
-
+    targetArray = [];
     switch ($("#select_report_type").val()) {
         case "daily_report":
             if ($("#date_one_day").val() == "")
@@ -392,8 +545,6 @@ function getAttendanceList() {
             }
             break;
         case "monthly_report":
-            return alert("月報表暫不提供!"); //因為搜尋時間太長了，搜尋會出錯，暫待提高出缺勤的搜尋效率;
-
             if ($("#month_select").val() == "")
                 return alert("請選擇日期!");
             const year_month = $("#month_select").val();
@@ -413,124 +564,25 @@ function getAttendanceList() {
         default:
             break;
     }
-
-    if (timeDelay["search"]) {
-        timeDelay["search"].forEach(timeout => {
-            clearTimeout(timeout);
-        });
-    }
-    timeDelay["search"] = [];
     showSearching();
-
-    let total_search = selectNumberArray.length * dateArray.length,
-        packge_percent = 100 / total_search / 24;
-
-    selectMembers = {};
-
+    interval_times = dateArray.length * selectNumberArray.length; //天數*人數
     $("#table_member_attendance tbody").empty();
-
-    dateArray.forEach(function (date, index) {
-        selectNumberArray.forEach(function (number, i) {
-            let tag_id = memberList[number].tag_id.substring(8);
-            if (index == 0)
-                selectMembers[tag_id] = memberList[number];
-            timeDelay["search"].push(setTimeout(function () {
-                if (!historyData[index])
-                    historyData[index] = {};
-                historyData[index][tag_id] = {
-                    first: null,
-                    last: null
-                };
-                sendRequest(index, {
-                    "Command_Type": ["Read"],
-                    "Command_Name": ["GetLocus_combine_hour"],
-                    "Value": {
-                        "tag_id": tag_id,
-                        "start_date": date,
-                        "start_time": "00:00:00",
-                        "end_date": date,
-                        "end_time": "23:59:59"
-                    },
-                    "api_token": [token]
-                });
-            }), 200 * i);
+    selectNumberArray.forEach(number => {
+        let tag_id = memberList[number].tag_id.substring(8);
+        targetArray.push({
+            tag_id: tag_id,
+            number: number
         });
+        for (let i = 0; i < dateArray.length; i++) {
+            if (!historyData[i])
+                historyData[i] = {};
+            historyData[i][tag_id] = {
+                first: null,
+                last: null
+            };
+        }
     });
-
-    function sendRequest(index, request) {
-        let xmlHttp = createJsonXmlHttp("sql");
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                if (isStop) return;
-                if (!this.responseText) {
-                    $('#progress_block').hide();
-                    clearTimeout(timeDelay["progress"]);
-                    alert("搜尋失敗，請稍候再試一次!");
-                    isStop = true;
-                    return;
-                }
-                let revObj = JSON.parse(this.responseText);
-                if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                    let revInfo = revObj.Value[0].Values || [],
-                        tag_id = revObj.Value[0].tag_id;
-                    revInfo.forEach(timeline => {
-                        if (!historyData[index][tag_id].first) {
-                            historyData[index][tag_id].first = timeline;
-                        } else {
-                            historyData[index][tag_id].last = timeline;
-                        }
-                    });
-                    interval_times++;
-                    $("#progress_bar").text(Math.round(packge_percent * interval_times) + " %");
-
-                    if (revObj.Value[0].Status == "1") {
-                        //以1小時為基準，分批接受並傳送要求
-                        timeDelay["search"].push(setTimeout(function () {
-                            sendRequest(index, {
-                                "Command_Type": ["Read"],
-                                "Command_Name": ["GetLocus_combine_hour"],
-                                "Value": {
-                                    "tag_id": tag_id,
-                                    "start_date": revObj.Value[0].start_date,
-                                    "start_time": revObj.Value[0].start_time,
-                                    "end_date": revObj.Value[0].end_date,
-                                    "end_time": revObj.Value[0].end_time
-                                },
-                                "api_token": [token]
-                            });
-                        }, 100));
-                    } else {
-                        count_times++;
-
-                        if (index == 0) {
-                            let member_info = selectMembers[tag_id],
-                                attend_from = historyData[index][tag_id].first,
-                                attend_end = historyData[index][tag_id].last,
-                                tr_context = "",
-                                date_arr = dateArray[0].split("-");
-                            tr_context += "<tr><td>" + count_times + "</td>";
-                            for (let title in RowsList) {
-                                if (RowsList[title]["attendance"] == true)
-                                    tr_context += "<td>" + member_info[title] + "</td>";
-                            }
-                            tr_context += "<td>" + (attend_from ? attend_from.time.split(" ")[1] : "缺席") + "</td>" +
-                                "<td>" + (attend_end ? attend_end.time.split(" ")[1] : "缺席") + "</td></tr>";
-                            $("#table_member_attendance tbody").append(tr_context);
-                            $("#current_pages").val(1);
-                            document.getElementById("report_attend_date").innerText = date_arr[0] + "年" + date_arr[1] + "月" + date_arr[2] + "日";
-                        }
-
-                        if (total_search <= count_times) {
-                            $("#progress_bar").text("100 %");
-                            completeSearch();
-                            $("#total_pages").text(dateArray.length);
-                        }
-                    }
-                }
-            }
-        };
-        xmlHttp.send(JSON.stringify(request));
-    }
+    func.getCount(0, targetArray[0].tag_id);
 }
 
 var changePage = {
@@ -570,17 +622,15 @@ var changePage = {
         }
     },
     toPage: function (pages) {
-        let count = 0,
-            date_arr = dateArray[pages - 1].split("-");
+        let date_arr = dateArray[pages - 1].split("-");
         $("#current_pages").val(pages);
         $("#table_member_attendance tbody").empty();
-        for (let tag_id in selectMembers) {
-            let member_info = selectMembers[tag_id],
-                attend_from = historyData[pages - 1][tag_id].first,
-                attend_end = historyData[pages - 1][tag_id].last,
+        targetArray.forEach(function (target, i) {
+            let member_info = memberList[target.number],
+                attend_from = historyData[pages - 1][target.tag_id].first,
+                attend_end = historyData[pages - 1][target.tag_id].last,
                 tr_context = "";
-            count++;
-            tr_context += "<tr><td>" + count + "</td>";
+            tr_context += "<tr><td>" + (i + 1) + "</td>";
             for (let title in RowsList) {
                 if (RowsList[title]["attendance"] == true)
                     tr_context += "<td>" + member_info[title] + "</td>";
@@ -588,7 +638,7 @@ var changePage = {
             tr_context += "<td>" + (attend_from ? attend_from.time.split(" ")[1] : "缺席") + "</td>" +
                 "<td>" + (attend_end ? attend_end.time.split(" ")[1] : "缺席") + "</td></tr>";
             $("#table_member_attendance tbody").append(tr_context);
-        }
+        });
         document.getElementById("report_attend_date").innerText = date_arr[0] + "年" + date_arr[1] + "月" + date_arr[2] + "日";
     }
 }

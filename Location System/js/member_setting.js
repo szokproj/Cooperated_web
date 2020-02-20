@@ -143,11 +143,10 @@ $(function () {
         $("#selectAll").parent().click();
     });
     $("#excel_import").change(function () {
-        if (permission > 0) {
+        if (permission > 0)
             importf(this);
-        } else {
+        else
             alert("No write permission!")
-        }
         $(this).val(''); //reset input[type='file']
     });
     $("#excel_export").click(function () {

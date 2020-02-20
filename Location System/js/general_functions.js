@@ -261,7 +261,7 @@ function startDLL(token) {
  **/
 
 /**
- * //let xmlHttp = GetXmlHttpObject();
+ * let xmlHttp = GetXmlHttpObject();
    const json_request = JSON.stringify({});
    xmlHttp.open("POST", "", true);
    xmlHttp.setRequestHeader("Content-type", "application/json");
@@ -274,8 +274,8 @@ function startDLL(token) {
    xmlHttp.send(json_request);
  */
 
-/*
-   const json_request = JSON.stringify({});
+/**
+ * const json_request = JSON.stringify({});
    let jxh = createJsonXmlHttp("");
    jxh.onreadystatechange = function () {
        if (jxh.readyState == 4 || jxh.readyState == "complete") {
@@ -284,19 +284,4 @@ function startDLL(token) {
        }
    };
    jxh.send(json_request);
-*/
-
-
-/*
-const json_request = JSON.stringify({}); //與後端溝通只能將內容放置到物件中再轉成json形式
-let xmlHttp = GetXmlHttpObject();
-xmlHttp.open("POST", "", true); //設定用POST能放入大量資料，封包比較不容易中段，並且可以接收到回應
-xmlHttp.setRequestHeader("Content-type", "application/json");
-xmlHttp.onreadystatechange = function () {
-    if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") { //驗證回應內容符合正確格式且完整
-        let revObj = JSON.parse(this.responseText); //需將回應(json)解析成Object才能取值
-        //編寫接收到回應資料後的處理程式
-    }
-};
-xmlHttp.send(json_request); //將要傳到後端的資料(Object)轉成json形式
-*/
+ */

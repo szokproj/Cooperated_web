@@ -1,9 +1,13 @@
 'use strict';
 var token = "",
-    sel_members_number = [],
     mapList = {},
     memberList = {},
-    timeDelay = {};
+    timeDelay = {},
+    selectMembers = {},
+    selectNumberArray = [],
+    dateArray = [],
+    historyData = [];
+
 
 $(function () {
     token = getToken();
@@ -63,18 +67,18 @@ $(function () {
     $("#btn_create_report").on("click", function () {
         switch ($("#select_report_name").val()) {
             case "person_timeline":
-                if (sel_members_number.length > 1 &&
+                if (selectNumberArray.length > 1 &&
                     !confirm("此報表為個人一日軌跡，如選擇多個人員，也只會搜尋第一個人員，確認繼續?")) {
                     return;
-                } else if (sel_members_number.length == 0) {
+                } else if (selectNumberArray.length == 0) {
                     alert("請選擇人員!")
                     return;
                 }
-                getPersonTimeline(sel_members_number[0]);
+                getPersonTimeline(selectNumberArray[0]);
                 break;
             case "member_attendance":
             case "all_member_attend":
-                if (sel_members_number.length == 0) {
+                if (selectNumberArray.length == 0) {
                     alert("請選擇人員!")
                     return;
                 }
@@ -89,20 +93,20 @@ $(function () {
         if ($("#select_report_name").val() == "all_member_attend")
             return;
         let checkbox = document.getElementsByName("select_members");
-        sel_members_number = [];
+        selectNumberArray = [];
         for (let i = 0; i < checkbox.length; i++) {
             if (!checkbox[i].checked)
-                sel_members_number.push(checkbox[i].value);
+                selectNumberArray.push(checkbox[i].value);
         }
         $("#table_members tbody").empty();
-        sel_members_number.forEach(function (number, i) {
+        selectNumberArray.forEach(function (number, i) {
             $("#table_members tbody").append("<tr>" +
                 "<td><input type='checkbox' name=\"select_members\" value=\"" + number + "\" /> " +
                 (i + 1) + "</td>" +
                 "<td>" + number + "</td>" +
                 "<td>" + memberList[number].Name + "</td></tr>");
         });
-        $("#count_sel_members").text(sel_members_number.length);
+        $("#count_sel_members").text(selectNumberArray.length);
         $("#chk_all_member").prop("checked", false);
     });
 
@@ -127,31 +131,50 @@ $(function () {
     });
 
     $("#btn_export_excel").click(function () {
-        var array = [];
-        var name = "";
         switch ($("#select_report_name").val()) {
             case "person_timeline":
-                name = "person_timeline";
-                array = convertTableToArray("table_person_timeline");
+                var name = "person_timeline";
+                var array = convertTableToArray("table_person_timeline");
+                if (array.length == 0)
+                    return alert($.i18n.prop('i_reportAlarm_1'));
+                var arr = array.slice(0, 10000);
+                //arraysToExcel.timeline(arr, "個人一日軌跡.xls", "Excel");
+                $("#dvjson").excelexportjs({
+                    containerid: "dvjson",
+                    datatype: 'json',
+                    dataset: arr,
+                    columns: getColumns(arr),
+                    fileName: "個人一日軌跡",
+                    worksheetName: name
+                });
                 break;
             case "member_attendance":
             case "all_member_attend":
-                name = "member_attendance";
-                array = convertTableToArray("table_member_attendance");
+                if (historyData.length > 0)
+                    arraysToExcel.attendance(historyData, dateArray, "人員出勤表.xls", "Excel");
+                else
+                    alert($.i18n.prop('i_reportAlarm_1'));
                 break;
             default:
                 break;
         }
-        if (array.length == 0)
-            return alert($.i18n.prop('i_reportAlarm_1'));
-        $("#dvjson").excelexportjs({
-            containerid: "dvjson",
-            datatype: 'json',
-            dataset: array,
-            columns: getColumns(array),
-            fileName: "Report.xls",
-            worksheetName: name
-        });
+    });
+
+    //control pages buttons
+    $("#btn_top").on("click", function () {
+        changePage.top();
+    });
+    $("#btn_backword").on("click", function () {
+        changePage.backword();
+    });
+    $("#btn_forword").on("click", function () {
+        changePage.forword();
+    });
+    $("#btn_bottom").on("click", function () {
+        changePage.bottom();
+    });
+    $("#current_pages").on("change", function () {
+        changePage.select($(this).val());
     });
 });
 
@@ -195,9 +218,9 @@ function selectPage(page_name) {
             $("#report_attend_title").text("全部人員出勤表");
             $("#table_members tbody").empty();
             let count = 0;
-            sel_members_number = []
+            selectNumberArray = []
             for (let number in memberList) {
-                sel_members_number.push(number);
+                selectNumberArray.push(number);
                 count++;
                 $("#table_members tbody").append("<tr>" +
                     "<td><input type='checkbox' name=\"select_members\" value=\"" + number + "\" /> " +
@@ -347,41 +370,32 @@ function getPersonTimeline(number) {
 function getAttendanceList() {
     let interval_times = 0,
         count_times = 0,
-        historyData = {},
-        tagid_number = {},
-        date_array = [],
-        members_length = sel_members_number.length,
-        packge_percent = 100 / members_length / 24;
+        isStop = false;
 
-
-
-    if (timeDelay["search"]) {
-        timeDelay["search"].forEach(timeout => {
-            clearTimeout(timeout);
-        });
-        timeDelay["search"] = [];
-    }
-
-    showSearching();
-
-    $("#table_member_attendance tbody").empty();
+    dateArray = [];
 
     switch ($("#select_report_type").val()) {
         case "daily_report":
+            if ($("#date_one_day").val() == "")
+                return alert("請選擇日期!");
             let date = document.getElementById("date_one_day").value;
-            //date_arr = date.split("-"),
-            date_array.push(new Date(date).format("yyyy-MM-dd"));
-            // document.getElementById("report_attend_date").innerText = date_arr[0] + "年" + date_arr[1] + "月" + date_arr[2] + "日";
+            dateArray.push(new Date(date).format("yyyy-MM-dd"));
             break;
         case "weekly_report":
+            if ($("#date_aweek_start").val() == "")
+                return alert("請選擇日期!");
             let start_date = document.getElementById("date_aweek_start").value;
             for (let i = 0; i < 7; i++) {
                 let date = new Date(start_date);
                 date.setDate(date.getDate() + i);
-                date_array.push(new Date(date).format("yyyy-MM-dd"));
+                dateArray.push(new Date(date).format("yyyy-MM-dd"));
             }
             break;
         case "monthly_report":
+            return alert("月報表暫不提供!"); //因為搜尋時間太長了，搜尋會出錯，暫待提高出缺勤的搜尋效率;
+
+            if ($("#month_select").val() == "")
+                return alert("請選擇日期!");
             const year_month = $("#month_select").val();
             const month = new Date(year_month).getMonth();
             let m = month;
@@ -391,7 +405,7 @@ function getAttendanceList() {
                 date.setDate(d++);
                 m = date.getMonth();
                 if (m == month)
-                    date_array.push(new Date(date).format("yyyy-MM-dd"));
+                    dateArray.push(new Date(date).format("yyyy-MM-dd"));
                 else
                     break;
             }
@@ -400,45 +414,59 @@ function getAttendanceList() {
             break;
     }
 
-    return;
+    if (timeDelay["search"]) {
+        timeDelay["search"].forEach(timeout => {
+            clearTimeout(timeout);
+        });
+    }
+    timeDelay["search"] = [];
+    showSearching();
 
-    date_array.forEach(date => {
-        
+    let total_search = selectNumberArray.length * dateArray.length,
+        packge_percent = 100 / total_search / 24;
+
+    selectMembers = {};
+
+    $("#table_member_attendance tbody").empty();
+
+    dateArray.forEach(function (date, index) {
+        selectNumberArray.forEach(function (number, i) {
+            let tag_id = memberList[number].tag_id.substring(8);
+            if (index == 0)
+                selectMembers[tag_id] = memberList[number];
+            timeDelay["search"].push(setTimeout(function () {
+                if (!historyData[index])
+                    historyData[index] = {};
+                historyData[index][tag_id] = {
+                    first: null,
+                    last: null
+                };
+                sendRequest(index, {
+                    "Command_Type": ["Read"],
+                    "Command_Name": ["GetLocus_combine_hour"],
+                    "Value": {
+                        "tag_id": tag_id,
+                        "start_date": date,
+                        "start_time": "00:00:00",
+                        "end_date": date,
+                        "end_time": "23:59:59"
+                    },
+                    "api_token": [token]
+                });
+            }), 200 * i);
+        });
     });
 
-    sel_members_number.forEach(function (number, i) {
-        let member_data = memberList[number],
-            tag_id = member_data.tag_id.substring(8);
-        tagid_number[tag_id] = number;
-        timeDelay["search"].push(setTimeout(function () {
-            historyData[tag_id] = {
-                first: null,
-                last: null
-            };
-            sendRequest({
-                "Command_Type": ["Read"],
-                "Command_Name": ["GetLocus_combine_hour"],
-                "Value": {
-                    "tag_id": tag_id,
-                    "start_date": date,
-                    "start_time": "00:00:00",
-                    "end_date": date,
-                    "end_time": "23:59:59"
-                },
-                "api_token": [token]
-            });
-        }), 200 * i);
-    });
-
-
-    function sendRequest(request) {
+    function sendRequest(index, request) {
         let xmlHttp = createJsonXmlHttp("sql");
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                if (isStop) return;
                 if (!this.responseText) {
                     $('#progress_block').hide();
                     clearTimeout(timeDelay["progress"]);
                     alert("搜尋失敗，請稍候再試一次!");
+                    isStop = true;
                     return;
                 }
                 let revObj = JSON.parse(this.responseText);
@@ -446,10 +474,10 @@ function getAttendanceList() {
                     let revInfo = revObj.Value[0].Values || [],
                         tag_id = revObj.Value[0].tag_id;
                     revInfo.forEach(timeline => {
-                        if (!historyData[tag_id].first) {
-                            historyData[tag_id].first = timeline;
+                        if (!historyData[index][tag_id].first) {
+                            historyData[index][tag_id].first = timeline;
                         } else {
-                            historyData[tag_id].last = timeline;
+                            historyData[index][tag_id].last = timeline;
                         }
                     });
                     interval_times++;
@@ -458,7 +486,7 @@ function getAttendanceList() {
                     if (revObj.Value[0].Status == "1") {
                         //以1小時為基準，分批接受並傳送要求
                         timeDelay["search"].push(setTimeout(function () {
-                            sendRequest({
+                            sendRequest(index, {
                                 "Command_Type": ["Read"],
                                 "Command_Name": ["GetLocus_combine_hour"],
                                 "Value": {
@@ -472,29 +500,96 @@ function getAttendanceList() {
                             });
                         }, 100));
                     } else {
-                        let member_info = memberList[tagid_number[tag_id]],
-                            attend_from = historyData[tag_id].first,
-                            attend_end = historyData[tag_id].last,
-                            tr_context = "";
                         count_times++;
-                        tr_context += "<tr><td>" + count_times + "</td>";
-                        for (let title in RowsList) {
-                            if (RowsList[title]["attendance"] == true)
-                                tr_context += "<td>" + member_info[title] + "</td>";
-                        }
-                        tr_context += "<td>" + (attend_from ? attend_from.time.split(" ")[1] : "缺席") + "</td>" +
-                            "<td>" + (attend_end ? attend_end.time.split(" ")[1] : "缺席") + "</td></tr>";
 
-                        $("#table_member_attendance tbody").append(tr_context);
-                        if (members_length <= count_times) {
+                        if (index == 0) {
+                            let member_info = selectMembers[tag_id],
+                                attend_from = historyData[index][tag_id].first,
+                                attend_end = historyData[index][tag_id].last,
+                                tr_context = "",
+                                date_arr = dateArray[0].split("-");
+                            tr_context += "<tr><td>" + count_times + "</td>";
+                            for (let title in RowsList) {
+                                if (RowsList[title]["attendance"] == true)
+                                    tr_context += "<td>" + member_info[title] + "</td>";
+                            }
+                            tr_context += "<td>" + (attend_from ? attend_from.time.split(" ")[1] : "缺席") + "</td>" +
+                                "<td>" + (attend_end ? attend_end.time.split(" ")[1] : "缺席") + "</td></tr>";
+                            $("#table_member_attendance tbody").append(tr_context);
+                            $("#current_pages").val(1);
+                            document.getElementById("report_attend_date").innerText = date_arr[0] + "年" + date_arr[1] + "月" + date_arr[2] + "日";
+                        }
+
+                        if (total_search <= count_times) {
                             $("#progress_bar").text("100 %");
                             completeSearch();
+                            $("#total_pages").text(dateArray.length);
                         }
                     }
                 }
             }
         };
         xmlHttp.send(JSON.stringify(request));
+    }
+}
+
+var changePage = {
+    forword: function () {
+        let pages = parseInt($("#current_pages").val(), 10);
+        if (pages == $("#total_pages").text())
+            alert("已經在最後一頁了!");
+        else
+            this.toPage(pages + 1);
+    },
+    backword: function () {
+        let pages = parseInt($("#current_pages").val(), 10);
+        if (pages == 1)
+            alert("已經在第一頁了!");
+        else
+            this.toPage(pages - 1);
+    },
+    top: function () {
+        if (dateArray.length > 0)
+            this.toPage(1);
+    },
+    bottom: function () {
+        if (dateArray.length > 0)
+            this.toPage($("#total_pages").text());
+    },
+    select: function (pages) {
+        if (dateArray.length > 0) {
+            pages = parseInt(pages);
+            if (pages < 1)
+                this.toPage(1);
+            else if (pages > dateArray.length)
+                this.toPage(dateArray.length);
+            else
+                this.toPage(pages);
+        } else {
+            $("#current_pages").val(1);
+        }
+    },
+    toPage: function (pages) {
+        let count = 0,
+            date_arr = dateArray[pages - 1].split("-");
+        $("#current_pages").val(pages);
+        $("#table_member_attendance tbody").empty();
+        for (let tag_id in selectMembers) {
+            let member_info = selectMembers[tag_id],
+                attend_from = historyData[pages - 1][tag_id].first,
+                attend_end = historyData[pages - 1][tag_id].last,
+                tr_context = "";
+            count++;
+            tr_context += "<tr><td>" + count + "</td>";
+            for (let title in RowsList) {
+                if (RowsList[title]["attendance"] == true)
+                    tr_context += "<td>" + member_info[title] + "</td>";
+            }
+            tr_context += "<td>" + (attend_from ? attend_from.time.split(" ")[1] : "缺席") + "</td>" +
+                "<td>" + (attend_end ? attend_end.time.split(" ")[1] : "缺席") + "</td></tr>";
+            $("#table_member_attendance tbody").append(tr_context);
+        }
+        document.getElementById("report_attend_date").innerText = date_arr[0] + "年" + date_arr[1] + "月" + date_arr[2] + "日";
     }
 }
 

@@ -241,6 +241,21 @@ input[type="file"] {
     border: 0;
 }
 
+.btn-mode {
+    padding: 5px;
+    width: 100%;
+    border: 2px solid transparent;
+}
+
+.btn-mode:hover {
+    border: 2px solid rgb(33, 170, 233);
+}
+
+.btn-mode.selected {
+    
+    background: rgb(166, 208, 228);
+}
+
 .btn-set {
     cursor: pointer;
     background: transparent !important;
@@ -391,4 +406,18 @@ input[type="file"] {
     -o-transition: opacity .5s linear;
     transition: opacity .5s linear;
     opacity: 0;
+}
+
+.canvas-modes {
+    margin-top: 5px;
+    border: 1px solid lightgray;
+}
+
+.canvas-modes img {
+    float: right;
+    height: 100px;
+}
+
+.canvas-modes i {
+    margin: auto;
 }

@@ -39,7 +39,8 @@ var token = "",
     blingTimer = null,
     RedBling = true,
     isFocus = false,
-    locating_id = "";
+    locating_id = "",
+    canvas_mode = ["1", "2_v", "2_h", "4", "6"];
 
 
 $(function () {
@@ -81,6 +82,21 @@ $(function () {
         backdrop: false,
         show: false
     });
+    for (let i = 0; i < canvas_mode.length; i++) {
+        document.getElementById("btn_sel_mode" + (i + 1)).onclick = function () {
+            document.getElementById("select_canvas_mode").value = canvas_mode[i];
+            let btn = document.getElementsByClassName("btn-mode");
+            for (let j = 0; j < btn.length; j++)
+                btn[j].classList.remove('selected');
+            btn[i].classList.add('selected');
+        };
+    }
+    document.getElementById("select_canvas_mode").onchange = function () {
+        canvas_mode.forEach(function (mode, i) {
+            if (mode == document.getElementById("select_canvas_mode").value)
+                document.getElementById("btn_sel_mode" + (i + 1)).click();
+        });
+    };
     setup();
 });
 
@@ -117,9 +133,8 @@ function selectMap(number, map_id) {
 function changeMapToCookie(index, map_id) {
     let cookie = Cookies.get("recent_map"),
         currentMaps = typeof (cookie) === 'undefined' ? [] : JSON.parse(cookie);
-    if (typeof (currentMaps) !== 'object') {
+    if (typeof (currentMaps) !== 'object') 
         Cookies.set("recent_map", JSON.stringify([]));
-    }
     if (index > -1)
         currentMaps.splice(index, 1, map_id);
     //移除此Canvas index的Map_id，再填空字串進去
@@ -435,16 +450,13 @@ function updateTagList() {
         if (xmlHttp["getTag"].readyState == 4 || xmlHttp["getTag"].readyState == "complete") {
             let revObj = JSON.parse(this.responseText);
             if (!checkTokenAlive(token, revObj)) {
-                //console.log("get datas : " + new Date().getTime());
                 let revInfo = revObj,
                     tagArrTemp = {},
                     update = 0;
-                //focus_data = null;
                 revInfo.forEach(element => { //new tag datas
                     element["user_id"] = parseInt(element.tag_id.substring(8), 16);
                     element["number"] = MemberList[element.user_id] ? MemberList[element.user_id].number : "";
                     element["name"] = MemberList[element.user_id] ? MemberList[element.user_id].name : "";
-                    //TagList = oldArray
                     let old_point = TagList[element.tag_id] ? TagList[element.tag_id].point[frames - 1] : null;
                     //update tag array
                     tagArrTemp[element.tag_id] = {
@@ -513,13 +525,11 @@ function updateTagList() {
                         AlarmList[locating_id] = temp;
                     }
                 }
-                //console.log("update tag array : " + new Date().getTime());
                 draw();
             }
         }
     };
     xmlHttp["getTag"].send(json_request);
-    //console.log("send request : " + new Date().getTime());
 }
 
 function sortAlarm() {

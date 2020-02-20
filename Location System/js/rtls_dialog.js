@@ -164,6 +164,10 @@ var setDialog = {
             let separate_canvas = Cookies.get("separate_canvas"),
                 mode = typeof (separate_canvas) === 'undefined' ? "1" : separate_canvas;
             $("#select_canvas_mode").val(mode);
+            canvas_mode.forEach(function (mode, i) {
+                if (mode == document.getElementById("select_canvas_mode").value)
+                    document.getElementById("btn_sel_mode" + (i + 1)).click();
+            });
             dialog.dialog("open");
         });
     }

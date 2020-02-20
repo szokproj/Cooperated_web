@@ -23,7 +23,7 @@ function drawInvisiblePoints(dctx, id, x, y, size, zoom) {
 }
 
 function drawTags(dctx, id, x, y, color, size, zoom) {
-    var radius = size * zoom; //半徑, 預設size:10
+    var radius = size * zoom; //半徑 //size:10
     dctx.beginPath();
     dctx.lineWidth = 2 * zoom;
     dctx.arc(x, y - radius * 2, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);
@@ -41,45 +41,46 @@ function drawTags(dctx, id, x, y, color, size, zoom) {
     dctx.fill();
 }
 
-var alarmTypeColor = {
-    low_power: {
-        fill: '#72ac1b',
-        mark: '#496e11'
-    },
-    help: {
-        fill: '#ff3333',
-        mark: '#e60000'
-    },
-    still: {
-        fill: '#FF6600',
-        mark: '#cc5200'
-    },
-    active: {
-        fill: '#FF6600',
-        mark: '#cc5200'
-    },
-    Fence: {
-        fill: '#ffe600',
-        mark: '#e7a81f'
-    },
-    stay: {
-        fill: '#1a53ff',
-        mark: '#0033ca'
-    },
-    hidden: {
-        fill: '#5151dd',
-        mark: '#2f2f83'
+function drawAlarmTags(dctx, id, x, y, type, size, zoom) {
+    var radius = size * zoom; //半徑 //size:14
+    var fillColor = '';
+    var markColor = ''
+    switch (type) {
+        case "low_power":
+            fillColor = '#72ac1b';
+            markColor = '#496e11';
+            break;
+        case "help":
+            fillColor = '#ff3333';
+            markColor = '#e60000';
+            break;
+        case "still":
+            fillColor = '#FF6600';
+            markColor = '#cc5200';
+            break;
+        case "active":
+            fillColor = '#FF6600';
+            markColor = '#cc5200';
+            break;
+        case "Fence":
+            fillColor = '#ffe600';
+            markColor = '#e7a81f';
+            break;
+        case "stay":
+            fillColor = '#1a53ff';
+            markColor = '#0033ca';
+            break;
+        case "hidden":
+            fillColor = '#5151dd';
+            markColor = '#2f2f83';
+            break;
+        default:
+            fillColor = '#72ac1b'; //unknown
+            markColor = '#72ac1b';
     }
-};
-
-function drawAlarmTags(dctx, id, x, y, type, size, zoom) { //zoom = 1/Zoom
-    var radius = size * zoom; //半徑, 預設size:14
-    var fillColor = alarmTypeColor[type].fill || '#72ac1b'; //倒水滴形底色
-    var markColor = alarmTypeColor[type].mark || '#72ac1b'; //驚嘆號顏色
     //畫倒水滴形
     dctx.beginPath();
-    dctx.lineWidth = 2 * zoom; //線條粗細以2為標準
-    //先順時針畫出一個開口在下的2/3個圓
+    dctx.lineWidth = 2 * zoom;
     dctx.arc(x, y - radius * 2, radius, Math.PI * (1 / 6), Math.PI * (5 / 6), true);
     dctx.lineTo(x, y);
     dctx.closePath();
@@ -96,15 +97,83 @@ function drawAlarmTags(dctx, id, x, y, type, size, zoom) { //zoom = 1/Zoom
     //畫驚嘆號
     dctx.fillStyle = markColor;
     dctx.beginPath();
-    dctx.arc(x, y - radius * 2.3, radius * 0.2, 0, Math.PI, true);
-    dctx.arc(x, y - radius * 1.9, radius * 0.1, Math.PI, 0, true);
-    dctx.closePath();
+    var start = {
+        x: x - radius * 0.1,
+        y: y + radius * (-1.9)
+    };
+    var cp1 = {
+        x: x - radius * 0.3,
+        y: y - radius * 2.46
+    };
+    var cp2 = {
+        x: x - radius * 0.1,
+        y: y - radius * 2.48
+    };
+    var end = {
+        x: x,
+        y: y - radius * 2.5
+    };
+    dctx.lineTo(start.x, start.y);
+    dctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
+    start = {
+        x: x,
+        y: y - radius * 2.5
+    };
+    cp1 = {
+        x: x + radius * 0.1,
+        y: y - radius * 2.48
+    };
+    cp2 = {
+        x: x + radius * 0.3,
+        y: y - radius * 2.46
+    };
+    end = {
+        x: x + radius * 0.1,
+        y: y + radius * (-1.9)
+    };
+    dctx.lineTo(start.x, start.y);
+    dctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
+    start = {
+        x: x + radius * 0.1,
+        y: y + radius * (-1.9)
+    };
+    cp1 = {
+        x: x + radius * 0.04,
+        y: y + radius * (-1.8)
+    };
+    cp2 = {
+        x: x - radius * 0.04,
+        y: y + radius * (-1.8)
+    };
+    end = {
+        x: x - radius * 0.1,
+        y: y + radius * (-1.9)
+    };
+    /*var center = {
+        x: x,
+        y: y - radius * 2.3
+    };
+    var radian1 = Math.PI * 0;
+    var radian2 = Math.PI * 1;
+    var r = 2 * zoom;
+    var end = {
+        x: center.x + r, //Math.cos(radian1) * r,
+        y: center.y // + Math.sin(radian1) * r
+    };
+    dctx.fillStyle = markColor;
+    dctx.beginPath();
+    dctx.arc(center.x, center.y, r, radian1, radian2, true);
+    dctx.arc(center.x, center.y + 2.5 * r, r, radian2, radian1, true);
+    dctx.lineTo(end.x, end.y);
+    dctx.fill();*/
+    dctx.lineTo(start.x, start.y);
+    dctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
     dctx.fill();
     //畫驚嘆號的圓點
     dctx.beginPath();
-    dctx.arc(x, y - radius * 1.6, radius * 0.1, 0, Math.PI * 2, true);
-    dctx.closePath();
+    dctx.arc(x, y + radius * (-1.6), radius * 0.1, 0, Math.PI * 2, true);
     dctx.fill();
+    dctx.closePath();
 }
 
 function drawFocusMark(dctx, x, y, zoom) {
@@ -141,7 +210,7 @@ function drawFocusMark(dctx, x, y, zoom) {
 }
 
 function drawFocusFrame(dctx, x, y, size, zoom) {
-    var radius = parseInt(size, 10); //預設size:10
+    var radius = parseInt(size, 10); //size:10
     dctx.strokeStyle = 'rgb(0, 106, 255)'; //'#446ca3d5';
     dctx.lineWidth = 2 * zoom;
     dctx.strokeRect(
@@ -152,7 +221,7 @@ function drawFocusFrame(dctx, x, y, size, zoom) {
 }
 
 function drawAlarmFocusFrame(dctx, x, y, size, zoom) {
-    var radius = parseInt(size, 10); //預設size:14
+    var radius = parseInt(size, 10); //size:14
     dctx.strokeStyle = 'red'; //'#446ca3d5';
     dctx.lineWidth = 2 * zoom;
     dctx.strokeRect(

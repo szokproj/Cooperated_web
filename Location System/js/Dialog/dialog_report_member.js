@@ -232,7 +232,8 @@ function setMembersDialog() {
                     let revInfo = revObj.Value[0].Values || [];
                     $("#search_member_list tbody").empty();
                     revInfo.forEach(function (member, i) {
-                        member.user_id = parseInt(member.tag_id.substring(8), 16);
+                        member["user_id"] = parseInt(member.tag_id.substring(8), 16);
+                        member["tid_id"] = parseInt(member.tag_id.substring(0, 8), 16);
                         addMemberRow(i + 1, member);
                         memberList[member.number] = member;
                     });
@@ -251,17 +252,6 @@ function setMembersDialog() {
             "<td>" + data.user_id + "</td>" +
             "<td>" + data.Name + "</td>" +
             "<td>" + data.department + "</td></tr>");
-
-        /*$("#" + tr_id).on("click", function () {
-            let checkbox = $(this).find("td:eq(0) input[type='checkbox']");
-            if (checkbox.prop("checked")) {
-                checkbox.prop("checked", false);
-                $(this).removeClass("selected");
-            } else {
-                checkbox.prop("checked", true);
-                $(this).addClass("selected");
-            }
-        });*/
     }
 }
 
@@ -538,10 +528,10 @@ var arraysToExcel = {
 
             //內容列
             let count = 0;
-            for (let tag_id in selectMembers) {
-                let member_info = selectMembers[tag_id],
-                    attend_from = historyData[i][tag_id].first,
-                    attend_end = historyData[i][tag_id].last;
+            targetArray.forEach(target => {
+                let member_info = memberList[target.number],
+                    attend_from = historyData[i][target.tag_id].first,
+                    attend_end = historyData[i][target.tag_id].last;
                 count++;
                 rowsXML += '<Row>';
                 for (let title in titlesList) {
@@ -569,7 +559,7 @@ var arraysToExcel = {
                     rowsXML += format(tmplCellXML, ctx);
                 }
                 rowsXML += '</Row>';
-            }
+            });
 
             ctx = {
                 rows: rowsXML,

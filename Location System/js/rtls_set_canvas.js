@@ -1,40 +1,40 @@
 'use strict';
 
 function RTLS_Canvas(number) {
-    let cvsBlock = document.getElementById("cvsBlock" + number),
-        canvas = document.getElementById("canvas" + number),
-        ctx = canvas.getContext("2d"),
-        coordinate = {
+    let cvsBlock = document.getElementById("cvsBlock" + number), //綁定畫布外框
+        canvas = document.getElementById("canvas" + number), //綁定畫布
+        ctx = canvas.getContext("2d"), //用來在畫布上渲染圖形的API
+        coordinate = { //用來顯示鼠標在此canvas上的座標
             x: document.getElementById("x" + number),
             y: document.getElementById("y" + number)
         },
-        restore = {
+        restore = { //快速切換符合頁面或原尺寸的按鈕
             btn: document.getElementById("btn_restore" + number),
             label: document.getElementById("label_restore" + number)
         },
-        visibleScale = document.getElementById("scale_visible" + number),
-        visibleMapName = document.getElementById("visible_map_name" + number),
-        inputMapList = document.getElementById("input_map_list" + number),
-        closeMap = document.getElementById("btn_close" + number),
-        serverImg = new Image(),
-        canvasImg = {
+        visibleScale = document.getElementById("scale_visible" + number), //顯示背景地圖的比例尺
+        visibleMapName = document.getElementById("visible_map_name" + number), //顯示背景地圖的名稱
+        inputMapList = document.getElementById("input_map_list" + number), //切換背景地圖的選單(放進地圖列表)
+        closeMap = document.getElementById("btn_close" + number), //關閉地圖
+        serverImg = new Image(), //建立一個圖片物件，儲存載入的地圖
+        canvasImg = { //紀錄已載入地圖的資料與狀態
             isLoad: false,
             width: 0,
             height: 0,
             scale: 1 //預設比例尺為1:1
         },
-        Map_id = "",
-        anchorArray = [],
-        fenceList = {},
-        isFitWindow = true,
-        times = 0,
-        // View parameters
+        Map_id = "", //當前地圖的編號(ID)
+        anchorArray = [], //基站列表(anchor list)
+        fenceList = {}, //圍籬列表(fence list)
+        isFitWindow = true, //是否canvas符合頁面大小
+        times = 0, //現在要繪製第幾幀的畫面
+        //View parameters
         lastX = 0, //滑鼠最後位置的X座標
         lastY = 0, //滑鼠最後位置的Y座標
         xleftView = 0, //canvas的X軸位移(負值向左，正值向右)
         ytopView = 0, //canvas的Y軸位移(負值向上，正值向下)
         Zoom = 1.0, //縮放比例
-        PIXEL_RATIO = (function () {
+        PIXEL_RATIO = (function () { //獲取瀏覽器像素比
             let dpr = window.devicePixelRatio || 1,
                 bsr = ctx.webkitBackingStorePixelRatio ||
                 ctx.mozBackingStorePixelRatio ||
@@ -43,18 +43,18 @@ function RTLS_Canvas(number) {
                 ctx.backingStorePixelRatio || 1;
             return dpr / bsr;
         })(),
-        mouse = {
+        mouse = { //記錄滑鼠事件的位移
             canvasLeft: 0,
             canvasTop: 0,
             downX: 0,
             downY: 0
         },
-        panPos = {
+        panPos = { //記錄觸碰事件的位移
             canvasLeft: 0,
             canvasTop: 0
         },
-        adjust = {
-            setCanvas: function (img_src, width, height) {
+        adjust = { //調整畫面
+            setCanvas: function (img_src, width, height) { //設定canvas偏移、大小和背景
                 canvas.style.marginLeft = "0px";
                 canvas.style.marginTop = "0px";
                 canvas.style.backgroundImage = "url(" + img_src + ")";
@@ -64,7 +64,7 @@ function RTLS_Canvas(number) {
                 canvas.style.width = width + 'px';
                 canvas.style.height = height + 'px';
             },
-            setSize: function () { //縮放canvas與背景圖大小
+            setSize: function () { //縮放canvas與渲染圖形
                 if (canvasImg.isLoad) {
                     canvas.style.marginLeft = xleftView + "px";
                     canvas.style.marginTop = ytopView + "px";
@@ -79,7 +79,7 @@ function RTLS_Canvas(number) {
                     ctx.translate(0, 0);
                 }
             },
-            restoreCanvas: function () {
+            restoreCanvas: function () { //切換背景符合畫面大小或恢復原尺寸
                 if (canvasImg.isLoad) {
                     let cvsBlock_width = parseFloat(cvsBlock.clientWidth),
                         cvsBlock_height = parseFloat(cvsBlock.clientHeight);
@@ -104,7 +104,7 @@ function RTLS_Canvas(number) {
                     draw();
                 }
             },
-            focusCenter: function (x, y) {
+            focusCenter: function (x, y) { //畫面中心鎖定目標標籤移動
                 if (display_setting.lock_window) {
                     let cvsBlock_width = parseFloat(cvsBlock.clientWidth),
                         cvsBlock_height = parseFloat(cvsBlock.clientHeight),
@@ -116,7 +116,7 @@ function RTLS_Canvas(number) {
                     canvas.style.marginTop = ytopView + "px";
                 }
             },
-            unlockFocusCenter: function () { //解除定位
+            unlockFocusCenter: function () { //解除鎖定
                 if (display_setting.lock_window) {
                     let cvsBlock_width = parseFloat(cvsBlock.clientWidth),
                         cvsBlock_height = parseFloat(cvsBlock.clientHeight);
@@ -133,7 +133,7 @@ function RTLS_Canvas(number) {
                     adjust.setSize();
                 }
             },
-            resetCanvas_Anchor: function () {
+            resetCanvas_Anchor: function () { //將canvas完全重置，包括背景圖和大小等
                 cvsBlock.style.background = 'rgb(185, 185, 185)';
                 canvasImg.isLoad = false;
                 canvasImg.width = 0;
@@ -154,7 +154,7 @@ function RTLS_Canvas(number) {
             }
         },
         get = {
-            anchors: function (map_id) {
+            anchors: function (map_id) { //取得基站(anchor)的資料
                 anchorArray = [];
                 //get anchor
                 const jr = JSON.stringify({
@@ -219,7 +219,7 @@ function RTLS_Canvas(number) {
                 };
                 jxh_main.send(jr_main);
             },
-            fences: function (map_id) {
+            fences: function (map_id) { //取得所有在此地圖上的圍籬編號和名稱
                 fenceList = {};
                 const json_request = JSON.stringify({
                     "Command_Type": ["Read"],
@@ -249,7 +249,7 @@ function RTLS_Canvas(number) {
                 };
                 jxh.send(json_request);
             },
-            fencePointArray: function (fence_id) {
+            fencePointArray: function (fence_id) { //取得此圍籬的所有座標點
                 const json_request = JSON.stringify({
                     "Command_Type": ["Read"],
                     "Command_Name": ["GetFence_point"],
@@ -273,8 +273,7 @@ function RTLS_Canvas(number) {
                 };
                 jxh.send(json_request);
             },
-            pointOnCanvas: function (x, y) {
-                //獲取滑鼠在Canvas物件上座標(座標起始點從左上換到左下)
+            pointOnCanvas: function (x, y) { //獲取滑鼠在Canvas物件上座標(座標起始點從左上換到左下)
                 let BCR = canvas.getBoundingClientRect(),
                     pos_x = (x - BCR.left) / Zoom,
                     pos_y = (y - BCR.top) / Zoom;
@@ -288,7 +287,7 @@ function RTLS_Canvas(number) {
                 }
             }
         },
-        setMapList = function () {
+        setMapList = function () { //設定選擇地圖的下拉清單
             let html = "";
             for (let id in MapList) {
                 html += "<a style=\"color:#000000;\" " +
@@ -297,7 +296,7 @@ function RTLS_Canvas(number) {
             }
             inputMapList.innerHTML = html;
         },
-        createFences = function () {
+        createFences = function () { //繪製所有在此地圖上的圍籬
             for (let i in fenceList) {
                 let fence = new Fence(ctx, 1 / Zoom),
                     fence_name = fenceList[i].name,
@@ -314,7 +313,7 @@ function RTLS_Canvas(number) {
                     fence.drawFence();
             }
         },
-        draw = function () {
+        draw = function () { //每隔一段時間刷新並繪製下一幀
             if (Map_id == "") //if reset the canvas map
                 return;
             pageTimer["draw_frame"]["canvas" + number].forEach(timeout => {
@@ -329,7 +328,7 @@ function RTLS_Canvas(number) {
                 );
             }
         },
-        drawFrame = function (i) {
+        drawFrame = function (i) { //繪出新的一幀畫面
             times = i;
             //console.log("draw time[" + i + "] : " + new Date().getTime());
             adjust.setSize();
@@ -393,7 +392,7 @@ function RTLS_Canvas(number) {
                 ytopView += pos_y - Next_y;
                 draw();
             },
-            handleCanvasDown: function (e) {
+            handleCanvasDown: function (e) { //按下滑鼠時的事件
                 if (display_setting.lock_window && isFocus)
                     return;
                 e.preventDefault();
@@ -409,7 +408,7 @@ function RTLS_Canvas(number) {
                     canvas.removeEventListener("mousemove", event.handleCanvasMove);
                 });
             },
-            handleCanvasMove: function (e) {
+            handleCanvasMove: function (e) { //按下滑鼠後移動的事件
                 //e.pageX, e.pageY:獲取滑鼠移動後的坐標 
                 xleftView = e.pageX - mouse.downX + mouse.canvasLeft;
                 ytopView = e.pageY - mouse.downY + mouse.canvasTop;
@@ -468,7 +467,7 @@ function RTLS_Canvas(number) {
                 }
             }
         },
-        setMobileEvents = function () {
+        setMobileEvents = function () { //設定手勢觸發事件(與滑鼠的功能相同)
             const hammer_pan = new Hammer(canvas); //Canvas位移
             const hammer_pinch = new Hammer(canvas); //Canvas縮放
             hammer_pan.get('pan').set({
@@ -513,8 +512,8 @@ function RTLS_Canvas(number) {
             });
         };
 
-    closeMap.addEventListener("click", adjust.resetCanvas_Anchor, false);
-    restore.btn.addEventListener("click", adjust.restoreCanvas, false);
+    closeMap.addEventListener("click", adjust.resetCanvas_Anchor, false); //綁定關閉地圖事件
+    restore.btn.addEventListener("click", adjust.restoreCanvas, false); //綁定快速切換canvas大小的事件
     canvas.addEventListener("mousemove", event.handleMouseMove, false); //滑鼠在畫布中移動的座標
     canvas.addEventListener("mousedown", event.handleCanvasDown, false); //滑鼠按住畫布綁定畫布拖移事件
     canvas.addEventListener("DOMMouseScroll", event.handleMouseWheel, false); // 畫面縮放(for Firefox)
@@ -524,15 +523,13 @@ function RTLS_Canvas(number) {
     });
     setMobileEvents(); //Hammer.js
 
-    this.Map_id = function () {
-        return Map_id;
-    };
+    this.adjust = adjust; //從外部也可以使用此物件內的調整方法
 
-    this.adjust = adjust;
+    this.draw = draw; //讓外部也可以使用此物件內的繪製方法
 
-    this.draw = draw;
+    this.Map_id = Map_id; //從外部取得此物件的當前地圖ID
 
-    this.inputMap = function (map_id) {
+    this.inputMap = function (map_id) { //從外部也可以載入地圖到此物件內
         Map_id = map_id;
         setMapList();
         if (map_id == "") return;
@@ -577,37 +574,31 @@ function RTLS_Canvas(number) {
 function canvasMode(blocks) {
     let content = document.getElementById("content");
     let h = Math.ceil((document.documentElement.clientHeight - 43) * 0.96); //window_height - nav_bar
-    //console.log("h : " + h);
     let number = 1;
     content.innerHTML = "";
     switch (blocks) {
         case "1":
             number = 1;
             content.innerHTML += createCanvasHtml(1, "100%", h - 40 + "px");
-            //page_height-(bar_height(20)*1 + space(20)) = h - 40
             break;
         case "2_v": //vertical
             number = 2;
             for (let i = 1; i < 3; i++)
                 content.innerHTML += createCanvasHtml(i, "100%", (h - 60) / 2 + "px");
-            //page_height-(bar_height(20)*2 + space(20)) = h - 60
             break;
         case "2_h": //horizontal
             number = 2;
             for (let i = 1; i < 3; i++)
                 content.innerHTML += createCanvasHtml(i, "50%", h - 40 + "px");
-            //page_height-(bar_height(20)*1 + space(20)) = h - 40
             break;
         case "4":
             number = 4;
             for (let i = 1; i < 5; i++)
                 content.innerHTML += createCanvasHtml(i, "50%", (h - 60) / 2 + "px");
-            //page_height-(bar_height(20)*2 + space(20)) = h - 60
             break;
         case "6":
             number = 6;
             content.innerHTML += createCanvasHtml(1, "66.6%", (h - 80) * 2 / 3 + 22 + "px");
-            //page_height-(bar_height(20)*3 + space(20)) = h - 80
             for (let i = 2; i < 7; i++)
                 content.innerHTML += createCanvasHtml(i, "33.3%", (h - 80) * 1 / 3 + "px");
             break;
