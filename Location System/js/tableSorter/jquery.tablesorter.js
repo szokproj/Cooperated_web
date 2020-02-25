@@ -51,19 +51,19 @@
  * 												Default value: "simple"
  * 
  * @option Object headers (optional) 			An array containing the forces sorting rules. 
- * 												This option let's you specify a default sorting rule. 
+ * 												This option var's you specify a default sorting rule. 
  * 												Default value: null
  * 
  * @option Array sortList (optional) 			An array containing the forces sorting rules. 
- * 												This option let's you specify a default sorting rule. 
+ * 												This option var's you specify a default sorting rule. 
  * 												Default value: null
  * 
  * @option Array sortForce (optional) 			An array containing forced sorting rules. 
- * 												This option let's you specify a default sorting rule, which is prepended to user-selected rules.
+ * 												This option var's you specify a default sorting rule, which is prepended to user-selected rules.
  * 												Default value: null
  *  
  * @option Array sortAppend (optional) 			An array containing forced sorting rules. 
- * 												This option let's you specify a default sorting rule, which is appended to user-selected rules.
+ * 												This option var's you specify a default sorting rule, which is appended to user-selected rules.
  * 												Default value: null
  * 
  * @option Boolean widthFixed (optional) 		Boolean flag indicating if tablesorter should apply fixed widths to the table columns.

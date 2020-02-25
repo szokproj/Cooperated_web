@@ -1,4 +1,4 @@
-const noImagePng = "../image/no_image.png";
+var noImagePng = "../image/no_image.png";
 
 var token = "";
 var PIXEL_RATIO; // 獲取瀏覽器像素比
@@ -34,7 +34,7 @@ var locate_tag = "";
 var MemberData = {};
 
 $(function () {
-    let h = document.documentElement.clientHeight;
+    var h = document.documentElement.clientHeight;
     //$(".container").css("height", h - 10 + "px");
     $("#cvsBlock").css("height", h - 100 + "px");
     //Check this page's permission and load navbar
@@ -206,7 +206,7 @@ function setup() {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                 $("#target_map").empty();
-                revObj.Value[0].Values.forEach(element => {
+                revObj.Value[0].Values.forEach(function (element) {
                     //mapCollection => key: map_id | value: {map_id, map_name, map_src, map_scale}
                     mapCollection[element.map_id] = {
                         map_id: element.map_id,
@@ -339,7 +339,7 @@ function search() {
     else if ($("#end_time").val() == "")
         return alert("請選擇結束時間!");
 
-    let datetime_start = Date.parse($("#start_date").val() + " " + $("#start_time").val()),
+    var datetime_start = Date.parse($("#start_date").val() + " " + $("#start_time").val()),
         datetime_end = Date.parse($("#end_date").val() + " " + $("#end_time").val());
     if (datetime_end - datetime_start < 60000) {
         return alert($.i18n.prop('i_alertTimeTooShort'));
@@ -379,10 +379,10 @@ function search() {
 }
 
 function getTimelineByTags(datetime_start, datetime_end) {
-    let timeslot = datetime_end - datetime_start;
+    var timeslot = datetime_end - datetime_start;
     //console.log("timeslot=> " + Math.floor(timeslot / 3600000));
-    let interval_times = 0;
-    let count_times = 0;
+    var interval_times = 0;
+    var count_times = 0;
     for (i in timeDelay["search"])
         clearTimeout(timeDelay["search"][i]);
     timeDelay["search"] = [];
@@ -605,17 +605,17 @@ function getTimelineByGroup(datetime_start, datetime_end, group_id) {
 }
 
 function getAlarmHandleByTime() {
-    let xmlHttp = createJsonXmlHttp("sql");
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                let MemberList = {};
-                let revInfo = revObj.Value[0].Values || [];
-                revInfo.forEach(element => {
+                var MemberList = {};
+                var revInfo = revObj.Value[0].Values || [];
+                revInfo.forEach(function (element) {
                     MemberList[element.tag_id] = element;
                 });
-                let xmlHttp2 = createJsonXmlHttp("alarmhandle");
+                var xmlHttp2 = createJsonXmlHttp("alarmhandle");
                 xmlHttp2.onreadystatechange = function () {
                     if (xmlHttp2.readyState == 4 || xmlHttp2.readyState == "complete") {
                         var revObj2 = JSON.parse(this.responseText);

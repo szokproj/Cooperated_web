@@ -1,4 +1,4 @@
-const noImagePng = "../image/no_image.png",
+var noImagePng = "../image/no_image.png",
     locateColor = "#9c00f7",
     groupColor = "#ff9933";
 
@@ -44,7 +44,7 @@ var token = "",
 
 
 $(function () {
-    let h = document.documentElement.clientHeight;
+    var h = document.documentElement.clientHeight;
     //$(".container").css("height", h - 10 + "px");
     $("#cvsBlock").css("height", h - 102 + "px");
     //Check this page's permission and load navbar
@@ -104,7 +104,7 @@ $(function () {
                 save_array.push($(this).parents("tr").html());
         });
         $("#table_target tbody").empty();
-        save_array.forEach(html => {
+        save_array.forEach(function (html) {
             $("#table_target tbody").append("<tr>" + html + "</tr>");
         });
     });
@@ -249,7 +249,7 @@ function setup() {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                 $("#target_map").empty();
-                revObj.Value[0].Values.forEach(element => {
+                revObj.Value[0].Values.forEach(function (element) {
                     //MapList => key: map_id | value: {map_id, map_name, map_src, map_scale}
                     MapList[element.map_id] = {
                         map_id: element.map_id,
@@ -382,7 +382,7 @@ function search() {
     else if ($("#end_time").val() == "")
         return alert("請選擇結束時間!");
 
-    let datetime_start = Date.parse($("#start_date").val() + " " + $("#start_time").val()),
+    var datetime_start = Date.parse($("#start_date").val() + " " + $("#start_time").val()),
         datetime_end = Date.parse($("#end_date").val() + " " + $("#end_time").val());
     if (datetime_end - datetime_start < 60000) {
         return alert($.i18n.prop('i_alertTimeTooShort'));
@@ -431,9 +431,9 @@ function getTimelineByTags() {
     };
     var func = {
         getCount: function () {
-            document.getElementsByName("chk_target_id").forEach(tag_id => {
+            document.getElementsByName("chk_target_id").forEach(function (tag_id) {
                 getMemberData(parseInt(tag_id.value, 16));
-                let request = {
+                var request = {
                     "Command_Name": ["GetLocus_combine_with_record"],
                     "Command_Type": ["Read"],
                     "Value": {
@@ -448,7 +448,7 @@ function getTimelineByTags() {
                     },
                     "api_token": [token]
                 };
-                let xmlHttp = createJsonXmlHttp("sql");
+                var xmlHttp = createJsonXmlHttp("sql");
                 xmlHttp.onreadystatechange = function () {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                         if (!this.responseText) {
@@ -457,13 +457,13 @@ function getTimelineByTags() {
                             alert("搜尋失敗，請稍候再試一次!");
                             return;
                         }
-                        let revObj = JSON.parse(this.responseText);
+                        var revObj = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                            let revInfo = revObj.Value[0].location || [{
+                            var revInfo = revObj.Value[0].location || [{
                                 "Status": "0"
                             }];
                             if (revInfo[0].Status == "1") {
-                                let total = parseInt(revInfo[0].Values[0].count, 10);
+                                var total = parseInt(revInfo[0].Values[0].count, 10);
                                 interval_times += Math.ceil(total / 10000);
                                 target_arr.push({
                                     tag_id: revInfo[0].tag_id,
@@ -481,7 +481,7 @@ function getTimelineByTags() {
         getDatas: function (target, startnum, total) {
             if (total == 0)
                 alert($.i18n.prop('i_tagID') + ":[" + parseInt(target, 16) + "]在此時段內無歷史資料");
-            let request = {
+            var request = {
                 "Command_Name": ["GetLocus_combine_with_record"],
                 "Command_Type": ["Read"],
                 "Value": {
@@ -496,7 +496,7 @@ function getTimelineByTags() {
                 },
                 "api_token": [token]
             }
-            let xmlHttp = createJsonXmlHttp("sql");
+            var xmlHttp = createJsonXmlHttp("sql");
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     if (!this.responseText) {
@@ -505,34 +505,34 @@ function getTimelineByTags() {
                         alert("搜尋失敗，請稍候再試一次!");
                         return;
                     }
-                    let revObj = JSON.parse(this.responseText);
+                    var revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                        let event = revObj.Value[0].event || [{
+                        var event = revObj.Value[0].event || [{
                             "Status": "0"
                         }];
                         if (event[0].Status == "1" && event[0].amount > 0) {
                             if (!AlarmList[event[0].tag_id])
                                 AlarmList[event[0].tag_id] = {};
-                            event[0].Values.forEach(element => {
+                            event[0].Values.forEach(function (element) {
                                 AlarmList[event[0].tag_id][element.time] = {
                                     alarm_type: element.alarm_type,
                                     status: element.status
                                 };
                             });
                         }
-                        let location = revObj.Value[0].location || [{
+                        var location = revObj.Value[0].location || [{
                             "Status": "0"
                         }];
                         if (location[0].Status == "1") {
-                            let tag_id = location[0].tag_id;
-                            let values = location[0].Values;
+                            var tag_id = location[0].tag_id;
+                            var values = location[0].Values;
                             if (values) {
-                                for (let i = 0; i < values.length; i++) {
+                                for (var i = 0; i < values.length; i++) {
                                     if (values[i].map_id in MapList) {
-                                        let mapInfo = MapList[values[i].map_id];
-                                        let time = values[i].time;
-                                        let time_arr = TimeToArray(time);
-                                        let type = "normal";
+                                        var mapInfo = MapList[values[i].map_id];
+                                        var time = values[i].time;
+                                        var time_arr = TimeToArray(time);
+                                        var type = "normal";
                                         if (!HistoryData[tag_id])
                                             HistoryData[tag_id] = [];
                                         if (AlarmList[tag_id] && AlarmList[tag_id][time]) {
@@ -555,7 +555,7 @@ function getTimelineByTags() {
                             }
                             count_times++;
                             $("#progress_bar").text(Math.round(count_times / interval_times * 100) + " %");
-                            let count = parseInt(startnum, 10) + location[0].amount;
+                            var count = parseInt(startnum, 10) + location[0].amount;
                             if (total != count) {
                                 //以10000筆資料為基準，分批接受並傳送要求
                                 func.getDatas(tag_id, count.toString(), total);
@@ -595,18 +595,18 @@ function getTimelineByGroup(group_id) {
     };
     var func = {
         getMapGroup: function () {
-            let request = {
+            var request = {
                 "Command_Type": ["Read"],
                 "Command_Name": ["GetMaps_Groups"],
                 "api_token": [token]
             };
-            let xmlHttp = createJsonXmlHttp("sql");
+            var xmlHttp = createJsonXmlHttp("sql");
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                    let revObj = JSON.parse(this.responseText);
+                    var revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                        let revInfo = revObj.Value[0].Values || [];
-                        let index = revInfo.findIndex(function (info) {
+                        var revInfo = revObj.Value[0].Values || [];
+                        var index = revInfo.findIndex(function (info) {
                             return info.group_id == group_id;
                         });
                         if (index == -1) {
@@ -623,7 +623,7 @@ function getTimelineByGroup(group_id) {
             xmlHttp.send(JSON.stringify(request));
         },
         getCount: function (target) {
-            let request = {
+            var request = {
                 "Command_Name": ["GetLocus_combine_with_record"],
                 "Command_Type": ["Read"],
                 "Value": {
@@ -638,7 +638,7 @@ function getTimelineByGroup(group_id) {
                 },
                 "api_token": [token]
             };
-            let xmlHttp = createJsonXmlHttp("sql");
+            var xmlHttp = createJsonXmlHttp("sql");
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     if (!this.responseText) {
@@ -647,16 +647,16 @@ function getTimelineByGroup(group_id) {
                         alert("搜尋失敗，請稍候再試一次!");
                         return;
                     }
-                    let revObj = JSON.parse(this.responseText);
+                    var revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                        let revInfo = revObj.Value[0].location || [{
+                        var revInfo = revObj.Value[0].location || [{
                             "Status": "0"
                         }];
                         if (revInfo[0].Status == "1") {
-                            let total = parseInt(revInfo[0].Values[0].count, 10);
+                            var total = parseInt(revInfo[0].Values[0].count, 10);
                             interval_times += Math.ceil(total / 10000);
-                            //console.log("total=> " + total);
-                            //console.log("interval_times=> " + interval_times);
+                            //console.log("total: " + total);
+                            //console.log("interval_times: " + interval_times);
                             func.getDatas(target, "0", total);
                         }
                     }
@@ -667,7 +667,7 @@ function getTimelineByGroup(group_id) {
         getDatas: function (target, startnum, total) {
             if (total == 0)
                 alert($.i18n.prop('i_groupID') + ":[" + target + "]在此時段內無歷史資料");
-            let request = {
+            var request = {
                 "Command_Name": ["GetLocus_combine_with_record"],
                 "Command_Type": ["Read"],
                 "Value": {
@@ -682,7 +682,7 @@ function getTimelineByGroup(group_id) {
                 },
                 "api_token": [token]
             };
-            let xmlHttp = createJsonXmlHttp("sql");
+            var xmlHttp = createJsonXmlHttp("sql");
             xmlHttp.onreadystatechange = function () {
                 if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                     if (!this.responseText) {
@@ -691,13 +691,13 @@ function getTimelineByGroup(group_id) {
                         alert("搜尋失敗，請稍候再試一次!");
                         return;
                     }
-                    let revObj = JSON.parse(this.responseText);
+                    var revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                        let event = revObj.Value[0].event || [{
+                        var event = revObj.Value[0].event || [{
                             "Status": "0"
                         }];
                         if (event[0].Status == "1" && event[0].amount > 0) {
-                            event[0].Values.forEach(element => {
+                            event[0].Values.forEach(function (element) {
                                 if (!AlarmList[element.time])
                                     AlarmList[element.time] = {};
                                 AlarmList[element.time][element.tag_id] = {
@@ -706,16 +706,16 @@ function getTimelineByGroup(group_id) {
                                 };
                             });
                         }
-                        let location = revObj.Value[0].location || [{
+                        var location = revObj.Value[0].location || [{
                             "Status": "0"
                         }];
                         if (location[0].Status == "1") {
-                            let revInfo = location[0].Values || [];
-                            revInfo.forEach(v => {
+                            var revInfo = location[0].Values || [];
+                            revInfo.forEach(function (v) {
                                 //改成按照時間分類排序
-                                let datetime_arr = TimeToArray(v.time);
-                                let date_time = v.time.split(".")[0]; //將秒數的小數點去掉後歸類
-                                let type = "normal";
+                                var datetime_arr = TimeToArray(v.time);
+                                var date_time = v.time.split(".")[0]; //將秒數的小數點去掉後歸類
+                                var type = "normal";
                                 if (AlarmList[v.time] && AlarmList[v.time][v.tag_id]) {
                                     type = AlarmList[v.time][v.tag_id].alarm_type;
                                     AlarmList[v.time][v.tag_id]["map_id"] = group_map.id;
@@ -741,7 +741,7 @@ function getTimelineByGroup(group_id) {
                             });
                             count_times++
                             $("#progress_bar").text(Math.round(count_times / interval_times * 100) + " %");
-                            let count = parseInt(startnum, 10) + location[0].amount;
+                            var count = parseInt(startnum, 10) + location[0].amount;
                             if (total != count) {
                                 //以10000筆資料為基準，分批接受並傳送要求
                                 func.getDatas(location[0].group_id, count.toString(), total);
@@ -749,8 +749,8 @@ function getTimelineByGroup(group_id) {
                                 timeslot_array.sort(); //整理時間順序
                                 tag_array.sort(); //整理標籤編號順序
                                 $("#table_tag_list tbody").empty();
-                                tag_array.forEach(tag_id => {
-                                    let user_id = parseInt(tag_id.substring(8), 16);
+                                tag_array.forEach(function (tag_id) {
+                                    var user_id = parseInt(tag_id.substring(8), 16);
                                     getMemberData(user_id);
                                     $("#table_tag_list tbody").append(
                                         "<tr><td><label name=\"tag_list_id\">" + user_id + "</label></td>" +
@@ -774,12 +774,12 @@ function getTimelineByGroup(group_id) {
 }
 
 function updateAlarmTable() {
-    let count = 0;
+    var count = 0;
     $("#alarm_table tbody").empty();
     switch (HistoryData["search_type"]) {
         case "Tag":
-            for (let tag_id in AlarmList) {
-                for (let time in AlarmList[tag_id]) {
+            for (var tag_id in AlarmList) {
+                for (var time in AlarmList[tag_id]) {
                     count++;
                     $("#alarm_table tbody").append("<tr><td>" + count + "</td>" +
                         "<td>" + AlarmList[tag_id][time].alarm_type + "</td>" +
@@ -793,8 +793,8 @@ function updateAlarmTable() {
             }
             break;
         case "Group":
-            for (let time in AlarmList) {
-                for (let tag_id in AlarmList[time]) {
+            for (var time in AlarmList) {
+                for (var tag_id in AlarmList[time]) {
                     count++;
                     $("#alarm_table tbody").append("<tr><td>" + count + "</td>" +
                         "<td>" + AlarmList[time][tag_id].alarm_type + "</td>" +
@@ -813,17 +813,17 @@ function updateAlarmTable() {
 }
 
 function getAlarmHandleByTime() {
-    let xmlHttp = createJsonXmlHttp("sql");
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                let MemberList = {};
-                let revInfo = revObj.Value[0].Values || [];
-                revInfo.forEach(element => {
+                var MemberList = {};
+                var revInfo = revObj.Value[0].Values || [];
+                revInfo.forEach(function (element) {
                     MemberList[element.tag_id] = element;
                 });
-                let xmlHttp2 = createJsonXmlHttp("alarmhandle");
+                var xmlHttp2 = createJsonXmlHttp("alarmhandle");
                 xmlHttp2.onreadystatechange = function () {
                     if (xmlHttp2.readyState == 4 || xmlHttp2.readyState == "complete") {
                         var revObj2 = JSON.parse(this.responseText);
@@ -889,7 +889,7 @@ function completeSearch() {
     $('#progress_block').hide();
     clearTimeout(timeDelay["model"]);
     alert($.i18n.prop('i_searchOver'));
-    let num = Object.keys(HistoryData).length;
+    var num = Object.keys(HistoryData).length;
     if (num <= 1)
         alert($.i18n.prop('i_searchNoData'));
     updateAlarmTable();
@@ -897,7 +897,7 @@ function completeSearch() {
 
 function fullOf4Byte(id) {
     id = parseInt(id).toString(16).toUpperCase();
-    let length = id.length;
+    var length = id.length;
     if (length > 0 && length < 9) {
         for (i = 0; i < 8 - length; i++) {
             id = "0" + id;

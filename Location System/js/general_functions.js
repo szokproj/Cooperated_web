@@ -38,18 +38,12 @@ function GetXmlHttpObject() {
 }
 
 function createJsonXmlHttp(url) {
-    var xmlHttp = null;
-    try { // Firefox, Opera 8.0+, Safari
-        xmlHttp = new XMLHttpRequest();
-    } catch (e) { //Internet Explorer
-        try {
-            xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
-            xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-    }
+    var xmlHttp = GetXmlHttpObject();
     xmlHttp.open("POST", url, true);
-    xmlHttp.setRequestHeader("Content-type", "application/json");
+    //xmlHttp.setRequestHeader("Accept", "*/*");
+    //xmlHttp.setRequestHeader("Access-Control-Allow-Credentials", "true");
+    //xmlHttp.setRequestHeader("Content-Type", "text/plain");
+    xmlHttp.setRequestHeader("Content-Type", "application/json");
     return xmlHttp;
 }
 
@@ -155,15 +149,15 @@ function colorToHex(color) {
     if (color.indexOf('#') == 0) {
         return color;
     } else {
-        let colorArr = color.substring(color.indexOf("(") + 1, color.length - 1).split(","),
+        var colorArr = color.substring(color.indexOf("(") + 1, color.length - 1).split(","),
             hexColor = "#";
-        for (let i = 0; i < colorArr.length; i++) {
+        for (var i = 0; i < colorArr.length; i++) {
             if (i == 3) {
-                let persentHex = Number(Math.floor(colorArr[i] * 255)).toString(16);
+                var persentHex = Number(Math.floor(colorArr[i] * 255)).toString(16);
                 if (hexColor != "FF")
                     hexColor += persentHex.length === 1 ? "0" + persentHex : persentHex;
             } else {
-                let hexStr = Number(colorArr[i]).toString(16);
+                var hexStr = Number(colorArr[i]).toString(16);
                 hexColor += hexStr.length === 1 ? "0" + hexStr : hexStr;
             }
         }
@@ -201,7 +195,7 @@ Date.prototype.format = function (fmt) {
 }
 
 function stopDLL(token) {
-    let xmlHttp = createJsonXmlHttp("test2");
+    var xmlHttp = createJsonXmlHttp("test2");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
@@ -220,7 +214,7 @@ function stopDLL(token) {
 }
 
 function startDLL(token) {
-    let xmlHttp = createJsonXmlHttp("test2");
+    var xmlHttp = createJsonXmlHttp("test2");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
             var revObj = JSON.parse(this.responseText);
@@ -261,13 +255,13 @@ function startDLL(token) {
  **/
 
 /**
- * let xmlHttp = GetXmlHttpObject();
-   const json_request = JSON.stringify({});
+ * var xmlHttp = GetXmlHttpObject();
+   var json_request = JSON.stringify({});
    xmlHttp.open("POST", "", true);
    xmlHttp.setRequestHeader("Content-type", "application/json");
    xmlHttp.onreadystatechange = function () {
        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-           let revObj = JSON.parse(this.responseText);
+           var revObj = JSON.parse(this.responseText);
            
        }
    };
@@ -275,11 +269,11 @@ function startDLL(token) {
  */
 
 /**
- * const json_request = JSON.stringify({});
-   let jxh = createJsonXmlHttp("");
+ * var json_request = JSON.stringify({});
+   var jxh = createJsonXmlHttp("");
    jxh.onreadystatechange = function () {
        if (jxh.readyState == 4 || jxh.readyState == "complete") {
-           let revObj = JSON.parse(this.responseText);
+           var revObj = JSON.parse(this.responseText);
            
        }
    };

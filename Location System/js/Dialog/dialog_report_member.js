@@ -1,6 +1,6 @@
 'use strict';
 
-const RowsList = {
+var RowsList = {
     "number": {
         i18n: "i_number",
         timeline: true,
@@ -104,7 +104,7 @@ const RowsList = {
 };
 
 function setMembersDialog() {
-    let dialog,
+    var dialog,
         return_table = $("#table_members tbody"),
         search_num = $("#search_number"),
         search_tag = $("#search_tag_id"),
@@ -113,14 +113,14 @@ function setMembersDialog() {
         allFields = $([]).add(search_num).add(search_tag).add(search_name);
 
     function inputMembers() {
-        let add_number_arr = [],
+        var add_number_arr = [],
             count = document.getElementsByName("select_members").length,
             chk_members = document.getElementsByName("chk_members");
         if (chk_members.length == 0)
             return alert("請至少選擇一個人員!");
-        chk_members.forEach(chk => {
+        chk_members.forEach(function (chk) {
             if (chk.checked) {
-                let exist = selectNumberArray.findIndex(function (number) {
+                var exist = selectNumberArray.findIndex(function (number) {
                     return number == chk.value;
                 });
                 if (exist == -1) {
@@ -129,7 +129,7 @@ function setMembersDialog() {
                 }
             }
         });
-        add_number_arr.forEach(number => {
+        add_number_arr.forEach(function (number) {
             count++;
             return_table.append("<tr>" +
                 "<td><input type='checkbox' name=\"select_members\" value=\"" + number + "\" /> " +
@@ -156,8 +156,8 @@ function setMembersDialog() {
             allFields.val("").removeClass("ui-state-error");
             $("#search_dept option").eq(0).prop("selected", true);
             $("#search_member_list tbody").empty();
-            let item = 0;
-            for (let number in memberList) {
+            var item = 0;
+            for (var number in memberList) {
                 item++;
                 addMemberRow(item, memberList[number]);
             }
@@ -169,8 +169,8 @@ function setMembersDialog() {
         allFields.val("").removeClass("ui-state-error");
         $("#search_dept option").eq(0).prop("selected", true);
         $("#search_member_list tbody").empty();
-        let item = 0;
-        for (let number in memberList) {
+        var item = 0;
+        for (var number in memberList) {
             item++;
             addMemberRow(item, memberList[number]);
         }
@@ -183,7 +183,7 @@ function setMembersDialog() {
     });
 
     $("#btn_search_member").on("click", function () {
-        let result = memberList,
+        var result = memberList,
             target = {
                 user_id: search_tag.val(),
                 number: search_num.val(),
@@ -191,23 +191,23 @@ function setMembersDialog() {
                 department_id: search_dept.val()
             };
 
-        for (let condition in target) {
+        for (var condition in target) {
             result = membersFilter(result, condition, "");
         }
 
         $("#search_member_list tbody").empty();
-        let item = 0;
-        for (let number in result) {
+        var item = 0;
+        for (var number in result) {
             item++;
             addMemberRow(item, result[number]);
         }
 
         function membersFilter(list, condition, null_str) {
-            let temp = {};
+            var temp = {};
             if (target[condition] == null_str) {
                 temp = list;
             } else {
-                for (let number in list) {
+                for (var number in list) {
                     if (list[number][condition] == target[condition])
                         temp[number] = list[number];
                 }
@@ -219,17 +219,17 @@ function setMembersDialog() {
     getMemberData();
 
     function getMemberData() {
-        const json_request = JSON.stringify({
+        var json_request = JSON.stringify({
             "Command_Type": ["Read"],
             "Command_Name": ["GetStaffs"],
             "api_token": [token]
         });
-        let jxh = createJsonXmlHttp("sql");
+        var jxh = createJsonXmlHttp("sql");
         jxh.onreadystatechange = function () {
             if (jxh.readyState == 4 || jxh.readyState == "complete") {
-                let revObj = JSON.parse(this.responseText);
+                var revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                    let revInfo = revObj.Value[0].Values || [];
+                    var revInfo = revObj.Value[0].Values || [];
                     $("#search_member_list tbody").empty();
                     revInfo.forEach(function (member, i) {
                         member["user_id"] = parseInt(member.tag_id.substring(8), 16);
@@ -244,7 +244,7 @@ function setMembersDialog() {
     }
 
     function addMemberRow(item, data) {
-        let tr_id = "member_index_" + item;
+        var tr_id = "member_index_" + item;
         $("#search_member_list tbody").append("<tr id=\"" + tr_id + "\">" +
             "<td><input type='checkbox' name=\"chk_members\" value=\"" + data.number + "\"" +
             " onchange=\"selectCheckbox(\'" + tr_id + "\')\" /> " + item + "</td>" +
@@ -280,7 +280,7 @@ function convertTableToArray(table_id) {
 }
 
 function selectCheckbox(tr_id) {
-    let tr = document.getElementById(tr_id);
+    var tr = document.getElementById(tr_id);
     if (tr.classList.contains("selected"))
         tr.classList.remove("selected");
     else
@@ -288,15 +288,15 @@ function selectCheckbox(tr_id) {
 }
 
 function setDisplayRowsDialog() {
-    let dialog;
+    var dialog;
 
     function submitDisplayRows() {
-        let chk_display_rows = document.getElementsByName("chk_display_rows"),
+        var chk_display_rows = document.getElementsByName("chk_display_rows"),
             chk_person_data = document.getElementsByName("chk_person_data"),
             tr_member_attendance = "",
             tr_person_timeline = "";
 
-        for (let i = 0; i < chk_display_rows.length; i++) {
+        for (var i = 0; i < chk_display_rows.length; i++) {
             if (chk_display_rows[i].checked) {
                 RowsList[chk_display_rows[i].value].attendance = true;
                 tr_member_attendance += "<th>" + $.i18n.prop(RowsList[chk_display_rows[i].value].i18n) + "</th>";
@@ -309,11 +309,11 @@ function setDisplayRowsDialog() {
             "<th>" + $.i18n.prop('i_clockIn') + "</th>" +
             "<th>" + $.i18n.prop('i_clockOut') + "</th>");
 
-        let count_data = 0;
-        for (let j = 0; j < chk_person_data.length; j++) {
+        var count_data = 0;
+        for (var j = 0; j < chk_person_data.length; j++) {
             if (chk_person_data[j].checked) {
                 RowsList[chk_person_data[j].value].timeline = true;
-                let id = "report_person_" + chk_person_data[j].value;
+                var id = "report_person_" + chk_person_data[j].value;
                 if (count_data / 4 > 0 && count_data % 4 == 0) //4 datas => 1 column
                     tr_person_timeline += "</tr><tr>";
                 tr_person_timeline += "<td>" + $.i18n.prop(RowsList[chk_person_data[j].value].i18n) + "</td>" +
@@ -355,12 +355,12 @@ function setDisplayRowsDialog() {
         document.getElementById("table_display_rows").innerHTML = createTbody("chk_display_rows", "attendance");
 
         function createTbody(checkbox_name, type) {
-            let html = "",
+            var html = "",
                 count_row = 0,
                 title_arr = Object.keys(RowsList),
                 integer = parseInt(title_arr.length / 2, 10);
-            for (let i = 0; i < title_arr.length; i++) {
-                let check = "";
+            for (var i = 0; i < title_arr.length; i++) {
+                var check = "";
                 if (i == 0)
                     check = "checked disabled";
                 else if (RowsList[title_arr[i]][type] == true)
@@ -409,7 +409,7 @@ var arraysToExcel = {
             };
 
         var titleText = '<Row>';
-        for (let title in array[0]) {
+        for (var title in array[0]) {
             ctx = {
                 attributeStyleID: '',
                 nameType: 'String',
@@ -430,11 +430,11 @@ var arraysToExcel = {
             rowsXML = titleText;
 
             //內容列 
-            for (let i = 0; i < 5000; i++) {
+            for (var i = 0; i < 5000; i++) {
                 if (array[i]) {
                     count++;
                     rowsXML += '<Row>';
-                    for (let title in array[i]) {
+                    for (var title in array[i]) {
                         ctx = {
                             attributeStyleID: '',
                             nameType: 'String',
@@ -505,7 +505,7 @@ var arraysToExcel = {
             };
 
         titlesList["item"] = $.i18n.prop('i_item');
-        for (let title in RowsList) {
+        for (var title in RowsList) {
             if (RowsList[title]["attendance"] == true)
                 titlesList[title] = $.i18n.prop(RowsList[title]["i18n"]);
         }
@@ -515,7 +515,7 @@ var arraysToExcel = {
         for (var i = 0; i < arrays.length; i++) {
             //標題列
             rowsXML += '<Row>';
-            for (let title in titlesList) {
+            for (var title in titlesList) {
                 ctx = {
                     attributeStyleID: '',
                     nameType: 'String',
@@ -527,15 +527,15 @@ var arraysToExcel = {
             rowsXML += '</Row>';
 
             //內容列
-            let count = 0;
-            targetArray.forEach(target => {
-                let member_info = memberList[target.number],
+            var count = 0;
+            targetArray.forEach(function (target) {
+                var member_info = memberList[target.number],
                     attend_from = historyData[i][target.tag_id].first,
                     attend_end = historyData[i][target.tag_id].last;
                 count++;
                 rowsXML += '<Row>';
-                for (let title in titlesList) {
-                    let value = null;
+                for (var title in titlesList) {
+                    var value = null;
                     switch (title) {
                         case "item":
                             value = count;

@@ -5,7 +5,7 @@ var token = "",
     usertypeNameArray = [];
 
 $(function () {
-    let h = document.documentElement.clientHeight;
+    var h = document.documentElement.clientHeight;
     $(".container").css("height", h - 10 + "px");
 
     //Check this page's permission and load navbar
@@ -39,7 +39,7 @@ $(function () {
 
         if (change == "add") {
             //因為type儲存為key值，所以必須先檢查是否新的type與舊的重複
-            usertypeNameArray.forEach(v => {
+            usertypeNameArray.forEach(function (v) {
                 if (v == $("#set_type_name").val()) {
                     valid = false;
                     $("#set_type_name").addClass("ui-state-error");

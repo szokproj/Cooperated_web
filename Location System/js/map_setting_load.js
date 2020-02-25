@@ -4,7 +4,7 @@ var thumb_width = 240;
 var thumb_height = 180;
 
 $(function () {
-    let h = document.documentElement.clientHeight;
+    var h = document.documentElement.clientHeight;
     /*$(".container").css("height", h - 10 + "px");*/
     $("#cvsBlock").css("height", h - 375 + "px");
     //Check this page's permission and load navbar

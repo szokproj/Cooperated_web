@@ -3,29 +3,29 @@
  **/
 
 function importFenceAlarmGroup() {
-    let dialog, form,
+    var dialog, form,
         sendFAG_Set = function () {
             $("#add_FAG_id").removeClass("ui-state-error");
-            let valid = true && checkLength($("#add_FAG_id"), $.i18n.prop('i_alarmAlert_39'), 1, 20),
+            var valid = true && checkLength($("#add_FAG_id"), $.i18n.prop('i_alarmAlert_39'), 1, 20),
                 fence_ids = document.getElementsByName("included_fences")
             if (fence_ids.length == 0)
                 return alert($.i18n.prop('i_alarmAlert_40'));
             if (valid) {
-                let fenceAG_arr = [];
-                fence_ids.forEach(element => {
+                var fenceAG_arr = [];
+                fence_ids.forEach(function (element) {
                     fenceAG_arr.push({
                         "fence_id": element.value,
                         "fence_alarm_gid": $("#add_FAG_id").val()
                     })
                 });
                 if (submit_type["fence_alarm_group"] == "Add") {
-                    let addXmlHttp = createJsonXmlHttp("sql");
+                    var addXmlHttp = createJsonXmlHttp("sql");
                     addXmlHttp.onreadystatechange = function () {
                         if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                            let revObj = JSON.parse(this.responseText);
+                            var revObj = JSON.parse(this.responseText);
                             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                                 if (revObj.Value[0].Value) {
-                                    let key = Object.keys(revObj.Value[0].Value);
+                                    var key = Object.keys(revObj.Value[0].Value);
                                     updateFenceAG_List(key);
                                     alert($.i18n.prop('i_alarmAlert_41'));
                                 }
@@ -41,18 +41,18 @@ function importFenceAlarmGroup() {
                         "api_token": [token]
                     }));
                 } else if (submit_type["fence_alarm_group"] == "Edit") {
-                    let deleteXmlHttp = createJsonXmlHttp("sql");
+                    var deleteXmlHttp = createJsonXmlHttp("sql");
                     deleteXmlHttp.onreadystatechange = function () {
                         if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
-                            let revObj = JSON.parse(this.responseText);
+                            var revObj = JSON.parse(this.responseText);
                             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                                let addXmlHttp = createJsonXmlHttp("sql");
+                                var addXmlHttp = createJsonXmlHttp("sql");
                                 addXmlHttp.onreadystatechange = function () {
                                     if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                                        let revObj2 = JSON.parse(this.responseText);
+                                        var revObj2 = JSON.parse(this.responseText);
                                         if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
                                             if (revObj2.Value[0].Value) {
-                                                let key = Object.keys(revObj2.Value[0].Value);
+                                                var key = Object.keys(revObj2.Value[0].Value);
                                                 updateFenceAG_List(key);
                                                 alert($.i18n.prop('i_alarmAlert_43'));
                                             }
@@ -118,7 +118,7 @@ function importFenceAlarmGroup() {
         submit_type["fence_alarm_group"] = "Add";
         $("#add_FAG_id").val("").prop('disabled', false);
         for (i = 0; i < fenceArray.length; i++) {
-            let tr_id = "remaining_fences_" + fenceArray[i].fence_id;
+            var tr_id = "remaining_fences_" + fenceArray[i].fence_id;
             $("#table_remaining_fences tbody").append("<tr id=\"" + tr_id + "\"" +
                 " onclick=\"beCheckedColumn(\'" + tr_id + "\')\">" +
                 "<td><input type=\"checkbox\" class=\"chk-hidden\"" +
@@ -131,7 +131,7 @@ function importFenceAlarmGroup() {
         dialog.dialog("open");
     });
     $("#btn_fenceAG_delete").on('click', function () {
-        let fenceAGs = document.getElementsByName("chk_fenceAG"),
+        var fenceAGs = document.getElementsByName("chk_fenceAG"),
             delete_arr = [];
         for (i = 0; i < fenceAGs.length; i++) {
             if (fenceAGs[i].checked) {
@@ -143,13 +143,13 @@ function importFenceAlarmGroup() {
         if (delete_arr.length == 0)
             return alert($.i18n.prop('i_alarmAlert_61'));
         if (confirm($.i18n.prop('i_alarmAlert_47'))) {
-            let deleteXmlHttp = createJsonXmlHttp("sql");
+            var deleteXmlHttp = createJsonXmlHttp("sql");
             deleteXmlHttp.onreadystatechange = function () {
                 if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
-                    let revObj = JSON.parse(this.responseText);
+                    var revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         if (revObj.Value[0].Value) {
-                            let key = Object.keys(revObj.Value[0].Value);
+                            var key = Object.keys(revObj.Value[0].Value);
                             updateFenceAG_List(key);
                             alert($.i18n.prop('i_alarmAlert_45'));
                         }
@@ -175,7 +175,7 @@ function updateFenceAG_List(array) {
     $("#table_fence_alarm_group tbody").empty();
     $("#add_alarm_mode_0_fagID").empty();
     for (i = 0; i < array.length; i++) {
-        let tr_id = "fenceAG_" + i;
+        var tr_id = "fenceAG_" + i;
         $("#table_fence_alarm_group tbody").append("<tr id=\"" + tr_id + "\"><td>" +
             "<input type=\"checkbox\" name=\"chk_fenceAG\" value=\"" + array[i] + "\"" +
             " onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (i + 1) + "</td>" +
@@ -193,15 +193,15 @@ function updateFenceAG_List(array) {
 }
 
 function getFenceAlarmGroup() {
-    let xmlHttp = createJsonXmlHttp("sql");
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (!checkTokenAlive(token, revObj)) {
                 return;
             } else if (revObj.Value[0].success > 0) {
                 if (revObj.Value[0].Value) {
-                    let key = Object.keys(revObj.Value[0].Value);
+                    var key = Object.keys(revObj.Value[0].Value);
                     updateFenceAG_List(key);
                 }
             } else {
@@ -218,19 +218,19 @@ function getFenceAlarmGroup() {
 
 function editFenceAlarmGroup(fence_alarm_gid) {
     submit_type["fence_alarm_group"] = "Edit";
-    let xmlHttp = createJsonXmlHttp("sql");
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                let revInfo = revObj.Value[0].Values.slice(0) || [];
+                var revInfo = revObj.Value[0].Values.slice(0) || [];
                 $("#add_FAG_id").val(fence_alarm_gid).prop('disabled', true);
                 fenceArray.forEach(function (element, index) {
-                    let included = revInfo.findIndex(Values => {
+                    var included = revInfo.findIndex(function (Values) {
                         return Values.fence_id == element.fence_id;
                     });
                     if (included > -1) {
-                        let tr_id = "included_fences_" + element.fence_id;
+                        var tr_id = "included_fences_" + element.fence_id;
                         $("#table_included_fences tbody").append("<tr id=\"" + tr_id + "\"" +
                             " onclick=\"beCheckedColumn(\'" + tr_id + "\')\">" +
                             "<td><input type=\"checkbox\" class=\"chk-hidden\"" +
@@ -239,7 +239,7 @@ function editFenceAlarmGroup(fence_alarm_gid) {
                             "<td>" + element.fence_id + "</td>" +
                             "<td>" + element.fence_name + "</td></tr>");
                     } else {
-                        let tr_id = "remaining_fences_" + element.fence_id;
+                        var tr_id = "remaining_fences_" + element.fence_id;
                         $("#table_remaining_fences tbody").append("<tr id=\"" + tr_id + "\"" +
                             " onclick=\"beCheckedColumn(\'" + tr_id + "\')\">" +
                             "<td><input type=\"checkbox\" class=\"chk-hidden\"" +
@@ -268,10 +268,10 @@ function editFenceAlarmGroup(fence_alarm_gid) {
 }
 
 function addFenceToFAG() {
-    let delete_arr = [];
+    var delete_arr = [];
     document.getElementsByName("remaining_fences").forEach(function (element) {
         if (element.checked) {
-            let index = fenceArray.findIndex(function (info) {
+            var index = fenceArray.findIndex(function (info) {
                     return info.fence_id == element.value;
                 }),
                 tr_id = "included_fences_" + element.value;
@@ -284,7 +284,7 @@ function addFenceToFAG() {
             delete_arr.push("#remaining_fences_" + element.value);
         }
     });
-    delete_arr.forEach(element => {
+    delete_arr.forEach(function (element) {
         $(element).remove();
     });
     resetListNumber("included_fences");
@@ -292,10 +292,10 @@ function addFenceToFAG() {
 }
 
 function removeFenceFormFAG() {
-    let delete_arr = [];
+    var delete_arr = [];
     document.getElementsByName("included_fences").forEach(function (element) {
         if (element.checked) {
-            let index = fenceArray.findIndex(function (info) {
+            var index = fenceArray.findIndex(function (info) {
                     return info.fence_id == element.value;
                 }),
                 tr_id = "remaining_fences_" + element.value;
@@ -308,7 +308,7 @@ function removeFenceFormFAG() {
             delete_arr.push("#included_fences_" + element.value);
         }
     });
-    delete_arr.forEach(element => {
+    delete_arr.forEach(function (element) {
         $(element).remove();
     });
     resetListNumber("included_fences");
@@ -322,7 +322,7 @@ function resetListNumber(item_name) {
 }
 
 function beCheckedColumn(id) {
-    let state = $("#" + id).find("td:eq(0) input").prop("checked");
+    var state = $("#" + id).find("td:eq(0) input").prop("checked");
     $("#" + id).toggleClass("changeBgColor")
         .find("td:eq(0) input").prop("checked", !state);
 }

@@ -1,5 +1,5 @@
 //'use strict';
-const ALARM_TYPE = ["low_power", "help", "still", "active", "Fence", "stay", "hidden"];
+var ALARM_TYPE = ["low_power", "help", "still", "active", "Fence", "stay", "hidden"];
 var token = "",
     userName = "",
     PIXEL_RATIO, // 獲取瀏覽器像素比
@@ -45,12 +45,12 @@ var token = "",
 
 $(function () {
     //https://www.minwt.com/webdesign-dev/js/16298.html
-    let h = document.documentElement.clientHeight,
+    var h = document.documentElement.clientHeight,
         w = document.documentElement.clientWidth;
     $("#content").css("height", h - 82 + "px");
     //Check this page's permission and load navbar
 
-    let userInfo = getUser();
+    var userInfo = getUser();
     token = getToken();
     userName = userInfo ? userInfo.cname : "";
     if (!getPermissionOfPage("index")) {
@@ -82,11 +82,11 @@ $(function () {
         backdrop: false,
         show: false
     });
-    for (let i = 0; i < canvas_mode.length; i++) {
+    for (var i = 0; i < canvas_mode.length; i++) {
         document.getElementById("btn_sel_mode" + (i + 1)).onclick = function () {
             document.getElementById("select_canvas_mode").value = canvas_mode[i];
-            let btn = document.getElementsByClassName("btn-mode");
-            for (let j = 0; j < btn.length; j++)
+            var btn = document.getElementsByClassName("btn-mode");
+            for (var j = 0; j < btn.length; j++)
                 btn[j].classList.remove('selected');
             btn[i].classList.add('selected');
         };
@@ -103,7 +103,7 @@ $(function () {
 function setup() {
     dot_size = getSizeFromCookie();
     display_setting = getFocusSetFromCookie();
-    let separate_canvas = Cookies.get("separate_canvas");
+    var separate_canvas = Cookies.get("separate_canvas");
     canvasMode(separate_canvas);
     if (token != "") {
         getMemberData();
@@ -126,14 +126,14 @@ function setFocusSetToCookie(Setting) {
 }
 
 function selectMap(number, map_id) {
-    let index = number == 0 ? number : number - 1;
+    var index = number == 0 ? number : number - 1;
     canvasArray[index].inputMap(map_id);
 }
 
 function changeMapToCookie(index, map_id) {
-    let cookie = Cookies.get("recent_map"),
+    var cookie = Cookies.get("recent_map"),
         currentMaps = typeof (cookie) === 'undefined' ? [] : JSON.parse(cookie);
-    if (typeof (currentMaps) !== 'object') 
+    if (typeof (currentMaps) !== 'object')
         Cookies.set("recent_map", JSON.stringify([]));
     if (index > -1)
         currentMaps.splice(index, 1, map_id);
@@ -144,7 +144,7 @@ function changeMapToCookie(index, map_id) {
 
 function loadMapToCanvas() {
     Stop();
-    let cookie = Cookies.get("recent_map"), //載入MapCookies
+    var cookie = Cookies.get("recent_map"), //載入MapCookies
         recentMaps = typeof (cookie) === 'undefined' ? [] : JSON.parse(cookie);
     if (typeof (recentMaps) !== 'object') {
         Cookies.set("recent_map", JSON.stringify([]));
@@ -160,14 +160,14 @@ function loadMapToCanvas() {
 }
 
 function draw() {
-    canvasArray.forEach(canvas => {
+    canvasArray.forEach(function (canvas) {
         canvas.draw();
     });
 }
 
 function Start() {
     //設定計時器
-    let send_time = 200; //millisecond
+    var send_time = 200; //millisecond
     frames = 1; //幀數
     if (display_setting.smooth_display) {
         send_time = display_setting.smooth_launch_time;
@@ -181,10 +181,10 @@ function Start() {
 }
 
 function Stop() {
-    for (let each in pageTimer) {
+    for (var each in pageTimer) {
         if (each == "draw_frame") {
-            for (let canvas in pageTimer[each]) {
-                pageTimer[each][canvas].forEach(timeout => {
+            for (var canvas in pageTimer[each]) {
+                pageTimer[each][canvas].forEach(function (timeout) {
                     clearTimeout(timeout);
                 });
                 pageTimer[each][canvas] = [];
@@ -208,18 +208,18 @@ function setFocusSetToCookie(Setting) {
 }
 
 function getMaps() {
-    const json_request = JSON.stringify({
+    var json_request = JSON.stringify({
         "Command_Type": ["Read"],
         "Command_Name": ["GetMaps"],
         "api_token": [token]
     });
-    let jxh = createJsonXmlHttp("sql");
+    var jxh = createJsonXmlHttp("sql");
     jxh.onreadystatechange = function () {
         if (jxh.readyState == 4 || jxh.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                let revInfo = revObj.Value[0].Values || [];
-                revInfo.forEach(v => {
+                var revInfo = revObj.Value[0].Values || [];
+                revInfo.forEach(function (v) {
                     MapList[v.map_id] = {
                         name: v.map_name,
                         src: "data:image/" + v.map_file_ext + ";base64," + v.map_file,
@@ -236,18 +236,18 @@ function getMaps() {
 }
 
 function getMapGroup() {
-    const json_request = JSON.stringify({
+    var json_request = JSON.stringify({
         "Command_Type": ["Read"],
         "Command_Name": ["GetMaps_Groups"],
         "api_token": [token]
     });
-    let jxh = createJsonXmlHttp("sql");
+    var jxh = createJsonXmlHttp("sql");
     jxh.onreadystatechange = function () {
         if (jxh.readyState == 4 || jxh.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                let revInfo = revObj.Value[0].Values || [];
-                revInfo.forEach(element => {
+                var revInfo = revObj.Value[0].Values || [];
+                revInfo.forEach(function (element) {
                     groupfindMap[element.group_id] = element.map_id;
                 });
             }
@@ -257,19 +257,19 @@ function getMapGroup() {
 }
 
 function getMemberData() {
-    const json_request = JSON.stringify({
+    var json_request = JSON.stringify({
         "Command_Type": ["Read"],
         "Command_Name": ["GetStaffs"],
         "api_token": [token]
     });
-    let jxh = createJsonXmlHttp("sql");
+    var jxh = createJsonXmlHttp("sql");
     jxh.onreadystatechange = function () {
         if (jxh.readyState == 4 || jxh.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                let revInfo = revObj.Value[0].Values || [];
-                revInfo.forEach(element => {
-                    let user_id = parseInt(element.tag_id.substring(8), 16);
+                var revInfo = revObj.Value[0].Values || [];
+                revInfo.forEach(function (element) {
+                    var user_id = parseInt(element.tag_id.substring(8), 16);
                     MemberList[user_id] = {
                         tag_id: element.tag_id,
                         card_id: element.card_id,
@@ -289,7 +289,7 @@ function getMemberData() {
 }
 
 function changeAlarmLight() {
-    let alarmSideBar_icon = document.getElementById("alarmSideBar_icon");
+    var alarmSideBar_icon = document.getElementById("alarmSideBar_icon");
     if (alarmFilterArr.length > 0) {
         RedBling = !RedBling;
         if (RedBling)
@@ -302,20 +302,20 @@ function changeAlarmLight() {
 }
 
 function updateAlarmHandle() {
-    const json_request = JSON.stringify({
+    var json_request = JSON.stringify({
         "Command_Type": ["Read"],
         "Command_Name": ["gethandlerecord50"],
         "api_token": [token]
     });
-    let jxh = createJsonXmlHttp("alarmhandle");
+    var jxh = createJsonXmlHttp("alarmhandle");
     jxh.onreadystatechange = function () {
         if (jxh.readyState == 4 || jxh.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                let revInfo = "Values" in revObj.Value[0] ? revObj.Value[0].Values : [],
+                var revInfo = "Values" in revObj.Value[0] ? revObj.Value[0].Values : [],
                     html = "";
-                for (let i = 0; i < revInfo.length; i++) {
-                    let user_id = parseInt(revInfo[i].tagid.substring(8), 16),
+                for (var i = 0; i < revInfo.length; i++) {
+                    var user_id = parseInt(revInfo[i].tagid.substring(8), 16),
                         number = user_id in MemberList ? MemberList[user_id].number : "",
                         name = user_id in MemberList ? MemberList[user_id].name : "";
                     html += "<tr><td>" + (i + 1) +
@@ -335,7 +335,7 @@ function updateAlarmHandle() {
 }
 
 function updateAlarmList() {
-    const json_request = JSON.stringify({
+    var json_request = JSON.stringify({
         "Command_Type": ["Read"],
         "Command_Name": ["GetAlarmTop50List"],
         "api_token": [token]
@@ -344,15 +344,15 @@ function updateAlarmList() {
     xmlHttp["getAlarm"].setRequestHeader("Content-type", "application/json");
     xmlHttp["getAlarm"].onreadystatechange = function () {
         if (xmlHttp["getAlarm"].readyState == 4 || xmlHttp["getAlarm"].readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value) {
-                let revInfo = revObj.Value[0] || [],
+                var revInfo = revObj.Value[0] || [],
                     update = 0,
                     temp_arr = alarmFilterArr;
                 alarmFilterArr = [];
-                revInfo.forEach(element => {
+                revInfo.forEach(function (element) {
                     if (ALARM_TYPE.indexOf(element.tag_alarm_type) > -1) {
-                        let user_id = parseInt(element.tag_id.substring(8), 16),
+                        var user_id = parseInt(element.tag_id.substring(8), 16),
                             number = user_id in MemberList ? MemberList[user_id].number : "",
                             name = user_id in MemberList ? MemberList[user_id].name : "";
                         if (element.tag_alarm_type == "low_power" && !display_setting.display_alarm_low_power)
@@ -386,7 +386,7 @@ function updateAlarmList() {
                     locateTag(alarmFilterArr[alarmFilterArr.length - 1].id);
                 } else {
                     alarmFilterArr.forEach(function (element) {
-                        let tagid_alarm = element.id + element.alarm_type,
+                        var tagid_alarm = element.id + element.alarm_type,
                             time_arr = TimeToArray(element.alarm_time);
                         document.getElementById("count_" + tagid_alarm).innerText = element.count;
                         document.getElementById("date_" + tagid_alarm).innerText = time_arr[0];
@@ -405,9 +405,9 @@ function inputTagPoints(old_point, new_point) {
      *  old_point = temp_arr[element.tag_id].point[frames-1];
      *  new_point = element;
      */
-    let point_array = [];
+    var point_array = [];
     if (!old_point || old_point.group_id != new_point.group_id) {
-        for (let i = 0; i < frames; i++) {
+        for (var i = 0; i < frames; i++) {
             point_array.push({
                 x: parseFloat(new_point.tag_x),
                 y: parseFloat(new_point.tag_y),
@@ -415,11 +415,11 @@ function inputTagPoints(old_point, new_point) {
             });
         }
     } else {
-        let frame_move = {
+        var frame_move = {
             x: (new_point.tag_x - old_point.x) / frames,
             y: (new_point.tag_y - old_point.y) / frames
         };
-        for (let i = 0; i < frames; i++) {
+        for (var i = 0; i < frames; i++) {
             if (i == frames - 1) {
                 point_array.push({
                     x: parseFloat(new_point.tag_x),
@@ -439,7 +439,7 @@ function inputTagPoints(old_point, new_point) {
 }
 
 function updateTagList() {
-    const json_request = JSON.stringify({
+    var json_request = JSON.stringify({
         "Command_Type": ["Read"],
         "Command_Name": ["GetTagList"],
         "api_token": [token]
@@ -448,16 +448,16 @@ function updateTagList() {
     xmlHttp["getTag"].setRequestHeader("Content-type", "application/json");
     xmlHttp["getTag"].onreadystatechange = function () {
         if (xmlHttp["getTag"].readyState == 4 || xmlHttp["getTag"].readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (!checkTokenAlive(token, revObj)) {
-                let revInfo = revObj,
+                var revInfo = revObj,
                     tagArrTemp = {},
                     update = 0;
-                revInfo.forEach(element => { //new tag datas
+                revInfo.forEach(function (element) { //new tag datas
                     element["user_id"] = parseInt(element.tag_id.substring(8), 16);
                     element["number"] = MemberList[element.user_id] ? MemberList[element.user_id].number : "";
                     element["name"] = MemberList[element.user_id] ? MemberList[element.user_id].name : "";
-                    let old_point = TagList[element.tag_id] ? TagList[element.tag_id].point[frames - 1] : null;
+                    var old_point = TagList[element.tag_id] ? TagList[element.tag_id].point[frames - 1] : null;
                     //update tag array
                     tagArrTemp[element.tag_id] = {
                         id: element.tag_id,
@@ -472,16 +472,16 @@ function updateTagList() {
                     update += TagList[element.tag_id] ? 0 : 1;
                 });
                 if (locating_id != "") {
-                    let temp = tagArrTemp[locating_id];
+                    var temp = tagArrTemp[locating_id];
                     if (temp) {
                         delete tagArrTemp[locating_id];
                         tagArrTemp[locating_id] = temp;
                     }
                 }
                 if (update > 0) { //update member list
-                    let html = "";
+                    var html = "";
                     revInfo.sort(function (a, b) {
-                        let A = a.user_id,
+                        var A = a.user_id,
                             B = b.user_id;
                         return A - B;
                     });
@@ -503,7 +503,7 @@ function updateTagList() {
                 tagArrTemp = null;
                 //定時比對TagList更新AlarmList
                 AlarmList = {}; //每次更新都必須重置AlarmList
-                alarmFilterArr.forEach(element => {
+                alarmFilterArr.forEach(function (element) {
                     if (element.id in TagList) {
                         //依序將Tag資料放入AlarmList中
                         AlarmList[element.id] = {
@@ -519,7 +519,7 @@ function updateTagList() {
                     }
                 });
                 if (locating_id != "") {
-                    let temp = AlarmList[locating_id];
+                    var temp = AlarmList[locating_id];
                     if (temp) {
                         delete AlarmList[locating_id];
                         AlarmList[locating_id] = temp;
@@ -533,7 +533,7 @@ function updateTagList() {
 }
 
 function sortAlarm() {
-    let btn = document.getElementById("btn_sort_alarm");
+    var btn = document.getElementById("btn_sort_alarm");
     if (btn.children[0].classList.contains("fa-sort-amount-up")) {
         btn.title = $.i18n.prop('i_oldestTop');
         btn.innerHTML = "<i class=\"fas fa-sort-amount-down\"></i>";
@@ -545,23 +545,23 @@ function sortAlarm() {
 }
 
 function changeFocusAlarm(tag_id, alarm_type) { //改變鎖定定位的Alarm目標
-    let index = alarmFilterArr.findIndex(function (info) { //抓取指定AlarmTag的位置
+    var index = alarmFilterArr.findIndex(function (info) { //抓取指定AlarmTag的位置
         return info.id == tag_id && info.alarm_type == alarm_type;
     });
     if (index == -1) return alert("此警報已解除或逾時，可在事件處理紀錄中查詢!");
-    let temp = alarmFilterArr[index];
+    var temp = alarmFilterArr[index];
     alarmFilterArr.splice(index, 1);
     alarmFilterArr.push(temp);
     locateTag(temp.id);
 }
 
 function releaseFocusAlarm(tag_id, alarm_type) { //解除指定的alarm
-    let index = alarmFilterArr.findIndex(function (info) { //抓取指定AlarmTag的位置
+    var index = alarmFilterArr.findIndex(function (info) { //抓取指定AlarmTag的位置
         return info.id == tag_id && info.alarm_type == alarm_type;
     });
     if (index > -1) {
-        let tag_id = alarmFilterArr[index].id;
-        const json_request = JSON.stringify({
+        var tag_id = alarmFilterArr[index].id;
+        var json_request = JSON.stringify({
             "Command_Name": ["addhandlerecord"],
             "Value": [{
                 "alarmtype": alarmFilterArr[index].alarm_type,
@@ -570,12 +570,12 @@ function releaseFocusAlarm(tag_id, alarm_type) { //解除指定的alarm
             }],
             "api_token": [token]
         });
-        let jxh = createJsonXmlHttp("alarmhandle");
+        var jxh = createJsonXmlHttp("alarmhandle");
         jxh.onreadystatechange = function () {
             if (jxh.readyState == 4 || jxh.readyState == "complete") {
-                let revObj = JSON.parse(this.responseText);
+                var revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj)) {
-                    let revInfo = revObj.Value[0];
+                    var revInfo = revObj.Value[0];
                     if (revInfo.success == 1) {
                         if (document.getElementById("alarm_dialog_id").innerText == parseInt(tag_id.substring(8), 16))
                             $("#alarm_dialog").dialog("close");
@@ -590,14 +590,14 @@ function releaseFocusAlarm(tag_id, alarm_type) { //解除指定的alarm
 
 function unlockFocusAlarm() { //解除定位
     isFocus = false;
-    canvasArray.forEach(canvas => {
+    canvasArray.forEach(function (canvas) {
         canvas.adjust.unlockFocusCenter();
     });
 }
 
 function checkMapIsUsed(map_id) {
-    let check = canvasArray.findIndex(function (canvas) {
-        return canvas.Map_id() == map_id;
+    var check = canvasArray.findIndex(function (canvas) {
+        return canvas.Map_id == map_id;
     });
     if (check == -1) {
         canvasArray[0].inputMap(map_id);
@@ -616,7 +616,7 @@ function locateTag(tag_id) {
 
 function showAlertDialog() {
     if (display_setting.display_no_position) {
-        let dialog = document.getElementById("alert_window");
+        var dialog = document.getElementById("alert_window");
         dialog.style.display = 'block';
         dialog.classList.remove("fadeOut");
         pageTimer["dialog"] = setTimeout(function () {
@@ -627,22 +627,22 @@ function showAlertDialog() {
 }
 
 function search() {
-    let html = "";
-    let key = $("#search_select_type").val();
-    let value = $("#search_input_target").val();
+    var html = "";
+    var key = $("#search_select_type").val();
+    var value = $("#search_input_target").val();
     if (key == "map") {
-        for (let map_id in MapList) {
+        for (var map_id in MapList) {
             if (map_id == value || MapList[map_id].name == value) {
-                let group_arr = [];
-                for (let i in groupfindMap) {
+                var group_arr = [];
+                for (var i in groupfindMap) {
                     if (groupfindMap[i] == map_id)
                         group_arr.push(i);
                 }
-                for (let tag_id in TagList) {
-                    let v = TagList[tag_id];
-                    group_arr.forEach(group_id => {
+                for (var tag_id in TagList) {
+                    var v = TagList[tag_id];
+                    group_arr.forEach(function (group_id) {
                         if (v.point[frames - 1].group_id == group_id) {
-                            let member_data = MemberList[v.user_id] || {
+                            var member_data = MemberList[v.user_id] || {
                                 dept: "",
                                 job_title: "",
                                 type: ""
@@ -665,8 +665,8 @@ function search() {
             }
         }
     } else {
-        let memberArray = [];
-        for (let each in MemberList) { //each : 'user_id'
+        var memberArray = [];
+        for (var each in MemberList) { //each : 'user_id'
             if (key == "user_id") {
                 if (each == value)
                     memberArray.push(MemberList[each]);
@@ -675,7 +675,7 @@ function search() {
                     memberArray.push(MemberList[each]);
             }
         }
-        memberArray.forEach(element => {
+        memberArray.forEach(function (element) {
             html += "<tr>" +
                 "<td>" + parseInt(element.tag_id.substring(8), 16) + "</td>" +
                 "<td>" + element.number + "</td>" +

@@ -9,10 +9,10 @@
     <link rel="shortcut icon" href="../image/logo/favicon.ico" type="image/x-icon" />
     <!--Jquery-->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <!--<script type="text/javascript" src="../js/jquery/jquery.min.js"></script>-->
     <!--BootStrap3-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <!--Add icon library-->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
@@ -31,8 +31,9 @@
     <!--Data Table-->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css" />
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
-    <!--Edit js-->
+    <!--Cookie-->
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <!--Edit js-->
     <script type="text/javascript" src="../js/hammer/hammer.min.js"></script>
     <script type="text/javascript" src="../js/general_functions.js"></script>
     <script type="text/javascript" src="../js/check_permission.js"></script>
@@ -41,16 +42,15 @@
     <script type="text/javascript" src="../js/draw_canvas.js"></script>
     <script type="text/javascript" src="../js/rtls_get_data.js"></script>
     <script type="text/javascript" src="../js/rtls_set_canvas.js"></script>
+    <script type="text/javascript" src="../js/rtls_dialog.js"></script>
     <!--JQuery UI - Dialog-->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script type="text/javascript" src="../js/rtls_dialog.js"></script>
 </head>
 
 <body>
     <div class="container">
         <!--icon navbar-->
         <div id="icon_navbar"></div>
-
         <!--Web content-->
         <div class="row">
             <div class="col-lg-12 top_nav">
@@ -77,7 +77,6 @@
 
             </div>
         </div>
-
         <div class="row">
             <div class="col-lg-12">
                 <!--Left (Alarm) Sidebar-->
@@ -198,7 +197,6 @@
             </div>
         </div>
     </div>
-
     <!--Hidden Dialog-->
     <div class="hidden_dialog">
         <!--Modal-->
@@ -421,11 +419,12 @@
                 </tr>
             </table>
         </div>
-
-        <!--i18n translation-->
-        <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
-        <script type="text/javascript" src="../js/i18n/language.js"></script>
-        <!--i18n-->
+    </div>
+    <!--i18n translation-->
+    <script type="text/javascript" src="../js/i18n/jquery.i18n.properties.js"></script>
+    <script type="text/javascript" src="../js/i18n/language.js"></script>
+    <!--開發版本-->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 </body>
 
 </html>

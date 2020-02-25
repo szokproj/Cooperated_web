@@ -23,7 +23,7 @@ $(function () {
     }
     setNavBar("Member_Setting", "Member_Setting");
 
-    let h = document.documentElement.clientHeight;
+    var h = document.documentElement.clientHeight;
     $(".container").css("height", h - 10 + "px");
     $(".member_list").css("max-height", h - 110 + "px");
 
@@ -39,13 +39,13 @@ $(function () {
     UpdateMemberList();
 
     //Set deptColorArray
-    let deptXmlHttp = createJsonXmlHttp('sql');
+    var deptXmlHttp = createJsonXmlHttp('sql');
     deptXmlHttp.onreadystatechange = function () {
         if (deptXmlHttp.readyState == 4 || deptXmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                let revInfo = revObj.Value[0].Values || [];
-                for (let i = 0; i < revInfo.length; i++)
+                var revInfo = revObj.Value[0].Values || [];
+                for (var i = 0; i < revInfo.length; i++)
                     deptColorArray.push(revInfo[i]);
             }
         }
@@ -56,13 +56,13 @@ $(function () {
         "api_token": [token]
     }));
     //Set titleColorArray
-    let titleXmlHttp = createJsonXmlHttp('sql');
+    var titleXmlHttp = createJsonXmlHttp('sql');
     titleXmlHttp.onreadystatechange = function () {
         if (titleXmlHttp.readyState == 4 || titleXmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                let revInfo = revObj.Value[0].Values || [];
-                revInfo.forEach(element => {
+                var revInfo = revObj.Value[0].Values || [];
+                revInfo.forEach(function (element) {
                     titleColorArray.push(element);
                 });
             }
@@ -74,13 +74,13 @@ $(function () {
         "api_token": [token]
     }));
     //Set userTypeColorArray and userTypeArr
-    let userTypeXmlHttp = createJsonXmlHttp('sql');
+    var userTypeXmlHttp = createJsonXmlHttp('sql');
     userTypeXmlHttp.onreadystatechange = function () {
         if (userTypeXmlHttp.readyState == 4 || userTypeXmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                let revInfo = revObj.Value[0].Values || [];
-                revInfo.forEach(element => {
+                var revInfo = revObj.Value[0].Values || [];
+                revInfo.forEach(function (element) {
                     userTypeColorArray.push(element);
                     userTypeArr.push(element.type);
                 });
@@ -93,10 +93,10 @@ $(function () {
         "api_token": [token]
     }));
     $("#main_type").change(function () {
-        let type = typeof ($(this).val()) != 'undefined' ? $(this).val() : "",
+        var type = typeof ($(this).val()) != 'undefined' ? $(this).val() : "",
             index = $("#main_select_tag_color").children('option:selected').index();
         if (index == 3 && type != "") {
-            userTypeColorArray.forEach(v => {
+            userTypeColorArray.forEach(function (v) {
                 if (v.type == type) {
                     $("#main_input_tag_color").val(colorToHex(v.color)).prop("disabled", true);
                 }
@@ -105,7 +105,7 @@ $(function () {
     });
     $("#main_picture_upload").unbind();
     $("#main_picture_upload").change(function () {
-        let file = this.files[0];
+        var file = this.files[0];
         //console.log(file.size / 1024);
         if (checkExt(this.value) && checkImageSize(file))
             transBase64(file);
@@ -127,7 +127,7 @@ $(function () {
         $("#dialog_tree_chart").dialog("open");
     });
     $("#selectAll").parent().on('click', function () {
-        let state = $("#selectAll").prop("checked");
+        var state = $("#selectAll").prop("checked");
         $("#selectAll").prop("checked", !state)
         if (!state) {
             $("input[name='chkbox_members']").prop("checked", true);
@@ -150,7 +150,7 @@ $(function () {
         $(this).val(''); //reset input[type='file']
     });
     $("#excel_export").click(function () {
-        let array = arrayKeyTranslate(memberArray);
+        var array = arrayKeyTranslate(memberArray);
         $("#dvjson").excelexportjs({
             containerid: "dvjson",
             datatype: 'json',
@@ -160,7 +160,7 @@ $(function () {
             worksheetName: "Member Data"
         });
     });
-    let lang = getCookie("userLanguage");
+    var lang = getCookie("userLanguage");
     $("#excel_example").click(function () {
         link = document.getElementById("excel_export_download");
         switch (lang) {
@@ -186,39 +186,39 @@ $(function () {
 });
 
 function UpdateMemberList() {
-    let getAlarmGroupReq = {
+    var getAlarmGroupReq = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetAlarmGroup_list"],
         "api_token": [token]
     };
-    let getXmlHttp = createJsonXmlHttp("sql");
+    var getXmlHttp = createJsonXmlHttp("sql");
     getXmlHttp.onreadystatechange = function () {
         if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                let revList = revObj.Value[0].Values || [];
+                var revList = revObj.Value[0].Values || [];
                 alarmGroupArr = [];
-                revList.forEach(element => {
+                revList.forEach(function (element) {
                     alarmGroupArr.push({
                         id: element.alarm_gid,
                         name: element.alarm_group_name
                     });
                 });
-                let request = {
+                var request = {
                     "Command_Type": ["Read"],
                     "Command_Name": ["GetStaffs"],
                     "api_token": [token]
                 };
-                let xmlHttp = createJsonXmlHttp("sql"); //updateMemberList
+                var xmlHttp = createJsonXmlHttp("sql"); //updateMemberList
                 xmlHttp.onreadystatechange = function () {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                        let revObj2 = JSON.parse(this.responseText);
+                        var revObj2 = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
                             $(function () {
                                 $("#table_member_setting tbody").empty(); //先重置表格
                                 memberArray = revObj2.Value[0].Values.slice(0) || [];
-                                for (let i = 0; i < memberArray.length; i++) {
-                                    let tr_id = "tr_member_" + i,
+                                for (var i = 0; i < memberArray.length; i++) {
+                                    var tr_id = "tr_member_" + i,
                                         user_id = parseInt(memberArray[i].tag_id.substring(8), 16),
                                         number = memberArray[i].number,
                                         alarm_index = alarmGroupArr.findIndex(function (array) {
@@ -259,7 +259,7 @@ function UpdateMemberList() {
 
 
 function editMemberData(number) {
-    let request = {
+    var request = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetOneStaff"],
         "Value": {
@@ -267,12 +267,12 @@ function editMemberData(number) {
         },
         "api_token": [token]
     };
-    let xmlHttp = createJsonXmlHttp("sql");
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                let revInfo = revObj.Value[0].Values[0];
+                var revInfo = revObj.Value[0].Values[0];
                 $("#main_tid_id").val(parseInt(revInfo.tag_id.substring(0, 8), 16));
                 $("#main_user_id").val(parseInt(revInfo.tag_id.substring(8), 16));
                 $("#main_card_id").val(revInfo.card_id);
@@ -286,12 +286,12 @@ function editMemberData(number) {
                 if (revInfo.file_ext == "" || revInfo.photo == "") {
                     adjustImageSize("");
                 } else {
-                    let src = "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
+                    var src = "data:image/" + revInfo.file_ext + ";base64," + revInfo.photo;
                     adjustImageSize(src);
                 }
                 $("#main_select_tag_color").html(createI18nOptions(dotTypeArr, revInfo.color_type));
                 selectTagColor(); //依照畫點依據的內容代入已設定的顏色，未設定則採用預設顏色
-                let color_type_index = $("#main_select_tag_color").children('option:selected').index();
+                var color_type_index = $("#main_select_tag_color").children('option:selected').index();
                 if (color_type_index == 4) { //自訂
                     $("#main_input_tag_color").val(colorToHex(revInfo.color));
                 }
@@ -348,17 +348,17 @@ function editMemberData(number) {
 
 function transBase64(file) {
     if (file) { //file transform base64
-        let FR = new FileReader();
+        var FR = new FileReader();
         FR.readAsDataURL(file);
         FR.onloadend = function (e) {
-            let base64data = e.target.result;
+            var base64data = e.target.result;
             adjustImageSize(base64data);
         };
     }
 }
 
 function checkExt(fileName) {
-    let validExts = new Array(".png", ".jpg", ".jpeg"), // 可接受的副檔名
+    var validExts = new Array(".png", ".jpg", ".jpeg"), // 可接受的副檔名
         fileExt = fileName.substring(fileName.lastIndexOf('.'));
     if (validExts.indexOf(fileExt) < 0) {
         alert($.i18n.prop('i_fileError_2') + validExts.toString());
@@ -377,30 +377,30 @@ function checkImageSize(file) {
 
 // 使用FileReader讀取檔案，並且回傳Base64編碼後的source
 function convertTobase64(file) {
-    return new Promise((resolve, reject) => {
+    return new Promise(function (resolve, reject) {
         // 建立FileReader物件
-        let reader = new FileReader();
+        var reader = new FileReader();
         // 註冊onload事件，取得result則resolve (會是一個Base64字串)
-        reader.onload = () => {
+        reader.onload = function () {
             resolve(reader.result);
-        }
+        };
         // 註冊onerror事件，若發生error則reject
-        reader.onerror = () => {
+        reader.onerror = function () {
             reject(reader.error);
-        }
+        };
         // 讀取檔案
         reader.readAsDataURL(file);
     });
 }
 
 function adjustImageSize(src) {
-    let thumb_width = parseInt($("#main_picture_block").css('max-width'), 10),
+    var thumb_width = parseInt($("#main_picture_block").css('max-width'), 10),
         thumb_height = parseInt($("#main_picture_block").css('max-height'), 10);
     if (src.length > 0) {
-        let img = new Image();
+        var img = new Image();
         img.src = src;
         img.onload = function () {
-            let thumbSize = thumb_width / thumb_height,
+            var thumbSize = thumb_width / thumb_height,
                 imgSize = img.width / img.height;
             if (imgSize > thumbSize) { //原圖比例寬邊較長
                 $("#main_picture_img").attr('src', src);
@@ -456,9 +456,9 @@ function addMemberData() {
 }
 
 function removeMemberDatas() {
-    let checkboxs = document.getElementsByName("chkbox_members"),
+    var checkboxs = document.getElementsByName("chkbox_members"),
         num_arr = [];
-    for (let j = 0; j < checkboxs.length; j++) {
+    for (var j = 0; j < checkboxs.length; j++) {
         if (checkboxs[j].checked)
             num_arr.push({
                 "number": checkboxs[j].value
@@ -467,16 +467,16 @@ function removeMemberDatas() {
     if (num_arr.length == 0)
         return alert($.i18n.prop('i_alertError_2'));
     if (confirm($.i18n.prop('i_confirm_1'))) {
-        let request = {
+        var request = {
             "Command_Type": ["Write"],
             "Command_Name": ["DeleteStaff"],
             "Value": num_arr,
             "api_token": [token]
         };
-        let xmlHttp = createJsonXmlHttp("sql");
+        var xmlHttp = createJsonXmlHttp("sql");
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                let revObj = JSON.parse(this.responseText);
+                var revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     UpdateMemberList();
                 }
@@ -489,7 +489,7 @@ function removeMemberDatas() {
 function multiEditData() {
     var checkboxs = document.getElementsByName("chkbox_members"),
         num_arr = [];
-    for (let j = 0; j < checkboxs.length; j++) {
+    for (var j = 0; j < checkboxs.length; j++) {
         if (checkboxs[j].checked)
             num_arr.push(checkboxs[j].value);
     }
@@ -515,7 +515,7 @@ function multiEditData() {
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                             var revInfo = revObj.Value[0].Values || [],
                                 deptArr = [];
-                            revInfo.forEach(element => {
+                            revInfo.forEach(function (element) {
                                 deptArr.push({
                                     id: element.c_id,
                                     name: element.children
@@ -541,7 +541,7 @@ function multiEditData() {
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                             var revInfo = revObj.Value[0].Values || [],
                                 titleArr = [];
-                            revInfo.forEach(element => {
+                            revInfo.forEach(function (element) {
                                 titleArr.push({
                                     id: element.c_id,
                                     name: element.children
@@ -567,7 +567,7 @@ function multiEditData() {
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                             var revInfo = revObj.Value[0].Values || [],
                                 typeArr = [];
-                            revInfo.forEach(element => {
+                            revInfo.forEach(function (element) {
                                 typeArr.push(element.type);
                             });
                             $("#multi_edit_value").html(createOptions(typeArr, typeArr[0]));
@@ -590,7 +590,7 @@ function multiEditData() {
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                             var revInfo = revObj.Value[0].Values || [],
                                 alarmGroupArr = [];
-                            revInfo.forEach(element => {
+                            revInfo.forEach(function (element) {
                                 alarmGroupArr.push({
                                     id: element.alarm_gid,
                                     name: element.alarm_group_name
@@ -612,11 +612,11 @@ function multiEditData() {
 }
 
 function createI18nOptions(array, select) {
-    let options = "";
+    var options = "";
     select = typeof (select) != 'undefined' ? select : "";
     options += "<option value=\"\">" + $.i18n.prop('i_select') + "</option>"; //增加預設的空白項
-    for (let i = 0; i < array.length; i++) {
-        let i18n_value = $.i18n.prop(array[i]);
+    for (var i = 0; i < array.length; i++) {
+        var i18n_value = $.i18n.prop(array[i]);
         if (array[i] == select) {
             options += "<option value=\"" + array[i] + "\" selected=\"selected\">" + i18n_value + "</option>";
         } else {
@@ -627,10 +627,10 @@ function createI18nOptions(array, select) {
 }
 
 function createOptions(array, select) {
-    let options = "";
+    var options = "";
     select = typeof (select) != 'undefined' ? select : "";
     options += "<option value=\"\">" + $.i18n.prop('i_select') + "</option>";
-    for (let i = 0; i < array.length; i++) {
+    for (var i = 0; i < array.length; i++) {
         if (array[i] == select) {
             options += "<option value=\"" + array[i] + "\" selected=\"selected\">" +
                 array[i] + "</option>";
@@ -642,8 +642,8 @@ function createOptions(array, select) {
 }
 
 function displayNameOptions(array, select_id) {
-    let options = "";
-    array.forEach(element => {
+    var options = "";
+    array.forEach(function (element) {
         if (element.id == select_id) {
             options += "<option value=\"" + element.id + "\" selected=\"selected\">" +
                 element.name + "</option>";
@@ -655,7 +655,7 @@ function displayNameOptions(array, select_id) {
 }
 
 function getFileName(src) {
-    let pos1 = src.lastIndexOf("\\"),
+    var pos1 = src.lastIndexOf("\\"),
         pos2 = src.lastIndexOf("/"),
         pos = -1;
     if (pos1 < 0) pos = pos2;

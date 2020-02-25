@@ -92,9 +92,9 @@ $(function () {
     $("#btn_delete_members").on("click", function () {
         if ($("#select_report_name").val() == "all_member_attend")
             return;
-        let checkbox = document.getElementsByName("select_members");
+        var checkbox = document.getElementsByName("select_members");
         selectNumberArray = [];
-        for (let i = 0; i < checkbox.length; i++) {
+        for (var i = 0; i < checkbox.length; i++) {
             if (!checkbox[i].checked)
                 selectNumberArray.push(checkbox[i].value);
         }
@@ -111,9 +111,9 @@ $(function () {
     });
 
     $("#chk_all_search_member").on("click", function () {
-        let checkboxs = document.getElementsByName("chk_members"),
+        var checkboxs = document.getElementsByName("chk_members"),
             isChecked = $(this).prop("checked");
-        checkboxs.forEach(element => {
+        checkboxs.forEach(function (element) {
             element.checked = isChecked;
         });
         if (isChecked)
@@ -123,9 +123,9 @@ $(function () {
     });
 
     $("#chk_all_member").on("click", function () {
-        let checkboxs = document.getElementsByName("select_members"),
+        var checkboxs = document.getElementsByName("select_members"),
             isChecked = $(this).prop("checked");
-        checkboxs.forEach(element => {
+        checkboxs.forEach(function (element) {
             element.checked = isChecked;
         });
     });
@@ -185,7 +185,7 @@ function getDepts() {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                 $("#search_dept").val("<option value=\"\">All</option>");
-                revObj.Value[0].Values.forEach(element => {
+                revObj.Value[0].Values.forEach(function (element) {
                     $("#search_dept").append("<option value=\"" + element.c_id + "\">" + element.children + "</option>");
                 });
             }
@@ -217,9 +217,9 @@ function selectPage(page_name) {
             $("#report_page_member").show();
             $("#report_attend_title").text("全部人員出勤表");
             $("#table_members tbody").empty();
-            let count = 0;
+            var count = 0;
             selectNumberArray = []
-            for (let number in memberList) {
+            for (var number in memberList) {
                 selectNumberArray.push(number);
                 count++;
                 $("#table_members tbody").append("<tr>" +
@@ -242,7 +242,7 @@ function getMap() {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                 $("#target_map").empty();
-                revObj.Value[0].Values.forEach(element => {
+                revObj.Value[0].Values.forEach(function (element) {
                     //mapList => key: map_id | value: {map_id, map_name, map_src, map_scale}
                     mapList[element.map_id] = {
                         map_id: element.map_id,
@@ -269,7 +269,7 @@ function getMap() {
 
 
 function getPersonTimeline(number) {
-    let person = memberList[number],
+    var person = memberList[number],
         count_times = 0,
         row_count = 0,
         date = document.getElementById("date_one_day").value,
@@ -280,12 +280,12 @@ function getPersonTimeline(number) {
         return;
     }
 
-    for (let title in RowsList) {
+    for (var title in RowsList) {
         if (RowsList[title]["timeline"] == true)
             $("#report_person_" + title).text(person[title]);
     }
     if (timeDelay["search"]) {
-        timeDelay["search"].forEach(timeout => {
+        timeDelay["search"].forEach(function (timeout) {
             clearTimeout(timeout);
         });
     }
@@ -308,7 +308,7 @@ function getPersonTimeline(number) {
     });
 
     function sendRequest(request) {
-        let xmlHttp = createJsonXmlHttp("sql");
+        var xmlHttp = createJsonXmlHttp("sql");
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 if (!this.responseText) {
@@ -317,12 +317,12 @@ function getPersonTimeline(number) {
                     alert("搜尋失敗，請稍候再試一次!");
                     return;
                 }
-                let revObj = JSON.parse(this.responseText);
+                var revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                    let revInfo = revObj.Value[0].Values || [];
-                    let record_sec = "";
+                    var revInfo = revObj.Value[0].Values || [];
+                    var record_sec = "";
                     revInfo.forEach(timeline => {
-                        let sec = parseInt(timeline.time.split(" ")[1].split(":")[2], 10);
+                        var sec = parseInt(timeline.time.split(" ")[1].split(":")[2], 10);
                         if (sec != record_sec) {
                             row_count++;
                             record_sec = sec;
@@ -368,7 +368,7 @@ function getPersonTimeline(number) {
 }
 
 function getAttendanceList() {
-    let interval_times = 0,
+    var interval_times = 0,
         count_times = 0,
         isStop = false;
 
@@ -378,15 +378,15 @@ function getAttendanceList() {
         case "daily_report":
             if ($("#date_one_day").val() == "")
                 return alert("請選擇日期!");
-            let date = document.getElementById("date_one_day").value;
+            var date = document.getElementById("date_one_day").value;
             dateArray.push(new Date(date).format("yyyy-MM-dd"));
             break;
         case "weekly_report":
             if ($("#date_aweek_start").val() == "")
                 return alert("請選擇日期!");
-            let start_date = document.getElementById("date_aweek_start").value;
-            for (let i = 0; i < 7; i++) {
-                let date = new Date(start_date);
+            var start_date = document.getElementById("date_aweek_start").value;
+            for (var i = 0; i < 7; i++) {
+                var date = new Date(start_date);
                 date.setDate(date.getDate() + i);
                 dateArray.push(new Date(date).format("yyyy-MM-dd"));
             }
@@ -396,12 +396,12 @@ function getAttendanceList() {
 
             if ($("#month_select").val() == "")
                 return alert("請選擇日期!");
-            const year_month = $("#month_select").val();
-            const month = new Date(year_month).getMonth();
-            let m = month;
-            let d = 1;
+            var year_month = $("#month_select").val();
+            var month = new Date(year_month).getMonth();
+            var m = month;
+            var d = 1;
             while (1) {
-                let date = new Date(year_month);
+                var date = new Date(year_month);
                 date.setDate(d++);
                 m = date.getMonth();
                 if (m == month)
@@ -422,7 +422,7 @@ function getAttendanceList() {
     timeDelay["search"] = [];
     showSearching();
 
-    let total_search = selectNumberArray.length * dateArray.length,
+    var total_search = selectNumberArray.length * dateArray.length,
         packge_percent = 100 / total_search / 24;
 
     selectMembers = {};
@@ -431,7 +431,7 @@ function getAttendanceList() {
 
     dateArray.forEach(function (date, index) {
         selectNumberArray.forEach(function (number, i) {
-            let tag_id = memberList[number].tag_id.substring(8);
+            var tag_id = memberList[number].tag_id.substring(8);
             if (index == 0)
                 selectMembers[tag_id] = memberList[number];
             timeDelay["search"].push(setTimeout(function () {
@@ -458,7 +458,7 @@ function getAttendanceList() {
     });
 
     function sendRequest(index, request) {
-        let xmlHttp = createJsonXmlHttp("sql");
+        var xmlHttp = createJsonXmlHttp("sql");
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                 if (isStop) return;
@@ -469,9 +469,9 @@ function getAttendanceList() {
                     isStop = true;
                     return;
                 }
-                let revObj = JSON.parse(this.responseText);
+                var revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                    let revInfo = revObj.Value[0].Values || [],
+                    var revInfo = revObj.Value[0].Values || [],
                         tag_id = revObj.Value[0].tag_id;
                     revInfo.forEach(timeline => {
                         if (!historyData[index][tag_id].first) {
@@ -503,13 +503,13 @@ function getAttendanceList() {
                         count_times++;
 
                         if (index == 0) {
-                            let member_info = selectMembers[tag_id],
+                            var member_info = selectMembers[tag_id],
                                 attend_from = historyData[index][tag_id].first,
                                 attend_end = historyData[index][tag_id].last,
                                 tr_context = "",
                                 date_arr = dateArray[0].split("-");
                             tr_context += "<tr><td>" + count_times + "</td>";
-                            for (let title in RowsList) {
+                            for (var title in RowsList) {
                                 if (RowsList[title]["attendance"] == true)
                                     tr_context += "<td>" + member_info[title] + "</td>";
                             }
@@ -535,14 +535,14 @@ function getAttendanceList() {
 
 var changePage = {
     forword: function () {
-        let pages = parseInt($("#current_pages").val(), 10);
+        var pages = parseInt($("#current_pages").val(), 10);
         if (pages == $("#total_pages").text())
             alert("已經在最後一頁了!");
         else
             this.toPage(pages + 1);
     },
     backword: function () {
-        let pages = parseInt($("#current_pages").val(), 10);
+        var pages = parseInt($("#current_pages").val(), 10);
         if (pages == 1)
             alert("已經在第一頁了!");
         else
@@ -570,18 +570,18 @@ var changePage = {
         }
     },
     toPage: function (pages) {
-        let count = 0,
+        var count = 0,
             date_arr = dateArray[pages - 1].split("-");
         $("#current_pages").val(pages);
         $("#table_member_attendance tbody").empty();
-        for (let tag_id in selectMembers) {
-            let member_info = selectMembers[tag_id],
+        for (var tag_id in selectMembers) {
+            var member_info = selectMembers[tag_id],
                 attend_from = historyData[pages - 1][tag_id].first,
                 attend_end = historyData[pages - 1][tag_id].last,
                 tr_context = "";
             count++;
             tr_context += "<tr><td>" + count + "</td>";
-            for (let title in RowsList) {
+            for (var title in RowsList) {
                 if (RowsList[title]["attendance"] == true)
                     tr_context += "<td>" + member_info[title] + "</td>";
             }

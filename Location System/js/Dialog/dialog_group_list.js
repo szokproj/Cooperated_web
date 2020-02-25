@@ -396,7 +396,7 @@ function editGroupList(main_anchor_id, set_x, set_y) {
     var groupList = getRowData_Group();
     var count = 0;
     $("#table_edit_grouplist tbody").empty();
-    groupList.forEach(element => {
+    groupList.forEach(function (element) {
         if (element.main_anchor_id == main_anchor_id) {
             count++;
             $("#table_edit_grouplist tbody").append("<tr>" +
@@ -481,8 +481,8 @@ function DeleteGroupInfo(deleteArray) {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 var deleteMapGroupArr = [];
-                deleteArray.forEach(info => {
-                    maps_groupsArray.forEach(element => {
+                deleteArray.forEach(function (info) {
+                    maps_groupsArray.forEach(function (element) {
                         if (element.group_id == info.group_id) {
                             deleteMapGroupArr.push({
                                 "map_id": element.map_id,

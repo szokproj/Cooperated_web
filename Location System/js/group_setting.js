@@ -3,7 +3,7 @@ function drawGroups(anchorArr) {
     var groupArray = updateGroupArray();
     groupArray.forEach(function (id) {
         var group = new Group();
-        anchorGroupArray.forEach(element => {
+        anchorGroupArray.forEach(function (element) {
             if (element.group_id == id) {
                 var i = anchorArr.findIndex(function (anchor) {
                     return anchor.id == element.anchor_id;
@@ -45,7 +45,7 @@ function getMainAnchorDropdown(select) {
     var mainAnchorList = document.getElementsByName("list_main_anchor_id");
     var options = "";
     select = select.length == 0 ? mainAnchorList[0].value : select;
-    mainAnchorList.forEach(element => {
+    mainAnchorList.forEach(function (element) {
         if (element.value == select) {
             options += "<option value=\"" + element.value + "\" selected=\"selected\">" +
                 element.value + "</option>";
@@ -61,7 +61,7 @@ function getAnchorDropdown(select) {
     var anchorList = document.getElementsByName("list_anchor_id");
     var options = "";
     select = select.length == 0 ? anchorList[0].value : select;
-    anchorList.forEach(element => {
+    anchorList.forEach(function (element) {
         if (element.value == select) {
             options += "<option value=\"" + element.value + "\" selected=\"selected\">" +
                 element.value + "</option>";

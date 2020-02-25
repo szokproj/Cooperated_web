@@ -92,9 +92,9 @@ $(function () {
     $("#btn_delete_members").on("click", function () {
         if ($("#select_report_name").val() == "all_member_attend")
             return;
-        let checkbox = document.getElementsByName("select_members");
+        var checkbox = document.getElementsByName("select_members");
         selectNumberArray = [];
-        for (let i = 0; i < checkbox.length; i++) {
+        for (var i = 0; i < checkbox.length; i++) {
             if (!checkbox[i].checked)
                 selectNumberArray.push(checkbox[i].value);
         }
@@ -111,9 +111,9 @@ $(function () {
     });
 
     $("#chk_all_search_member").on("click", function () {
-        let checkboxs = document.getElementsByName("chk_members"),
+        var checkboxs = document.getElementsByName("chk_members"),
             isChecked = $(this).prop("checked");
-        checkboxs.forEach(element => {
+        checkboxs.forEach(function (element) {
             element.checked = isChecked;
         });
         if (isChecked)
@@ -123,9 +123,9 @@ $(function () {
     });
 
     $("#chk_all_member").on("click", function () {
-        let checkboxs = document.getElementsByName("select_members"),
+        var checkboxs = document.getElementsByName("select_members"),
             isChecked = $(this).prop("checked");
-        checkboxs.forEach(element => {
+        checkboxs.forEach(function (element) {
             element.checked = isChecked;
         });
     });
@@ -150,10 +150,12 @@ $(function () {
                 break;
             case "member_attendance":
             case "all_member_attend":
-                if (historyData.length > 0)
+                if (historyData.length > 0) {
+                    //
                     arraysToExcel.attendance(historyData, dateArray, "人員出勤表.xls", "Excel");
-                else
+                } else {
                     alert($.i18n.prop('i_reportAlarm_1'));
+                }
                 break;
             default:
                 break;
@@ -185,7 +187,7 @@ function getDepts() {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                 $("#search_dept").val("<option value=\"\">All</option>");
-                revObj.Value[0].Values.forEach(element => {
+                revObj.Value[0].Values.forEach(function (element) {
                     $("#search_dept").append("<option value=\"" + element.c_id + "\">" + element.children + "</option>");
                 });
             }
@@ -217,9 +219,9 @@ function selectPage(page_name) {
             $("#report_page_member").show();
             $("#report_attend_title").text("全部人員出勤表");
             $("#table_members tbody").empty();
-            let count = 0;
+            var count = 0;
             selectNumberArray = []
-            for (let number in memberList) {
+            for (var number in memberList) {
                 selectNumberArray.push(number);
                 count++;
                 $("#table_members tbody").append("<tr>" +
@@ -242,7 +244,7 @@ function getMap() {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                 $("#target_map").empty();
-                revObj.Value[0].Values.forEach(element => {
+                revObj.Value[0].Values.forEach(function (element) {
                     //mapList => key: map_id | value: {map_id, map_name, map_src, map_scale}
                     mapList[element.map_id] = {
                         map_id: element.map_id,
@@ -268,7 +270,7 @@ function getMap() {
 }
 
 function getPersonTimeline(number) {
-    let person = memberList[number],
+    var person = memberList[number],
         interval_times = 0,
         count_times = 0,
         row_count = 0,
@@ -278,7 +280,7 @@ function getPersonTimeline(number) {
             getCount: function () {
                 if (date == "")
                     return alert("請選擇日期!");
-                for (let title in RowsList) {
+                for (var title in RowsList) {
                     if (RowsList[title]["timeline"] == true) {
                         $("#report_person_" + title).text(person[title]);
                     }
@@ -286,7 +288,7 @@ function getPersonTimeline(number) {
                 showSearching();
                 document.getElementById("report_date").innerText = date_arr[0] + "年" + date_arr[1] + "月" + date_arr[2] + "日";
                 $("#table_person_timeline tbody").empty();
-                let request = {
+                var request = {
                         "Command_Name": ["GetLocus_combine_with_record"],
                         "Command_Type": ["Read"],
                         "Value": {
@@ -309,13 +311,13 @@ function getPersonTimeline(number) {
                             clearTimeout(timeDelay["model"]);
                             return alert("搜尋失敗，請稍候再試一次!");
                         }
-                        let revObj = JSON.parse(this.responseText);
+                        var revObj = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                            let revInfo = revObj.Value[0].location || [{
+                            var revInfo = revObj.Value[0].location || [{
                                 "Status": "0"
                             }];
                             if (revInfo[0].Status == "1") {
-                                let total = parseInt(revInfo[0].Values[0].count, 10);
+                                var total = parseInt(revInfo[0].Values[0].count, 10);
                                 interval_times += Math.ceil(total / 10000);
                                 func.getDatas(revInfo[0].tag_id, "0", parseInt(total, 10));
                             }
@@ -329,7 +331,7 @@ function getPersonTimeline(number) {
                     $('#progress_block').hide();
                     return alert($.i18n.prop('i_tagID') + ":[" + target + "]在此時段內無歷史資料");
                 }
-                let request = {
+                var request = {
                         "Command_Name": ["GetLocus_combine_with_record"],
                         "Command_Type": ["Read"],
                         "Value": {
@@ -352,14 +354,14 @@ function getPersonTimeline(number) {
                             clearTimeout(timeDelay["progress"]);
                             return alert("搜尋失敗，請稍候再試一次!");
                         }
-                        let revObj = JSON.parse(this.responseText);
+                        var revObj = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                            let location = revObj.Value[0].location || [{
+                            var location = revObj.Value[0].location || [{
                                 Status: "0"
                             }];
                             if (location[0].Status == "1") {
                                 if (location[0].Values) {
-                                    location[0].Values.forEach(timeline => {
+                                    location[0].Values.forEach(function (timeline) {
                                         row_count++;
                                         $("#table_person_timeline tbody").append("<tr>" +
                                             "<td>" + row_count + "</td>" +
@@ -373,7 +375,7 @@ function getPersonTimeline(number) {
                             }
                             count_times++;
                             $("#progress_bar").text(Math.round(count_times / interval_times * 100) + " %");
-                            let count = parseInt(startnum, 10) + location[0].amount;
+                            var count = parseInt(startnum, 10) + location[0].amount;
                             if (total > count) /*interval_times > count_times*/ { //以10000筆資料為基準，分批接受並傳送要求
                                 func.getDatas(location[0].tag_id, count.toString(), total);
                             } else {
@@ -389,11 +391,11 @@ function getPersonTimeline(number) {
 }
 
 function getAttendanceList() {
-    let interval_times = 0,
+    var interval_times = 0,
         count_times = 0,
         func = {
             getCount: function (index, target) {
-                let request = {
+                var request = {
                     "Command_Name": ["GetLocus_combine_with_record"],
                     "Command_Type": ["Read"],
                     "Value": {
@@ -408,7 +410,7 @@ function getAttendanceList() {
                     },
                     "api_token": [token]
                 };
-                let xmlHttp = createJsonXmlHttp("sql");
+                var xmlHttp = createJsonXmlHttp("sql");
                 xmlHttp.onreadystatechange = function () {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                         if (!this.responseText) {
@@ -416,13 +418,13 @@ function getAttendanceList() {
                             clearTimeout(timeDelay["model"]);
                             return alert("搜尋失敗，請稍候再試一次!");
                         }
-                        let revObj = JSON.parse(this.responseText);
+                        var revObj = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                            let revInfo = revObj.Value[0].location || [{
+                            var revInfo = revObj.Value[0].location || [{
                                 Status: "0"
                             }];
                             if (revInfo[0].Status == "1") {
-                                let total = parseInt(revInfo[0].Values[0].count, 10);
+                                var total = parseInt(revInfo[0].Values[0].count, 10);
                                 func.getDatas(index, target, "0", total);
                             }
                         }
@@ -431,7 +433,7 @@ function getAttendanceList() {
                 xmlHttp.send(JSON.stringify(request));
             },
             getDatas: function (index, target, startnum, total) {
-                let request = {
+                var request = {
                     "Command_Name": ["GetLocus_combine_with_record"],
                     "Command_Type": ["Read"],
                     "Value": {
@@ -446,7 +448,7 @@ function getAttendanceList() {
                     },
                     "api_token": [token]
                 };
-                let xmlHttp = createJsonXmlHttp("sql");
+                var xmlHttp = createJsonXmlHttp("sql");
                 xmlHttp.onreadystatechange = function () {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
                         if (!this.responseText) {
@@ -454,14 +456,14 @@ function getAttendanceList() {
                             clearTimeout(timeDelay["model"]);
                             return alert("搜尋失敗，請稍候再試一次!");
                         }
-                        let revObj = JSON.parse(this.responseText);
+                        var revObj = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
-                            let location = revObj.Value[0].location || [{
+                            var location = revObj.Value[0].location || [{
                                 Status: "0"
                             }];
                             if (location[0].Status == "1") {
-                                let revInfo = location[0].Values || [];
-                                revInfo.forEach(timeline => {
+                                var revInfo = location[0].Values || [];
+                                revInfo.forEach(function (timeline) {
                                     if (!historyData[index][target].first) {
                                         historyData[index][target].first = timeline;
                                     } else {
@@ -469,11 +471,11 @@ function getAttendanceList() {
                                     }
                                 });
                             }
-                            let count = parseInt(startnum, 10) + location[0].amount;
+                            var count = parseInt(startnum, 10) + location[0].amount;
                             if (total > count) {
                                 //以10000筆資料為基準，分批接受並傳送要求
                                 if (total > 10000) {
-                                    let last_cnt = (Math.round(total / 10000) * 10000).toString();
+                                    var last_cnt = (Math.round(total / 10000) * 10000).toString();
                                     func.getDatas(index, target, last_cnt, total);
                                 } else {
                                     func.getDatas(index, target, count.toString(), total);
@@ -482,7 +484,7 @@ function getAttendanceList() {
                                 count_times++;
                                 $("#table_tag_list tbody").empty();
                                 if (interval_times > count_times) {
-                                    let num_index = targetArray.findIndex(function (info) {
+                                    var num_index = targetArray.findIndex(function (info) {
                                         return info.tag_id == target;
                                     });
                                     if (num_index == targetArray.length - 1)
@@ -505,14 +507,14 @@ function getAttendanceList() {
             },
             inputFP: function () {
                 selectNumberArray.forEach(function (number, i) {
-                    let member_info = memberList[number],
+                    var member_info = memberList[number],
                         tag_id = memberList[number].tag_id.substring(8),
                         attend_start = historyData[0][tag_id].first,
                         attend_end = historyData[0][tag_id].last,
                         date_arr = dateArray[0].split("-"),
                         tr_context = "";
                     tr_context += "<tr><td>" + (i + 1) + "</td>";
-                    for (let title in RowsList) {
+                    for (var title in RowsList) {
                         if (RowsList[title]["attendance"] == true)
                             tr_context += "<td>" + member_info[title] + "</td>";
                     }
@@ -531,15 +533,15 @@ function getAttendanceList() {
         case "daily_report":
             if ($("#date_one_day").val() == "")
                 return alert("請選擇日期!");
-            let date = document.getElementById("date_one_day").value;
+            var date = document.getElementById("date_one_day").value;
             dateArray.push(new Date(date).format("yyyy-MM-dd"));
             break;
         case "weekly_report":
             if ($("#date_aweek_start").val() == "")
                 return alert("請選擇日期!");
-            let start_date = document.getElementById("date_aweek_start").value;
-            for (let i = 0; i < 7; i++) {
-                let date = new Date(start_date);
+            var start_date = document.getElementById("date_aweek_start").value;
+            for (var i = 0; i < 7; i++) {
+                var date = new Date(start_date);
                 date.setDate(date.getDate() + i);
                 dateArray.push(new Date(date).format("yyyy-MM-dd"));
             }
@@ -547,12 +549,12 @@ function getAttendanceList() {
         case "monthly_report":
             if ($("#month_select").val() == "")
                 return alert("請選擇日期!");
-            const year_month = $("#month_select").val();
-            const month = new Date(year_month).getMonth();
-            let m = month;
-            let d = 1;
+            var year_month = $("#month_select").val();
+            var month = new Date(year_month).getMonth();
+            var m = month;
+            var d = 1;
             while (1) {
-                let date = new Date(year_month);
+                var date = new Date(year_month);
                 date.setDate(d++);
                 m = date.getMonth();
                 if (m == month)
@@ -567,13 +569,13 @@ function getAttendanceList() {
     showSearching();
     interval_times = dateArray.length * selectNumberArray.length; //天數*人數
     $("#table_member_attendance tbody").empty();
-    selectNumberArray.forEach(number => {
-        let tag_id = memberList[number].tag_id.substring(8);
+    selectNumberArray.forEach(function (number) {
+        var tag_id = memberList[number].tag_id.substring(8);
         targetArray.push({
             tag_id: tag_id,
             number: number
         });
-        for (let i = 0; i < dateArray.length; i++) {
+        for (var i = 0; i < dateArray.length; i++) {
             if (!historyData[i])
                 historyData[i] = {};
             historyData[i][tag_id] = {
@@ -587,14 +589,14 @@ function getAttendanceList() {
 
 var changePage = {
     forword: function () {
-        let pages = parseInt($("#current_pages").val(), 10);
+        var pages = parseInt($("#current_pages").val(), 10);
         if (pages == $("#total_pages").text())
             alert("已經在最後一頁了!");
         else
             this.toPage(pages + 1);
     },
     backword: function () {
-        let pages = parseInt($("#current_pages").val(), 10);
+        var pages = parseInt($("#current_pages").val(), 10);
         if (pages == 1)
             alert("已經在第一頁了!");
         else
@@ -622,16 +624,16 @@ var changePage = {
         }
     },
     toPage: function (pages) {
-        let date_arr = dateArray[pages - 1].split("-");
+        var date_arr = dateArray[pages - 1].split("-");
         $("#current_pages").val(pages);
         $("#table_member_attendance tbody").empty();
         targetArray.forEach(function (target, i) {
-            let member_info = memberList[target.number],
+            var member_info = memberList[target.number],
                 attend_from = historyData[pages - 1][target.tag_id].first,
                 attend_end = historyData[pages - 1][target.tag_id].last,
                 tr_context = "";
             tr_context += "<tr><td>" + (i + 1) + "</td>";
-            for (let title in RowsList) {
+            for (var title in RowsList) {
                 if (RowsList[title]["attendance"] == true)
                     tr_context += "<td>" + member_info[title] + "</td>";
             }

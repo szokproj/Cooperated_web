@@ -5,7 +5,7 @@ var isStart = false,
     pageTimer = 0,
     countDatas = 0;
 $(function () {
-    let h = document.documentElement.clientHeight;
+    var h = document.documentElement.clientHeight;
     $(".table_block").css({
         "max-height": h - 80 + "px",
         "height": h - 80 + "px"
@@ -47,7 +47,7 @@ function loadAnchorList() {
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 $("#select_source_id").empty();
                 $("#select_anchor_id").empty();
-                revObj.Value[0].Values.forEach(element => {
+                revObj.Value[0].Values.forEach(function (element) {
                     if (element.anchor_type == "main") {
                         $("#select_source_id").append("<option" +
                             " value=\"" + element.anchor_id + "\">" +
@@ -138,12 +138,11 @@ function startRefence() {
     }
 
     function getResult() {
-        console.log("send=>{" +
+        /*console.log("send=>{" +
             "\n type : " + condition.source_type +
             "\n source_id : " + condition.source_id +
             "\n anchor_id : " + condition.anchor_id +
-            "\n}");
-        //return;
+            "\n}");*/
         var requestArray = {
             "Command_Type": ["Read"],
             "Command_Name": ["getreferencerecord"],
@@ -155,7 +154,7 @@ function startRefence() {
                 var revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     var revInfo = revObj.Value[0].Value ? revObj.Value[0].Value : [];
-                    revInfo.forEach(element => {
+                    revInfo.forEach(function (element) {
                         countDatas++;
                         $("#table_reference_tags tbody").append("<tr>" +
                             "<td>" + countDatas + "</td>" +
@@ -165,7 +164,7 @@ function startRefence() {
                             "<td>" + element.count + "</td></tr>");
                     });
                     if ($("#chk_latest_items").prop("checked")) {
-                        let div = document.getElementById("reference_block");
+                        var div = document.getElementById("reference_block");
                         div.scrollTop = div.scrollHeight;
                     }
                 }

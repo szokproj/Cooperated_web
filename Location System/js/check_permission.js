@@ -163,11 +163,11 @@ function Navbar() {
     var navbarHtml = "<aside class=\"menu\"><div class=\"menu-left" + (lock_stste == "locked" ? " locked" : "") + "\">" +
         "<nav class=\"sidebar\"><ul class=\"nav\">";
     this.setFirstFloor = function (parent_page) {
-        ParentPageArray.forEach(page_name => {
+        ParentPageArray.forEach(function (page_name) {
             var permission_num = typeof (parseInt(permission, 10)) === 'number' ? parseInt(permission, 10) : 0;
             //沒有設定權限等同訪客帳號
             if (permission_num >= parseInt(MinimumPermission[page_name], 10)) {
-                const selected_li = "<li class=\"active\"><a href=\"#\">";
+                var selected_li = "<li class=\"active\"><a href=\"#\">";
                 switch (page_name) {
                     case "index":
                         navbarHtml += (page_name == parent_page ? selected_li : "<li><a href=\"../index.html\">") +
@@ -216,7 +216,7 @@ function Navbar() {
         });
     };
     this.setSecondFloor = function (parent_page, child_page) {
-        const selected_li = "<li class=\"setting-type active\"><a href=\"#\">";
+        var selected_li = "<li class=\"setting-type active\"><a href=\"#\">";
         if (parent_page == "index") {
             navbarHtml += "<hr><li class=\"alarmlist\"><a href=\"javascript: alarmSidebarMove();\">" +
                 "<i class=\"fas fa-exclamation-circle\" id=\"alarmSideBar_icon\"></i>" +
@@ -226,8 +226,8 @@ function Navbar() {
                 "<span>" + $.i18n.prop('i_tagList') + "</span></a></li>";
         } else if (parent_page == "Member_Setting") {
             navbarHtml += "<hr>";
-            const ChildPageArray = ["Member_Setting", "Dept_Setting", "Job_Title_Setting", "User_Type_Setting", "Preview_Color_Setting"];
-            ChildPageArray.forEach(page_name => {
+            var ChildPageArray = ["Member_Setting", "Dept_Setting", "Job_Title_Setting", "User_Type_Setting", "Preview_Color_Setting"];
+            ChildPageArray.forEach(function (page_name) {
                 switch (page_name) {
                     case "Member_Setting":
                         navbarHtml += (page_name == child_page ?
@@ -261,8 +261,8 @@ function Navbar() {
             });
         } else if (parent_page == "Reference") {
             navbarHtml += "<hr>";
-            const ChildPageArray = ["Reference", "Advance_cmd", "Update"];
-            ChildPageArray.forEach(page_name => {
+            var ChildPageArray = ["Reference", "Advance_cmd", "Update"];
+            ChildPageArray.forEach(function (page_name) {
                 switch (page_name) {
                     case "Reference":
                         navbarHtml += (page_name == child_page ?
@@ -300,8 +300,8 @@ function Navbar() {
 }
 
 function lockLeftMemu() {
-    let menu_left = document.getElementsByClassName("menu-left")[0];
-    let lock = document.querySelector("li.lock");
+    var menu_left = document.getElementsByClassName("menu-left")[0];
+    var lock = document.querySelector("li.lock");
     if (menu_left.classList.contains("locked")) {
         menu_left.classList.remove("locked");
         lock.firstChild.innerHTML = "<i class=\"fas fa-lock-open\"></i><span>" + $.i18n.prop('i_lock') + "</span></a>";

@@ -94,7 +94,7 @@ function restartCanvas() {
 }
 
 function handleMouseWheel(event) {
-    let BCR = canvas.getBoundingClientRect(),
+    var BCR = canvas.getBoundingClientRect(),
         pos_x = event.pageX - BCR.left,
         pos_y = event.pageY - BCR.top,
         scale = 1.0;
@@ -124,7 +124,7 @@ function handleMouseClick(event) {
 }
 
 function handleMobileTouch(event) { //手指觸碰事件
-    let x = event.changedTouches[0].clientX,
+    var x = event.changedTouches[0].clientX,
         y = event.changedTouches[0].clientY,
         p = getPointOnCanvas(x, y);
     //console.log("{ x: " + x + " , y: " + y + " }");
@@ -135,11 +135,11 @@ function handleMobileTouch(event) { //手指觸碰事件
 }
 
 function checkInTagsRange(p) {
-    let radius = {
+    var radius = {
         tag: 5,
         alarm: 14
     };
-    let inputThumbInfos = function (user_id, history) {
+    var inputThumbInfos = function (user_id, history) {
         var member_info = MemberData[user_id];
         $("#thumb_user_id").text(user_id);
         $("#thumb_number").text(member_info.number);
@@ -153,9 +153,9 @@ function checkInTagsRange(p) {
     };
     switch ($("#target_type").val()) {
         case "Tag":
-            document.getElementsByName("chk_target_id").forEach(tag_id => {
+            document.getElementsByName("chk_target_id").forEach(function(tag_id ) {
                 var array = HistoryData[tag_id.value];
-                for (let i = 0; i < times; i++) {
+                for (var i = 0; i < times; i++) {
                     if (typeof (array[i].x) == 'undefined') return;
                     if (Math.pow(radius.tag, 2) >= Math.pow(array[i].x - p.x, 2) + Math.pow(array[i].y - p.y, 2)) {
                         inputThumbInfos(parseInt(tag_id.value, 16), array[i]);
@@ -167,8 +167,8 @@ function checkInTagsRange(p) {
             var start = 0;
             if (!document.getElementById("chk_is_overlap").checked && times > 0)
                 start = times - 1;
-            for (let i = start; i < times; i++) {
-                HistoryData[timeslot_array[i]].forEach(info => {
+            for (var i = start; i < times; i++) {
+                HistoryData[timeslot_array[i]].forEach(function(info ) {
                     if (typeof (info.x) == 'undefined') return;
                     if (Math.pow(radius.tag, 2) >= Math.pow(info.x - p.x, 2) + Math.pow(info.y - p.y, 2))
                         inputThumbInfos(parseInt(info.tag_id.substring(8), 16), info);
@@ -180,7 +180,7 @@ function checkInTagsRange(p) {
             return false;
     }
     if (document.getElementById("chk_diaplay_alarm").checked) {
-        displayAlarms.forEach(alarm => {
+        displayAlarms.forEach(function(alarm) {
             if (Math.pow(radius.alarm, 2) >= Math.pow(alarm.x - p.x, 2) + Math.pow(alarm.y - (p.y - radius.alarm * 2), 2))
                 inputThumbInfos(alarm.user_id, alarm);
         });
@@ -192,26 +192,26 @@ function checkInTagsRange(p) {
 }
 
 function setMobileEvents() {
-    const hammer_pan = new Hammer(canvas); //Canvas位移
-    const hammer_pinch = new Hammer(canvas); //Canvas縮放
+    var hammer_pan = new Hammer(canvas); //Canvas位移
+    var hammer_pinch = new Hammer(canvas); //Canvas縮放
     hammer_pan.get('pan').set({
         direction: Hammer.DIRECTION_ALL
     });
     hammer_pinch.get('pinch').set({
         enable: true
     });
-    hammer_pan.on('panstart', ev => {
+    hammer_pan.on('panstart', function(ev ) {
         panPos.canvasLeft = parseInt(canvas.style.marginLeft);
         panPos.canvasTop = parseInt(canvas.style.marginTop);
     });
-    hammer_pan.on('panmove', ev => {
+    hammer_pan.on('panmove', function(ev ) {
         xleftView = panPos.canvasLeft + ev.deltaX;
         ytopView = panPos.canvasTop + ev.deltaY;
         canvas.style.marginLeft = xleftView + "px";
         canvas.style.marginTop = ytopView + "px";
     });
-    hammer_pinch.on('pinchstart pinchmove', ev => {
-        let BCR = canvas.getBoundingClientRect(),
+    hammer_pinch.on('pinchstart pinchmove', function(ev ) {
+        var BCR = canvas.getBoundingClientRect(),
             pos_x = ev.center.x - BCR.left,
             pos_y = ev.center.y - BCR.top,
             scale = 1;
@@ -223,7 +223,7 @@ function setMobileEvents() {
                 scale = 1.05;
         }
         Zoom *= scale; //縮放比例
-        let Next_x = pos_x * scale, //縮放後的位置(x坐標)
+        var Next_x = pos_x * scale, //縮放後的位置(x坐標)
             Next_y = pos_y * scale; //縮放後的位置(y坐標)
         xleftView += pos_x - Next_x;
         ytopView += pos_y - Next_y;
@@ -331,19 +331,19 @@ function clearDrawInterval() {
 function drawNextTimeByTag() {
     if (!isContinue)
         return;
-    let count = 0;
-    let locate_map = document.getElementById("target_map").value;
+    var count = 0;
+    var locate_map = document.getElementById("target_map").value;
     if (times == 0) {
         displayAlarms = [];
         document.getElementsByName("chk_target_id").forEach(function (tag_id, i) {
-            let color = document.getElementsByName("input_target_color")[i].value;
-            let array = HistoryData[tag_id.value];
+            var color = document.getElementsByName("input_target_color")[i].value;
+            var array = HistoryData[tag_id.value];
             if (!array)
                 return alert($.i18n.prop('i_tagID') + ":[" + parseInt(tag_id.value, 16) + "]" + $.i18n.prop('i_tagSearchNoData'));
             if ((chkUseInputMap.checked && inputMapSrc.length > 0) || (array[0] && array[0].map_id == locate_map)) {
                 drawTag(ctx, array[0].time, array[0].x, canvasImg.height - array[0].y, color);
                 if (array[0].type != "normal") {
-                    let alarm = AlarmList[tag_id.value][array[0].date + " " + array[0].time];
+                    var alarm = AlarmList[tag_id.value][array[0].date + " " + array[0].time];
                     displayAlarms.push({
                         user_id: parseInt(tag_id.value, 16),
                         date: array[0].date,
@@ -364,7 +364,7 @@ function drawNextTimeByTag() {
         });
         document.getElementById("current_tags_amount").innerText = count;
         if (document.getElementById("chk_diaplay_alarm").checked) {
-            displayAlarms.forEach(alarm => {
+            displayAlarms.forEach(function(alarm) {
                 drawAlarmTag(ctx, "", alarm.x, canvasImg.height - alarm.y, alarm.alarm_type);
             });
         }
@@ -375,7 +375,7 @@ function drawNextTimeByTag() {
         times++;
     } else if (times < max_times) {
         document.getElementsByName("chk_target_id").forEach(function (tag_id, i) {
-            let array = HistoryData[tag_id.value];
+            var array = HistoryData[tag_id.value];
             if (!array)
                 return false;
             document.getElementById("current_map").innerText = array[times].map_name;
@@ -404,8 +404,8 @@ function drawNextTimeByGroup() {
     if (!isContinue)
         return;
     if (times < timeslot_array.length) {
-        let history = HistoryData[timeslot_array[times]];
-        let datetime_arr = TimeToArray(timeslot_array[times]);
+        var history = HistoryData[timeslot_array[times]];
+        var datetime_arr = TimeToArray(timeslot_array[times]);
         if (!document.getElementById("chk_is_overlap").checked)
             setSize();
         document.getElementById("current_tags_amount").innerText = history.length;
@@ -430,20 +430,20 @@ function reDrawTag() {
     setSize();
     switch (HistoryData["search_type"]) {
         case "Tag":
-            let locate_map = document.getElementById("target_map").value;
-            let k = 0;
+            var locate_map = document.getElementById("target_map").value;
+            var k = 0;
             if (times == 0) return;
             if (document.getElementsByName("radio_is_limit")[1].checked) {
-                let limitCount = document.getElementById("limit_count").value;
+                var limitCount = document.getElementById("limit_count").value;
                 if (limitCount != "" && times > limitCount)
                     k = times - limitCount;
             }
             displayAlarms = [];
             document.getElementsByName("chk_target_id").forEach(function (tag_id, i) {
-                let color = document.getElementsByName("input_target_color")[i].value;
-                let array = HistoryData[tag_id.value];
+                var color = document.getElementsByName("input_target_color")[i].value;
+                var array = HistoryData[tag_id.value];
                 if (!array) return;
-                for (let j = k; j < times; j++) {
+                for (var j = k; j < times; j++) {
                     if ((chkUseInputMap.checked && inputMapSrc.length > 0) || (array[j] && array[j].map_id == locate_map)) {
                         if (j > k) {
                             drawArrow(ctx, array[j - 1].x, canvasImg.height - array[j - 1].y,
@@ -451,7 +451,7 @@ function reDrawTag() {
                         }
                         drawTag(ctx, array[j].time, array[j].x, canvasImg.height - array[j].y, color);
                         if (array[j].type != "normal") {
-                            let alarm = AlarmList[tag_id.value][array[j].date + " " + array[j].time];
+                            var alarm = AlarmList[tag_id.value][array[j].date + " " + array[j].time];
                             displayAlarms.push({
                                 user_id: parseInt(tag_id.value, 16),
                                 date: array[j].date,
@@ -471,27 +471,27 @@ function reDrawTag() {
                 }
             });
             if (document.getElementById("chk_diaplay_alarm").checked) {
-                displayAlarms.forEach(alarm => {
+                displayAlarms.forEach(function(alarm ) {
                     if ((chkUseInputMap.checked && inputMapSrc.length > 0) || (alarm.map_id == locate_map))
                         drawAlarmTag(ctx, "", alarm.x, canvasImg.height - alarm.y, alarm.alarm_type);
                 });
             }
             break;
         case "Group":
-            let start = 0;
-            let locate_arr = [];
+            var start = 0;
+            var locate_arr = [];
             displayAlarms = [];
             if (!document.getElementById("chk_is_overlap").checked && times > 0)
                 start = times - 1;
-            for (let i = start; i < times; i++) {
-                HistoryData[timeslot_array[i]].forEach(info => {
+            for (var i = start; i < times; i++) {
+                HistoryData[timeslot_array[i]].forEach(function(info) {
                     if (info.tag_id == locate_tag) {
                         locate_arr.push(info);
                     } else {
                         drawTag(ctx, info.time, info.x, canvasImg.height - info.y, groupColor);
                     }
                     if (info.type != "normal") {
-                        let alarm = AlarmList[info.date + " " + info.time][info.tag_id];
+                        var alarm = AlarmList[info.date + " " + info.time][info.tag_id];
                         displayAlarms.push({
                             user_id: parseInt(info.tag_id.substring(8), 16),
                             date: info.date,
@@ -504,11 +504,11 @@ function reDrawTag() {
                     }
                 });
             }
-            locate_arr.forEach(info => {
+            locate_arr.forEach(function(info ){
                 drawTag(ctx, info.time, info.x, canvasImg.height - info.y, locateColor);
             });
             if (document.getElementById("chk_diaplay_alarm").checked) {
-                displayAlarms.forEach(alarm => {
+                displayAlarms.forEach(function(alarm) {
                     drawAlarmTag(ctx, "", alarm.x, canvasImg.height - alarm.y, alarm.alarm_type);
                 });
             }
@@ -523,7 +523,7 @@ function reDrawTag() {
 }
 
 function displayAlarmPos(key1, key2) {
-    let alarm = AlarmList[key1][key2],
+    var alarm = AlarmList[key1][key2],
         tag_id = HistoryData["search_type"] == "Tag" ? key1 : key2.substring(8),
         date_time = HistoryData["search_type"] == "Tag" ? key2.split(" ") : key1.split(" ");
     posAlarmData = {
@@ -548,7 +548,7 @@ function displayAlarmPos(key1, key2) {
 }
 
 function showAlertDialog() {
-    let dialog = document.getElementById("alert_window");
+    var dialog = document.getElementById("alert_window");
     dialog.style.display = 'block';
     dialog.classList.remove("fadeOut");
     timeDelay["dialog"] = setTimeout(function () {
@@ -691,10 +691,10 @@ function drawArrow(dctx, fromX, fromY, toX, toY, theta, headlen, width, color) {
     ctx.globalCompositeOperation = "destination-over";
     var deltaX = toX - fromX;
     var deltaY = toY - fromY;
-    let len = Math.pow(deltaX, 2) + Math.pow(deltaY, 2);
+    var len = Math.pow(deltaX, 2) + Math.pow(deltaY, 2);
     if (len > 100) {
         //將指向圓心的(toX,toY)往回退，讓箭頭能完全被畫出來
-        let m = Math.sqrt(Math.pow(5, 2) / len);
+        var m = Math.sqrt(Math.pow(5, 2) / len);
         toX -= m * deltaX;
         toY -= m * deltaY;
 

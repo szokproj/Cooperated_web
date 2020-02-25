@@ -3,7 +3,7 @@ var default_color = '#2eb82e';
 var default_size = 10;
 
 $(function () {
-    let h = document.documentElement.clientHeight;
+    var h = document.documentElement.clientHeight;
     $(".container").css("height", h - 10 + "px");
     
     //Check this page's permission and load navbar

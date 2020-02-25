@@ -1,6 +1,6 @@
 var token = "";
 $(function () {
-    let h = document.documentElement.clientHeight;
+    var h = document.documentElement.clientHeight;
     $("#chart-container").css("height", h - 150 + "px");
 
     token = getToken();

@@ -5003,7 +5003,7 @@ var widgetsMenu = $.widget( "ui.menu", {
 						// Redirect focus to the menu
 						this.element.trigger( "focus", [ true ] );
 
-						// If the active item is on the top level, let it stay active.
+						// If the active item is on the top level, var it stay active.
 						// Otherwise, blur the active item since it is no longer visible.
 						if ( this.active && this.active.parents( ".ui-menu" ).length === 1 ) {
 							clearTimeout( this.timer );
@@ -9330,7 +9330,7 @@ var widgetsMouse = $.widget( "ui.mouse", {
 
 	_mouseDown: function( event ) {
 
-		// don't let more than one widget handle mouseStart
+		// don't var more than one widget handle mouseStart
 		if ( mouseHandled ) {
 			return;
 		}
@@ -15275,7 +15275,7 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
 		//Get the items
 		this.refresh();
 
-		//Let's determine the parent's offset
+		//var's determine the parent's offset
 		this.offset = this.element.offset();
 
 		//Initialize mouse events for interaction

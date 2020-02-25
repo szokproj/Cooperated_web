@@ -1,4 +1,4 @@
-const noImagePng = "../image/no_image.png";
+var noImagePng = "../image/no_image.png";
 var leftSide_isOpen = false;
 var rightSide_isOpen = false;
 
@@ -46,7 +46,7 @@ function inputAlarmData(element, i) {
     /**
      * Alarm Card
      */
-    let html = "",
+    var html = "",
         color = "",
         status = "",
         time_arr = TimeToArray(element.alarm_time),
@@ -153,7 +153,7 @@ function inputAlarmData(element, i) {
 }
 
 function setAlarmDialog(Obj) {
-    let color = "",
+    var color = "",
         status = "",
         time_arr = TimeToArray(Obj.alarm_time);
     switch (Obj.status) {
@@ -221,7 +221,7 @@ function setMemberPhoto(img_id, number_id, number) {
     if (number == "") {
         $("#" + img_id).attr('src', noImagePng);
     } else {
-        const json_request = JSON.stringify({
+        var json_request = JSON.stringify({
             "Command_Type": ["Read"],
             "Command_Name": ["GetOneStaff"],
             "Value": {
@@ -229,12 +229,12 @@ function setMemberPhoto(img_id, number_id, number) {
             },
             "api_token": [token]
         });
-        let jxh = createJsonXmlHttp("sql");
+        var jxh = createJsonXmlHttp("sql");
         jxh.onreadystatechange = function () {
             if (jxh.readyState == 4 || jxh.readyState == "complete") {
-                let revObj = JSON.parse(this.responseText);
+                var revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0 && revObj.Value[0].Values) {
-                    let revInfo = revObj.Value[0].Values[0];
+                    var revInfo = revObj.Value[0].Values[0];
                     if (document.getElementById(number_id).innerText != number)
                         return;
                     if (revInfo.file_ext != "" && revInfo.photo != "")

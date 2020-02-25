@@ -144,7 +144,7 @@ function setTreeArray(dataArray) {
     var treeArray = [];
     $('.tree').empty();
     if (dataArray.length > 0) {
-        dataArray.forEach(data => {
+        dataArray.forEach(function (data) {
             var exist_index = treeArray.findIndex(function (branch) {
                 return branch.name == data.group_id;
             });

@@ -1,4 +1,4 @@
-const IP_MODE = ["DHCP", "Static"],
+var IP_MODE = ["DHCP", "Static"],
     RF_CHANNEL = ["CH1(3.5GHz)", "CH2(4.0GHz)", "CH3(4.5GHz)", "CH4(4.5GHz WBW)", "CH5(6.5GHz)", "CH7(6.5GHz WBW)"],
     RF_DATARATE = ["110Kbps", "850Kbps", "6.8Mbps"],
     RF_PRF = ["16M", "64M"],
@@ -49,8 +49,8 @@ var displayRowArray = {
     },
     token = "";
 
-$(function () { //Load==>
-    let h = document.documentElement.clientHeight;
+$(function () { //Load
+    var h = document.documentElement.clientHeight;
     //$(".container").css("height", h - 10 + "px");
     $(".middle").css("height", h - 120 + "px");
 
@@ -180,7 +180,7 @@ function Limit_input_number(e) {
         (e.keyCode == 65 && (e.ctrlKey === true || e.metaKey === true)) ||
         // Allow: home, end, left, right, down, up
         (e.keyCode >= 35 && e.keyCode <= 40)) {
-        // let it happen, don't do anything
+        // var it happen, don't do anything
         return;
     }
     // Ensure that it is a number and stop the keypress
@@ -284,7 +284,7 @@ function setListenerOfSetAllRow() {
     $("#all_check").parent().on('click', function () {
         var state = $("#all_check").prop("checked");
         $("#all_check").prop("checked", !state);
-        check.forEach(element => {
+        check.forEach(function (element) {
             element.checked = !state;
         });
         checked_trans();
@@ -388,7 +388,7 @@ function setListenerOfSetAllRow() {
         "rf_channel", "rf_datarate", "rf_prf", "rf_preamble_code", "rf_preamble_len", "rf_pac",
         "rf_pg_delay", "rf_power", "rf_nsd", "rf_sdf_timeoutr", "rf_smartpower", "rf_ntm", "rf_mult"
     ];
-    network_name_array.forEach(column => {
+    network_name_array.forEach(function (column) {
         $("#all_" + column).on("change", function () {
             check.forEach(function (element, i) {
                 if (element.checked && status[i].value == "1")
@@ -396,7 +396,7 @@ function setListenerOfSetAllRow() {
             });
         });
     });
-    rf_name_array.forEach(column => {
+    rf_name_array.forEach(function (column) {
         $("#all_" + column).on("change", function () {
             check.forEach(function (element, i) {
                 if (element.checked && status[i].value == "1")
@@ -409,7 +409,7 @@ function setListenerOfSetAllRow() {
 function ipAddrTo_ip(ip_addr) {
     var ip = "";
     if (ip_addr) {
-        ip_addr.split(".").forEach(block => {
+        ip_addr.split(".").forEach(function (block) {
             ip += "_" + block;
         });
     }

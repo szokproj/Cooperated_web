@@ -22,7 +22,7 @@ $(function () {
                 if (index == 1 && dept_id != "") {
                     $("#main_input_tag_color").val(default_color);
                     $("#main_display_color").css("background-color", default_color);
-                    deptColorArray.forEach(v => {
+                    deptColorArray.forEach(function (v) {
                         if (v.c_id == dept_id) {
                             $("#main_input_tag_color").val(colorToHex(v.color));
                             $("#main_display_color").css("background-color", colorToHex(v.color));
@@ -37,7 +37,7 @@ $(function () {
                 if (index == 2 && title_id != "") {
                     $("#main_input_tag_color").val(default_color);
                     $("#main_display_color").css("background-color", default_color);
-                    titleColorArray.forEach(v => {
+                    titleColorArray.forEach(function (v) {
                         if (v.c_id == title_id) {
                             $("#main_input_tag_color").val(colorToHex(v.color));
                             $("#main_display_color").css("background-color", colorToHex(v.color));

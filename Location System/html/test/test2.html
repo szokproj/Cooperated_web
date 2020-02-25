@@ -55,7 +55,7 @@
 	<!-- 引用Vue.js -->
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.js"></script>
 	<script type="text/javascript">
-		let app = new Vue({
+		var app = new Vue({
 			el: '#myApp',
 			data: {
 				showData: "",
@@ -64,26 +64,26 @@
 			methods: { //methods是關鍵字，通常處理和用戶的互動事件
 				doThis1: function ($event) {
 					//事件監聽沒傳遞$event，但可透過注入方式取得
-					let vm = this;
+					var vm = this;
 
 					vm.showData = $event.target.value;
 					vm.msg = "";
 				},
 				doThis2: function ($event) {
 					//一目瞭然的寫法
-					let vm = this;
+					var vm = this;
 					vm.showData = $event.target.value;
 					vm.msg = "";
 				},
 				doThis3: function (msg, $event) {
 					//一目瞭解的寫法
-					let vm = this;
+					var vm = this;
 					vm.showData = $event.target.value;
 					vm.msg = msg;
 				},
 				doThis4: function (msg, $event) {
 					//事件監聽當只有傳遞參數時..
-					let vm = this;
+					var vm = this;
 
 					vm.showData = typeof ($event); //$event即使注入仍然抓不到
 

@@ -331,7 +331,7 @@ function drawNextTimeByGroup() {
         if (!document.getElementById("chk_is_overlap").checked)
             setSize();
         if (locate_tag == "") {
-            let count = 0;
+            var count = 0;
             historyData[timeslot_array[times]].forEach(info => {
                 drawTag(ctx, info.time, info.x, canvasImg.height - info.y, group_color);
                 count++;
@@ -340,7 +340,7 @@ function drawNextTimeByGroup() {
         } else {
             reDrawTag();
         }
-        let history = historyData[timeslot_array[times]][0];
+        var history = historyData[timeslot_array[times]][0];
         document.getElementById("current_map").innerText = history.map_name;
         document.getElementById("current_date").innerText = history.date;
         document.getElementById("current_time").innerText = history.time;
@@ -422,10 +422,10 @@ function drawArrow(dctx, fromX, fromY, toX, toY, theta, headlen, width, color) {
     ctx.globalCompositeOperation = "destination-over";
     var deltaX = toX - fromX;
     var deltaY = toY - fromY;
-    let len = Math.pow(deltaX, 2) + Math.pow(deltaY, 2);
+    var len = Math.pow(deltaX, 2) + Math.pow(deltaY, 2);
     if (len > 100) {
         //將指向圓心的(toX,toY)往回退，讓箭頭能完全被畫出來
-        let m = Math.sqrt(Math.pow(5, 2) / len);
+        var m = Math.sqrt(Math.pow(5, 2) / len);
         toX -= m * deltaX;
         toY -= m * deltaY;
 

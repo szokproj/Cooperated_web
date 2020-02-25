@@ -43,7 +43,7 @@ window.onload = function () {
             var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success == 1) {
                 $("#target_map").empty();
-                revObj.Value[0].Values.forEach(element => {
+                revObj.Value[0].Values.forEach(function (element) {
                     //MapList => key: map_id | value: {map_id, map_name, map_src, map_scale}
                     MapList[element.map_id] = {
                         map_id: element.map_id,
@@ -132,8 +132,8 @@ function setSize() { //縮放canvas與背景圖大小
 
 function draw() {
     setSize(); //重新調整畫面比例並清空畫布
-    for (let tag_id in TagList) { //繪出接收到的標籤資料(座標位置)
-        let v = TagList[tag_id];
+    for (var tag_id in TagList) { //繪出接收到的標籤資料(座標位置)
+        var v = TagList[tag_id];
         if (groupfindMap[v.point[i].group_id] == Map_id) { //標籤座標在當前地圖上
             //標籤圖形(中心有白色圓圈的倒水滴型)
             drawTags(ctx, v.id, v.point[i].x, canvasImg.height - v.point[i].y,

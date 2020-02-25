@@ -1,4 +1,4 @@
-let map_id = "",
+var map_id = "",
     mapArray = [],
     anchorGroupArray = [],
     groupArray = [],
@@ -33,7 +33,7 @@ function setupCanvas() {
     canvas = document.getElementById("canvas_map");
     ctx = canvas.getContext("2d");
     PIXEL_RATIO = (function () {
-        let dpr = window.devicePixelRatio || 1,
+        var dpr = window.devicePixelRatio || 1,
             bsr = ctx.webkitBackingStorePixelRatio ||
             ctx.mozBackingStorePixelRatio ||
             ctx.msBackingStorePixelRatio ||
@@ -74,22 +74,22 @@ function resetBlockDisplay() {
 }
 
 function loadMaps() {
-    let requestArray = {
+    var requestArray = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetMaps"],
         "api_token": [token]
     };
-    let xmlHttp = createJsonXmlHttp("sql");
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (!checkTokenAlive(token, revObj)) {
                 return;
             } else if (revObj.Value[0].success > 0) {
-                let revInfo = revObj.Value[0].Values || [];
+                var revInfo = revObj.Value[0].Values || [];
                 mapArray = [];
                 $("#select_map").empty();
-                revInfo.forEach(v => {
+                revInfo.forEach(function (v) {
                     mapArray.push({
                         id: v.map_id,
                         name: v.map_name,
@@ -111,11 +111,11 @@ function loadMaps() {
 
 function setMapById(id) { //選擇地圖(下拉選單)後，依據map_id抓取對應資訊
     map_id = id;
-    let index = mapArray.findIndex(function (map_info) {
+    var index = mapArray.findIndex(function (map_info) {
         return map_info.id == id;
     });
     if (index > -1) {
-        let dataUrl = "data:image/" + mapArray[index].file_ext + ";base64," + mapArray[index].file;
+        var dataUrl = "data:image/" + mapArray[index].file_ext + ";base64," + mapArray[index].file;
         setMap(dataUrl, mapArray[index].scale);
         $("#select_map_id").val(mapArray[index].id);
         $("#select_map_name").val(mapArray[index].name);
@@ -142,7 +142,7 @@ function setMap(map_url, map_scale) {
         Zoom = 1.0;
         ctx.save(); //紀錄原比例
 
-        let serImgSize = serverImg.width / serverImg.height,
+        var serImgSize = serverImg.width / serverImg.height,
             cvs_width = parseFloat($("#mapBlock").css("width")) - 2,
             cvs_height = parseFloat($("#mapBlock").css("height")) - 7,
             cvsSize = cvs_width / cvs_height;
@@ -159,7 +159,7 @@ function setMap(map_url, map_scale) {
 }
 
 function getFileName(src) {
-    let pos1 = src.lastIndexOf("\\"),
+    var pos1 = src.lastIndexOf("\\"),
         pos2 = src.lastIndexOf("/"),
         pos = -1;
     if (pos1 < 0) pos = pos2;
@@ -220,7 +220,7 @@ function resizeCanvas() {
         document.getElementById("label_resize").title = $.i18n.prop('i_fit_window');
     } else { //依比例拉伸(Fit in Window)
         isFitWindow = true; //目前狀態:依比例拉伸
-        let cvs_width = parseFloat($("#mapBlock").css("width")) - 2,
+        var cvs_width = parseFloat($("#mapBlock").css("width")) - 2,
             cvs_height = parseFloat($("#mapBlock").css("height")) - 7;
         if ((serverImg.width / serverImg.height) > (cvs_width / cvs_height)) //原圖比例寬邊較長
             Zoom = cvs_width / serverImg.width;
@@ -234,7 +234,7 @@ function resizeCanvas() {
 
 function handleMouseWheel(event) {
     event.preventDefault();
-    let scale = 1.0;
+    var scale = 1.0;
     if (event.wheelDelta < 0 || event.detail > 0) {
         if (Zoom > 0.1)
             scale = 0.9;
@@ -252,7 +252,7 @@ function handleMouseMove(event) { //滑鼠移動事件
 }
 
 function getPointOnCanvas(x, y) {
-    let BCR = canvas.getBoundingClientRect(),
+    var BCR = canvas.getBoundingClientRect(),
         pos_x = (x - BCR.left) / Zoom,
         pos_y = (y - BCR.top) / Zoom;
     lastX = pos_x;
@@ -266,7 +266,7 @@ function getPointOnCanvas(x, y) {
 }
 
 function updateFenceTable() {
-    let request = {
+    var request = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetFencesInMap"],
         "Value": {
@@ -274,10 +274,10 @@ function updateFenceTable() {
         },
         "api_token": [token]
     };
-    let xmlHttp = createJsonXmlHttp("sql");
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (!checkTokenAlive(token, revObj)) {
                 return;
             } else if (revObj.Value[0].success > 0) {
@@ -285,7 +285,7 @@ function updateFenceTable() {
                 $("#table_fence_setting tbody").empty();
                 fenceDotArray = [];
                 for (i = 0; i < fenceArray.length; i++) {
-                    let tr_id = "tr_fence_setting_" + (i + 1);
+                    var tr_id = "tr_fence_setting_" + (i + 1);
                     $("#table_fence_setting tbody").append("<tr id=\"" + tr_id + "\"><td>" +
                         "<input type=\"checkbox\" name=\"chkbox_fence_setting\" value=\"" + fenceArray[i].fence_id + "\"" +
                         " onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (i + 1) + "</td>" +
@@ -307,7 +307,7 @@ function updateFenceTable() {
 }
 
 function getFencePointArray(fence_id) {
-    let request = {
+    var request = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetFence_point"],
         "Value": {
@@ -315,14 +315,14 @@ function getFencePointArray(fence_id) {
         },
         "api_token": [token]
     };
-    let xmlHttp = createJsonXmlHttp("sql");
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (!checkTokenAlive(token, revObj)) {
                 return;
             } else if (revObj.Value[0].success > 0) {
-                let arr = revObj.Value[0].Values || [];
+                var arr = revObj.Value[0].Values || [];
                 for (i = 0; i < arr.length; i++)
                     fenceDotArray.push(arr[i]);
                 draw();
@@ -337,7 +337,7 @@ function getFencePointArray(fence_id) {
 function updateFenceDotsArr() {
     $("#table_fence_dot_setting tbody").empty();
     for (j = 0; j < addFenceDotArray.length; j++) {
-        let tr_id = "tr_fence_dot_setting_" + (j + 1);
+        var tr_id = "tr_fence_dot_setting_" + (j + 1);
         $("#table_fence_dot_setting tbody").append("<tr id=\"" + tr_id + "\"><td>" +
             "<input type=\"checkbox\" name=\"chkbox_fence_dot_setting\" value=\"" + j +
             "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + (j + 1) + "</td>" +
@@ -347,10 +347,10 @@ function updateFenceDotsArr() {
 }
 
 function getFences() {
-    let xmlHttp = createJsonXmlHttp("sql");
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (!checkTokenAlive(token, revObj))
                 return;
             else if (revObj.Value[0].success > 0)
@@ -367,21 +367,21 @@ function getFences() {
 }
 
 function getGroups() {
-    let request = {
+    var request = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetMaps_Groups"],
         "api_token": [token]
     };
-    let xmlHttp = createJsonXmlHttp("sql");
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (!checkTokenAlive(token, revObj)) {
                 return;
             } else if (revObj.Value[0].success > 0) {
-                let mapGroups = revObj.Value[0].Values || [];
+                var mapGroups = revObj.Value[0].Values || [];
                 groupArray = [];
-                mapGroups.forEach(element => {
+                mapGroups.forEach(function (element) {
                     if (element.map_id == map_id)
                         groupArray.push(element.group_id);
                 });
@@ -395,7 +395,7 @@ function getGroups() {
 }
 
 function getAnchor_Group() {
-    let request = {
+    var request = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetAnchorsInMap"],
         "Value": {
@@ -403,10 +403,10 @@ function getAnchor_Group() {
         },
         "api_token": [token]
     };
-    let xmlHttp = createJsonXmlHttp("sql");
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (!checkTokenAlive(token, revObj)) {
                 return;
             } else if (revObj.Value[0].success > 0) {
@@ -430,15 +430,15 @@ function draw() {
 
 function drawAnchor_Group() {
     groupArray.forEach(function (group_id) {
-        let group = new Group(),
+        var group = new Group(),
             group_pos_arr = [],
             containDots = 0,
             containPolygon = 0,
             group_name = "";
-        anchorGroupArray.forEach(element => {
+        anchorGroupArray.forEach(function (element) {
             if (element.group_id == group_id) {
                 group_name = element.group_name;
-                let point = {
+                var point = {
                         x: element.set_x,
                         y: element.set_y
                     },
@@ -453,7 +453,7 @@ function drawAnchor_Group() {
         containPolygon += checkPP(group_pos_arr, addFenceDotArray) == true ? 1 : 0;
         if (containDots > 0 || containPolygon > 0) {
             //console.log("contain groups : " + group_id);
-            let repeat = addFenceContainGroup.findIndex(function (groupInfo) {
+            var repeat = addFenceContainGroup.findIndex(function (groupInfo) {
                 return groupInfo.g_id == group_id;
             });
             if (repeat == -1)
@@ -470,10 +470,10 @@ function drawAnchor_Group() {
 }
 
 function drawFences() {
-    fenceArray.forEach(fence_info => {
-        let fence = new Fence(),
+    fenceArray.forEach(function (fence_info) {
+        var fence = new Fence(),
             count = 0;
-        fenceDotArray.forEach(dot_info => {
+        fenceDotArray.forEach(function (dot_info) {
             if (dot_info.fence_id == fence_info.fence_id) {
                 fence.setFenceDot(
                     fence_info.fence_name,
@@ -489,21 +489,21 @@ function drawFences() {
 }
 
 function drawSettingFence() {
-    let s_fence = new SettingFence();
-    addFenceDotArray.forEach(dot_info => {
+    var s_fence = new SettingFence();
+    addFenceDotArray.forEach(function (dot_info) {
         s_fence.setFenceDot(
             parseFloat(dot_info.x),
             canvasImg.height - parseFloat(dot_info.y)
         );
-        let point = {
+        var point = {
             x: dot_info.x,
             y: dot_info.y
         };
         groupArray.forEach(function (group_id) {
-            let containDots = 0,
+            var containDots = 0,
                 polygon = [],
                 group_name = "";
-            anchorGroupArray.forEach(element => {
+            anchorGroupArray.forEach(function (element) {
                 if (element.group_id == group_id) {
                     group_name = element.group_name;
                     polygon.push({
@@ -516,7 +516,7 @@ function drawSettingFence() {
             });
             if (containDots > 0) {
                 //console.log("contain groups : " + group_id);
-                let repeat = addFenceContainGroup.findIndex(function (groupInfo) {
+                var repeat = addFenceContainGroup.findIndex(function (groupInfo) {
                     return groupInfo.g_id == group_id;
                 });
                 if (repeat == -1)
@@ -543,7 +543,7 @@ function startFencePosition() {
         isPosition = true;
         document.getElementById("label_fence_dot_position").innerHTML = "<i class='fas fa-map-marked' style='font-size:20px;'></i>";
         document.getElementById("label_fence_dot_position").title = $.i18n.prop('i_stopFencePointPos');
-        let delaytime = 100; //0.1s
+        var delaytime = 100; //0.1s
         pageTimer["timer1"] = setTimeout(function request() {
             draw();
             drawDotPosition(ctx, lastX, canvasImg.height - lastY, 1 / Zoom);
@@ -554,7 +554,7 @@ function startFencePosition() {
         isPosition = false;
         document.getElementById("label_fence_dot_position").innerHTML = "<i class='fas fa-map-marked-alt' style='font-size:20px;'></i>";
         document.getElementById("label_fence_dot_position").title = $.i18n.prop('i_startFencePointPos');
-        for (let each in pageTimer)
+        for (var each in pageTimer)
             clearTimeout(pageTimer[each]);
         draw();
         canvas.removeEventListener("click", handleDotPosition);
@@ -566,7 +566,7 @@ function resetFencePosition() {
         isPosition = false;
         document.getElementById("label_fence_dot_position").innerHTML = "<i class='fas fa-map-marked-alt' style='font-size:20px;'></i>";
         document.getElementById("label_fence_dot_position").title = $.i18n.prop('i_startFencePointPos');
-        for (let each in pageTimer)
+        for (var each in pageTimer)
             clearTimeout(pageTimer[each]);
         addFenceDotArray = [];
         draw();
@@ -575,7 +575,7 @@ function resetFencePosition() {
 }
 
 function Fence() {
-    let fence_dot_array = [];
+    var fence_dot_array = [];
     this.setFenceDot = function (fence_name, x, y) {
         fence_dot_array.push({
             fence_name: fence_name,
@@ -584,7 +584,7 @@ function Fence() {
         });
     };
     this.drawFence = function () {
-        let canvas = document.getElementById("canvas_map"),
+        var canvas = document.getElementById("canvas_map"),
             ctx = canvas.getContext("2d"),
             len = fence_dot_array.length;
         ctx.beginPath();
@@ -600,7 +600,7 @@ function Fence() {
         //在圍籬中間畫出群組名稱
         ctx.fillStyle = "blue";
         ctx.font = 26 / Zoom + 'px serif';
-        let arr = fence_dot_array,
+        var arr = fence_dot_array,
             displace_x = (arr[2].x - arr[0].x) / 2 - 13 * arr[0].fence_name.length,
             displace_y = (arr[2].y - arr[0].y) / 2 - 13;
         ctx.fillText(arr[0].fence_name, arr[0].x + displace_x, arr[0].y + displace_y);
@@ -609,7 +609,7 @@ function Fence() {
 }
 
 function SettingFence() {
-    let fence_dot_array = [],
+    var fence_dot_array = [],
         canvas = document.getElementById("canvas_map"),
         ctx = canvas.getContext("2d"),
         displace = 5 / Zoom;
@@ -620,7 +620,7 @@ function SettingFence() {
         });
     };
     this.drawFence = function () {
-        let len = fence_dot_array.length;
+        var len = fence_dot_array.length;
         ctx.beginPath();
         fence_dot_array.forEach(function (v, i, arr) {
             if (i == len - 1) {
@@ -637,7 +637,7 @@ function SettingFence() {
         ctx.closePath();
     };
     this.drawFenceDots = function () {
-        let size = 10 / Zoom;
+        var size = 10 / Zoom;
         fence_dot_array.forEach(function (v) {
             ctx.fillStyle = "rgb(255, 80, 80)";
             ctx.fillRect(v.x - displace, v.y - displace, size, size); //10*3
@@ -655,7 +655,7 @@ function addDotArray(x, y) {
 }
 
 function deleteDotArray() {
-    let checkboxs = document.getElementsByName("chkbox_fence_dot_setting"),
+    var checkboxs = document.getElementsByName("chkbox_fence_dot_setting"),
         retain_arr = [];
     for (k = 0; k < checkboxs.length; k++) {
         if (!checkboxs[k].checked)
@@ -668,7 +668,7 @@ function deleteDotArray() {
 }
 
 function Group() {
-    let anchor_array = [];
+    var anchor_array = [];
     this.setAnchor = function (id, x, y) {
         anchor_array.push({
             id: id,
@@ -677,7 +677,7 @@ function Group() {
         });
     }
     this.drawGroup = function () {
-        let canvas = document.getElementById("canvas_map"),
+        var canvas = document.getElementById("canvas_map"),
             ctx = canvas.getContext("2d"),
             len = anchor_array.length;
         ctx.beginPath();
@@ -698,7 +698,7 @@ function Group() {
 }
 
 function drawAnchor(dctx, id, type, x, y, zoom) {
-    let size = 10 * zoom;
+    var size = 10 * zoom;
     if (type == "main")
         dctx.fillStyle = "red";
     else

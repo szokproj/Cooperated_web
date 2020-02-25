@@ -44,9 +44,9 @@ function arrayKeyTranslate(array) {
     });
 
     //input data rows
-    array.forEach(value => {
+    array.forEach(function (value) {
         var obj = {};
-        datafield.forEach(key => {
+        datafield.forEach(function (key) {
             if (key == "tag_id") {
                 obj["tid_id"] = parseInt(value[key].substring(0, 8), 16);
                 obj["user_id"] = parseInt(value[key].substring(8), 16);
@@ -61,7 +61,7 @@ function arrayKeyTranslate(array) {
 
 
 function excelImportTable(jsonData) {
-    let coverArr = [],
+    var coverArr = [],
         addArr = [],
         overwriteArr = [],
         successNumber = {
@@ -75,17 +75,17 @@ function excelImportTable(jsonData) {
         isStop = false,
         update_delay = 0;
     if (jsonData) {
-        let getXmlHttp = createJsonXmlHttp("sql"); //getMemberList
+        var getXmlHttp = createJsonXmlHttp("sql"); //getMemberList
         getXmlHttp.onreadystatechange = function () {
             if (getXmlHttp.readyState == 4 || getXmlHttp.readyState == "complete") {
-                let revObj = JSON.parse(this.responseText);
+                var revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                    let memberArray = revObj.Value[0].Values || [],
+                    var memberArray = revObj.Value[0].Values || [],
                         dataArray = JSON.parse(jsonData) || [];
                     dataArray.forEach(function (element, index) {
                         if (index == 0 || isStop || !element.number)
                             return;
-                        let repeat_number = memberArray.findIndex(function (info) {
+                        var repeat_number = memberArray.findIndex(function (info) {
                                 return info.number == element.number;
                             }),
                             repeat_tagid = memberArray.findIndex(function (info) {
@@ -115,14 +115,14 @@ function excelImportTable(jsonData) {
                     });
 
                     if (!isStop) {
-                        let delay = 0;
+                        var delay = 0;
                         if (overwriteArr.length > 0) {
                             delay++;
                             deleteMemberData(overwriteArr);
                         }
                         if (addArr.length > 0) {
                             successNumber.add = [];
-                            addArr.forEach(element => {
+                            addArr.forEach(function (element) {
                                 delay++;
                                 setTimeout(function () {
                                     sendMemberData("AddStaff", element);
@@ -131,7 +131,7 @@ function excelImportTable(jsonData) {
                         }
                         if (coverArr.length > 0) {
                             successNumber.edit = [];
-                            coverArr.forEach(element => {
+                            coverArr.forEach(function (element) {
                                 delay++;
                                 setTimeout(function () {
                                     sendMemberData("EditStaff", element);

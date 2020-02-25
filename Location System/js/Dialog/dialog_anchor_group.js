@@ -40,7 +40,7 @@ function importAnchorGroup() {
     $("#btn_add_anc").on("click", function () {
         var count = document.getElementsByName("checkbox_add_group_anchor").length + 1,
             anchors = [];
-        document.getElementsByName("list_anchor_id").forEach(element => {
+        document.getElementsByName("list_anchor_id").forEach(function (element) {
             anchors.push(element.value);
         });
         $("#dialog_add_anchor_group tbody").append("<tr>" +
@@ -57,7 +57,7 @@ function importAnchorGroup() {
             trs = "",
             count = 0,
             anchors = [];
-        document.getElementsByName("list_anchor_id").forEach(element => {
+        document.getElementsByName("list_anchor_id").forEach(function (element) {
             anchors.push(element.value);
         });
         document.getElementsByName("checkbox_add_group_anchor").forEach(function (element, i) {
@@ -137,7 +137,7 @@ function importAnchorGroup() {
                     "set_y": add_anchor_y.eq(i).val()
                 });
             }
-            GroupAnchorList.forEach(element => {
+            GroupAnchorList.forEach(function (element) {
                 if (element.group_id == add_group_id.val() && element.anchor_id == add_anchor_id.eq(i).val()) {
                     add_anchor_id.eq(i).addClass("ui-state-error");
                     alert($.i18n.prop('i_anchorID') + " : " + element.anchor_id + $.i18n.prop('i_mapAlert_21'));
@@ -265,7 +265,7 @@ function importAnchorGroup() {
                             "set_y": edit_y.val()
                         });
                     }
-                    GroupAnchorList.forEach(element => {
+                    GroupAnchorList.forEach(function (element) {
                         if (element.anchor_id == edit_anchor.val()) {
                             edit_anchor.addClass("ui-state-error");
                             alert($.i18n.prop('i_anchorID') + " : " + element.anchor_id + $.i18n.prop('i_mapAlert_23'));
@@ -391,7 +391,7 @@ function editGroup_Anchor(anchor_id, set_x, set_y) {
     var anchor_groupList = getRowData_Group_Anchor();
     var count = 0;
     $("#table_edit_group_ids tbody").empty();
-    anchor_groupList.forEach(element => {
+    anchor_groupList.forEach(function (element) {
         if (element.anchor_id == anchor_id) {
             count++;
             $("#table_edit_group_ids tbody").append("<tr>" +

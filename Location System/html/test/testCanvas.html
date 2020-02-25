@@ -205,7 +205,7 @@
             ytopView = y - targetY;
             setSize();*/
 
-            let BCR = canvas.getBoundingClientRect(),
+            var BCR = canvas.getBoundingClientRect(),
                 pos_x = event.clientX - BCR.left,
                 pos_y = event.clientY - BCR.top,
                 scale = 1.0;
@@ -217,10 +217,10 @@
             }
             Zoom = (Zoom * scale).toFixed(2); //縮放比例
             setSize();
-            let Next_x = lastX * Zoom, //縮放後滑鼠位移後的位置(x坐標)
+            var Next_x = lastX * Zoom, //縮放後滑鼠位移後的位置(x坐標)
                 Next_y = (canvasImg.height - lastY) * Zoom; //縮放後滑鼠位移後的位置(y坐標)
-            //let canvas_left = parseFloat($("#canvas").css("margin-left")); //canvas目前相對於div的位置(x坐標)
-            //let canvas_top = parseFloat($("#canvas").css("margin-top")); //canvas目前相對於div的位置(y坐標)
+            //var canvas_left = parseFloat($("#canvas").css("margin-left")); //canvas目前相對於div的位置(x坐標)
+            //var canvas_top = parseFloat($("#canvas").css("margin-top")); //canvas目前相對於div的位置(y坐標)
             xleftView += pos_x - Next_x;
             ytopView += pos_y - Next_y;
             $("#canvas").css("margin-left", xleftView + "px").css("margin-top", ytopView + "px");

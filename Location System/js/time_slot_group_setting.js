@@ -1,4 +1,4 @@
-let includeSlotsArr = [],
+var includeSlotsArr = [],
     count_time_groups = 0,
     count_time_group_slots = 0;
 
@@ -6,7 +6,7 @@ function importTimeSlotGroup() {
     inputTimeGroups();
 
     //Dialog to edit time group.
-    let dialog, form,
+    var dialog, form,
         add_group_id = $("#add_time_group_id"),
         add_group_name = $("#add_time_group_name"),
         add_group_slots = document.getElementsByName("time_group_slot"),
@@ -17,9 +17,9 @@ function importTimeSlotGroup() {
         if (checkLength(add_group_name, $.i18n.prop('i_alarmAlert_4'), 1, 50)) {
             if (add_group_slots.length == 0)
                 return alert($.i18n.prop('i_alarmAlert_8'));
-            let isRepeat = false;
-            for (let i = 0; i < add_group_slots.length; i++) {
-                for (let j = i + 1; j < add_group_slots.length; j++) {
+            var isRepeat = false;
+            for (var i = 0; i < add_group_slots.length; i++) {
+                for (var j = i + 1; j < add_group_slots.length; j++) {
                     if (add_group_slots[i].value == add_group_slots[j].value)
                         isRepeat = true;
                 }
@@ -27,7 +27,7 @@ function importTimeSlotGroup() {
             if (isRepeat)
                 return alert($.i18n.prop('i_alarmAlert_16'));
             if (submit_type["time_group"] == "Add") {
-                let requestJSON = JSON.stringify({
+                var requestJSON = JSON.stringify({
                     "Command_Type": ["Write"],
                     "Command_Name": ["AddTimeGroup"],
                     "Value": {
@@ -35,12 +35,12 @@ function importTimeSlotGroup() {
                     },
                     "api_token": [token]
                 });
-                let xmlHttp = createJsonXmlHttp("sql");
+                var xmlHttp = createJsonXmlHttp("sql");
                 xmlHttp.onreadystatechange = function () {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                        let revObj = JSON.parse(this.responseText);
+                        var revObj = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                            let revInfo = revObj.Value[0].Values || [];
+                            var revInfo = revObj.Value[0].Values || [];
                             add_group_id.val(revInfo.time_gid);
                             addTimeGroup_Slots();
                         } else {
@@ -50,7 +50,7 @@ function importTimeSlotGroup() {
                 };
                 xmlHttp.send(requestJSON);
             } else {
-                let requestJSON = JSON.stringify({
+                var requestJSON = JSON.stringify({
                     "Command_Type": ["Write"],
                     "Command_Name": ["EditTimeGroup"],
                     "Value": {
@@ -59,10 +59,10 @@ function importTimeSlotGroup() {
                     },
                     "api_token": [token]
                 });
-                let xmlHttp = createJsonXmlHttp("sql");
+                var xmlHttp = createJsonXmlHttp("sql");
                 xmlHttp.onreadystatechange = function () {
                     if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                        let revObj = JSON.parse(this.responseText);
+                        var revObj = JSON.parse(this.responseText);
                         if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                             updateTimeGroup_Slots();
                         }
@@ -99,7 +99,7 @@ function importTimeSlotGroup() {
 
     //新增時段群組中包含的時段
     $("#btn_add_time_group_slot").on("click", function () {
-        let count_time_group_slots = document.querySelectorAll("#table_time_group_slot tr").length,
+        var count_time_group_slots = document.querySelectorAll("#table_time_group_slot tr").length,
             tr_id = "tr_time_group_slot" + count_time_group_slots;
         $("#table_time_group_slot tbody").append(
             "<tr id=\"" + tr_id + "\">" +
@@ -111,10 +111,10 @@ function importTimeSlotGroup() {
 
     //刪除時段群組中包含的時段
     $("#btn_delete_time_group_slot").on("click", function () {
-        let save_time_slots = [],
+        var save_time_slots = [],
             items = document.getElementsByName("chkbox_time_group_slot"),
             timeslots = document.getElementsByName("time_group_slot"); //timeslot_ids
-        for (let k = 0; k < items.length; k++) {
+        for (var k = 0; k < items.length; k++) {
             if (!items[k].checked)
                 save_time_slots.push(timeslots[k].value);
         }
@@ -122,7 +122,7 @@ function importTimeSlotGroup() {
             return alert($.i18n.prop('i_alarmAlert_9'));
         $("#table_time_group_slot tbody").empty();
         save_time_slots.forEach(function (time_slot_id, index) {
-            let tr_id = "tr_time_group_slot" + (index + 1);
+            var tr_id = "tr_time_group_slot" + (index + 1);
             $("#table_time_group_slot tbody").append(
                 "<tr id=\"" + tr_id + "\">" +
                 "<td><input type='checkbox' name=\"chkbox_time_group_slot\" value=\"" + tr_id +
@@ -143,7 +143,7 @@ function importTimeSlotGroup() {
 
     //按下刪除時段群組
     $("#btn_delete_time_group").button().on("click", function () {
-        let checkboxs = document.getElementsByName("chkbox_time_group"),
+        var checkboxs = document.getElementsByName("chkbox_time_group"),
             delete_arr = [];
         for (k in checkboxs) {
             if (checkboxs[k].checked)
@@ -154,16 +154,16 @@ function importTimeSlotGroup() {
         if (delete_arr.length == 0)
             return alert($.i18n.prop('i_alarmAlert_10'));
         if (confirm($.i18n.prop('i_alarmAlert_13'))) {
-            let requestJSON = JSON.stringify({
+            var requestJSON = JSON.stringify({
                 "Command_Type": ["Write"],
                 "Command_Name": ["DeleteTimeGroup"],
                 "Value": delete_arr,
                 "api_token": [token]
             });
-            let deleteXmlHttp = createJsonXmlHttp("sql");
+            var deleteXmlHttp = createJsonXmlHttp("sql");
             deleteXmlHttp.onreadystatechange = function () {
                 if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
-                    let revObj = JSON.parse(this.responseText);
+                    var revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         inputTimeGroups();
                     }
@@ -178,16 +178,16 @@ function importTimeSlotGroup() {
             //如果時段群組原本沒有包含任何時段
             addTimeGroup_Slots();
         } else {
-            let requestJSON = JSON.stringify({
+            var requestJSON = JSON.stringify({
                 "Command_Type": ["Write"],
                 "Command_Name": ["DeleteTimeSlotGroup"],
                 "Value": includeSlotsArr,
                 "api_token": [token]
             });
-            let deleteXmlHttp = createJsonXmlHttp("sql");
+            var deleteXmlHttp = createJsonXmlHttp("sql");
             deleteXmlHttp.onreadystatechange = function () {
                 if (deleteXmlHttp.readyState == 4 || deleteXmlHttp.readyState == "complete") {
-                    let revObj = JSON.parse(this.responseText);
+                    var revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         addTimeGroup_Slots();
                     }
@@ -198,11 +198,11 @@ function importTimeSlotGroup() {
     }
 
     function addTimeGroup_Slots() {
-        let count = 0;
+        var count = 0;
         addTimeSlot(add_group_slots[count].value);
 
         function addTimeSlot(time_slot_id) {
-            let request = {
+            var request = {
                 "Command_Type": ["Write"],
                 "Command_Name": ["AddTimeSlotGroup"],
                 "Value": {
@@ -211,10 +211,10 @@ function importTimeSlotGroup() {
                 },
                 "api_token": [token]
             };
-            let addXmlHttp = createJsonXmlHttp("sql");
+            var addXmlHttp = createJsonXmlHttp("sql");
             addXmlHttp.onreadystatechange = function () {
                 if (addXmlHttp.readyState == 4 || addXmlHttp.readyState == "complete") {
-                    let revObj = JSON.parse(this.responseText);
+                    var revObj = JSON.parse(this.responseText);
                     if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                         count++;
                         if (count < add_group_slots.length) {
@@ -236,15 +236,15 @@ function importTimeSlotGroup() {
 }
 
 function inputTimeGroups() {
-    let request = {
+    var request = {
         "Command_Type": ["Read"],
         "Command_Name": ["GetTimeGroup_list"],
         "api_token": [token]
     };
-    let xmlHttp = createJsonXmlHttp("sql");
+    var xmlHttp = createJsonXmlHttp("sql");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (!checkTokenAlive(token, revObj)) {
                 return;
             } else if (revObj.Value[0].success > 0) {
@@ -253,17 +253,17 @@ function inputTimeGroups() {
                 TimeGroupArr = revObj.Value[0].Values.slice(0) || [];
                 inputAlarmGroupTable(); //載入警報群組已設定的內容
                 for (i = 0; i < TimeGroupArr.length; i++) {
-                    let timelist_name = [];
+                    var timelist_name = [];
                     TimeGroupArr[i]["id"] = TimeGroupArr[i].time_group_id;
                     TimeGroupArr[i]["name"] = TimeGroupArr[i].time_group_name;
                     if (TimeGroupArr[i].elements) {
-                        TimeGroupArr[i].elements.forEach(element => {
+                        TimeGroupArr[i].elements.forEach(function (element) {
                             timelist_name.push(element.time_slot_name);
 
                         });
                     }
                     count_time_groups++;
-                    let tr_id = "tr_time_group_" + count_time_groups;
+                    var tr_id = "tr_time_group_" + count_time_groups;
                     $("#table_time_group tbody").append("<tr id=\"" + tr_id + "\">" +
                         "<td><input type='checkbox' name=\"chkbox_time_group\" value=\"" + TimeGroupArr[i].time_group_id +
                         "\" onchange=\"selectColumn(\'" + tr_id + "\')\" />  " + count_time_groups + "</td>" +
@@ -286,7 +286,7 @@ function inputTimeGroups() {
 
 function inputTimeGroupSlots(time_group_id) {
     submit_type["time_group"] = "Edit";
-    let index = TimeGroupArr.findIndex(function (info) {
+    var index = TimeGroupArr.findIndex(function (info) {
         return info.time_group_id == time_group_id;
     });
     if (index > -1) {
@@ -296,9 +296,9 @@ function inputTimeGroupSlots(time_group_id) {
         includeSlotsArr = [];
         count_time_group_slots = 0;
         if (TimeGroupArr[index].elements) {
-            TimeGroupArr[index].elements.forEach(element => {
+            TimeGroupArr[index].elements.forEach(function (element) {
                 count_time_group_slots++;
-                let tr_id = "tr_time_group_slot" + count_time_group_slots;
+                var tr_id = "tr_time_group_slot" + count_time_group_slots;
                 $("#table_time_group_slot tbody").append(
                     "<tr id=\"" + tr_id + "\">" +
                     "<td><input type='checkbox' name=\"chkbox_time_group_slot\" value=\"" + tr_id +

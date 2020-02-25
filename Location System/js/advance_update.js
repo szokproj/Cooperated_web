@@ -9,7 +9,7 @@ var time = 100;
 var ipPortList = {};
 
 $(function () {
-    let h = document.documentElement.clientHeight;
+    var h = document.documentElement.clientHeight;
     $("#block_files_list").css("max-height", h - 432 + "px");
 
     token = getToken();
@@ -29,7 +29,7 @@ $(function () {
             alert($.i18n.prop('i_selectFirmwareFirst'));
         } else {
             if (confirm($.i18n.prop('i_confirmUploadFirmware'))) {
-                let file_name = $("#update_file").val().substring($("#update_file").val().lastIndexOf('\\') + 1);
+                var file_name = $("#update_file").val().substring($("#update_file").val().lastIndexOf('\\') + 1);
                 setProgress(0);
                 sendFileToServer(file_name, 0);
             }
@@ -52,7 +52,7 @@ $(function () {
 });
 
 function uint8ToHex16(str) {
-    let str_hex = parseInt(str, 10).toString(16);
+    var str_hex = parseInt(str, 10).toString(16);
     while (str_hex.length < 2) {
         str_hex = "0" + str_hex;
     }
@@ -63,17 +63,17 @@ function uint8ToHex16(str) {
 function handleFiles(files) {
     $("#btn_upload").prop("disabled", true);
     $("#btn_reset").prop("disabled", true);
-    let file = files[0];
-    let fileExt = (file.name.substring(file.name.lastIndexOf('.'))).toLowerCase();
+    var file = files[0];
+    var fileExt = (file.name.substring(file.name.lastIndexOf('.'))).toLowerCase();
     if (fileExt == ".bin") {
-        let src = document.getElementById('file_upload').value;
+        var src = document.getElementById('file_upload').value;
         document.getElementById('update_file').value = src;
         if (window.File && window.FileReader && window.FileList && window.Blob) {
-            let fr = new FileReader();
+            var fr = new FileReader();
             fr.onloadend = function (e) {
-                let file_data = new Uint8Array(e.target.result);
-                let temp = "";
-                for (let i = 0; i < file_data.length; i++) {
+                var file_data = new Uint8Array(e.target.result);
+                var temp = "";
+                for (var i = 0; i < file_data.length; i++) {
                     temp += uint8ToHex16(file_data[i]);
                 }
                 fileArray = [];
@@ -98,8 +98,8 @@ function handleFiles(files) {
 }
 
 function sendFileToServer(file_name, index) { //上傳bin檔到Server
-    let total_files = fileArray.length;
-    let requestArray = {
+    var total_files = fileArray.length;
+    var requestArray = {
         "Command_Type": ["Write"],
         "Command_Name": ["uploadFW"],
         "Value": {
@@ -108,10 +108,10 @@ function sendFileToServer(file_name, index) { //上傳bin檔到Server
         },
         "api_token": [token]
     };
-    let xmlHttp = createJsonXmlHttp("Update_fw");
+    var xmlHttp = createJsonXmlHttp("Update_fw");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 //當Server回傳接收成功後, 持續向Server傳送取得更新進度的要求
                 if (revObj.Value[0].Status == "Upload OK") {
@@ -163,7 +163,7 @@ function reset() {
 
 function updateFileToDevice() {
     $("#sel_device_ip").removeClass("ui-state-error");
-    let ip_addr = $("#sel_device_ip").val();
+    var ip_addr = $("#sel_device_ip").val();
     if (!ip_addr || ip_addr == "") {
         $("#sel_device_ip").addClass("ui-state-error");
         alert($.i18n.prop('i_selectIpAddress'));
@@ -174,7 +174,7 @@ function updateFileToDevice() {
     }
     if (confirm($.i18n.prop('i_checkUpdateFirmware_1') + fileName + $.i18n.prop('i_checkUpdateFirmware_2') +
             $("#sel_device_ip").val() + $.i18n.prop('i_checkUpdateFirmware_3'))) {
-        let requestArray = {
+        var requestArray = {
                 "Command_Type": ["Read"],
                 "Command_Name": ["updateFW"],
                 "Value": {
@@ -186,7 +186,7 @@ function updateFileToDevice() {
             xmlHttp = createJsonXmlHttp("Update_fw");
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-                let revObj = JSON.parse(this.responseText);
+                var revObj = JSON.parse(this.responseText);
                 if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                     alert($.i18n.prop('i_updateFirmwareOK'));
                 } else {
@@ -199,7 +199,7 @@ function updateFileToDevice() {
 }
 
 function deleteFileByName() {
-    let requestArray = {
+    var requestArray = {
             "Command_Type": ["Read"],
             "Command_Name": ["deleteFW"],
             "Value": {
@@ -210,7 +210,7 @@ function deleteFileByName() {
         xmlHttp = createJsonXmlHttp("Update_fw");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 getFileList();
                 alert($.i18n.prop('i_deleteFirmwareOK'));
@@ -225,7 +225,7 @@ function deleteFileByName() {
 function checkFileByName() {
     if (fileName.length == 0)
         return alert($.i18n.prop('i_selectFileFirst'));
-    let requestArray = {
+    var requestArray = {
             "Command_Type": ["Read"],
             "Command_Name": ["checkFW"],
             "Value": {
@@ -236,7 +236,7 @@ function checkFileByName() {
         xmlHttp = createJsonXmlHttp("Update_fw");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
                 alert($.i18n.prop('i_checkFirmwareOK'));
             } else {
@@ -258,7 +258,7 @@ function checkFileByName() {
 }
 
 function getFileList() {
-    let requestArray = {
+    var requestArray = {
             "Command_Type": ["Read"],
             "Command_Name": ["checkFWlist"],
             "api_token": [token]
@@ -266,13 +266,13 @@ function getFileList() {
         xmlHttp = createJsonXmlHttp("Update_fw");
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            let revObj = JSON.parse(this.responseText);
+            var revObj = JSON.parse(this.responseText);
             if (checkTokenAlive(token, revObj) && revObj.Value[0].success > 0) {
-                let revInfo = revObj.Value[0].FileName ? revObj.Value[0].FileName : [];
+                var revInfo = revObj.Value[0].FileName ? revObj.Value[0].FileName : [];
                 fileName = ""; //清空指定的檔名
                 $("#block_files_list").empty();
                 revInfo.forEach(function (element, i) {
-                    let id = "files_" + i;
+                    var id = "files_" + i;
                     $("#block_files_list").append("<button class=\"btn file-img-name\" id=\"" + id + "\"" +
                         " name=\"files\" onclick=\"setSelected(\'" + id + "\',\'" + element + "\')\">" +
                         "<img src=\"../image/file.png\"><br>" +

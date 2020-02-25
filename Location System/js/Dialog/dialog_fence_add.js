@@ -10,7 +10,7 @@ function importAddFenceDialog() {
         var valid = true;
         valid = valid && checkLength(add_fence_name, $.i18n.prop('i_alarmAlert_38'), 1, 100);
         if (submit_type["fence"] == "Add") {
-            document.getElementsByName("fence_name").forEach(element => {
+            document.getElementsByName("fence_name").forEach(function (element) {
                 if (element.innerText == add_fence_name.val()) {
                     valid = false;
                     add_fence_name.addClass("ui-state-error");
@@ -409,7 +409,7 @@ function addFencePoints(f_id) {
 
 function addFenceGroups(f_id) {
     var add_group_arr = [];
-    addFenceContainGroup.forEach(element => {
+    addFenceContainGroup.forEach(function (element) {
         add_group_arr.push({
             "fence_id": f_id,
             "group_id": element.g_id

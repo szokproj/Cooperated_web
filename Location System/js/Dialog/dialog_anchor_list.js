@@ -31,11 +31,11 @@ function importAnchorList() {
         if (confirm($.i18n.prop('i_mapAlert_24'))) {
             var chk_main_anc = document.getElementsByName("chkbox_main_anchor_list");
             var chk_anc = document.getElementsByName("chkbox_anchor_list");
-            chk_main_anc.forEach(element => {
+            chk_main_anc.forEach(function (element) {
                 if (element.checked)
                     deleteMainAnchor(element.value);
             });
-            chk_anc.forEach(element => {
+            chk_anc.forEach(function (element) {
                 if (element.checked)
                     deleteAnchor(element.value);
             });
@@ -174,7 +174,7 @@ function deleteMainAnchor(id) {
                         if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
                             var deleteArray = [];
                             var revInfo = revObj2.Value[0].Values || [];
-                            revInfo.forEach(element => {
+                            revInfo.forEach(function (element) {
                                 if (element.main_anchor_id == id) {
                                     deleteArray.push({
                                         "group_id": element.group_id
@@ -221,7 +221,7 @@ function deleteAnchor(id) {
                         if (checkTokenAlive(token, revObj2) && revObj2.Value[0].success > 0) {
                             var deleteArr = [];
                             var revInfo = revObj2.Value[0].Values || [];
-                            revInfo.forEach(element => {
+                            revInfo.forEach(function (element) {
                                 if (element.anchor_id == id)
                                     deleteArr.push({
                                         "group_id": element.group_id,

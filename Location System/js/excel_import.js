@@ -107,7 +107,7 @@ function s2ab(s) { //字符串转字符流
 }
 // 将指定的自然数转换为26进制表示。映射关系：[0-25] -> [A-Z]。
 function getCharCol(n) {
-    let temCol = '',
+    var temCol = '',
         s = '',
         m = 0
     while (n > 0) {
