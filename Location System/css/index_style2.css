@@ -1,0 +1,410 @@
+th,
+td {
+    padding: 4px;
+    text-align: left;
+    border: 1px solid rgb(47, 95, 201);
+    /*#808080;*/
+}
+
+/* 自訂thead(表格的開頭)文字大小 */
+thead th {
+    text-align: left;
+    font-size: 12px;
+}
+
+/*tr:hover {
+    background-color: #f5f5f5;
+}*/
+
+/*網頁內的輸入框*/
+
+label,
+input {
+    display: inline block;
+}
+
+input.text {
+    margin-bottom: 12px;
+    width: 95%;
+    padding: .4em;
+}
+
+fieldset {
+    padding: 0;
+    border: 0;
+    margin-top: 25px;
+}
+
+.tool-bar {
+    float: right;
+}
+
+/* 修改滾動條樣式 */
+/* this targets the default scrollbar (compulsory) 
+::-webkit-scrollbar {
+    width: 12px !important;
+    height: 12px !important;
+}*/
+
+/*the new scrollbar will have a flat appearance with the set background color
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}*/
+
+/* this will style the thumb, ignoring the track 
+::-webkit-scrollbar-thumb {
+    background-color: lightgray;
+    border: 1px solid rgb(128, 128, 128);
+}*/
+
+/* if both the vertical and the horizontal bars appear, then perhaps the right bottom corner also needs to be styled 
+::-webkit-scrollbar-corner {
+    background-color: gray;
+}*/
+
+/***************/
+
+/**
+ * Alarm Dialog裡的Status文字設定
+ */
+#alarm_dialog_status {
+    color: red;
+}
+
+#content {
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -webkit-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+    padding: 0px 0px 0px 0px;
+}
+
+#content.right_open {
+    padding-right: 330px;
+}
+
+#content.left_open {
+    padding-left: 305px;
+}
+
+.member_photo {
+    float: left;
+    max-width: 130px;
+    margin-right: 10px;
+}
+
+canvas:hover {
+    cursor: pointer;
+}
+
+canvas:active {
+    cursor: move;
+}
+
+.transition {
+    height: 680px;
+    width: 100%;
+    background: white;
+    display: none;
+}
+
+.mouse_cursor_move {
+    cursor: move;
+}
+
+.top_button_group {
+    margin-bottom: 5px;
+}
+
+.btn-group button {
+    height: 30px;
+    font-size: 12px;
+}
+
+.dropdown {
+    display: inline-block;
+    font-size: 14px;
+    text-align: left;
+}
+
+.dropdown ul {
+    z-index: 2;
+}
+
+.dropdown button {
+    height: 30px;
+    font-size: 12px;
+}
+
+.dropdown input,
+.dropdown label {
+    color: #000000;
+    background-color: rgba(0, 0, 0, 0);
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: none;
+    padding: 5px 30px;
+    text-decoration: none;
+    text-align: left;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.dropdown input:active,
+.dropdown input:hover,
+.dropdown input:focus,
+.dropdown label:hover,
+.dropdown label:focus {
+    color: #333;
+    background-color: #e6e6e6;
+    background-image: none;
+    border: none;
+}
+
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu a {
+    padding: 10px 0px 0px 30px !important;
+    height: 40px;
+    text-decoration: none;
+    text-align: left;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+    font-weight: normal;
+    font-size: 14px;
+}
+
+.dropdown-submenu a:focus,
+.dropdown-submenu a:hover {
+    background-color: rgba(0, 0, 0, 0.089) !important;
+}
+
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+}
+
+input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.custom-file-download {
+    color: #000000;
+    background-color: rgba(0, 0, 0, 0);
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: 0px;
+    padding: 10px 0px 10px 30px;
+    text-decoration: none;
+    text-align: left;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+    font-weight: normal;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-group .btn {
+    border-radius: 0px;
+}
+
+.btn-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.btn-mode {
+    padding: 5px;
+    width: 100%;
+    border: 2px solid transparent;
+}
+
+.btn-mode:hover {
+    border: 2px solid rgb(33, 170, 233);
+}
+
+.btn-mode.selected {
+    
+    background: rgb(166, 208, 228);
+}
+
+.btn-set {
+    cursor: pointer;
+    background: transparent !important;
+    color: rgb(0, 119, 255) !important;
+    padding: 0px !important;
+}
+
+.btn-set:hover {
+    background: transparent !important;
+    color: rgb(90, 158, 236) !important;
+}
+
+.btn-set i {
+    font-size: 18px !important;
+}
+
+.btn-icon {
+    cursor: pointer;
+    color: rgb(0, 119, 255);
+    margin-right: 5px;
+}
+
+.btn-icon:hover {
+    color: rgb(90, 158, 236);
+}
+
+.btn-icon i {
+    font-size: 16px !important;
+}
+
+.btn-delete {
+    cursor: pointer;
+    color: rgb(0, 0, 0);
+}
+
+.btn-delete:hover {
+    color: rgb(70, 70, 70);
+}
+
+.btn-delete i {
+    font-size: 18px !important;
+}
+
+.btn-map-tab {
+    border-color: rgb(47, 95, 201);
+    background-color: transparent;
+    color: white;
+}
+
+.btn-map-tab:hover {
+    border-color: rgb(47, 95, 201);
+    background-color: transparent;
+    color: white;
+}
+
+/*.btn-map-tab:focus,
+.btn-map-tab:active {
+    outline: none;
+}*/
+
+.btn-map-tab.selected,
+.btn-map-tab.selected:hover {
+    background-color: rgb(47, 95, 201);
+    color: white;
+}
+
+
+/**
+ *  Dialog內的tr被選取時變色 
+ */
+.changeBgColor {
+    background-color: rgb(187, 234, 250);
+}
+
+.coordinate {
+    background-color: transparent;
+    max-width: 80px;
+    border: none;
+}
+
+/* icon navbar */
+.menu-left ul .alarmlist a,
+.menu-left ul .taglist a {
+    background: transparent;
+}
+
+.menu-left ul .alarmlist:hover a {
+    background: rgb(240, 107, 98)
+}
+
+.menu-left ul .taglist:hover a {
+    background: rgb(219, 157, 43)
+}
+
+/* Model */
+
+.modal-body {
+    background: #36a4ff63;
+    border-radius: 5px;
+}
+
+/* Display size */
+#canvas_display_size {
+    height: 180px;
+    width: 100%;
+    background: lightgray;
+    border: 1px solid lightgray;
+}
+
+.noborder-block {
+    color: #363636;
+    font-family: 'Microsoft JhengHei', 'sans-serif';
+    font-weight: normal;
+    font-size: 14px;
+    border: none;
+    padding: 0px;
+}
+
+.noborder-block th,
+.noborder-block td {
+    border: none;
+}
+
+.alert_block {
+    top: 10px;
+    left: 40%;
+    position: absolute;
+    display: none;
+    margin: auto;
+    width: auto;
+    height: auto;
+    padding: 10px 14px;
+    -moz-box-shadow: 4px 4px 12px -2px rgb(97, 96, 96);
+    -webkit-box-shadow: 4px 4px 12px -2px rgb(97, 96, 96);
+    box-shadow: 4px 4px 12px -2px rgb(97, 96, 96);
+    border-radius: 5px;
+    background: rgb(94, 191, 255);
+    color: rgb(0, 0, 0);
+    opacity: 100;
+    filter: alpha(opacity=100);
+}
+
+.alert_block.fadeOut {
+    -webkit-transition: opacity .5s linear;
+    -moz-transition: opacity .5s linear;
+    -o-transition: opacity .5s linear;
+    transition: opacity .5s linear;
+    opacity: 0;
+}
+
+.canvas-modes {
+    margin-top: 5px;
+    border: 1px solid lightgray;
+}
+
+.canvas-modes img {
+    float: right;
+    height: 100px;
+}
+
+.canvas-modes i {
+    margin: auto;
+}

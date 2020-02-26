@@ -1,6 +1,9 @@
 body {
-    background: black;
-    padding: 5px;
+    /*background: linear-gradient(180deg, #0077F7 0%, #08132E 100%);
+    background: -moz-linear-gradient(180deg, #0077F7 0%, #08132E 100%);
+    background: -webkit-linear-gradient(180deg, #0077F7 0%, #08132E 100%);
+    background: -o-linear-gradient(180deg, #0077F7 0%, #08132E 100%);*/
+    background: #132742;
 }
 
 table {
@@ -14,44 +17,44 @@ table {
 }
 
 .container {
+    margin-left: 50px;
     width: auto;
     height: 100%;
-    margin-left: 50px;
-
-    /*background: rgb(146, 145, 145);*/
-
-    background: linear-gradient(90deg, lightgray 0%, gray 100%);
-    background: -moz-linear-gradient(90deg, lightgray 0%, gray 100%);
-    background: -webkit-linear-gradient(90deg, lightgray 0%, gray 100%);
-    background: -o-linear-gradient(90deg, lightgray 0%, gray 100%);
-
-    box-shadow: 0px 0px 2px 3px rgb(255, 255, 255) inset;
-    -moz-box-shadow: 0px 0px 2px 3px rgb(255, 255, 255) inset;
-    -webkit-box-shadow: 0px 0px 2px 3px rgb(255, 255, 255) inset;
-    border-radius: 8px;
+    background: transparent;
+    color: white;
     font-family: 'Microsoft JhengHei', 'sans-serif';
 }
 
-.top_nav {
-    padding-top: 4px;
-    padding-bottom: 4px;
-    width: auto;
-    border-radius: 5px;
-    background: black;
-    color: white;
-    box-shadow: 0px 0px 3px 4px rgb(211, 211, 211) inset;
-    -moz-box-shadow: 0px 0px 3px 4px rgb(211, 211, 211) inset;
-    -webkit-box-shadow: 0px 0px 3px 4px rgb(211, 211, 211) inset;
+.container select,
+.container select option,
+.container option label,
+.container option span,
+.container input[type=text],
+.container input[type=date],
+.container input[type=time],
+.container input[type=search] {
+    background: #132742;
+    border: 1px solid lightgray;
+}
 
-    /*background: linear-gradient(270deg, rgba(0, 227, 255, 1)0%, rgba(47, 149, 255, 1)65%);
+.top_nav {
+    width: auto;
+    margin-bottom: 3px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    background: #112044;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0px 0px 4px 2px rgb(0, 0, 0) inset;
+    -webkit-box-shadow: 0px 0px 4px 2px rgb(0, 0, 0) inset;
+    -moz-box-shadow: 0px 0px 4px 2px rgb(0, 0, 0) inset;
+    -o-box-shadow: 0px 0px 4px 2px rgb(0, 0, 0) inset;
+    /*background: linear-gradient(270deg, rgb(34, 157, 173)0%, rgba(47, 149, 255, 1)65%);
     background: -moz-linear-gradient(270deg, rgba(0, 227, 255, 1)0%, rgba(47, 149, 255, 1)65%);
     background: -webkit-linear-gradient(270deg, rgba(0, 227, 255, 1)0%, rgba(47, 149, 255, 1)65%);
     background: -o-linear-gradient(270deg, rgba(0, 227, 255, 1)0%, rgba(47, 149, 255, 1)65%);*/
 }
 
-/*.top_nav img {
-    padding-top: 3px;
-}*/
 
 .tool-bar {
     float: right;
@@ -65,13 +68,13 @@ table {
 .select-lang {
     margin-top: 5px;
     margin-right: 10px;
-    background: white;
-    color: black;
+    background: #082041;
+    color: white;
 }
 
 img.logo {
-    max-height: 40px;
-    max-width: 40px;
+    max-height: 30px;
+    max-width: 30px;
     margin: auto;
     background: transparent !important;
 }
@@ -134,6 +137,33 @@ canvas {
     position: relative;
 }
 
+/*@media only screen and (min-width: 769px) {
+
+    桌上型電腦
+    .cvsBlock {
+        width: 100%;
+        height: 330px;
+    }
+}
+
+@media only screen and (min-width: 321px) and (max-width: 768px) {
+
+    平板
+    .cvsBlock {
+        width: 100%;
+        height: 250px;
+    }
+}
+
+@media only screen and (min-width: 0px) and (max-width: 320px) {
+
+    手機
+    .cvsBlock {
+        width: 100%;
+        height: 500px;
+    }
+}*/
+
 /*DropDownList*/
 .dropbtn {
     background-color: #4CAF50;
@@ -178,7 +208,23 @@ canvas {
     background-color: #3e8e41;
 }
 
-.nav-tabs {
+/*
+ * Copyright (c) 2006 Sam Collett (http://www.texotela.co.uk)
+ * Licensed under the MIT License:
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+
+/*
+ * A time picker for jQuery
+ * Based on original timePicker by Sam Collet (http://www.texotela.co.uk)
+ * @name     timePicker
+ * @version  0.1 
+ * @author   Anders Fajerson (http://perifer.se)
+ * @example  $("#mytime").timePicker();
+ * @example  $("#mytime").timePicker({step:30, startTime:"15:00", endTime:"18:00"}); 
+ */
+
+ .nav-tabs {
     border-color: rgb(0, 0, 0);
     margin: 0px 3px;
 }

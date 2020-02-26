@@ -9,6 +9,19 @@ td {
     text-align: left;
     border: none;
     background-color: white;
+    color: black;
+}
+
+.container select,
+.container select option,
+.container option label,
+.container option span,
+.container input[type=text],
+.container input[type=date],
+.container input[type=time],
+.container input[type=search] {
+    background: transparent;
+    border: 1px solid lightgray;
 }
 
 input[type="file"] {
@@ -279,8 +292,7 @@ h5 {
     height: 38px;
     position: relative;
     float: left;
-    background-color: rgb(82, 82, 82);
-    border: 1px solid rgb(163, 163, 163);
+    border: 1px solid rgb(0, 0, 0);
 }
 
 .sidebar-menu li:before {
@@ -297,10 +309,9 @@ h5 {
 .btn-sidebar {
     width: 40px;
     height: 36px;
-    background-color: rgb(82, 82, 82);
-    color: white;
+    background-color: rgb(30, 90, 169);
+    color: black;
     text-align: center;
-    /*border-radius: 5px;*/
     padding-top: 1px;
     cursor: pointer;
     font-weight: bold;
@@ -308,11 +319,12 @@ h5 {
 }
 
 .btn-sidebar.opened {
-    background-color: rgb(255, 96, 22);
-    color: rgb(0, 0, 0);
+    background-color: rgb(57, 143, 255);
+    color: white !important;
 }
 
 .btn-sidebar:hover {
+    background-color: rgb(57, 143, 255);
     color: rgb(0, 0, 0);
 }
 
@@ -352,7 +364,7 @@ canvas {
     height: 360px;
     width: 100%;
     overflow: auto;
-    border: 1px solid rgb(82, 82, 82);
+    border: 1px solid #286090;
 }
 
 #dialog_map_setting {
@@ -379,7 +391,7 @@ canvas {
     height: 240px;
     width: 100%;
     overflow: auto;
-    border: 1px solid rgb(125, 125, 125);
+    border: 2px solid rgb(125, 125, 125);
     box-shadow: 1px 1px 4px 2px #3a3a3a inset;
     background: #888888;
 }
@@ -407,4 +419,35 @@ canvas {
 
 .display-block {
     margin-bottom: 20px;
+}
+
+/*tab pages*/
+
+.nav-tabs {
+    border-color: #1a88ff;
+}
+
+.nav-tabs li a {
+    padding: 6px 10px;
+    background-color: transparent;
+    color: white;
+}
+
+.nav-tabs li:hover a {
+    border-color: #1a88ff;
+    background-color: transparent;
+}
+
+.nav-tabs li.active a:hover,
+.nav-tabs li.active a:focus,
+.nav-tabs li.active a {
+    border-color: #1a88ff;
+    background-color: #1a88ff;
+    color: white;
+}
+
+.nav-tabs a,
+.tab-pane th,
+.tab-pane td {
+    font-family: 'Microsoft JhengHei', 'sans-serif';
 }

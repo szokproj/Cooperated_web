@@ -3,6 +3,18 @@
     font-family: 'Microsoft JhengHei', 'sans-serif';
 }
 
+.container select,
+.container select option,
+.container option label,
+.container option span,
+.container input[type=text],
+.container input[type=date],
+.container input[type=time],
+.container input[type=search] {
+    background: transparent;
+    border: 1px solid lightgray;
+}
+
 a,
 a:hover,
 a:active,
@@ -66,7 +78,6 @@ canvas:active {
     position: relative;
     background: transparent;
     border: 1px solid rgb(110, 110, 110);
-    box-shadow: 0px 0px 3px 4px rgb(61, 61, 61) inset;
 }
 
 #positionInfo {

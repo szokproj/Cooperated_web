@@ -197,7 +197,7 @@ input[type="file"] {
     padding: 3px 8px;
     text-align: center;
     font-size: 14px;
-    color: white
+    color: white;
 }
 
 .table-line td {
@@ -207,6 +207,7 @@ input[type="file"] {
     text-align: left;
     font-size: 14px;
     background-color: rgb(216, 216, 216);
+    color: black;
 }
 
 .member_list {

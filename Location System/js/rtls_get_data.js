@@ -82,20 +82,17 @@ $(function () {
         backdrop: false,
         show: false
     });
-    for (var i = 0; i < canvas_mode.length; i++) {
+    canvas_mode.forEach(function (mode, i) {
         document.getElementById("btn_sel_mode" + (i + 1)).onclick = function () {
-            document.getElementById("select_canvas_mode").value = canvas_mode[i];
-            var btn = document.getElementsByClassName("btn-mode");
-            for (var j = 0; j < btn.length; j++)
-                btn[j].classList.remove('selected');
-            btn[i].classList.add('selected');
+            document.getElementById("select_canvas_mode").value = mode;
+            $(".btn-mode").removeClass('selected');
+            $(".btn-mode").eq(i).addClass('selected');
         };
-    }
+    });
     document.getElementById("select_canvas_mode").onchange = function () {
-        canvas_mode.forEach(function (mode, i) {
-            if (mode == document.getElementById("select_canvas_mode").value)
-                document.getElementById("btn_sel_mode" + (i + 1)).click();
-        });
+        var i = canvas_mode.indexOf(document.getElementById("select_canvas_mode").value)
+        if (i > -1)
+            document.getElementById("btn_sel_mode" + (i + 1)).click();
     };
     setup();
 });
